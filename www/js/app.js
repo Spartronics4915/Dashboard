@@ -165,6 +165,10 @@ var app = {
         this.rebuildNetTab();
     },
 
+    robotlogPageLoaded: function(targetElem, html) {
+        targetElem.innerHTML = html;
+    },
+
     aboutPageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
         $("#logo").animate({
