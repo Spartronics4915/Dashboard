@@ -1,21 +1,19 @@
-<h2>Hello Developers!</h2>
+<h2>Yo Devs!</h2>
 <hr>
 
+<span class="title">LogLevels</span>
+
 Drivetrain:
-<select class="btn" id="first">
-    <option>DEBUG</option>
-    <option>INFO</option>
-    <option>NOTICE</option>
-    <option>WARNING</option>
-    <option>ERROR</option>
+<select class="selector" id="DrivetrainLogLevel">
+    {loglevels}
 </select>
-<br><br>
 
 Launcher:
-<select class="btn" id="second">
-    <option>DEBUG</option>
-    <option>INFO</option>
-    <option>NOTICE</option>
-    <option>WARNING</option>
-    <option>ERROR</option>
+<select class="selector" id="LauncherLogLevel">
+    {loglevels}
+</select>
+
+Intake:
+<select class="selector" id="IntakeLogLevel">
+    {loglevels}
 </select>

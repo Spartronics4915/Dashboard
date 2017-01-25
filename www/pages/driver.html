@@ -1,43 +1,26 @@
 <h2>Hello Drivers!</h2>
 
 <hr >
+<span class="title">Autonomous</span>
+&nbsp; &nbsp; &nbsp;
 
-<div class="row">
-    <div class="col-xs-3">
-    Autonomous Position
-    </div>
-    <div class="dropdown col-xs-3">
-      <button class="btn btn-default dropdown-toggle" type="button"
-            id="autoPosition" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="true">
-        None
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" aria-labelledby="autoPosition">
-        <li><a href="#driver?autoPosition=Right">Right</a></li>
-        <li><a href="#driver?autoPosition=Center">Center</a></li>
-        <li><a href="#driver?autoPosition=Left">Left</a></li>
-      </ul>
-    </div>
-</div>
-<br>
-<div class="row">
-    <div class="col-xs-3">
-    Autonomous Mode:
-    </div>
-<div class="dropdown col-xs-6">
-  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-    None
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li><a href="#driver?autoMode=line">Line-Cross</a></li>
-    <li><a href="#driver?autoMode=fuel">Fuel</a></li>
-    <li><a href="#driver?autoMode=sproket">Sprocket</a></li>
-  </ul>
-</div>
+Position
+<select class="selector" id="autoPosition">
+    <option>Unknown</option>
+    <option>Right</option>
+    <option>Center</option>
+    <option>Left</option>
+</select>
 
-</div>
+&nbsp; &nbsp; &nbsp;
+
+Mode
+<select class="selector" id="autoMode">
+    <option>None</option>
+    <option>Line-Cross</option>
+    <option>Fuel</option>
+    <option>Sprocket</option>
+</select>
 
 <div id="driverCam", style="height: 500px; width: 500px;">
 

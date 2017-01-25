@@ -9,6 +9,19 @@ hr {
     border-color: #25b;
 }
 
+select {
+    color: #888888;
+    background-color: #222;
+    padding: 6px 12px;
+    border-radius: 3px;
+    border: 0px;
+}
+
+.title {
+    font-size: 150%;
+    color:#55b;
+}
+
 #status {
     text-align: right;
 }
@@ -30,7 +43,11 @@ hr {
     padding-top: 10px;
 }
 
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
+#networktable {
+    border-spacing: 1px;
+    border-collapse: separate;
+}
+
+#networktable td {
+    padding: 10px;
 }
