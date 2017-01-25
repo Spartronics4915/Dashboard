@@ -21,11 +21,11 @@ var app = {
 
     // onReady is invoked after all scripts have finished loading.
     onReady: function() { // event callback, 'this' not valid
-        app.logMsg("deviceready");
+        // app.logMsg("deviceready");
         var initURL = app.homeHref;
         if(window.location.hash)
         {
-            app.logMsg("using window.location.hash: " + window.location.hash);
+            // app.logMsg("using window.location.hash: " + window.location.hash);
             initURL = window.location.hash;
             app.navigate(window.location.hash);
         }
@@ -88,6 +88,43 @@ var app = {
 
     driverPageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
+        loadCameraOnConnect({
+            container: '#driverCam',      // where to put the img tag
+            proto: null,                  // optional, defaults to http://
+            host: null,                   // optional, if null will use robot's autodetected IP address
+            port: 5800,                   // webserver port
+            image_url: '/?action=stream', // mjpg stream of camera
+            data_url: '/program.json',    // used to test if connection is up
+            wait_img: null,               // optional img to show when not connected, can use SVG instead
+            error_img: null,              // optional img to show when error connecting, can use SVG instead
+            attrs: {                      // optional: attributes set on svg or img element
+                width: 400,               // optional, stretches image to this width
+                height: 300,              // optional, stretches image to this width
+            }
+        });
+        loadCameraOnConnect({
+            container: '#sprocketCam',      // where to put the img tag
+            proto: null,                  // optional, defaults to http://
+            host: "http://10.49.15.4",                   // optional, if null will use robot's autodetected IP address
+            port: 5805,                   // webserver port
+            image_url: '/?action=stream', // mjpg stream of camera
+            data_url: '/program.json',    // used to test if connection is up
+            wait_img: null,               // optional img to show when not connected, can use SVG instead
+            error_img: null,              // optional img to show when error connecting, can use SVG instead
+            attrs: {                      // optional: attributes set on svg or img element
+                width: 400,               // optional, stretches image to this width
+                height: 300,              // optional, stretches image to this width
+            }
+        });
+        // first initialize selectors from network tables.
+        $(".selector").each(function() {
+            var key = $(this).attr("id");
+            var ntkey = "/SmartDashboard/" + key ;
+            var val = NetworkTables.getValue(ntkey + "/selected");
+            $(this).val(val);
+        });
+
+        // now update network tables on changes
         $(".selector").change(function() {
             var value = $(this).val();
             var key = $(this).attr("id");
@@ -105,6 +142,16 @@ var app = {
                         "<option>ERROR</option>",
         };
         targetElem.innerHTML = this.interpolate(html, map);
+
+        // first initialize selectors from network tables.
+        $(".selector").each(function() {
+            var key = $(this).attr("id");
+            var ntkey = "/SmartDashboard/" + key ;
+            var val = NetworkTables.getValue(ntkey + "/selected");
+            $(this).val(val);
+        });
+
+        // now update network tables on changes
         $(".selector").change(function() {
             var value = $(this).val();
             var key = $(this).attr("id");
@@ -161,9 +208,9 @@ var app = {
     },
 
     onNetTabChange: function(key, value, isNew) {
-        app.logMsg("nettab entry changed: " + key +
-                    " = " + value +
-                    " new: " + isNew);
+        // app.logMsg("nettab entry changed: " + key +
+        //           " = " + value +
+        //           " new: " + isNew);
 
         if(app.currentPage == "nettab")
         {
@@ -224,7 +271,7 @@ var app = {
 }; // end of app definition
 
 app.initialize();
-app.logMsg("app loaded", true);
+app.logMsg("Dashboard loaded", true);
 global.app = app;
 
 })(window);
