@@ -35,7 +35,7 @@ var developer = {
 
         // build string.
         var val = NetworkTables.getValue("/SmartDashboard/Build", "n/a");
-        $("#build").text("Robot sw build: " + val);
+        $(".buildid").text("Robot sw build: " + val);
 
         // dabble wth flot
         var plot = $.plot("#randomPlot", [this.getRandomData()], {
@@ -66,12 +66,21 @@ var developer = {
             title: "IMU Heading",
             valueFontColor: "#888",
           });
-        var changeGage = function() {
-            var val = Math.floor(Math.random() * 360 - 180);
-            self.imuHeadingGage.refresh(val);
-            window.setTimeout(changeGage, 2000);
+        if(0) {
+            var changeGage = function() {
+                var val = Math.floor(Math.random() * 360 - 180);
+                self.imuHeadingGage.refresh(val);
+                window.setTimeout(changeGage, 2000);
+            }
+            changeGage();
         }
-        changeGage();
+    },
+
+    onNetTabChange: function(key, value, isNew) {
+        if(key === "IMU Heading")
+        {
+            self.imuHeadingGage.refresh(Number(val));
+        }
     },
 
     getRandomData: function() {

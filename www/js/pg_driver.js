@@ -9,8 +9,8 @@ var driver = {
         loadCameraOnConnect({
             container: '#driverCam',      // where to put the img tag
             proto: null,                  // optional, defaults to http://
-            host: null,                   // optional, if null will use robot's autodetected IP address
-            port: 5800,                   // webserver port
+            host: "http://10.49.15.12",   // optional, if null will use robot's autodetected IP address
+            port: 80,                     // webserver port
             image_url: '/?action=stream', // mjpg stream of camera
             data_url: '/program.json',    // used to test if connection is up
             wait_img: null,               // optional img to show when not connected, can use SVG instead
@@ -23,8 +23,8 @@ var driver = {
         loadCameraOnConnect({
             container: '#sprocketCam',      // where to put the img tag
             proto: null,                  // optional, defaults to http://
-            host: "http://10.49.15.4",                   // optional, if null will use robot's autodetected IP address
-            port: 5805,                   // webserver port
+            host: "http://10.49.15.11",                   // optional, if null will use robot's autodetected IP address
+            port: 80,                       // webserver port
             image_url: '/?action=stream', // mjpg stream of camera
             data_url: '/program.json',    // used to test if connection is up
             wait_img: null,               // optional img to show when not connected, can use SVG instead

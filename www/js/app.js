@@ -108,7 +108,7 @@ var app = {
     onRobotConnect: function(cnx) {
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='amber'>disconnected</span>");
-        $("#robotAddress").html("@: " + cnx ? NetworkTables.getRobotAddress() : "<na>");
+        $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
     },
 
     onNetTabConnect: function(cnx) {

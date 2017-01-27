@@ -17,9 +17,10 @@ this approach may be for you.
 
 To run the dashboard:
 
-  1. make sure correct python modules are installed
-  2. start the dashboard server:  python tornado_server.py
-  3. point your favorite webbrowser to http://localhost:8888
+  1. make sure you have python installed (2.7+ may be the best choice)
+  2. make sure correct python modules are installed (pynetworktablas, pynetworktablsjs)
+  2. start dashboard server:  python tornado_server.py --port 5080 --robot 10.49.15.2
+  3. point your favorite webbrowser to http://localhost:5080
 
 ### Helpful Links
 

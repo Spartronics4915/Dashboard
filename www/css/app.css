@@ -9,6 +9,10 @@ hr {
     border-color: #25b;
 }
 
+.buildid {
+    font-size: 14px;
+}
+
 select {
     color: #888888;
     background-color: #222;
