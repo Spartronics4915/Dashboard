@@ -7,6 +7,7 @@ var app = {
     caret: " <span class='caret'></span>",
     openURL: null,
     currentPage: null,
+    pageHandlers: {},
     varRegExp: /{\s*(\w+)\s*}/g, /* w is alphnum, s is space*/
 
     initialize: function() {
@@ -17,6 +18,10 @@ var app = {
         if(force || true) {
             console.log(msg);
         }
+    },
+
+    setPageHandler: function(page, handler) {
+        this.pageHandlers[page] = handler;
     },
 
     // onReady is invoked after all scripts have finished loading.
@@ -55,7 +60,8 @@ var app = {
         }
         if(params !== null)
         {
-            this.updateParams(params);
+            this.logMsg("url params not current supported");
+            // this.updateParams(params);
         }
     },
 
@@ -65,9 +71,6 @@ var app = {
         // find the parent of the <a> whose href endswith the current page.
         $("#mainNavList a[href$='" + this.currentPage + "']").parent()
                                                            .addClass("active");
-    },
-
-    updateParams: function(params) {
     },
 
     urlToPage: function(href) {
@@ -80,100 +83,10 @@ var app = {
         var fileref = "/pages/" + page + ".html";
         this.sendGetRequest(fileref, function(html) {
             var targetElem = document.querySelector(target);
-            app[page + "PageLoaded"](targetElem, html);
+            app.pageHandlers[page].pageLoaded(targetElem, html);
             // after a page is loaded we may need to refresh its connent
             // for example, the network tables table
         });
-    },
-
-    driverPageLoaded: function(targetElem, html) {
-        targetElem.innerHTML = html;
-        loadCameraOnConnect({
-            container: '#driverCam',      // where to put the img tag
-            proto: null,                  // optional, defaults to http://
-            host: null,                   // optional, if null will use robot's autodetected IP address
-            port: 5800,                   // webserver port
-            image_url: '/?action=stream', // mjpg stream of camera
-            data_url: '/program.json',    // used to test if connection is up
-            wait_img: null,               // optional img to show when not connected, can use SVG instead
-            error_img: null,              // optional img to show when error connecting, can use SVG instead
-            attrs: {                      // optional: attributes set on svg or img element
-                width: 400,               // optional, stretches image to this width
-                height: 300,              // optional, stretches image to this width
-            }
-        });
-        loadCameraOnConnect({
-            container: '#sprocketCam',      // where to put the img tag
-            proto: null,                  // optional, defaults to http://
-            host: "http://10.49.15.4",                   // optional, if null will use robot's autodetected IP address
-            port: 5805,                   // webserver port
-            image_url: '/?action=stream', // mjpg stream of camera
-            data_url: '/program.json',    // used to test if connection is up
-            wait_img: null,               // optional img to show when not connected, can use SVG instead
-            error_img: null,              // optional img to show when error connecting, can use SVG instead
-            attrs: {                      // optional: attributes set on svg or img element
-                width: 400,               // optional, stretches image to this width
-                height: 300,              // optional, stretches image to this width
-            }
-        });
-        // first initialize selectors from network tables.
-        $(".selector").each(function() {
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
-            var val = NetworkTables.getValue(ntkey + "/selected");
-            $(this).val(val);
-        });
-
-        // now update network tables on changes
-        $(".selector").change(function() {
-            var value = $(this).val();
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
-            NetworkTables.putValue(ntkey + "/selected", value);
-        });
-    },
-
-    developerPageLoaded: function(targetElem, html) {
-        var map = {
-            loglevels:  "<option>DEBUG</option>"+
-                        "<option>INFO</option>"+
-                        "<option>NOTICE</option>"+
-                        "<option>WARNING</option>"+
-                        "<option>ERROR</option>",
-        };
-        targetElem.innerHTML = this.interpolate(html, map);
-
-        // first initialize selectors from network tables.
-        $(".selector").each(function() {
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
-            var val = NetworkTables.getValue(ntkey + "/selected");
-            $(this).val(val);
-        });
-
-        // now update network tables on changes
-        $(".selector").change(function() {
-            var value = $(this).val();
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
-            NetworkTables.putValue(ntkey + "/selected", value);
-        });
-    },
-
-    nettabPageLoaded: function(targetElem, html) {
-        targetElem.innerHTML = html;
-        this.rebuildNetTab();
-    },
-
-    robotlogPageLoaded: function(targetElem, html) {
-        targetElem.innerHTML = html;
-    },
-
-    aboutPageLoaded: function(targetElem, html) {
-        targetElem.innerHTML = html;
-        $("#logo").animate({
-            width: "333px",
-          });
     },
 
     interpolate: function(body, map) {
@@ -202,12 +115,13 @@ var app = {
         if(cnx)
         {
             $("#nettabState").html("<span class='green'>connected</span>");
-            // clear the table here.
-            $("#nt tbody > tr").remove();
+            if(app.pageHandlers[app.currentPage].onNetTabConnect) {
+                app.pageHandlers[app.currentPage].onNetTabConnect();
+            }
         }
         else
         {
-            $("#connectState").text("<span class='amber'>disconnected</span>");
+            $("#nettabState").text("<span class='amber'>disconnected</span>");
         }
     },
 
@@ -215,36 +129,9 @@ var app = {
         // app.logMsg("nettab entry changed: " + key +
         //           " = " + value +
         //           " new: " + isNew);
-
-        if(app.currentPage == "nettab")
+        if(app.pageHandlers[app.currentPage].onNetTabChange)
         {
-            // key thing here: we're using the various NetworkTable keys as
-            // the id of the elements that we're appending, for simplicity. However,
-            // the key names aren't always valid HTML identifiers, so we use
-            // the NetworkTables.keyToId() function to convert them appropriately
-            if (isNew)
-            {
-                var tr = $('<tr></tr>').appendTo($('#networktable > tbody:last'));
-                $('<td></td>').text(key).appendTo(tr);
-                $('<td></td>').attr('id', NetworkTables.keyToId(key))
-                               .text(value)
-                               .appendTo(tr);
-            }
-            else
-            {
-                // similarly, use keySelector to convert the key to a valid jQuery
-                // selector. This should work for class names also, not just for ids
-                $('#' + NetworkTables.keySelector(key)).text(value);
-            }
-        }
-    },
-
-    rebuildNetTab: function() {
-        var keys = NetworkTables.getKeys();
-        for(var i=0;i<keys.length; i++)
-        {
-            var key = keys[i];
-            app.onNetTabChange(key, NetworkTables.getValue(key), true);
+            app.pageHandlers[app.currentPage].onNetTabChange(key, value, isNew);
         }
     },
 
@@ -275,7 +162,7 @@ var app = {
 }; // end of app definition
 
 app.initialize();
-app.logMsg("Dashboard loaded", true);
 global.app = app;
+app.logMsg("Dashboard loaded", true);
 
 })(window);
