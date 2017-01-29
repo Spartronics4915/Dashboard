@@ -121,7 +121,7 @@ var app = {
         }
         else
         {
-            $("#nettabState").text("<span class='amber'>disconnected</span>");
+            $("#nettabState").html("<span class='amber'>disconnected</span>");
         }
     },
 
