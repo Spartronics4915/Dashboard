@@ -125,10 +125,10 @@ var app = {
         }
     },
 
-    onNetTabChange: function(key, value, isNew) {
+    onNetTbChange: function(key, value, isNew) {
         // app.logMsg("nettab entry changed: " + key +
-        //           " = " + value +
-        //           " new: " + isNew);
+        //          " = " + value +
+        //         " new: " + isNew);
         if(app.pageHandlers[app.currentPage].onNetTabChange)
         {
             app.pageHandlers[app.currentPage].onNetTabChange(key, value, isNew);

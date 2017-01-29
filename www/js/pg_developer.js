@@ -79,7 +79,7 @@ var developer = {
     onNetTabChange: function(key, value, isNew) {
         if(key === "/SmartDashboard/Drivetrain_IMU_Heading")
         {
-            self.imuHeadingGage.refresh(Number(value));
+            this.imuHeadingGage.refresh(Number(value));
         }
     },
 
