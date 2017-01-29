@@ -125,7 +125,7 @@ var app = {
         }
     },
 
-    onNetTbChange: function(key, value, isNew) {
+    onNetTabChange: function(key, value, isNew) {
         // app.logMsg("nettab entry changed: " + key +
         //          " = " + value +
         //         " new: " + isNew);
