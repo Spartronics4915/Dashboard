@@ -11,7 +11,7 @@ var driver = {
             proto: null,                  // optional, defaults to http://
             host: "http://10.49.15.12",   // optional, if null will use robot's autodetected IP address
             port: 80,                     // webserver port
-            image_url: '/?action=stream', // mjpg stream of camera
+            image_url: '/mjpg/video.mjpg', // mjpg stream of camera
             data_url: '/program.json',    // used to test if connection is up
             wait_img: null,               // optional img to show when not connected, can use SVG instead
             error_img: null,              // optional img to show when error connecting, can use SVG instead

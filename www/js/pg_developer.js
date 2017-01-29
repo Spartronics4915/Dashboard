@@ -77,9 +77,9 @@ var developer = {
     },
 
     onNetTabChange: function(key, value, isNew) {
-        if(key === "IMU Heading")
+        if(key === "Drivetrain_IMU_Heading")
         {
-            self.imuHeadingGage.refresh(Number(val));
+            self.imuHeadingGage.refresh(Number(value));
         }
     },
 
