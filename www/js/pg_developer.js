@@ -37,27 +37,6 @@ var developer = {
         var val = NetworkTables.getValue("/SmartDashboard/Build", "n/a");
         $(".buildid").text("Robot sw build: " + val);
 
-        // dabble wth flot
-        var plot = $.plot("#randomPlot", [this.getRandomData()], {
-                series: {
-                    shadowSize: 0
-                },
-                yaxis: {
-                    min: 0,
-                    max: 100
-                },
-                xaxis: {
-                    show: false
-                }
-        });
-        function update() {
-            plot.setData([self.getRandomData()]);
-            plot.draw();
-            setTimeout(update, 30);
-        }
-        update();
-
-        // dabble with justgage...
         this.imuHeadingGage = new JustGage({
             id: "imuHeadingGage",
             value: 67,
@@ -66,52 +45,36 @@ var developer = {
             title: "IMU Heading",
             valueFontColor: "#888",
           });
-        if(0) {
-            var changeGage = function() {
-                var val = Math.floor(Math.random() * 360 - 180);
-                self.imuHeadingGage.refresh(val);
-                window.setTimeout(changeGage, 2000);
+
+        // console.log("chartWidth:" + $("#imuHeadingChart").width());
+        // console.log("chartHeight:" + $("#imuHeadingChart").height());
+        this.imuHeadingChart = new StripChart({
+            id: "#imuHeadingChart",
+            yaxis: {
+                min:-200,
+                max:200,
             }
-            changeGage();
+        });
+        function update() {
+            var val = Math.floor(Math.random() * 360 - 180);
+            self.imuHeadingChart.addDataPt(val);
+            setTimeout(update, 30);
         }
+        update();
     },
 
     onNetTabChange: function(key, value, isNew) {
         if(key === "/SmartDashboard/Drivetrain_IMU_Heading")
         {
-            this.imuHeadingGage.refresh(Number(value));
+            if(this.imuHeadingGage) {
+                this.imuHeadingGage.refresh(Number(value));
+            }
+            if(this.imuHeadingChart) {
+                this.imuHeadingChart.addDataPt(Number(value));
+            }
         }
     },
 
-    getRandomData: function() {
-        if(this.randomData.length > 0)
-        {
-            this.randomData = this.randomData.slice(1);
-        }
-        while(this.randomData.length < 300)
-        {
-            var prev = this.randomData.length > 0 ?
-                        this.randomData[this.randomData.length-1] : 50;
-            var y = prev + Math.random() * 10 - 5;
-            if(y < 0)
-            {
-                y = 0;
-            }
-            else
-            if(y > 100)
-            {
-                y = 100;
-            }
-            this.randomData.push(y);
-        }
-        // Zip the generated y values with the x values
-        var res = [];
-        for(var i=0; i<this.randomData.length; i++)
-        {
-            res.push([i, this.randomData[i]]);
-        }
-        return res;
-    }
 };
 global.app.setPageHandler("developer", developer);
 })(window);

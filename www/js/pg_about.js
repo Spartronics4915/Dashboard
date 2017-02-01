@@ -6,7 +6,7 @@
 var about = {
     pageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
-        $("#logo").animate({
+        $("#aboutlogo").animate({
             width: "333px",
           });
     },

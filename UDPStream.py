@@ -9,6 +9,7 @@
 #    s.send( 'some data' )
 #    data = yield gen.Task( s.read_chunk )
 #
+#  comments:
 #  thanks for this. i had to modify it a bit to get the functionality
 #  amunrei is talking about (don't set _read_callback to None after reading
 #  a chunk, and DO reset the timeout), and also in my case (UPnP discovery)

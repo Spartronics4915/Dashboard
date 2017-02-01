@@ -9,16 +9,30 @@ hr {
     border-color: #25b;
 }
 
-.buildid {
-    font-size: 14px;
-}
-
 select {
     color: #888888;
     background-color: #222;
     padding: 6px 12px;
     border-radius: 3px;
     border: 0px;
+}
+
+.buildid {
+    font-size: 14px;
+}
+
+#aboutlogo {
+    width: 32px;
+    animation: spin 4s linear infinite;
+}
+@-moz-keyframes spin {
+    100% { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
 }
 
 .title {
@@ -36,6 +50,11 @@ select {
 
 .amber {
   color: #a08030;
+}
+
+.stripChart {
+  width: 300px;
+  height: 100px;
 }
 
 #nettabState,
