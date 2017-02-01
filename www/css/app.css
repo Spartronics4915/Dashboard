@@ -17,6 +17,28 @@ select {
     border: 0px;
 }
 
+input[type=range] {
+    display: inline-block;
+    width: 80px;
+}
+
+div label, div input { /* fix up slider placement */
+    vertical-align: middle;
+    padding:0px;
+    margin:0px;
+}
+
+.panel-default > .panel-heading {
+  background-color: #181818;
+  color: #2af;
+  border-color: #038;
+}
+
+.panel-default {
+  background-color: #181818;
+  border-color: #181838;
+}
+
 .buildid {
     font-size: 14px;
 }

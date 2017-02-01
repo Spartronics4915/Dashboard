@@ -6,12 +6,13 @@
 var driver = {
     pageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
-        var dlink1 = {ip:"192.168.0.20", url: "/video.cgi"};
+        var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
+        var dlink4915 = {ip:"10.49.15.13", url: "/video.cgi"};
         var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
         var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
 
-        var driverCam = dlink1;
-        var sprocketCam = dlink1;
+        var driverCam = dlink4915;
+        var sprocketCam = dlink4915;
 
         $("#driverCam").html("<img width=\"400px\" src='http://" + driverCam.ip +
                                             driverCam.url + "''></img>");

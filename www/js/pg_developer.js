@@ -4,18 +4,11 @@
 (function(global) {
 'use strict';
 var developer = {
-    randomData: [],
+    iteration: 0,
 
     pageLoaded: function(targetElem, html) {
         var self = this;
-        var map = {
-            loglevels:  "<option>DEBUG</option>"+
-                        "<option>INFO</option>"+
-                        "<option>NOTICE</option>"+
-                        "<option>WARNING</option>"+
-                        "<option>ERROR</option>",
-        };
-        targetElem.innerHTML = app.interpolate(html, map);
+        targetElem.innerHTML = html;
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
@@ -33,18 +26,19 @@ var developer = {
             NetworkTables.putValue(ntkey + "/selected", value);
         });
 
-        // build string.
-        var val = NetworkTables.getValue("/SmartDashboard/Build", "n/a");
-        $(".buildid").text("Robot sw build: " + val);
-
-        this.imuHeadingGage = new JustGage({
-            id: "imuHeadingGage",
-            value: 67,
-            min: -180,
-            max: 180,
-            title: "IMU Heading",
-            valueFontColor: "#888",
-          });
+        if(false) {
+            this.imuHeadingGage = new JustGage({
+                id: "imuHeadingGage",
+                value: 67,
+                min: -180,
+                max: 180,
+                title: "IMU Heading",
+                valueFontColor: "#888",
+              });
+        }
+        else {
+            this.imuHeadingGage = null;
+        }
 
         // console.log("chartWidth:" + $("#imuHeadingChart").width());
         // console.log("chartHeight:" + $("#imuHeadingChart").height());
@@ -56,22 +50,55 @@ var developer = {
             }
         });
         function update() {
-            var val = Math.floor(Math.random() * 360 - 180);
-            self.imuHeadingChart.addDataPt(val);
-            setTimeout(update, 30);
+            var val = Math.floor(180*(Math.sin(self.iteration/10) *
+                                     Math.sin(self.iteration/5) +
+                                     .2*Math.random()));
+            self.iteration++;
+            self.updateIMU(val);
+            setTimeout(update, 100);
         }
         update();
     },
 
+    updateIMU: function(num) {
+        if(this.imuHeadingGage) {
+            this.imuHeadingGage.refresh(num);
+        }
+        if(this.imuHeadingChart) {
+            $("#imuHeading").text(num);
+            this.imuHeadingChart.addDataPt(num);
+        }
+    },
+
     onNetTabChange: function(key, value, isNew) {
-        if(key === "/SmartDashboard/Drivetrain_IMU_Heading")
-        {
-            if(this.imuHeadingGage) {
-                this.imuHeadingGage.refresh(Number(value));
-            }
-            if(this.imuHeadingChart) {
-                this.imuHeadingChart.addDataPt(Number(value));
-            }
+        switch(key) {
+            case "/SmartDashboard/Drivetrain_Status":
+                $("#drivetrainStatus").text(value);
+                break;
+            case "/SmartDashboard/Drivetrain_IMU_Heading":
+                this.updateIMU(Number(value));
+                break;
+            case "/SmartDashboard/Build":
+                $(".buildid").text("Robot sw build: " + value);
+                break;
+            case "/SmartDashboard/Intake Status":
+                $("#intakeStatus").text(value);
+                break;
+            case "/SmartDashboard/Intake State":
+                $("#intakeState").text(value);
+                break;
+            case "/SmartDashboard/Intake Speed":
+                $("#intakeSpeed").text(value);
+                break;
+            case "/SmartDashboard/Climber Status":
+                $("#climberStatus").text(value);
+                break;
+            case "/SmartDashboard/Climber State":
+                $("#climberState").text(value);
+                break;
+            case "/SmartDashboard/Climber Speed":
+                $("#climberSpeed").text(value);
+                break;
         }
     },
 
