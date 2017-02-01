@@ -11,10 +11,11 @@ var developer = {
         targetElem.innerHTML = html;
 
         // first initialize selectors from network tables.
+        //  (currently there are none on the dev page)
         $(".selector").each(function() {
             var key = $(this).attr("id");
             var ntkey = "/SmartDashboard/" + key;
-            var val = NetworkTables.getValue(ntkey + "/selected");
+            var val = NetworkTables.getValue(ntkey);
             $(this).val(val);
         });
 
@@ -23,7 +24,7 @@ var developer = {
             var value = $(this).val();
             var key = $(this).attr("id");
             var ntkey = "/SmartDashboard/" + key ;
-            NetworkTables.putValue(ntkey + "/selected", value);
+            NetworkTables.putValue(ntkey, value);
         });
 
         if(false) {
