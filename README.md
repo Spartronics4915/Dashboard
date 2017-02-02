@@ -20,8 +20,16 @@ To run the dashboard:
 
   1. make sure you have python installed (2.7+ may be the best choice)
   2. make sure the correct python modules are installed (pynetworktables, pynetworktable2js)
-  2. start dashboard server:  python tornado_server.py --port 5080 --robot 10.49.15.2
-  3. point your favorite web browser to http://localhost:5080
+  3. start dashboard server: `python tornado_server.py --port 5080 --robot 10.49.15.2`
+  4. point your favorite web browser to http://localhost:5080
+
+Drop **a shortcut to** `start.bat` in the startup folder: `Win+R`, enter `shell:startup`.
+
+Put a shortcut to Chrome there as well, and a shortcut to the driver
+station.  The driver station shortcut has to be marked "Run as
+Administrator" in its Properties window.  Also, disable UAC (the
+window-dimming 'are you sure' thing) otherwise the dashboard won't start
+up on boot.
 
 ### Helpful Links
 
