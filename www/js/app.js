@@ -44,6 +44,9 @@ var app = {
         NetworkTables.addWsConnectionListener(app.onNetTabConnect, true);
         NetworkTables.addRobotConnectionListener(app.onRobotConnect, true);
         NetworkTables.addGlobalListener(app.onNetTabChange, true);
+
+        RobotLog.addWsConnectionListener(app.onLogConnect, true);
+        RobotLog.addLogListener(app.onLogMsg, true);
     },
 
     // navigate: is the primary entrypoint for switch views
@@ -102,6 +105,15 @@ var app = {
                 }
             });
         return result;
+    },
+
+    // robotlog callbacks ------------------------------------------------
+    onLogConnect: function(cnx) {
+
+    },
+
+    onLogMsg: function(msg) {
+
     },
 
     // network table callbacks ------------------------------------------------

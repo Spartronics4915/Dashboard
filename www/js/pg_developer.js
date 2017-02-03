@@ -10,6 +10,13 @@ var developer = {
         var self = this;
         targetElem.innerHTML = html;
 
+        var ntMap = {
+            launcherRPM: "/SmartDashboard/Launcher_RPM"
+        };
+
+        var tval = NetworkTables.getValue("/SmartDashboard/Build");
+        $(".buildid").text("Robot sw build: " + tval);
+
         // first initialize selectors from network tables.
         //  (currently there are none on the dev page)
         $(".selector").each(function() {
@@ -27,7 +34,19 @@ var developer = {
             NetworkTables.putValue(ntkey, value);
         });
 
-        if(false) {
+        // callback for slider changes
+        $("input[type=range]").on('input', function() {
+                var value = $(this).val();
+                var id = $(this).attr("id");
+                $("#"+id+"Txt").text(value);
+                NetworkTables.setValue(ntMap[id], value);
+            });
+
+        tval = NetworkTables.getValue("/SmartDashboard/Launcher_RPM", 3000);
+        $("#launcherRPM").val(tval);
+        $("#launcherRPMTxt").text(tval);
+
+        if(true) {
             this.imuHeadingGage = new JustGage({
                 id: "imuHeadingGage",
                 value: 67,
@@ -35,6 +54,10 @@ var developer = {
                 max: 180,
                 title: "IMU Heading",
                 valueFontColor: "#888",
+                startAnimationTime: 150,
+                refreshAnimationTime: 0,
+                gaugeColor: "#333",
+                levelColors: ["#000150", "#0025a0", "#1040f0"]
               });
         }
         else {
@@ -58,7 +81,7 @@ var developer = {
             self.updateIMU(val);
             setTimeout(update, 100);
         }
-        update();
+        /// update();
     },
 
     updateIMU: function(num) {
@@ -81,6 +104,10 @@ var developer = {
                 break;
             case "/SmartDashboard/Build":
                 $(".buildid").text("Robot sw build: " + value);
+                break;
+            case "/SmartDashboard/Launcher_RPM":
+                $("#launcherRPM").val(value);
+                $("#launcherRPMTxt").text(value);
                 break;
             case "/SmartDashboard/Intake Status":
                 $("#intakeStatus").text(value);

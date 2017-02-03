@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 '''
-    This is an example server application, using the tornado handlers,
+    This is our dashboard server application, using the tornado handlers,
     that you can use to connect your HTML/Javascript dashboard code to
     your robot via NetworkTables.
 
-    Run this application with python, then you can open your browser to 
-    http://localhost:8888/ to view the index.html page.
+    Run this application with python, then you can open your browser to
+    http://localhost:5080/ to view the index.html page.
 '''
 
 from os.path import abspath, dirname, exists, join
@@ -15,7 +15,9 @@ import tornado.web
 from tornado.ioloop import IOLoop
 
 from networktables import NetworkTable
-from pynetworktables2js import get_handlers, NonCachingStaticFileHandler
+import pynetworktables2js
+
+import Robotlog
 
 import logging
 logger = logging.getLogger('dashboard')
@@ -32,41 +34,40 @@ def init_networktables(options):
         logger.info("Connecting to networktables at %s", options.robot)
         NetworkTable.setIPAddress(options.robot)
         NetworkTable.setClientMode()
-    
+
     NetworkTable.initialize()
     logger.info("Networktables Initialized")
-
 
 if __name__ == '__main__':
 
     # Setup options here
     parser = OptionParser()
-    
-    parser.add_option('-p', '--port', default=8888, 
+
+    parser.add_option('-p', '--port', default=5080,
                       help='Port to run web server on')
-    
-    parser.add_option('-v', '--verbose', default=False, action='store_true', 
+
+    parser.add_option('-v', '--verbose', default=False, action='store_true',
                       help='Enable verbose logging')
-    
-    parser.add_option('--robot', default='127.0.0.1', 
+
+    parser.add_option('--robot', default='10.49.15.2',
                       help="Robot's IP address")
-    
+
     parser.add_option('--dashboard', default=False, action='store_true',
                       help='Use this instead of --robot to receive the IP from the driver station. WARNING: It will not work if you are not on the same host as the DS!')
-    
+
     options, args = parser.parse_args()
-    
+
     # Setup logging
     logging.basicConfig(datefmt=log_datefmt,
                         format=log_format,
                         level=logging.DEBUG if options.verbose else logging.INFO)
-    
-    if options.dashboard and options.robot != '127.0.0.1':
+
+    if options.dashboard and options.robot != '10.49.15.2':
         parser.error("Cannot specify --robot and --dashboard")
-    
+
     # Setup NetworkTables
     init_networktables(options)
-    
+
     # setup tornado application with static handler + networktables support
     www_dir = abspath(join(dirname(__file__), 'www'))
     index_html = join(www_dir, 'index.html')
@@ -77,14 +78,17 @@ if __name__ == '__main__':
 
     if not exists(index_html):
         logger.warn("%s not found" % index_html)
-    
+
     app = tornado.web.Application(
-        get_handlers() + [
-            (r"/()", NonCachingStaticFileHandler, {"path": index_html}),
-            (r"/(.*)", NonCachingStaticFileHandler, {"path": www_dir})
+        pynetworktables2js.get_handlers() +
+        Robotlog.getHandlers() + [
+            (r"/()", pynetworktables2js.NonCachingStaticFileHandler,
+                {"path": index_html}),
+            (r"/(.*)", pynetworktables2js.NonCachingStaticFileHandler,
+                {"path": www_dir})
         ]
     )
-    
+
     # Start the app
     logger.info("Listening on http://localhost:%s/", options.port)
 

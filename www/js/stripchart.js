@@ -61,7 +61,7 @@ var StripChart = function(config) {
         }
         return res;
     };
-    app.logMsg("plotting: " + this.config.id);
+    // app.logMsg("plotting: " + this.config.id);
     this.plot = $.plot(this.config.id, [this.getStripData()], this.config);
 };
 

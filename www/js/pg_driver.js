@@ -12,12 +12,12 @@ var driver = {
         var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
 
         var driverCam = dlink4915;
-        var sprocketCam = dlink4915;
+        var sprocketCam = axis2;
 
         $("#driverCam").html("<img width=\"400px\" src='http://" + driverCam.ip +
-                                            driverCam.url + "''></img>");
-        $("#sprocketCam").html("<img src='http://" + sprocketCam.ip +
-                                            sprocketCam.url + "''></img>");
+                                        driverCam.url + "''></img>");
+        $("#sprocketCam").html("<img width=\"400px\" src='http://" + sprocketCam.ip +
+                                        sprocketCam.url + "''></img>");
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
