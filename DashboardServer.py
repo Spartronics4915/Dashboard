@@ -17,16 +17,13 @@ from tornado.ioloop import IOLoop
 from networktables import NetworkTable
 import pynetworktables2js
 
-import Robotlog
+import pylib.Robotlog as Robotlog
 
+import functools
 import logging
 logger = logging.getLogger('dashboard')
 
-log_datefmt = "%H:%M:%S"
-log_format = "%(asctime)s:%(msecs)03d %(levelname)-8s: %(name)-20s: %(message)s"
-
-def init_networktables(options):
-
+def initNetworktables(options):
     if options.dashboard:
         logger.info("Connecting to networktables in Dashboard mode")
         NetworkTable.setDashboardMode()
@@ -58,6 +55,9 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     # Setup logging
+    log_datefmt = "%H:%M:%S"
+    #log_format = "%(asctime)s:%(msecs)03d %(levelname)-6s: %(name)-8s: %(message)s"
+    log_format = "%(asctime)s %(levelname)-6s: %(name)-8s: %(message)s"
     logging.basicConfig(datefmt=log_datefmt,
                         format=log_format,
                         level=logging.DEBUG if options.verbose else logging.INFO)
@@ -65,8 +65,8 @@ if __name__ == '__main__':
     if options.dashboard and options.robot != '10.49.15.2':
         parser.error("Cannot specify --robot and --dashboard")
 
-    # Setup NetworkTables
-    init_networktables(options)
+    initNetworktables(options)
+    robotlog = Robotlog.Robotlog()
 
     # setup tornado application with static handler + networktables support
     www_dir = abspath(join(dirname(__file__), 'www'))
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     app = tornado.web.Application(
         pynetworktables2js.get_handlers() +
-        Robotlog.getHandlers() + [
+        robotlog.getHandlers() + [
             (r"/()", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": index_html}),
             (r"/(.*)", pynetworktables2js.NonCachingStaticFileHandler,
@@ -89,8 +89,13 @@ if __name__ == '__main__':
         ]
     )
 
+
     # Start the app
     logger.info("Listening on http://localhost:%s/", options.port)
 
     app.listen(options.port)
+    ioLoop = tornado.ioloop.IOLoop.current()
+    sock = robotlog.getUDPSocket()
+    callback = functools.partial(robotlog.handleMsg, sock);
+    ioLoop.add_handler(sock.fileno(), callback, ioLoop.READ)
     IOLoop.current().start()
