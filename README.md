@@ -18,7 +18,7 @@ this approach may be for you.
 
 To run the dashboard:
 
-  1. make sure you have python installed (2.7+ may be the best choice)
+  1. make sure you have python installed (tested with both 3.6 and 2.7)
   2. make sure the correct python modules are installed (pynetworktables, pynetworktable2js)
   3. start dashboard server:  python DashboardServer.py
   4. point your favorite web browser to http://localhost:5080, Chrome is recommended.

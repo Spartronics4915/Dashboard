@@ -79,9 +79,15 @@ var developer = {
                                      .2*Math.random()));
             self.iteration++;
             self.updateIMU(val);
-            setTimeout(update, 100);
+            if(!app.robotConnected)
+            {
+                setTimeout(update, 100);
+            }
         }
-        /// update();
+        if(!app.robotConnected)
+        {
+            update();
+        }
     },
 
     updateIMU: function(num) {

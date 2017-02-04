@@ -5,7 +5,13 @@
 #   establishes a connection-point for the udp-based log
 #   traffic from the robot.  To deliver this udpstream
 #   to a web browser over http, we require a bridge
-#   in the form of the RobotlogEchoServer
+#   in the form of the RobotlogEchoServer.  If broadcast
+#   packets fail to arrive, it's possible that the windows
+#   firewall is blocking them.  You'll need to either re-install
+#   your python interpretter (and answer yes to the netweork-access
+#   prompt for both private as well as public networks),  or you
+#   can attempt to edit your firewall rules (using the Advanced.. tab
+#   of the windows firewall interface).
 #
 #  RobotlogEchoSocket
 #   establishes a connection-point for a browser. The connection
@@ -59,9 +65,19 @@ class Robotlog():
     '''
     def __init__(self):
         self.udpsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        port = 6666 # this is the roborio console port
+        #self.udpsock.bind(('', port)) # this is the roborio console port
+        #addr = ' '  # doesn't work
+        #addr = '192.168.1.255'; # fails during bind
+        #addr = '192.168.1.113' # abalone (works when connected wifi, but on same host)
+        #addr = '255.255.255.255' # fails during bind
+        #addr = 'localhost' # succeeds, but fails for broadcast
+        #addr = '<broadcast>' # doesn't work
+        addr = ''  # means accept packets from all addresses, works for broadcast
+        self.udpsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.udpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.udpsock.bind((addr, port))
         self.udpsock.setblocking(0)
-        self.udpsock.bind(('localhost', 6666)) # this is the roborio console port
         logger.info("listening for robot logs")
 
     def getUDPSocket(self):
