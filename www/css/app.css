@@ -85,3 +85,38 @@ select {
 #networktable td {
     padding: 10px;
 }
+
+/* robolog --*/
+.logmsg {
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.timestamp {
+    color: #555;
+}
+
+.namespace {
+    color: #383;
+}
+
+.DEBUG {
+   color: #555;
+}
+
+.INFO {
+   color: #248;
+}
+
+.NOTICE {
+   color: #24F;
+}
+
+.WARNING {
+    color: #842;
+}
+
+.ERROR,
+.EXCEPTION {
+    color: #822;
+}
