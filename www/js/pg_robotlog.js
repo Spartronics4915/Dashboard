@@ -5,6 +5,7 @@
 'use strict';
 var robotlog = {
     pageLoaded: function(targetElem, html) {
+        var self = this;
         var map = {
             loglevels:  "<option>DEBUG</option>"+
                         "<option>INFO</option>"+
@@ -29,12 +30,17 @@ var robotlog = {
             var ntkey = "/SmartDashboard/" + key ;
             NetworkTables.putValue(ntkey, value);
         });
+
+        RobotLog.setLogListener(self.onRobotMsg, true);
     },
 
     onNetTabChange: function(key, value, isNew) {
         // TODO: make sure our selector has the right value
-    }
+    },
 
+    onRobotMsg: function(msg) {
+        $("#robotlog").prepend("<div>" + msg + "</div>")
+    }
 };
 global.app.setPageHandler("robotlog", robotlog);
 

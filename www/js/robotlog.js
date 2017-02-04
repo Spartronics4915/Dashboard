@@ -18,7 +18,7 @@ var RobotLog = new function () {
 	}
 
 	var m_cnxListeners = [];
-	var m_logListeners = [];
+	var m_logListener = null;
     var m_log = []; // an array of strings
 
 	/**
@@ -30,8 +30,10 @@ var RobotLog = new function () {
 	                            with the current status of the websocket
     */
 	this.addWsConnectionListener = function(f, immediateNotify) {
-		m_cnxListeners.push(f);
-		if (immediateNotify == true) {
+        if (m_cnxListeners.indexOf(f) != -1) {
+    		m_cnxListeners.push(f);
+        }
+		if (immediateNotify) {
 			f(m_socketOpen);
 		}
 	};
@@ -44,9 +46,9 @@ var RobotLog = new function () {
 	    :param immediateNotify: If true, the function will be immediately called
 	                            with the all existing log msgs.
     */
-	this.addLogListener = function(f, immediateNotify) {
-		m_logListeners.push(f);
-		if (immediateNotify == true) {
+	this.setLogListener = function(f, immediateNotify) {
+		this.m_logListener = f;
+		if (immediateNotify) {
             for(var i=0;i<m_log.length;i++) {
 				f(m_log[i]);
 			};
@@ -65,6 +67,7 @@ var RobotLog = new function () {
 	var m_socketOpen = false;
 	var m_robotConnected = false;
 	var m_robotAddress = null;
+    var self = this;
 
 	// construct the websocket URI, presumed to be on the same site that
     // served this page.
@@ -85,10 +88,7 @@ var RobotLog = new function () {
 		if (m_socket) {
 
 			m_socket.onopen = function() {
-				console.log("RobotLog WebSocket opened");
-
 				m_socketOpen = true;
-
 				for (var i in m_cnxListeners) {
 					m_cnxListeners[i](true);
 				}
@@ -98,9 +98,7 @@ var RobotLog = new function () {
                 // currently our messages are just simple strings...
 				var data = msg.data;
                 m_log.push(data);
-				for (var i in m_logListeners) {
-					m_logListeners[i](data);
-				}
+                self.m_logListener(data);
 			};
 
 			m_socket.onclose = function() {

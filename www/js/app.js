@@ -46,7 +46,6 @@ var app = {
         NetworkTables.addGlobalListener(app.onNetTabChange, true);
 
         RobotLog.addWsConnectionListener(app.onLogConnect, true);
-        RobotLog.addLogListener(app.onLogMsg, true);
     },
 
     // navigate: is the primary entrypoint for switch views
@@ -84,6 +83,7 @@ var app = {
     loadPage: function(page, target) {
         // this.logMsg("loadPage: " + page);
         var fileref = "/pages/" + page + ".html";
+        RobotLog.setLogListener(null, false);
         this.sendGetRequest(fileref, function(html) {
             var targetElem = document.querySelector(target);
             app.pageHandlers[page].pageLoaded(targetElem, html);
@@ -109,11 +109,7 @@ var app = {
 
     // robotlog callbacks ------------------------------------------------
     onLogConnect: function(cnx) {
-
-    },
-
-    onLogMsg: function(msg) {
-
+        app.logMsg("robotlog connected");
     },
 
     // network table callbacks ------------------------------------------------

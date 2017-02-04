@@ -39,7 +39,7 @@ class RobotlogEchoSocket(WebSocketHandler):
         logger.info("Unexpected message from browser:" + message)  # none expected
 
     def send_msg(self, msg):
-        logger.info("send message:" + msg)
+        # logger.info("send message:" + msg)
         try:
             self.write_message(msg, False)
         except WebSocketClosedError:
