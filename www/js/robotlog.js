@@ -98,7 +98,7 @@ var RobotLog = new function () {
                 // currently our messages are just simple strings...
 				var data = msg.data;
                 m_log.push(data);
-                self.m_logListener(data);
+                m_logListener(data);
 			};
 
 			m_socket.onclose = function() {
