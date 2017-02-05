@@ -6,7 +6,7 @@
 var msgTmplt = "<div class='logmsg'>" +
               "<span class='timestamp'>{ts} </span>" +
               "<span class='{lvlcls}'>{lvlpad} </span>" +
-              "<span class='namespace'>{nmspc}: </span>" +
+              "<span class='namespace'>{nmspc} </span>" +
               "{msg}</div>";
 var robotlog = {
     pageLoaded: function(targetElem, html) {
