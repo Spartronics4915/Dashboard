@@ -47,7 +47,7 @@ var RobotLog = new function () {
 	                            with the all existing log msgs.
     */
 	this.setLogListener = function(f, immediateNotify) {
-		this.m_logListener = f;
+		m_logListener = f;
 		if (immediateNotify) {
             for(var i=0;i<m_log.length;i++) {
 				f(m_log[i]);
@@ -98,7 +98,9 @@ var RobotLog = new function () {
                 // currently our messages are just simple strings...
 				var data = msg.data;
                 m_log.push(data);
-                m_logListener(data);
+                if(m_logListener) {
+                    m_logListener(data);
+                }
 			};
 
 			m_socket.onclose = function() {

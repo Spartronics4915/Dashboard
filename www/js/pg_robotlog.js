@@ -50,7 +50,7 @@ var robotlog = {
             });
         });
 
-        RobotLog.setLogListener(self.onRobotMsg, true);
+        RobotLog.setLogListener(this.onRobotMsg, true);
     },
 
     onNetTabChange: function(ntkey, value, isNew) {
@@ -80,7 +80,6 @@ var robotlog = {
             $: "&nbsp;",
         };
         $("#robotlog").prepend(app.interpolate(msgTmplt, map));
-
     }
 };
 global.app.setPageHandler("robotlog", robotlog);
