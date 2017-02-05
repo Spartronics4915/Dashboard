@@ -11,7 +11,7 @@ var developer = {
         targetElem.innerHTML = html;
 
         var ntMap = {
-            launcherRPM: "/SmartDashboard/Launcher_RPM"
+            launcherTGT: "/SmartDashboard/Launcher_TGT"
         };
 
         var tval = NetworkTables.getValue("/SmartDashboard/Build");
@@ -42,9 +42,9 @@ var developer = {
                 NetworkTables.setValue(ntMap[id], value);
             });
 
-        tval = NetworkTables.getValue("/SmartDashboard/Launcher_RPM", 3000);
-        $("#launcherRPM").val(tval);
-        $("#launcherRPMTxt").text(tval);
+        tval = NetworkTables.getValue("/SmartDashboard/Launcher_TGT", 3000);
+        $("#launcherTGT").val(tval);
+        $("#launcherTxt").text(tval);
 
         if(true) {
             this.imuHeadingGage = new JustGage({
@@ -58,7 +58,7 @@ var developer = {
                 refreshAnimationTime: 0,
                 gaugeColor: "#333",
                 levelColors: ["#000150", "#0025a0", "#1040f0"]
-              });
+            });
         }
         else {
             this.imuHeadingGage = null;
@@ -88,6 +88,15 @@ var developer = {
         {
             update();
         }
+
+        //  Launcher -------------------------------------------------------
+        this.launcherACT = new StripChart({
+            id: "#launcherACT",
+            yaxis: {
+                min:900,
+                max:1100
+            }
+        });
     },
 
     updateIMU: function(num) {
@@ -111,9 +120,15 @@ var developer = {
             case "/SmartDashboard/Build":
                 $(".buildid").text("Robot sw build: " + value);
                 break;
-            case "/SmartDashboard/Launcher_RPM":
-                $("#launcherRPM").val(value);
-                $("#launcherRPMTxt").text(value);
+            case "/SmartDashboard/Launcher_TGT":
+                $("#launcherTGT").val(value);
+                $("#launcherTGTTxt").text(value);
+                break;
+            case "/SmartDashboard/Launcher_ACT":
+                this.launcherACT.addDataPt(valuie);
+                break;
+            case "/SmartDashboard/Launcher_MSG":
+                $("#launcherMSG").text(value);
                 break;
             case "/SmartDashboard/Intake Status":
                 $("#intakeStatus").text(value);
