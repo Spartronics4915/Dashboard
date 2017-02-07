@@ -1,18 +1,25 @@
 
-<h2>Robotlogs <small>(reloading this page clears the logs)</small></h2>
+<h2>Robotlogs
+    <span class="hdetail">(reloading this page clears the logs)
+    </span>
+</h2>
 
 <hr>
 
-<div class="col-xs-12 col-sm-3 panel panel-default">
-    <h4>LogLevels</h4>
-    <div class="selectors">
+<div class="col-xs-3 panel panel-default">
+    <h4>Filter: &nbsp;<span><input id="filter" style="font-size:75%;width:7em"></input></span></h4>
+
+    <br>
+    <h4>Log Levels</h4>
+    <div id="loglevels">
+        <!-- loglevel selectors are added here -->
     </div>
 </div>
 
-<div class="col-sm-9">
+<div class="col-xs-9">
     <h4>Msgs</h4>
     <hr>
     <div id="robotlog">
-    <!-- messages are added here -->
+        <!-- messages are added here -->
     </div>
 </div>

@@ -1,4 +1,4 @@
-input[type=range],
+input[type="range"],
 output {
     display: inline-block;
     width: 120px;
@@ -8,7 +8,7 @@ output {
     color: #aaa;
 }
 
-div label, div input, div output { /* fix up slider placement */
+div label, div input[type="range"], div output { /* fix up slider placement */
     vertical-align: middle;
     padding:0px;
     margin:0px;

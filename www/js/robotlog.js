@@ -49,11 +49,17 @@ var RobotLog = new function () {
 	this.setLogListener = function(f, immediateNotify) {
 		m_logListener = f;
 		if (immediateNotify) {
-            for(var i=0;i<m_log.length;i++) {
-				f(m_log[i]);
-			};
+            this.replayLogs();
 		}
 	};
+
+    this.replayLogs = function() {
+        if(m_logListener) {
+            for(var i=0;i<m_log.length;i++) {
+				m_logListener(m_log[i]);
+			};
+        }
+    },
 
 	this.isWsConnected = function() {
 		return m_socketOpen;

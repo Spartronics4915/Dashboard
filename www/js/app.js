@@ -109,7 +109,7 @@ var app = {
 
     // robotlog callbacks ------------------------------------------------
     onLogConnect: function(cnx) {
-        app.logMsg("robotlog connected");
+        app.logMsg("RobotLog connected");
     },
 
     // network table callbacks ------------------------------------------------

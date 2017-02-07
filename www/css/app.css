@@ -9,12 +9,21 @@ hr {
     border-color: #25b;
 }
 
+input,
 select {
     color: #888888;
     background-color: #222;
-    padding: 6px 12px;
+    padding: 2px 4px;
     border-radius: 3px;
     border: 0px;
+}
+
+div input {
+    padding:6px 4px;
+}
+
+.hdetail {
+    font-size: 50%;
 }
 
 .panel-default > .panel-heading {

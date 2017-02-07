@@ -8,19 +8,21 @@ var msgTmplt = "<div class='logmsg'>" +
               "<span class='{lvlcls}'>{lvlpad} </span>" +
               "<span class='namespace'>{nmspc} </span>" +
               "{msg}</div>";
+var filter = "";
+var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "EXCEPTION"];
 var robotlog = {
     pageLoaded: function(targetElem, html) {
         var self = this;
-        var map = {
-            loglevels: "<option data-text='DEBUG'>DEBUG</option>"+
-                       "<option data-text='INFO'>INFO</option>"+
-                       "<option data-text='NOTICE'>NOTICE</option>"+
-                       "<option data-text='WARNING'>WARNING</option>"+
-                       "<option data-text='ERROR'>ERROR</option>",
-        };
-        targetElem.innerHTML = app.interpolate(html, map);
+        targetElem.innerHTML = html; // was: app.interpolate(html, map);
 
-        // first initialize selectors from network tables.
+        // initialize filter callbacks
+        $("#filter").on("input", function() {
+            filter = $(this).val();
+            self.onFilterChange();
+        });
+
+        // populate #loglevels from SmartDashboard
+        // first initialize loggers from network tables.
         var loggers = [];
         NetworkTables.getKeys().forEach(function(key)
         {
@@ -30,15 +32,21 @@ var robotlog = {
             }
         });
 
+        // now build a table with two columns for each logger: nm, selector
+        var loglevels = "<option data-text='DEBUG'>DEBUG</option>"+
+                       "<option data-text='INFO'>INFO</option>"+
+                       "<option data-text='NOTICE'>NOTICE</option>"+
+                       "<option data-text='WARNING'>WARNING</option>"+
+                       "<option data-text='ERROR'>ERROR</option>";
         var table = "<table width='100%'>";
         loggers.forEach(function(key) {
-            table += `<tr><td width="50%">${key}:</td><td width="50%"><select style="width: 100%" data-log="${key}">${map.loglevels}</select></span></td></tr>`;
+            table += `<tr><td width="50%">${key}:</td><td width="50%"><select style="width: 100%" data-log="${key}">${loglevels}</select></span></td></tr>`;
         });
         table += "</table>";
+        $("#loglevels").html(table);
 
-        $(".selectors").html(table);
-
-        $(".selectors select").each(function() {
+        // install callbacks for each logger
+        $("#loglevels select").each(function() {
             var key = $(this).attr("data-log");
             var ntkey = "/SmartDashboard/Loggers/" + key;
             var val = NetworkTables.getValue(ntkey);
@@ -59,25 +67,43 @@ var robotlog = {
             var key = ntkey.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;");
 
             // Clear all
-            $(`.selectors select option`).attr("selected", false);
+            $(`#loglevels select option`).attr("selected", false);
             // Then set the right one
-            $(`.selectors select[data-log="${key}"] option[data-text="${value}"]`).attr("selected", true);
+            $(`#loglevels select[data-log="${key}"] option[data-text="${value}"]`).attr("selected", true);
         }
     },
 
+    onFilterChange: function () {
+        $("#robotlog").html("<hr>");
+        RobotLog.replayLogs();
+    },
+
     onRobotMsg: function(msg) {
-        // Logger (java) :
-        //   System.out.println(nowstr + " " + lvl + " " + m_namespace + ": " + msg);
+        if(filter) {
+            if(-1 === msg.indexOf(filter)) return;
+        }
         var fields = msg.split(' ');
+        var ts = fields[0];
         var lvlcls = fields[1];
-        var lvlpad = (fields[1] + ".....").slice(0,9); // EXCEPTION is longest lvl
+        var nmspc;
+        var msgtxt;
+        if(!lvlcls || -1 === knownLogLevels.indexOf(lvlcls)) {
+            lvlcls = "UNKNOWN";
+            ts = "";
+            nmspc = "";
+            msgtxt = msg;
+        }
+        else {
+            nmspc = fields[2];
+            msgtxt = fields.slice(3).join(' ')
+        }
+        var lvlpad = (lvlcls + ".....").slice(0,9); // EXCEPTION is longest lvl
         var map = {
-            ts: fields[0],
+            ts: ts,
             lvlcls: lvlcls,
             lvlpad: lvlpad,
-            nmspc: fields[2],
-            msg: fields.slice(3).join(' '),
-            $: "&nbsp;",
+            nmspc: nmspc,
+            msg: msgtxt,
         };
         $("#robotlog").prepend(app.interpolate(msgTmplt, map));
     }
