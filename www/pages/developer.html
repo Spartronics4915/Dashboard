@@ -1,18 +1,19 @@
-<h2>Yo Devs! <span class="buildid">buildid n/a</span></h2>
+<h2>Developer
+</h2>
 <hr>
 
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Drivetrain <small id="drivetrainStatus">status n/a</small></h3>
     </div>
-    <div class="col-md-4 plotContainer" style="border:5px;">
-        <div style="margin-top:10px">
-            <b>IMU Heading <span id="imuHeading">n/a</span></b>
-        </div>
-        <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
-    </div>
     <div class="panel-body">
-        <div class="col-md-4">
+        <div class="col-sm-6 plotContainer" style="border:5px;">
+            <div>
+                <b>IMU Heading <span id="imuHeading">n/a</span></b>
+            </div>
+            <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
+        </div>
+        <div class="col-sm-6">
             <div id="imuHeadingGage" style="width:300;height:120px"></div>
         </div>
     </div>
@@ -25,18 +26,17 @@
         </h3>
     </div>
     <div class="panel-body">
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <label for="l1">RPM</label>
             <input id="launcherTGT" type="range" id="l1" min="0" max="4000"/>
             <output for="l1" id="launcherTGTTxt">0</output>
+            <p><br>
+            Msg: <span id="launcherMSG"></span>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <div class="stripChart" id="launcherACT"
-                    style="width:100%; height:100px">
+                 style="width:300px; height:100px">
             </div>
-        </div>
-        <div class="col-sm-4">
-            msg: <span id="launcherMSG"></span>
         </div>
     </div>
 </div>

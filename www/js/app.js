@@ -132,12 +132,24 @@ var app = {
         {
             $("#nettabState").html("<span class='amber'>disconnected</span>");
         }
+
+        var tval = NetworkTables.getValue("/SmartDashboard/Build");
+        if(tval) {
+            $("#buildid").html("<span class='green'>"+tval+"</span");
+        }
     },
 
     onNetTabChange: function(key, value, isNew) {
         // app.logMsg("nettab entry changed: " + key +
         //          " = " + value +
         //         " new: " + isNew);
+        switch(key) {
+            case "/SmartDashboard/Build":
+                $("#buildid").html("<span class='green'>"+tval+"</span");
+                break;
+            default:
+                break;
+        }
         if(app.pageHandlers[app.currentPage].onNetTabChange)
         {
             app.pageHandlers[app.currentPage].onNetTabChange(key, value, isNew);

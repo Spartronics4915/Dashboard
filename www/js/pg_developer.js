@@ -14,9 +14,6 @@ var developer = {
             launcherTGT: "/SmartDashboard/Launcher_TGT"
         };
 
-        var tval = NetworkTables.getValue("/SmartDashboard/Build");
-        $(".buildid").text("Robot sw build: " + tval);
-
         // first initialize selectors from network tables.
         //  (currently there are none on the dev page)
         $(".selector").each(function() {
@@ -42,9 +39,9 @@ var developer = {
                 NetworkTables.setValue(ntMap[id], value);
             });
 
-        tval = NetworkTables.getValue("/SmartDashboard/Launcher_TGT", 3000);
+        var tval = NetworkTables.getValue("/SmartDashboard/Launcher_TGT", 3000);
         $("#launcherTGT").val(tval);
-        $("#launcherTxt").text(tval);
+        $("#launcherTGTTxt").text(tval);
 
         if(true) {
             this.imuHeadingGage = new JustGage({
@@ -116,9 +113,6 @@ var developer = {
                 break;
             case "/SmartDashboard/Drivetrain_IMU_Heading":
                 this.updateIMU(Number(value));
-                break;
-            case "/SmartDashboard/Build":
-                $(".buildid").text("Robot sw build: " + value);
                 break;
             case "/SmartDashboard/Launcher_TGT":
                 $("#launcherTGT").val(value);
