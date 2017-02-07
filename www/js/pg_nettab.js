@@ -3,13 +3,22 @@
 //
 (function(global) {
 'use strict';
+var ntfilter = "";
 var nettab = {
     pageLoaded: function(targetElem, html) {
+        var self = this;
         targetElem.innerHTML = html;
+        $("#ntfilter").on("input", function() {
+            ntfilter = $(this).val();
+            self.rebuildNetTab();
+        });
         this.rebuildNetTab();
     },
 
+    // rebuildNetTab: triggers callback to app, which distributes
+    //  the event to all nt listeners, including ourselves.
     rebuildNetTab: function() {
+        this.clearDisplay();
         var keys = NetworkTables.getKeys();
         for(var i=0;i<keys.length; i++)
         {
@@ -19,8 +28,11 @@ var nettab = {
     },
 
     onNetTabConnect: function() {
-        // clear the table here.
-        $("#nt tbody > tr").remove();
+        this.clearDisplay();
+    },
+
+    clearDisplay: function() {
+        $("#networktable tbody > tr").remove();
     },
 
     onNetTabChange: function(key, value, isNew) {
@@ -28,6 +40,7 @@ var nettab = {
         // the id of the elements that we're appending, for simplicity. However,
         // the key names aren't always valid HTML identifiers, so we use
         // the NetworkTables.keyToId() function to convert them appropriately
+        if(ntfilter && -1 === key.indexOf(ntfilter)) return;
         if (isNew)
         {
             var tr = $('<tr></tr>').appendTo($('#networktable > tbody:last'));
