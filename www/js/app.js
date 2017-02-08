@@ -87,8 +87,7 @@ var app = {
         this.sendGetRequest(fileref, function(html) {
             var targetElem = document.querySelector(target);
             app.pageHandlers[page].pageLoaded(targetElem, html);
-            // after a page is loaded we may need to refresh its connent
-            // for example, the network tables table
+            app.replayNetTab(); // triggers onNetTabChange
         });
     },
 
@@ -136,6 +135,15 @@ var app = {
         var tval = NetworkTables.getValue("/SmartDashboard/Build");
         if(tval) {
             $("#buildid").html("<span class='green'>"+tval+"</span");
+        }
+    },
+
+    replayNetTab: function() {
+        var keys = NetworkTables.getKeys();
+        for(var i=0;i<keys.length; i++)
+        {
+            var key = keys[i];
+            app.onNetTabChange(key, NetworkTables.getValue(key), true);
         }
     },
 

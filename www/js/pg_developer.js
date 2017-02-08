@@ -5,7 +5,6 @@
 'use strict';
 var developer = {
     iteration: 0,
-
     pageLoaded: function(targetElem, html) {
         var self = this;
         targetElem.innerHTML = html;
@@ -14,8 +13,10 @@ var developer = {
             launcherTGT: "/SmartDashboard/Launcher_TGT"
         };
 
-        // first initialize selectors from network tables.
+        // Selector (pulldown menu) support ------------------------------
         //  (currently there are none on the dev page)
+        // The asumption is that the id of the selector matches
+        // the SmartDashboard key.
         $(".selector").each(function() {
             var key = $(this).attr("id");
             var ntkey = "/SmartDashboard/" + key;
@@ -31,7 +32,7 @@ var developer = {
             NetworkTables.putValue(ntkey, value);
         });
 
-        // callback for slider changes
+        // Slider support ----------------------------------------------
         $("input[type=range]").on('input', function() {
                 var value = $(this).val();
                 var id = $(this).attr("id");
@@ -39,10 +40,8 @@ var developer = {
                 NetworkTables.setValue(ntMap[id], value);
             });
 
-        var tval = NetworkTables.getValue("/SmartDashboard/Launcher_TGT", 3000);
-        $("#launcherTGT").val(tval);
-        $("#launcherTGTTxt").text(tval);
 
+        // special widgets -----------------------------------------------
         if(true) {
             this.imuHeadingGage = new JustGage({
                 id: "imuHeadingGage",
@@ -72,7 +71,7 @@ var developer = {
         });
         function update() {
             var val = Math.floor(180*(Math.sin(self.iteration/10) *
-                                     Math.sin(self.iteration/5) +
+                                     Math.sin(self.iteration/7) +
                                      .2*Math.random()));
             self.iteration++;
             self.updateIMU(val);
@@ -94,6 +93,9 @@ var developer = {
                 max:1100
             }
         });
+
+        // we assume that after page loaded, we'll receive a dump
+        // of all networktable values (via onNetTabChange)
     },
 
     updateIMU: function(num) {
@@ -106,42 +108,48 @@ var developer = {
         }
     },
 
+    netTabActions: { // a dispatch table...
+        "/SmartDashboard/Drivetrain_Status": function(value) {
+            $("#drivetrainStatus").text(value);
+        },
+        "/SmartDashboard/Drivetrain_IMU_Heading": function(value) {
+            this.updateIMU(Number(value));
+        },
+        "/SmartDashboard/Launcher_TGT": function(value) {
+            $("#launcherTGT").val(value);
+            $("#launcherTGTTxt").text(value);
+        },
+        "/SmartDashboard/Launcher_ACT": function(value) {
+            this.launcherACT.addDataPt(valuie);
+        },
+        "/SmartDashboard/Launcher_MSG": function(value) {
+            $("#launcherMSG").text(value);
+        },
+        "/SmartDashboard/Intake Status": function(value) {
+            $("#intakeStatus").text(value);
+        },
+        "/SmartDashboard/Intake State": function(value) {
+            $("#intakeState").text(value);
+        },
+        "/SmartDashboard/Intake Speed": function(value) {
+            $("#intakeSpeed").text(value);
+        },
+        "/SmartDashboard/Climber Status": function(value) {
+            $("#climberStatus").text(value);
+        },
+        "/SmartDashboard/Climber State": function(value) {
+            $("#climberState").text(value);
+        },
+        "/SmartDashboard/Climber Speed": function(value) {
+            $("#climberSpeed").text(value);
+        },
+    },
+
     onNetTabChange: function(key, value, isNew) {
-        switch(key) {
-            case "/SmartDashboard/Drivetrain_Status":
-                $("#drivetrainStatus").text(value);
-                break;
-            case "/SmartDashboard/Drivetrain_IMU_Heading":
-                this.updateIMU(Number(value));
-                break;
-            case "/SmartDashboard/Launcher_TGT":
-                $("#launcherTGT").val(value);
-                $("#launcherTGTTxt").text(value);
-                break;
-            case "/SmartDashboard/Launcher_ACT":
-                this.launcherACT.addDataPt(valuie);
-                break;
-            case "/SmartDashboard/Launcher_MSG":
-                $("#launcherMSG").text(value);
-                break;
-            case "/SmartDashboard/Intake Status":
-                $("#intakeStatus").text(value);
-                break;
-            case "/SmartDashboard/Intake State":
-                $("#intakeState").text(value);
-                break;
-            case "/SmartDashboard/Intake Speed":
-                $("#intakeSpeed").text(value);
-                break;
-            case "/SmartDashboard/Climber Status":
-                $("#climberStatus").text(value);
-                break;
-            case "/SmartDashboard/Climber State":
-                $("#climberState").text(value);
-                break;
-            case "/SmartDashboard/Climber Speed":
-                $("#climberSpeed").text(value);
-                break;
+        var f = this.netTabActions[key];
+        if(f)
+        {
+            f(value);
         }
     },
 

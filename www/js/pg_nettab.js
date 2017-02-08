@@ -12,19 +12,13 @@ var nettab = {
             ntfilter = $(this).val();
             self.rebuildNetTab();
         });
-        this.rebuildNetTab();
     },
 
     // rebuildNetTab: triggers callback to app, which distributes
     //  the event to all nt listeners, including ourselves.
     rebuildNetTab: function() {
         this.clearDisplay();
-        var keys = NetworkTables.getKeys();
-        for(var i=0;i<keys.length; i++)
-        {
-            var key = keys[i];
-            app.onNetTabChange(key, NetworkTables.getValue(key), true);
-        }
+        app.replayNetTab();
     },
 
     onNetTabConnect: function() {
