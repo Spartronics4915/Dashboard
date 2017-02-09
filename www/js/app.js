@@ -58,7 +58,6 @@ var app = {
             // this.logMsg("navigate: " + page);
             this.currentPage = page;
             this.loadPage(page, this.mainContent);
-            this.updateNav();
         }
         if(params !== null)
         {
@@ -68,7 +67,7 @@ var app = {
     },
 
     updateNav: function() {
-        // this.logMsg("updateNav");
+        // this.logMsg("updateNav ---------------------------------");
         $("#mainNavList").find(".active").removeClass("active");
         // find the parent of the <a> whose href endswith the current page.
         $("#mainNavList a[href$='" + this.currentPage + "']").parent()
@@ -88,6 +87,7 @@ var app = {
             var targetElem = document.querySelector(target);
             app.pageHandlers[page].pageLoaded(targetElem, html);
             app.replayNetTab(); // triggers onNetTabChange
+            app.updateNav();
         });
     },
 
@@ -148,12 +148,14 @@ var app = {
     },
 
     onNetTabChange: function(key, value, isNew) {
-        // app.logMsg("nettab entry changed: " + key +
-        //          " = " + value +
-        //         " new: " + isNew);
+        if(false) {
+            app.logMsg("nettab entry changed: " + key +
+                  " = " + value +
+                 " new: " + isNew);
+        }
         switch(key) {
             case "/SmartDashboard/Build":
-                $("#buildid").html("<span class='green'>"+tval+"</span");
+                $("#buildid").html("<span class='green'>"+value+"</span");
                 break;
             default:
                 break;

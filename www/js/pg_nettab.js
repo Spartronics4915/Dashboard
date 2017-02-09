@@ -8,6 +8,7 @@ var nettab = {
     pageLoaded: function(targetElem, html) {
         var self = this;
         targetElem.innerHTML = html;
+        $("#ntfilter").val(ntfilter);
         $("#ntfilter").on("input", function() {
             ntfilter = $(this).val();
             self.rebuildNetTab();

@@ -16,6 +16,7 @@ var robotlog = {
         targetElem.innerHTML = html; // was: app.interpolate(html, map);
 
         // initialize filter callbacks
+        $("#filter").val(filter);
         $("#filter").on("input", function() {
             filter = $(this).val();
             self.onFilterChange();
