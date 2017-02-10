@@ -92,7 +92,7 @@ var developer = {
                 var value = $(this).val();
                 $("#"+id+"Txt").text(value);
                 // app.logMsg("slider " + id + ": " + value);
-                NetworkTables.putValue(ntkey, value);
+                NetworkTables.putValue(ntkey, Number(value));
             });
 
 
@@ -128,7 +128,7 @@ var developer = {
         this.launcherACT = new StripChart({
             id: "#launcherACT",
             yaxis: {
-                min:0,
+                min:1000,
                 max:5000
             }
         });

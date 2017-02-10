@@ -115,7 +115,7 @@ var app = {
     onRobotConnect: function(cnx) {
         app.robotConnected = cnx;
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
-                                    "<span class='amber'>disconnected</span>");
+                                    "<span class='amber'>off-line</span>");
         $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
     },
 
@@ -129,7 +129,7 @@ var app = {
         }
         else
         {
-            $("#nettabState").html("<span class='amber'>disconnected</span>");
+            $("#nettabState").html("<span class='amber'>off-line</span>");
         }
 
         var tval = NetworkTables.getValue("/SmartDashboard/Build");

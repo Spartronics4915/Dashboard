@@ -31,6 +31,18 @@ Administrator" in its Properties window.  Also, disable UAC (the
 window-dimming 'are you sure' thing) otherwise the dashboard won't start
 up on boot.
 
+
+### Programming Note
+
+From the pynetworktables2js docs:
+
+  NetworkTables is type sensitive, whereas Javascript is loosely typed.
+  This function will not check the type of the value that you are trying
+  to *put*, so you must be careful to only put the correct values (types) that are
+  expected. If your robot tries to retrieve the value and it is an
+  unexpected type, an exception will be thrown and your robot may crash.
+  Make sure you test your code – you have been warned.
+
 ### Helpful Links
 
 [python](http://python.org) - is the language atop-which the dashboard
