@@ -11,18 +11,18 @@ var driver = {
         var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
         var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
 
-        var driverCam = dlink4915;
+        var intakeCam = dlink4915;
         var sprocketCam = axis2;
 
-        $("#driverCam").html("<img width=\"400px\" src='http://" + driverCam.ip +
-                                        driverCam.url + "''></img>");
+        $("#intakeCam").html("<img width=\"400px\" src='http://" + intakeCam.ip +
+                                        intakeCam.url + "''></img>");
         $("#sprocketCam").html("<img width=\"400px\" src='http://" + sprocketCam.ip +
                                         sprocketCam.url + "''></img>");
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
             var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
+            var ntkey = "/SmartDashboard/" + key;
             var val = NetworkTables.getValue(ntkey);
             $(this).val(val);
         });
@@ -35,6 +35,25 @@ var driver = {
             NetworkTables.putValue(ntkey, value);
         });
     },
+    onNetTabChange: function(key, value, isNew) {
+        var str;
+        switch(key) {
+            case "/SmartDashboard/AllianceStation":
+                switch(value[0]) {
+                    case "R":
+                        str = "<span class='redAlliance'> from "+value+" position</span>";
+                        break;
+                    case "B":
+                        str = "<span class='blueAlliance'> from "+value+" position</span>";
+                        break;
+                    default:
+                        str = "<span class='noAlliance'> from "+value+" position</span>";
+                        break;
+                }
+                $("#allianceStation").html(str);
+                break;
+        }
+    }
 };
 
 global.app.setPageHandler("driver", driver);

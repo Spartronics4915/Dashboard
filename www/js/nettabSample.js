@@ -23,10 +23,10 @@ var ntSample = {
     "/SmartDashboard/Intake State:": "OFF",
     "/SmartDashboard/Intake Speed": "0",
     "/SmartDashboard/Launcher_ACT": "-2996.77734375",
-    "/SmartDashboard/Launcher_RPM": "3000",
     "/SmartDashboard/LauncherLogLevel": "DEBUG",
     "/SmartDashboard/AutoPosition": "Center",
     "/SmartDashboard/AutoMode": "Sprocket",
+    "/SmartDashboard/AllianceStation": "Blue3",
 };
 
 

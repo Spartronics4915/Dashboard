@@ -41,6 +41,19 @@ div input {
     font-size: 14px;
 }
 
+#allianceStation {
+    font-size: 16px;
+    font-style: italic;
+}
+
+.redAlliance {
+    color: rgb(200, 30, 30);
+}
+
+.blueAlliance {
+    color: rgb(30, 90, 255);
+}
+
 #aboutlogo {
     width: 32px;
     animation: spin 4s linear infinite;
