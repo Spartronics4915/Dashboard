@@ -35,10 +35,25 @@ var driver = {
             NetworkTables.putValue(ntkey, value);
         });
     },
+
     onNetTabChange: function(key, value, isNew) {
-        var str;
         switch(key) {
+            case "/SmartDashboard/AutoStrategyOptions":
+                // we assume that value is a comma separated list
+                var options = value.split(",");
+                var sel = document.getElementById("AutoStrategy");
+                if(sel) {
+                    $(sel).empty();
+                    for(let i=0;i<options.length;i++) {
+                        var opt = document.createElement("option");
+                        opt.value = options[i];
+                        opt.innerHTML = opt.value;
+                        sel.appendChild(opt);
+                    }
+                }
+                break;
             case "/SmartDashboard/AllianceStation":
+                var str;
                 switch(value[0]) {
                     case "R":
                         str = "<span class='redAlliance'> from "+value+" position</span>";
