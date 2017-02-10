@@ -39,7 +39,7 @@ var robotlog = {
                        "<option data-text='NOTICE'>NOTICE</option>"+
                        "<option data-text='WARNING'>WARNING</option>"+
                        "<option data-text='ERROR'>ERROR</option>";
-        var table = "<table width='100%'>";
+        var table = "<table width='100%' style='border-collapse:separate;border-spacing:5px'>";
         loggers.forEach(function(key) {
             table += `<tr><td width="50%">${key}:</td><td width="50%"><select style="width: 100%" data-log="${key}">${loglevels}</select></span></td></tr>`;
         });
@@ -66,10 +66,6 @@ var robotlog = {
         if (isNew && ntkey.startsWith("/SmartDashboard/Loggers/"))
         {
             var key = ntkey.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;");
-
-            // Clear all
-            $(`#loglevels select option`).attr("selected", false);
-            // Then set the right one
             $(`#loglevels select[data-log="${key}"] option[data-text="${value}"]`).attr("selected", true);
         }
     },
