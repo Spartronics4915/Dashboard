@@ -128,7 +128,7 @@ var developer = {
         this.launcherACT = new StripChart({
             id: "#launcherACT",
             yaxis: {
-                min:1000,
+                min:2000,
                 max:5000
             }
         });
