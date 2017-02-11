@@ -39,10 +39,10 @@ var developer = {
         },
 
         // Intake --------------------------------------------------------
-        "/SmartDashboard/Intake Status:": function(o, value) {
+        "/SmartDashboard/Intake Status": function(o, value) {
             $("#intakeStatus").text(value);
         },
-        "/SmartDashboard/Intake State:": function(o, value) {
+        "/SmartDashboard/Intake State": function(o, value) {
             $("#intakeState").text(value);
         },
         "/SmartDashboard/Intake Speed": function(o, value) {
@@ -50,10 +50,10 @@ var developer = {
         },
 
         // Climber --------------------------------------------------------
-        "/SmartDashboard/Climber Status:": function(o, value) {
+        "/SmartDashboard/Climber Status": function(o, value) {
             $("#climberStatus").text(value);
         },
-        "/SmartDashboard/Climber State:": function(o, value) {
+        "/SmartDashboard/Climber State": function(o, value) {
             $("#climberState").text(value);
         },
         "/SmartDashboard/Climber Speed": function(o, value) {
