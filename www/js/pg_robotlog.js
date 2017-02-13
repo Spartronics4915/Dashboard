@@ -76,7 +76,7 @@ var robotlog = {
     },
 
     onRobotMsg: function(msg) {
-        if(!(/S/.test(msg))) return; // ignore messages with whitespace-only
+        if(!(/\S/.test(msg))) return; // ignore messages with whitespace-only
         if(filter) {
             if(-1 === msg.indexOf(filter)) return;
         }
