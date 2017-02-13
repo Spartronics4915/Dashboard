@@ -13,9 +13,11 @@
             </div>
             <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
         </div>
+        <!--
         <div class="col-sm-6">
             <div id="imuHeadingGage" style="width:300;height:120px"></div>
         </div>
+        -->
     </div>
 </div>
 
@@ -29,7 +31,7 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6">
-            <label for="l1">RPM</label>
+            <label for="l1">Target RPM</label>
             <input id="launcherTGT" type="range" id="l1"
                    min="2000" max="5000" step="50"/>
             <output for="l1" id="launcherTGTTxt">0</output>
@@ -37,6 +39,7 @@
             Msg: <span id="launcherMSG"></span>
         </div>
         <div class="col-sm-6">
+            <div><b>Actual RPM</b></div>
             <div class="stripChart" id="launcherACT"
                  style="width:300px; height:100px">
             </div>
@@ -51,8 +54,16 @@
         </h3>
     </div>
     <div class="panel-body">
-        State: <span id="intakeState">n/a</span><br>
-        Speed: <span id="intakeSpeed">n/a</span>
+        <div class="col-sm-6">
+            State: <span id="intakeState">n/a</span><br>
+            Speed: <span id="intakeSpeed">n/a</span>
+        </div>
+        <div class="col-sm-6">
+            <div> <b>Intake Current</b> </div>
+            <div class="stripChart" id="intakeCurrent"
+                 style="width:300px; height:100px">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -63,7 +74,15 @@
         </h3>
     </div>
     <div class="panel-body">
-        State: <span id="climberState">n/a</span><br>
-        Speed: <span id="climberSpeed">n/a</span>
+        <div class="col-sm-6">
+            State: <span id="climberState">n/a</span><br>
+            Speed: <span id="climberSpeed">n/a</span>
+        </div>
+        <div class="col-sm-6">
+            <div> <b>Climber Current</b> </div>
+            <div class="stripChart" id="climberCurrent"
+                 style="width:300px; height:100px">
+            </div>
+        </div>
     </div>
 </div>

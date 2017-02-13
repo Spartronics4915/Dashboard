@@ -48,6 +48,11 @@ var developer = {
         "/SmartDashboard/Intake Speed": function(o, value) {
             $("#intakeSpeed").text(value);
         },
+        "/SmartDashboard/Intake Current": function(o, value) {
+            if(o.intakeCurrent) {
+                o.intakeCurrent.addDataPt(value);
+            }
+        },
 
         // Climber --------------------------------------------------------
         "/SmartDashboard/Climber Status": function(o, value) {
@@ -58,6 +63,11 @@ var developer = {
         },
         "/SmartDashboard/Climber Speed": function(o, value) {
             $("#climberSpeed").text(value);
+        },
+        "/SmartDashboard/Climber Current": function(o, value) {
+            if(o.climberCurrent) {
+                o.climberCurrent.addDataPt(value);
+            }
         },
     },
 
@@ -97,7 +107,7 @@ var developer = {
 
 
         // special widgets -----------------------------------------------
-        if(true) {
+        if(false) {
             this.imuHeadingGage = new JustGage({
                 id: "imuHeadingGage",
                 value: 67,
@@ -132,6 +142,22 @@ var developer = {
                 max:5000
             }
         });
+        //  Intake -------------------------------------------------------
+        this.intakeCurrent = new StripChart({
+            id: "#intakeCurrent",
+            yaxis: {
+                min:0,
+                max:60,
+            }
+        });
+        //  Climber -------------------------------------------------------
+        this.climberCurrent = new StripChart({
+            id: "#climberCurrent",
+            yaxis: {
+                min:0,
+                max:60,
+            }
+        });
 
         function updateWhenNoRobot() {
             var r = Math.random();
@@ -145,6 +171,9 @@ var developer = {
                         self.launcherACT.config.yaxis.min;
             var mid = self.launcherACT.config.yaxis.min + .5 * range;
             self.launcherACT.addDataPt(mid + .3 * range * (r - .5));
+
+            self.intakeCurrent.addDataPt(0);
+            self.climberCurrent.addDataPt(0);
             if(!app.robotConnected)
             {
                 setTimeout(updateWhenNoRobot, 100);
