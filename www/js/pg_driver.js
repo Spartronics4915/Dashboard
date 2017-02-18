@@ -10,14 +10,22 @@ var driver = {
         var dlink4915 = {ip:"10.49.15.13", url: "/video.cgi"};
         var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
         var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
+        var usbCam = {ip:"10.49.15.2:1071", url: "/mjpg/video.mjpg"};
 
         var intakeCam = dlink4915;
         var sprocketCam = axis2;
 
-        $("#intakeCam").html("<img width=\"400px\" src='http://" + intakeCam.ip +
+        if(false)
+        {
+            $("#intakeCam").html("<img width=\"400px\" src='http://" + intakeCam.ip +
                                         intakeCam.url + "''></img>");
-        $("#sprocketCam").html("<img width=\"400px\" src='http://" + sprocketCam.ip +
+            $("#sprocketCam").html("<img width=\"400px\" src='http://" + sprocketCam.ip +
                                         sprocketCam.url + "''></img>");
+        }
+        else {
+            $("#driverCam").html("<img width=\"480px\" src='http://" + usbCam.ip +
+                                        usbCam.url + "''></img>");
+        }
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
@@ -50,6 +58,14 @@ var driver = {
                         opt.innerHTML = opt.value;
                         sel.appendChild(opt);
                     }
+                }
+                break;
+            case "/SmartDashboard/DrivetrainReverseEnabled":
+                if(value) {
+                    $("#fwdrev").html('<img width="30px" src="/images/backward.gif"></img>');
+                }
+                else {
+                    $("#fwdrev").html('<img width="30px" src="/images/forward.gif"></img>');
                 }
                 break;
             case "/SmartDashboard/AllianceStation":
