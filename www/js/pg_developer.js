@@ -7,6 +7,7 @@ var developer = {
     iteration: 0,
     netTabIdToKey: {
         "launcherTGT": "/SmartDashboard/Launcher_TGT",
+        "agitatorTGT": "/SmartDashboard/Agitator_TGT",
     },
 
     netTabActions: { // a dispatch table...
@@ -22,9 +23,6 @@ var developer = {
         "/SmartDashboard/Launcher Status:": function(o, value) {
             $("#launcherStatus").text(value);
         },
-        "/SmartDashboard/Agitator Status:": function(o, value) {
-            $("#agitatorStatus").text(value);
-        },
         "/SmartDashboard/Launcher_TGT": function(o, value) {
             $("#launcherTGT").val(value);
             $("#launcherTGTTxt").text(value);
@@ -36,6 +34,14 @@ var developer = {
         },
         "/SmartDashboard/Launcher_MSG": function(o, value) {
             $("#launcherMSG").text(value);
+        },
+
+        "/SmartDashboard/Agitator Status:": function(o, value) {
+            $("#agitatorStatus").text(value);
+        },
+        "/SmartDashboard/Agitator_TGT": function(o, value) {
+            $("#agitatorTGT").val(value);
+            $("#agitatorTGTTxt").text(value);
         },
 
         // Intake --------------------------------------------------------
@@ -99,9 +105,12 @@ var developer = {
         $("input[type=range]").on('input', function() {
                 var id = $(this).attr("id");
                 var ntkey = self.netTabIdToKey[id];
+                if(!ntkey) {
+                    app.logMsg("unknown slider....");
+                }
                 var value = $(this).val();
                 $("#"+id+"Txt").text(value);
-                // app.logMsg("slider " + id + ": " + value);
+                // app.logMsg("slider " + id + ": " + Number(value));
                 NetworkTables.putValue(ntkey, Number(value));
             });
 
@@ -138,8 +147,8 @@ var developer = {
         this.launcherACT = new StripChart({
             id: "#launcherACT",
             yaxis: {
-                min:2000,
-                max:5000
+                min:2700,
+                max:3100
             }
         });
         //  Intake -------------------------------------------------------

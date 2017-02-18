@@ -267,8 +267,9 @@ var NetworkTables = new function () {
 
 		if (value === undefined)
 			throw new Error(key + ": 'undefined' passed to putValue");
-
-		socket.send(JSON.stringify({'k': key, 'v': value}));
+        var data = JSON.stringify({'k': key, 'v': value});
+        // app.logMsg("putValue:" + data + " key:" + key);
+		socket.send(data);
 		return true;
 	};
 
