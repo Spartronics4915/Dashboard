@@ -29,13 +29,29 @@ var driver = {
             var ntkey = "/SmartDashboard/" + key;
             NetworkTables.putValue(ntkey, value);
         });
+
+        // first initialize selectors from network tables.
+        $(".checkbox").each(function() {
+            var key = $(this).attr("id");
+            var ntkey = "/SmartDashboard/" + key;
+            var val = NetworkTables.getValue(ntkey);
+            $(this).prop('checked', val);
+        });
+
+        // now update network tables on changes
+        $(".checkbox").change(function() {
+            var value = $(this).prop('checked');
+            var key = $(this).attr("id");
+            var ntkey = "/SmartDashboard/" + key;
+            NetworkTables.putValue(ntkey, value);
+        });
     },
 
     onNetTabChange: function(key, value, isNew) {
         switch(key) {
             case "/SmartDashboard/AutoStrategyOptions":
                 // we assume that value is a comma separated list
-                var options = value.split(",");
+                var options = value.split(",").sort();
                 var sel = document.getElementById("AutoStrategy");
                 if(sel) {
                     $(sel).empty();
