@@ -3,29 +3,16 @@
 //
 (function(global) {
 'use strict';
+var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
+var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
+var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
+var dlink4915 = {ip:"10.49.15.13", url: "/video.cgi"};
+var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream"};
 var driver = {
+    forwardCam: usbCam,
+    reverseCam: dlink4915,
     pageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
-        var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
-        var dlink4915 = {ip:"10.49.15.13", url: "/video.cgi"};
-        var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
-        var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
-        var usbCam = {ip:"10.49.15.2:1071", url: "/mjpg/video.mjpg"};
-
-        var intakeCam = dlink4915;
-        var sprocketCam = axis2;
-
-        if(false)
-        {
-            $("#intakeCam").html("<img width=\"400px\" src='http://" + intakeCam.ip +
-                                        intakeCam.url + "''></img>");
-            $("#sprocketCam").html("<img width=\"400px\" src='http://" + sprocketCam.ip +
-                                        sprocketCam.url + "''></img>");
-        }
-        else {
-            $("#driverCam").html("<img width=\"480px\" src='http://" + usbCam.ip +
-                                        usbCam.url + "''></img>");
-        }
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
@@ -60,12 +47,23 @@ var driver = {
                     }
                 }
                 break;
-            case "/SmartDashboard/DrivetrainReverseEnabled":
-                if(value) {
+            case "/SmartDashboard/ReverseEnabled":
+                var camhtml;
+                if(value === "Enabled") {
                     $("#fwdrev").html('<img width="30px" src="/images/backward.gif"></img>');
+                    camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
+                                        this.reverseCam.url + "''></img>";
                 }
                 else {
                     $("#fwdrev").html('<img width="30px" src="/images/forward.gif"></img>');
+                    camhtml = "<img width=\"400px\" src='http://" + this.forwardCam.ip +
+                                        this.forwardCam.url + "''></img>";
+                }
+                if(app.robotConnected) {
+                    $("#camera").html(camhtml);
+                }
+                else {
+                    $("#camera").html("");
                 }
                 break;
             case "/SmartDashboard/AllianceStation":
