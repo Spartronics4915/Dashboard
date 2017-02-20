@@ -64,23 +64,15 @@ var driver = {
                 }
                 break;
             case "/SmartDashboard/ReverseEnabled":
-                var camhtml;
                 if(value === "Enabled") {
-                    $("#fwdrev").html('<img width="30px" src="/images/backward.gif"></img>');
-                    camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
-                                        this.reverseCam.url + "''></img>";
+                    $("#fwdrev").text("Reverse");
+                    $("#fwdrevimg").html('<img width="20px" src="/images/reverse.gif"></img>');
                 }
                 else {
-                    $("#fwdrev").html('<img width="30px" src="/images/forward.gif"></img>');
-                    camhtml = "<img width=\"400px\" src='http://" + this.forwardCam.ip +
-                                        this.forwardCam.url + "''></img>";
+                    $("#fwdrev").text("Forward");
+                    $("#fwdrevimg").html('<img width="20px" src="/images/forward.gif"></img>');
                 }
-                if(app.robotConnected) {
-                    $("#camera").html(camhtml);
-                }
-                else {
-                    $("#camera").html("");
-                }
+                this.changeCamera(value);
                 break;
             case "/SmartDashboard/AllianceStation":
                 var str;
@@ -97,7 +89,32 @@ var driver = {
                 }
                 $("#allianceStation").html(str);
                 break;
+            case "/SmartDashboard/CameraView":
+                this.changeCamera(NetworkTables.getValue("/SmartDashboard/ReverseEnabled"));
+                break;
         }
+    },
+    changeCamera: function(val) {
+        var camhtml;
+        var view = NetworkTables.getValue("/SmartDashboard/CameraView");
+        if(view === "Auto") {
+            view = val;
+        }
+        switch(view) {
+            case "Enabled": // ie ReverseEnabled
+                camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
+                                        this.reverseCam.url + "''></img>";
+                break;
+            case "Disabled":
+                camhtml = "<img width=\"400px\" src='http://" + this.forwardCam.ip +
+                                        this.forwardCam.url + "''></img>";
+                break;
+        }
+        if(!app.robotConnected) {
+            camhtml = '<div style="background-color:rgb(0,0,20);height:320px"></div>';
+        }
+        app.logMsg("changeCamera: " + camhtml + " val:" + val);
+        $("#camera").html(camhtml);
     }
 };
 
