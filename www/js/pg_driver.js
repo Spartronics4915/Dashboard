@@ -96,11 +96,7 @@ var driver = {
     },
     changeCamera: function(val) {
         var camhtml;
-        var view = NetworkTables.getValue("/SmartDashboard/CameraView");
-        if(view === "Auto") {
-            view = val;
-        }
-        switch(view) {
+        switch(val) {
             case "Enabled": // ie ReverseEnabled
                 camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
                                         this.reverseCam.url + "''></img>";
@@ -110,7 +106,7 @@ var driver = {
                                         this.forwardCam.url + "''></img>";
                 break;
         }
-        if(!app.robotConnected) {
+        if(!app.robotConnected || !camhtml) {
             camhtml = '<div style="background-color:rgb(0,0,20);height:320px"></div>';
         }
         app.logMsg("changeCamera: " + camhtml + " val:" + val);
