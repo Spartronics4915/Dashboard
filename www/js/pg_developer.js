@@ -8,7 +8,8 @@ var developer = {
     netTabIdToKey: {
         "launcherTGT": "/SmartDashboard/Launcher_TGT",
         "agitatorTGT": "/SmartDashboard/Agitator_TGT",
-        "climberSpeed": "/SmartDashboard/Climber Speed"
+        "climberSpeed": "/SmartDashboard/Climber Speed",
+        "intakeTGT": "/SmartDashboard/Intake TGT"
     },
 
     netTabActions: { // a dispatch table...
@@ -54,6 +55,10 @@ var developer = {
         },
         "/SmartDashboard/Intake Speed": function(o, value) {
             $("#intakeSpeed").text(value);
+        },
+        "/SmartDashboard/Intake TGT": function(o, value) {
+            $("#intakeTGT").val(value);
+            $("#intakeTGTTxt").text(value);
         },
         "/SmartDashboard/Intake Current": function(o, value) {
             if(o.intakeCurrent) {
