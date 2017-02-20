@@ -8,6 +8,7 @@ var developer = {
     netTabIdToKey: {
         "launcherTGT": "/SmartDashboard/Launcher_TGT",
         "agitatorTGT": "/SmartDashboard/Agitator_TGT",
+        "climberSpeed": "/SmartDashboard/Climber Speed"
     },
 
     netTabActions: { // a dispatch table...
@@ -68,7 +69,8 @@ var developer = {
             $("#climberState").text(value);
         },
         "/SmartDashboard/Climber Speed": function(o, value) {
-            $("#climberSpeed").text(value);
+            $("#climberSpeed").val(value);
+            $("#climberSpeedTxt").text(value);
         },
         "/SmartDashboard/Climber Current": function(o, value) {
             if(o.climberCurrent) {
