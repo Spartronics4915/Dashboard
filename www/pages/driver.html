@@ -1,24 +1,17 @@
-<h2>Drivers, Prepare for Liftoff
-    <span id="allianceStation"></span>
-</div>
-</h2>
-
-<hr>
-
 <div class="col-sm-12 panel panel-default">
     <div class="panel-body">
-        <div class="col-sm-12">
-            <table class="container">
+        <div class="col-sm-6">
+            <table>
+            <tr height="25px">
+                <td>Driver Station</td>
+                <td><span id="allianceStation"></span></td>
+            </tr>
             <tr height="25px">
                <td>Auto Strategy</td>
                <td><select class="selector" style="width:20em" id="AutoStrategy">
                     <option>None</option>
                     </select>
                 </td>
-            </tr>
-            <tr height="25px">
-                <td>Recording Enabled </td>
-                <td><input type="checkbox" style="margin:10px" id="RecordingEnabled"></td>
             </tr>
             <tr height="25px">
                 <td>Driving Direction</td>
@@ -29,10 +22,14 @@
                     </span>
                 </td>
             </tr>
+            <tr height="25px">
+                <td>Recording Enabled </td>
+                <td><input type="checkbox" style="margin:10px" id="RecordingEnabled"></td>
+            </tr>
             </table>
         </div>
-        <div class="container col-sm-12">
-            <div id="camera" style="align:center;height:400px;margin-top:20px">
+        <div class="col-sm-6">
+            <div id="camera" style:"border-color:blue;border-width:2px">
                 <!-- this element should be empty, an img tag will be added here -->
                 <div style="background-color:rgb(0,0,20);height:320px"></div>
             </div>

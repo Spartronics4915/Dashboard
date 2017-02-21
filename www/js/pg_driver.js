@@ -98,16 +98,16 @@ var driver = {
         var camhtml;
         switch(val) {
             case "Enabled": // ie ReverseEnabled
-                camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
+                camhtml = "<img width=\"600px\" src='http://" + this.reverseCam.ip +
                                         this.reverseCam.url + "'></img>";
                 break;
             case "Disabled":
-                camhtml = "<img width=\"400px\" src='http://" + this.forwardCam.ip +
+                camhtml = "<img width=\"600px\" src='http://" + this.forwardCam.ip +
                                         this.forwardCam.url + "'></img>";
                 break;
         }
         if(!app.robotConnected || !camhtml) {
-            camhtml = '<div style="background-color:rgb(0,0,20);height:320px"></div>';
+            camhtml = '<div style="background-color:rgb(0,0,20);width:600px;height:400px"></div>';
         }
         app.logMsg("changeCamera: " + camhtml + " val:" + val);
         $("#camera").html(camhtml);

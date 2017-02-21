@@ -142,3 +142,9 @@ div input {
 .EXCEPTION {
     color: #822;
 }
+
+@media (min-width: 1200px) {
+.container {
+    width: 95%;
+}
+}
