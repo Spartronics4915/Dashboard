@@ -99,11 +99,11 @@ var driver = {
         switch(val) {
             case "Enabled": // ie ReverseEnabled
                 camhtml = "<img width=\"400px\" src='http://" + this.reverseCam.ip +
-                                        this.reverseCam.url + "''></img>";
+                                        this.reverseCam.url + "'></img>";
                 break;
             case "Disabled":
                 camhtml = "<img width=\"400px\" src='http://" + this.forwardCam.ip +
-                                        this.forwardCam.url + "''></img>";
+                                        this.forwardCam.url + "'></img>";
                 break;
         }
         if(!app.robotConnected || !camhtml) {
