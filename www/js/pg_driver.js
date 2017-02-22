@@ -75,19 +75,7 @@ var driver = {
                 this.changeCamera(value);
                 break;
             case "/SmartDashboard/AllianceStation":
-                var str;
-                switch(value[0]) {
-                    case "R":
-                        str = "<span class='redAlliance'> from "+value+" position</span>";
-                        break;
-                    case "B":
-                        str = "<span class='blueAlliance'> from "+value+" position</span>";
-                        break;
-                    default:
-                        str = "<span class='noAlliance'> from "+value+" position</span>";
-                        break;
-                }
-                $("#allianceStation").html(str);
+                $(`#AutoStrategy option:contains(${value})`).attr("selected", true);
                 break;
             case "/SmartDashboard/CameraView":
                 this.changeCamera(NetworkTables.getValue("/SmartDashboard/ReverseEnabled"));
