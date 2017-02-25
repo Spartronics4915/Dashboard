@@ -1,25 +1,25 @@
 <div class="col-sm-12 panel panel-default">
     <div class="panel-body">
         <div class="col-sm-6">
-            <table>
-            <tr height="25px">
+            <table id="driverpanel">
+            <tr>
                <td>Field Configuration</td>
                <td>
-                    <select class="selector" style="width:20em"
-                            id="AllianceStation">
-                    <option><span class="blueAlliance">Blue<span></option>
-                    <option><span class="redAlliance">Red<span></option>
+                    <select class="selector" id="AllianceStation">
+                        <option class="amber" value="Unknown" selected>Unknown</option>
+                        <option class="blueAlliance">Blue</option>
+                        <option class="redAlliance">Red</option>
                     </select>
                 </td>
             </tr>
-            <tr height="25px">
+            <tr>
                <td>Auto Strategy</td>
                <td><select class="selector" style="width:20em" id="AutoStrategy">
                     <option>None</option>
                     </select>
                 </td>
             </tr>
-            <tr height="25px">
+            <tr>
                 <td>Driving Direction</td>
                 <td>
                     <span id="fwdrev">Forward</span>
@@ -28,16 +28,25 @@
                     </span>
                 </td>
             </tr>
-            <tr height="25px">
+            <tr>
+                <td>Camera View</td>
+                <td>
+                    <select class="selector" id="CameraView">
+                        <option value="Auto" selected>Auto</option>
+                        <option>Forward</option>
+                        <option>Reverse</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td>Recording Enabled </td>
                 <td><input type="checkbox" style="margin:10px" id="RecordingEnabled"></td>
             </tr>
             </table>
         </div>
         <div class="col-sm-6">
-            <div id="camera" style:"border-color:blue;border-width:2px">
+            <div id="camera" class="nocam" width="640px" height="480px">
                 <!-- this element should be empty, an img tag will be added here -->
-                <div style="background-color:rgb(0,0,20);height:320px"></div>
             </div>
         </div>
     </div>

@@ -9,6 +9,10 @@ hr {
     border-color: #25b;
 }
 
+td {
+    padding: 4px;
+}
+
 input,
 select {
     color: #888888;
@@ -42,16 +46,23 @@ div input {
 }
 
 #allianceStation {
-    font-size: 16px;
+    font-weight: bold;
     font-style: italic;
 }
 
 .redAlliance {
+    font-size: 16px;
     color: rgb(200, 30, 30);
 }
 
 .blueAlliance {
+    font-size: 16px;
     color: rgb(30, 90, 255);
+}
+
+.unknownAlliance {
+    font-size: 16px;
+    color: rgb(200,130,0); /* amber */
 }
 
 #aboutlogo {
@@ -95,6 +106,14 @@ div input {
   text-align: right;
 }
 
+#drivertable {
+  cellspacing: 10px;
+}
+
+#drivertable tr {
+  height: 30px; // row height for better padding
+}
+
 #mainContent {
     padding-top: 10px;
 }
@@ -106,6 +125,26 @@ div input {
 
 #networktable td {
     padding: 10px;
+}
+
+/* assume camera feeds are 320x240 (4to3)*/
+.nocam,
+.fwdcam,
+.revcam {
+    width: 600px; /* zoom factor of 600/320) */
+    height: 452px; /* height is approx max visible */
+}
+
+.nocam {
+    border: 2px solid gray;
+}
+
+.fwdcam {
+    border: 2px solid rgb(17, 151, 42);
+}
+
+.revcam {
+    border: 2px solid red;
 }
 
 /* robolog --*/

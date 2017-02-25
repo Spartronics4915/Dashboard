@@ -45,23 +45,34 @@ var driver = {
             var ntkey = "/SmartDashboard/" + key;
             NetworkTables.putValue(ntkey, value);
         });
+
+        this.changeCamera();
     },
 
     onNetTabChange: function(key, value, isNew) {
         switch(key) {
+            case "/SmartDashboard/AutoStrategy":
+                var sel = document.getElementById("AutoStrategy");
+                if(sel) {
+                    sel.value = value;
+                }
+                break;
             case "/SmartDashboard/AutoStrategyOptions":
                 // we assume that value is a comma separated list
                 var options = value.split(",").sort();
                 var sel = document.getElementById("AutoStrategy");
                 if(sel) {
                     $(sel).empty();
-                    for(let i=0;i<options.length;i++) {
+                    for(let i=0;i<options.length;i++) {jjjjjjjjjjjjjjjjjjjj
                         var opt = document.createElement("option");
                         opt.value = options[i];
                         opt.innerHTML = opt.value;
                         sel.appendChild(opt);
                     }
                 }
+                break;
+            case "/SmartDashboard/CameraView":
+                this.changeCamera();
                 break;
             case "/SmartDashboard/ReverseEnabled":
                 if(value === "Enabled") {
@@ -75,29 +86,72 @@ var driver = {
                 this.changeCamera(value);
                 break;
             case "/SmartDashboard/AllianceStation":
-                $(`#AutoStrategy option:contains(${value})`).attr("selected", true);
-                break;
-            case "/SmartDashboard/CameraView":
-                this.changeCamera(NetworkTables.getValue("/SmartDashboard/ReverseEnabled"));
+                // $(`#AutoStrategy option:contains(${value})`).attr("selected", true);
+                var el = document.getElementById("AllianceStation");
+                if(el) {
+                    switch(value)
+                    {
+                    case "Blue":
+                        $(el).removeClass("unknownAlliance")
+                             .removeClass("redAlliance")
+                             .addClass("blueAlliance");
+                        break;
+                    case "Red":
+                        $(el).removeClass("unknownAlliance")
+                             .removeClass("blueAlliance")
+                             .addClass("redAlliance");
+                        break;
+                    default:
+                        $(el).removeClass("blueAlliance")
+                             .removeClass("redAlliance")
+                             .addClass("unknownAlliance");
+                        break;
+                    }
+                    el.value = value;
+                }
                 break;
         }
     },
-    changeCamera: function(val) {
-        var camhtml;
-        switch(val) {
-            case "Enabled": // ie ReverseEnabled
-                camhtml = "<img width=\"600px\" src='http://" + this.reverseCam.ip +
-                                        this.reverseCam.url + "'></img>";
+    changeCamera: function(reverseEnabled) {
+        var camhtml, cam, view = NetworkTables.getValue("/SmartDashboard/CameraView", "Auto");
+        var camdiv = $("#camera");
+        if(!reverseEnabled) {
+            reverseEnabled = NetworkTables.getValue("/SmartDashboard/ReverseEnabled", "Disabled");
+        }
+        camdiv.removeClass("nocam")
+              .removeClass("fwdcam")
+              .removeClass("revcam");
+        if(view === "Auto") {
+            if(!app.robotConnected)
+                view = "None";
+            else
+            if (reverseEnabled === "Enabled")
+                view = "Reverse";
+            else
+                view = "Forward";
+        }
+        switch(view) {
+            case "Forward":
+                camdiv.addClass("fwdcam");
+                cam = this.forwardCam;
                 break;
-            case "Disabled":
-                camhtml = "<img width=\"600px\" src='http://" + this.forwardCam.ip +
-                                        this.forwardCam.url + "'></img>";
+            case "Reverse":
+                camdiv.addClass("revcam");
+                cam = this.reverseCam;
+                break;
+            default:
+                camdiv.addClass("nocam");
+                cam = null;
                 break;
         }
-        if(!app.robotConnected || !camhtml) {
-            camhtml = '<div style="background-color:rgb(0,0,20);width:600px;height:400px"></div>';
+        if(cam) {
+            camhtml = `<img style="width:100%" src="http://${cam.ip}${cam.url}"></img>`;
         }
-        app.logMsg("changeCamera: " + camhtml + " val:" + val);
+        else {
+            camhtml = "<!-- empty -->";
+        }
+
+        app.logMsg("changeCamera: " + camhtml);
         $("#camera").html(camhtml);
     }
 };
