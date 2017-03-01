@@ -63,7 +63,7 @@ var driver = {
                 var sel = document.getElementById("AutoStrategy");
                 if(sel) {
                     $(sel).empty();
-                    for(let i=0;i<options.length;i++) {jjjjjjjjjjjjjjjjjjjj
+                    for(let i=0;i<options.length;i++) {
                         var opt = document.createElement("option");
                         opt.value = options[i];
                         opt.innerHTML = opt.value;
