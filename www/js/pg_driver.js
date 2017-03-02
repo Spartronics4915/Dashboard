@@ -6,7 +6,7 @@
 var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
 var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
 var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
-var dlink4915 = {ip:"10.49.15.13", url: "/video.cgi"};
+var dlink4915 = {ip:"admin:@10.49.15.13", url: "/video.cgi"};
 var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream"};
 var driver = {
     forwardCam: usbCam,
