@@ -21,7 +21,7 @@ To run the dashboard:
   1. make sure you have python installed (tested with both 3.6 and 2.7)
   2. make sure the correct python modules are installed (pynetworktables, pynetworktable2js)
   3. start dashboard server:  python DashboardServer.py
-  4. point your favorite web browser to http://localhost:5080, Chrome is recommended.
+  4. point your favorite web browser to http://localhost:5080, Firefox is recommended over Chrome.
 
 Drop **a shortcut to** `start.bat` in the startup folder: `Win+R`, enter `shell:startup`.
 
@@ -31,6 +31,11 @@ Administrator" in its Properties window.  Also, disable UAC (the
 window-dimming 'are you sure' thing) otherwise the dashboard won't start
 up on boot.
 
+
+### Usage Note
+
+We've found that Chrome is flaky when it comes to mjpg streams.  We therefore highly recommend 
+that you use Firefox as your primary web brower for this application.
 
 ### Programming Note
 
