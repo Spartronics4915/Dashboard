@@ -78,6 +78,10 @@ div input {
 @keyframes spin {
     100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
 }
+@-webkit-keyframes blink { 67% { opacity: 0 }}
+@-moz-keyframes blink {  67% { opacity: 0 }}
+@-o-keyframes blink {  67% { opacity: 0 }}
+@keyframes blink {  67% { opacity: 0 }}
 
 .title {
     font-size: 150%;
@@ -92,8 +96,21 @@ div input {
   color: rgb(17, 151, 42);
 }
 
+.bigfont {
+  font-size: 30px;
+}
+
 .amber {
   color: rgb(200,130,0);
+}
+
+.blinkRed {
+  color: rgb(255,30,30);
+  font-size: 30px;
+  -webkit-animation-name: blink;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+  -webkit-animation-duration: 1s;
 }
 
 .stripChart {

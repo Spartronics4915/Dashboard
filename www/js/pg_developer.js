@@ -13,6 +13,10 @@ var developer = {
     },
 
     netTabActions: { // a dispatch table...
+        "/SmartDashboard/Build": function(o, value) {
+            $("#buildid").html("<span class='green'>"+value+"</span");
+        },
+
         // DriveTrain ------------------------------------------------------
         "/SmartDashboard/Drivetrain_Status": function(o, value) {
             $("#drivetrainStatus").text(value);

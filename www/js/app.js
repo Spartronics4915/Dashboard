@@ -115,8 +115,24 @@ var app = {
     onRobotConnect: function(cnx) {
         app.robotConnected = cnx;
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
-                                    "<span class='amber'>off-line</span>");
+                                    "<span class='blinkRed bigfont'>off-line</span>");
         $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
+        app.updateCANStatus();
+    },
+
+    updateCANStatus: function() {
+        if(this.robotConnected)
+        {
+            var value = NetworkTables.getValue("/SmartDashboard/CANBusStatus");
+            if(value === "OK")
+                $("#robotCANStatus").html("CAN Status:<span class='green'>OK</span>");
+            else
+                $("#robotCANStatus").html(`CAN Status:<span class='blinkRed'>${value}</span>`);
+        }
+        else
+        {
+            $("#robotCANStatus").html(``);
+        }
     },
 
     onNetTabConnect: function(cnx) {
@@ -129,13 +145,17 @@ var app = {
         }
         else
         {
-            $("#nettabState").html("<span class='amber'>off-line</span>");
+            $("#nettabState").html("<span class='blinkRed bigfont'>off-line</span>");
         }
 
         var tval = NetworkTables.getValue("/SmartDashboard/Build");
         if(tval) {
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
+
+        NetworkTables.putValue("/SmartDashboard/CameraView", "Auto");
+        NetworkTables.putValue("/SmartDashboard/AutoStrategy", "None");
+        NetworkTables.putValue("/SmartDashboard/AllianceStation", "Unknown");
     },
 
     replayNetTab: function() {
@@ -154,8 +174,8 @@ var app = {
                  " new: " + isNew);
         }
         switch(key) {
-            case "/SmartDashboard/Build":
-                $("#buildid").html("<span class='green'>"+value+"</span");
+            case "/SmartDashboard/CANBusStatus":
+                app.updateCANStatus();
                 break;
             default:
                 break;
