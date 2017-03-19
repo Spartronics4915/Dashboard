@@ -30,20 +30,9 @@ var driver = {
             NetworkTables.putValue(ntkey, value);
         });
 
-        // first initialize selectors from network tables.
-        $(".checkbox").each(function() {
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key;
-            var val = NetworkTables.getValue(ntkey);
-            $(this).prop('checked', val);
-        });
-
-        // now update network tables on changes
-        $(".checkbox").change(function() {
-            var value = $(this).prop('checked');
-            var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key;
-            NetworkTables.putValue(ntkey, value);
+        $(".command").click(function() {
+            var key = $(this).attr("data-command");
+            NetworkTables.putValue("/SmartDashboard/" + key + "/running", true);
         });
 
         this.changeCamera();
