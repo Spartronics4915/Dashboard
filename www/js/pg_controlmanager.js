@@ -15,8 +15,8 @@
         var expressionID = $.escapeSelector(expressionName); // Needs >= v3.0 of jQuery
         if (isNew) {
           $("#expressionlist").append(
-            `<li class="col-sm-12 expression"><p class="col-sm-6">` + expressionName + `:&nbsp;</p>
-            <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-6"/>
+            `<li class="col-sm-12 expression"><p class="col-sm-5">` + expressionName + `:&nbsp;</p>
+            <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-7"/>
             </li>`);
 
           $("#"+expressionID).on("input", function(event) {
