@@ -26,6 +26,14 @@ div input {
     padding:6px 4px;
 }
 
+.text-center {
+  text-align: align;
+}
+
+.expression {
+  padding-bottom: 3px;
+}
+
 .hdetail {
     font-size: 50%;
 }
