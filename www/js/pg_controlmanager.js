@@ -12,13 +12,12 @@
       var keySuffix = "/SmartDashboard/ControlManager/";
       if (key.substring(0, keySuffix.length) == keySuffix) {
         var expressionName = key.substring(keySuffix.length,key.length);
-        var expressionID = $.escapeSelector(expressionName); // Needs >= v3.0 of jQuery
+        var expressionID = expressionName.replace(/[^a-zA-Z0-9\-]/g, "λ"); // To deal with non alphanumeric characters in ids
         if (isNew) {
           $("#expressionlist").append(
             `<li class="col-sm-12 expression"><p class="col-sm-5">` + expressionName + `:&nbsp;</p>
             <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-7"/>
             </li>`);
-
           $("#"+expressionID).on("input", function(event) {
             NetworkTables.putValue(key, $(this).val());
           });
