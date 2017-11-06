@@ -3,6 +3,10 @@
 //
 (function(global) {
   'use strict';
+
+  var typingTimer;
+  var doneTypingAfter = 1600; // in milleseconds
+
   var controlManager = {
     pageLoaded: function(targetElem, html) {
       targetElem.innerHTML = html;
@@ -19,7 +23,11 @@
             <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-7"/>
             </li>`);
           $("#"+expressionID).on("input", function(event) {
-            NetworkTables.putValue(key, $(this).val());
+            window.clearTimeout(typingTimer);
+            var val = $(this).val();
+            typingTimer = window.setTimeout(function() {
+              NetworkTables.putValue(key, val);
+            }, doneTypingAfter);
           });
         } else {
           $("#"+expressionID).val(value);
