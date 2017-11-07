@@ -5,7 +5,7 @@
   'use strict';
 
   var typingTimer;
-  var doneTypingAfter = 1600; // in milleseconds
+  var doneTypingAfter = 700; // in milleseconds
 
   var controlManager = {
     pageLoaded: function(targetElem, html) {
@@ -19,14 +19,16 @@
         var expressionID = expressionName.replace(/[^a-zA-Z0-9\-]/g, "λ"); // To deal with non alphanumeric characters in ids
         if (isNew) {
           $("#expressionlist").append(
-            `<li class="col-sm-12 expression"><p class="col-sm-5">` + expressionName + `:&nbsp;</p>
-            <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-7"/>
+            `<li class="col-sm-12 expression"><p class="col-sm-4">` + expressionName + `:&nbsp;</p>
+            <input id="` + expressionID + `" value="` + value + `" placeholder="Mathematical expression with variables" type="text" class="col-sm-8"/>
             </li>`);
           $("#"+expressionID).on("input", function(event) {
             window.clearTimeout(typingTimer);
-            var val = $(this).val();
+            $(this).css("opacity", 0.8);
+            var element = this;
             typingTimer = window.setTimeout(function() {
-              NetworkTables.putValue(key, val);
+              $(element).css("opacity", 1);
+              NetworkTables.putValue(key, $(element).val());
             }, doneTypingAfter);
           });
         } else {
