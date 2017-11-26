@@ -1,14 +1,15 @@
 # Dashboard
-=======
-# Spartronics 2017-Dashboard
 
-Repository with the Spartronics code for the Dashboard for
-FRC 2017-STEAMWorks game. This dashboard is built atop the python
+Repository with the Spartronics dashboard code. This dashboard is built atop the python
 implementation of networktables.  Coupled with standard python
 webserver tech (here, tornado), the result is a webserver running
 on the driver's station that can read and control networktable values.
 Now, we can connect a standard web browser to the server
 and develop a custom dashboard build atop standard web technologies.
+
+Because so much code is reused across years, we chose to maintain a single repository for
+multiple years. We will tag the commit at the end of a year, to allow us to easily return
+to that point in history, then remove/rework the dashboard for the new game.
 
 If you:
   * wonder why SendableChooser is so weird/flaky
