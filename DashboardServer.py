@@ -14,7 +14,7 @@ from optparse import OptionParser
 import tornado.web
 from tornado.ioloop import IOLoop
 
-from networktables import NetworkTable
+from networktables import NetworkTables
 import pynetworktables2js
 
 import pylib.Robotlog as Robotlog
@@ -26,13 +26,12 @@ logger = logging.getLogger('dashboard')
 def initNetworktables(options):
     if options.dashboard:
         logger.info("Connecting to networktables in Dashboard mode")
-        NetworkTable.setDashboardMode()
+        NetworkTables.initialize();
+        NetworkTables.setDashboardMode(options.port);
     else:
         logger.info("Connecting to networktables at %s", options.robot)
-        NetworkTable.setIPAddress(options.robot)
-        NetworkTable.setClientMode()
+        NetworkTables.initialize(options.robot)
 
-    NetworkTable.initialize()
     logger.info("Networktables Initialized")
 
 if __name__ == '__main__':
