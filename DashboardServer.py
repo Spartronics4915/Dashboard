@@ -25,9 +25,11 @@ logger = logging.getLogger('dashboard')
 
 def initNetworktables(options):
     if options.dashboard:
-        logger.info("Connecting to networktables in Dashboard mode")
+        # connects to driver station on localhost to obtain server IPaddress.
+        # (don't often run in this mode).
+        logger.info("Connecting to networktables in DSClient mode")
         NetworkTables.initialize();
-        NetworkTables.setDashboardMode(options.port);
+        NetworkTables.startDSClient(options.port);
     else:
         logger.info("Connecting to networktables at %s", options.robot)
         NetworkTables.initialize(options.robot)

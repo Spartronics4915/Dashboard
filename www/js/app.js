@@ -123,7 +123,7 @@ var app = {
     updateCANStatus: function() {
         if(this.robotConnected)
         {
-            var value = NetworkTables.getValue("/SmartDashboard/CANBusStatus");
+            var value = app.getValue("CANBusStatus");
             if(value === "OK")
                 $("#robotCANStatus").html("CAN Status:<span class='green'>OK</span>");
             else
@@ -148,14 +148,22 @@ var app = {
             $("#nettabState").html("<span class='blinkRed bigfont'>off-line</span>");
         }
 
-        var tval = NetworkTables.getValue("/SmartDashboard/Build");
+        var tval = app.getValue("Build");
         if(tval) {
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
 
-        NetworkTables.putValue("/SmartDashboard/CameraView", "Auto");
-        NetworkTables.putValue("/SmartDashboard/AutoStrategy", "None");
-        NetworkTables.putValue("/SmartDashboard/AllianceStation", "Unknown");
+        app.putValue("CameraView", "Auto");
+        app.putValue("AutoStrategy", "None");
+        app.putValue("AllianceStation", "Unknown");
+    },
+
+    putValue: function(nm, value) {
+        NetworkTables.putValue("SmartDashboard/"+nm, value);
+    },
+
+    getValue: function(nm, def="") {
+        return NetworkTables.getValue("/SmartDashboard/"+nm, def);
     },
 
     replayNetTab: function() {

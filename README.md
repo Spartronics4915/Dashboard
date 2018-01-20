@@ -22,9 +22,11 @@ this approach may be for you.
 To run the dashboard:
 
   1. make sure you have python installed (tested with both 3.6 and 2.7)
-  2. make sure the correct python modules are installed (pynetworktables, pynetworktable2js)
+  2. make sure the correct python moduleis are installed pynetworktables
+  3. make sure the javascript side of pynetworktable2js is up to date (below www/js).
   3. start dashboard server:  python DashboardServer.py
-  4. point your favorite web browser to http://localhost:5080, Firefox is recommended over Chrome.
+  4. point your favorite web browser to http://localhost:5080, Firefox is recommended 
+    over Chrome due to improved performance of mjpg streaming.
 
 Drop **a shortcut to** `start.bat` in the startup folder: `Win+R`, enter `shell:startup`.
 
@@ -37,8 +39,8 @@ up on boot.
 
 ### Usage Note
 
-We've found that Chrome is flaky when it comes to mjpg streams.  We therefore highly recommend 
-that you use Firefox as your primary web brower for this application.
+We've found that Chrome is flaky when it comes to mjpg streams.  We therefore highly 
+recommend that you use Firefox as your primary web brower for this application.
 
 ### Programming Note
 

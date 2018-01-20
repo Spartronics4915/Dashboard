@@ -49,13 +49,14 @@ var robotlog = {
         // install callbacks for each logger
         $("#loglevels select").each(function() {
             var key = $(this).attr("data-log");
-            var ntkey = "/SmartDashboard/Loggers/" + key;
-            var val = NetworkTables.getValue(ntkey);
+            var ntkey = "Loggers/" + key;
+            var val = app.getValue(ntkey);
             $(this).find(`option[data-text="${val}"]`).attr("selected", true);
 
             // Update NetworkTables on change
             $(this).change(function() {
-                NetworkTables.putValue(`/SmartDashboard/Loggers/${key}`, $(this).find("option:selected").text());
+                app.putValue("Loggers/${key}", 
+                            $(this).find("option:selected").text());
             });
         });
 

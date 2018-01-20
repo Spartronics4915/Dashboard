@@ -6,10 +6,10 @@
 var developer = {
     iteration: 0,
     netTabIdToKey: {
-        "launcherTGT": "/SmartDashboard/Launcher_TGT",
-        "agitatorTGT": "/SmartDashboard/Agitator_TGT",
-        "climberSpeed": "/SmartDashboard/Climber Speed",
-        "intakeTGT": "/SmartDashboard/Intake TGT"
+        "launcherTGT": "Launcher_TGT",
+        "agitatorTGT": "gitator_TGT",
+        "climberSpeed": "Climber Speed",
+        "intakeTGT": "Intake TGT"
     },
 
     netTabActions: { // a dispatch table...
@@ -99,8 +99,8 @@ var developer = {
         // the SmartDashboard key.
         $(".selector").each(function() {
             var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key;
-            var val = NetworkTables.getValue(ntkey);
+            // var ntkey = "/SmartDashboard/" + key;
+            var val = app.getValue(key);
             $(this).val(val);
         });
 
@@ -108,8 +108,7 @@ var developer = {
         $(".selector").change(function() {
             var value = $(this).val();
             var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key ;
-            NetworkTables.putValue(ntkey, value);
+            app.putValue(key, value);
         });
 
         // Slider support ----------------------------------------------
@@ -122,7 +121,7 @@ var developer = {
                 var value = $(this).val();
                 $("#"+id+"Txt").text(value);
                 // app.logMsg("slider " + id + ": " + Number(value));
-                NetworkTables.putValue(ntkey, Number(value));
+                app.putValue(ntkey, Number(value));
             });
 
 
