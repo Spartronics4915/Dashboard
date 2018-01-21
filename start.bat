@@ -1,2 +1,2 @@
-cd C:\Users\Spartronics\2017-Dashboard
+cd C:\Users\Spartronics\Dashboard
 python DashboardServer.py
