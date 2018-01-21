@@ -6,6 +6,11 @@
 
     Run this application with python, then you can open your browser to
     http://localhost:5080/ to view the index.html page.
+
+    Notes on upgrading networktables:
+        - make sure to update both pynetworktables and pynetworktables2js
+          to the same support level
+        - make sure that a pip install produces the right version string.
 '''
 
 from os.path import abspath, dirname, exists, join
@@ -14,6 +19,7 @@ from optparse import OptionParser
 import tornado.web
 from tornado.ioloop import IOLoop
 
+import networktables
 from networktables import NetworkTables
 import pynetworktables2js
 
@@ -25,14 +31,17 @@ logger = logging.getLogger('dashboard')
 
 def initNetworktables(options):
     if options.dashboard:
-        logger.info("Connecting to networktables in Dashboard mode")
+        # connects to driver station on localhost to obtain server IPaddress.
+        # (don't often run in this mode).
+        logger.info("Connecting to networktables in DSClient mode")
         NetworkTables.initialize();
-        NetworkTables.setDashboardMode(options.port);
+        NetworkTables.startDSClient(options.port);
     else:
         logger.info("Connecting to networktables at %s", options.robot)
         NetworkTables.initialize(options.robot)
 
-    logger.info("Networktables Initialized")
+    logger.info("Networktables Initialized %s, %s" % 
+        (networktables.__version__ , pynetworktables2js.__version__))
 
 if __name__ == '__main__':
 

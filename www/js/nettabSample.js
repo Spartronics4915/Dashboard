@@ -1,41 +1,43 @@
 (function(global) {
 'use strict';
 
+// this file is used to populate dashboard with 'typical' values
+// to run: enter  initNetTabSample() into the browser javascript console
+
 var ntSample = {
-    "/SmartDashboard/Build": "by: Atlas02 on: Feb 08, 08:05 PM (week3-90-g1c082f9-dirty)",
+    "Build": "by: Atlas02 on: Feb 08, 08:05 PM (week3-90-g1c082f9-dirty)",
 
-    "/LiveWindow/~STATUS~/LW Enabled": false,
-    "/SmartDashboard/Loggers/<shared>": "DEBUG",
-    "/SmartDashboard/Loggers/Launcher": "DEBUG",
-    "/SmartDashboard/Loggers/Climber": "NOTICE",
-    "/SmartDashboard/Loggers/Robot": "DEBUG",
-    "/SmartDashboard/Loggers/OI": "DEBUG",
-    "/SmartDashboard/Loggers/Intake": "NOTICE",
-    "/SmartDashboard/Loggers/Drivetrain": "DEBUG",
-    "/SmartDashboard/LauncherLogLevel": "DEBUG",
+    "Loggers/<shared>": "DEBUG",
+    "Loggers/Launcher": "DEBUG",
+    "Loggers/Climber": "NOTICE",
+    "Loggers/Robot": "DEBUG",
+    "Loggers/OI": "DEBUG",
+    "Loggers/Intake": "NOTICE",
+    "Loggers/Drivetrain": "DEBUG",
+    "LauncherLogLevel": "DEBUG",
 
-    "/SmartDashboard/AllianceStation": "Blue3",
-    "/SmartDashboard/AutoStrategyOptions": "None,Fuel,Fuel+Sprocket,Left Sprocket,Right Sprocket,Line Cross",
+    "AllianceStation": "Blue3",
+    "AutoStrategyOptions": "None,Fuel,Fuel+Sprocket,Left Sprocket,Right Sprocket,Line Cross",
 
-    "/SmartDashboard/Drivetrain_Status": "initialized",
+    "Drivetrain_Status": "initialized",
 
-    "/SmartDashboard/Agitator Status:": "Initialized",
-    "/SmartDashboard/Launcher Status:": "Initialized",
-    "/SmartDashboard/Launcher_ACT": "-2996.77734375",
-    "/SmartDashboard/Launcher_MSG": "-2997 / 3000",
-    "/SmartDashboard/Launcher_TGT": "3000",
-    "/SmartDashboard/Climber Status": "Initialized",
-    "/SmartDashboard/Climber State": "SLOW",
-    "/SmartDashboard/Climber Speed": "0.375",
-    "/SmartDashboard/Intake Status": "Initialized",
-    "/SmartDashboard/Intake State": "OFF",
-    "/SmartDashboard/Intake Speed": "0",
+    "Agitator Status:": "Initialized",
+    "Launcher Status:": "Initialized",
+    "Launcher_ACT": "-2996.77734375",
+    "Launcher_MSG": "-2997 / 3000",
+    "Launcher_TGT": "3000",
+    "Climber Status": "Initialized",
+    "Climber State": "SLOW",
+    "Climber Speed": "0.375",
+    "Intake Status": "Initialized",
+    "Intake State": "OFF",
+    "Intake Speed": "0",
 };
 
 
 global.initNetTabSample = function() {
     for(let key in ntSample) {
-        NetworkTables.putValue(key, ntSample[key]);
+        app.putValue(key, ntSample[key]);
     }
 };
 

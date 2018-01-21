@@ -17,8 +17,8 @@ var driver = {
         // first initialize selectors from network tables.
         $(".selector").each(function() {
             var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key;
-            var val = NetworkTables.getValue(ntkey);
+            // var ntkey = "/SmartDashboard/" + key;
+            var val = app.getValue(key);
             $(this).val(val);
         });
 
@@ -26,13 +26,12 @@ var driver = {
         $(".selector").change(function() {
             var value = $(this).val();
             var key = $(this).attr("id");
-            var ntkey = "/SmartDashboard/" + key;
-            NetworkTables.putValue(ntkey, value);
+            app.putValue(key, value);
         });
 
         $(".command").click(function() {
             var key = $(this).attr("data-command");
-            NetworkTables.putValue("/SmartDashboard/" + key + "/running", true);
+            app.putValue(key + "/running", true);
         });
 
         this.changeCamera();
@@ -102,10 +101,10 @@ var driver = {
         }
     },
     changeCamera: function(reverseEnabled) {
-        var camhtml, cam, view = NetworkTables.getValue("/SmartDashboard/CameraView", "Auto");
+        var camhtml, cam, view = app.getValue("CameraView", "Auto");
         var camdiv = $("#camera");
         if(!reverseEnabled) {
-            reverseEnabled = NetworkTables.getValue("/SmartDashboard/ReverseEnabled", "Disabled");
+            reverseEnabled = app.getValue("ReverseEnabled", "Disabled");
         }
         camdiv.removeClass("nocam")
               .removeClass("fwdcam")
