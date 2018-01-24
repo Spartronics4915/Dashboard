@@ -2,21 +2,69 @@
     Build <span id="buildid"><span class="amber">unknown</span></span>&nbsp;&nbsp;
 </div>
 
+<!-- Drive -->
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Drivetrain <small id="drivetrainStatus">status n/a</small></h3>
+        <h3 class="panel-title">Drive <small id="driveStatus">status n/a</small></h3>
     </div>
     <div class="panel-body">
+        State: <span id="driveState">n/a</span><br>
         <div class="col-sm-6 plotContainer" style="border:5px;">
             <div>
                 <b>IMU Heading <span id="imuHeading">n/a</span></b>
             </div>
             <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
         </div>
-        <!--
-        <div class="col-sm-6">
-            <div id="imuHeadingGage" style="width:300;height:120px"></div>
+        <div class="col-sm-6" style="border:5px;">
+            <label for="driveTuning">Tuning Knob</label>
+            <input id="driveTuning" type="range"
+                   min="0" max="1" step=".025"/>
+            <output for="driveTuning" id="driveTuningTxt">0</output>
         </div>
-        -->
     </div>
 </div>
+
+<!-- Climber -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Climber
+            <small id="climberStatus">status n/a</small>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-6">
+            State: <span id="climberState">n/a</span><br>
+            <div> <b>Climber Current</b> </div>
+            <div class="stripChart" id="climberCurrent"
+                 style="width:300px; height:100px">
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <label for="climberSpeed">Climber Speed</label>
+            <input id="climberSpeed" type="range"
+                   min="0" max="1" step=".025"/>
+            <output for="climberSpeed" id="climberSpeedTxt">0</output>
+        </div>
+    </div>
+</div>
+
+<!-- Testbed -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Testbed
+            <small id="testbedStatus">status n/a</small>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-6">
+            State: <span id="testbedState">n/a</span><br>
+        </div>
+        <div class="col-sm-6" style="border:5px;">
+            <label for="testbedTuning">Tuning Knob</label>
+            <input id="testbedTuning" type="range"
+                   min="0" max="1" step=".025"/>
+            <output for="testbedTuning" id="testbedTuningTxt">0</output>
+        </div>
+    </div>
+</div>
+

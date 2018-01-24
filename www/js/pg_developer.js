@@ -6,73 +6,37 @@
 var developer = {
     iteration: 0,
     netTabIdToKey: {
-        "launcherTGT": "Launcher_TGT",
-        "agitatorTGT": "gitator_TGT",
         "climberSpeed": "Climber Speed",
-        "intakeTGT": "Intake TGT"
+        "driveTuning": "Drive_TuningKnob",
+        "testbedTuning": "Testbed_TuningKnob",
     },
 
-    netTabActions: { // a dispatch table...
+    netTabActions: { 
+        // a dispatch table, trigger a function when a nettable entry changes.
+        // args are (this, value)
         "/SmartDashboard/Build": function(o, value) {
             $("#buildid").html("<span class='green'>"+value+"</span");
         },
 
-        // DriveTrain ------------------------------------------------------
-        "/SmartDashboard/Drivetrain_Status": function(o, value) {
-            $("#drivetrainStatus").text(value);
+        // Drive ------------------------------------------------------
+        "/SmartDashboard/Drive_SubsystemStatus": function(o, value) {
+            $("#driveStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/Drive/state": function(o, value) {
+            $("#driveState").text(value);
         },
         "/SmartDashboard/Drivetrain_IMU_Heading": function(o, value) {
             o.updateIMU(Number(value));
         },
-
-        // Launcher + Agitator ---------------------------------------------
-        "/SmartDashboard/Launcher Status:": function(o, value) {
-            $("#launcherStatus").text(value);
-        },
-        "/SmartDashboard/Launcher_TGT": function(o, value) {
-            $("#launcherTGT").val(value);
-            $("#launcherTGTTxt").text(value);
-        },
-        "/SmartDashboard/Launcher_ACT": function(o, value) {
-            if(o.launcherACT) {
-                o.launcherACT.addDataPt(Math.abs(value));
-            }
-        },
-        "/SmartDashboard/Launcher_MSG": function(o, value) {
-            $("#launcherMSG").text(value);
+        "/SmartDashboard/Drive_TuningKnob": function(o, value) {
+            $("#driveTuning").val(Number(value));
+            $("#driveTuningTxt").text(value);
         },
 
-        "/SmartDashboard/Agitator Status:": function(o, value) {
-            $("#agitatorStatus").text(value);
-        },
-        "/SmartDashboard/Agitator_TGT": function(o, value) {
-            $("#agitatorTGT").val(value);
-            $("#agitatorTGTTxt").text(value);
-        },
-
-        // Intake --------------------------------------------------------
-        "/SmartDashboard/Intake Status": function(o, value) {
-            $("#intakeStatus").text(value);
-        },
-        "/SmartDashboard/Intake State": function(o, value) {
-            $("#intakeState").text(value);
-        },
-        "/SmartDashboard/Intake Speed": function(o, value) {
-            $("#intakeSpeed").text(value);
-        },
-        "/SmartDashboard/Intake TGT": function(o, value) {
-            $("#intakeTGT").val(value);
-            $("#intakeTGTTxt").text(value);
-        },
-        "/SmartDashboard/Intake Current": function(o, value) {
-            if(o.intakeCurrent) {
-                o.intakeCurrent.addDataPt(value);
-            }
-        },
 
         // Climber --------------------------------------------------------
-        "/SmartDashboard/Climber Status": function(o, value) {
-            $("#climberStatus").text(value);
+        "/SmartDashboard/Climber_SubsystemStatus": function(o, value) {
+            $("#climberStatus").html(o.subsystemStatus(value));
         },
         "/SmartDashboard/Climber State": function(o, value) {
             $("#climberState").text(value);
@@ -86,8 +50,23 @@ var developer = {
                 o.climberCurrent.addDataPt(value);
             }
         },
-    },
 
+        // Testbed --------------------------------------------------------
+        "/SmartDashboard/Testbed_SubsystemStatus": function(o, value) {
+            $("#testbedStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/Testbed_State": function(o, value) {
+            $("#testbedState").text(value);
+        },
+        "/SmartDashboard/Testbed_TuningKnob": function(o, value) {
+            $("#testbedTuning").val(value);
+            $("#testbedTuningTxt").text(value);
+        },
+
+    },
+    subsystemStatus: function(value) {
+        return value==="ERROR"?"<span style=\"color:red\">offline</span>":"online";
+    },
     pageLoaded: function(targetElem, html) {
         // app.logMsg("devpgLoaded begin --------{");
         var self = this;
@@ -116,7 +95,7 @@ var developer = {
                 var id = $(this).attr("id");
                 var ntkey = self.netTabIdToKey[id];
                 if(!ntkey) {
-                    app.logMsg("unknown slider....");
+                    app.logMsg("unknown slider " + id);
                 }
                 var value = $(this).val();
                 $("#"+id+"Txt").text(value);
@@ -153,22 +132,7 @@ var developer = {
                 max:200,
             }
         });
-        //  Launcher -------------------------------------------------------
-        this.launcherACT = new StripChart({
-            id: "#launcherACT",
-            yaxis: {
-                min:2700,
-                max:3100
-            }
-        });
-        //  Intake -------------------------------------------------------
-        this.intakeCurrent = new StripChart({
-            id: "#intakeCurrent",
-            yaxis: {
-                min:0,
-                max:60,
-            }
-        });
+
         //  Climber -------------------------------------------------------
         this.climberCurrent = new StripChart({
             id: "#climberCurrent",
@@ -185,13 +149,6 @@ var developer = {
                                      .2*r));
             self.iteration++;
             self.updateIMU(angle);
-
-            var range = self.launcherACT.config.yaxis.max -
-                        self.launcherACT.config.yaxis.min;
-            var mid = self.launcherACT.config.yaxis.min + .5 * range;
-            self.launcherACT.addDataPt(mid + .3 * range * (r - .5));
-
-            self.intakeCurrent.addDataPt(0);
             self.climberCurrent.addDataPt(0);
             if(!app.robotConnected)
             {

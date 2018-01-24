@@ -4,13 +4,13 @@
             <table id="driverpanel">
             <tr>
                <td>Field Configuration</td>
+                <!-- field config isn't an option, can be selected via driverstation -->
                <td>
-                    <select class="selector" id="AllianceStation">
-                        <option class="amber" value="Unknown" selected>Unknown</option>
-                        <option class="blueAlliance">Blue</option>
-                        <option class="redAlliance">Red</option>
-                    </select>
-                </td>
+                 &nbsp;&nbsp;
+                <span id="alliance">Unknown alliance</span>, 
+                Station <span id="allianceStation">0</span>
+                <span id="fmsGameMSG">(no game msg)</span>
+               </td>
             </tr>
             <tr>
                <td>Auto Strategy</td>
@@ -22,7 +22,7 @@
             <tr>
                 <td>Driving Direction</td>
                 <td>
-                    <span id="fwdrev">Forward</span>
+                    <span id="fwdrev">&nbsp;&nbsp;Forward</span>
                     <span id="fwdrevimg">
                         <img src="/images/forward.gif" height="20px"></img>
                     </span>

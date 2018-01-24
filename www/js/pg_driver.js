@@ -73,7 +73,51 @@ var driver = {
                 }
                 this.changeCamera(value);
                 break;
+            case "/FMSInfo/IsRedAlliance":
+                var el = document.getElementById("alliance");
+                if(el) {
+                    switch(value)
+                    {
+                    case false:
+                        $(el).html("<span class=\"blueAlliance\">Blue Alliance</span>");
+                        break;
+                    case true:
+                        $(el).html("<span class=\"redAlliance\">Red Alliance</span>");
+                        break;
+                    default:
+                        $(el).html("<span class=\"unknownAlliance\">Unknown Alliance</span>");
+                        break;
+                    }
+                }
+                break;
+            case "/FMSInfo/StationNumber":
+                var el = document.getElementById("allianceStation");
+                $(el).text(value);
+                break;
+            case "/FMSInfo/GameSpecificMessage":
+                var el = document.getElementById("fmsGameMSG");
+                // 2018: 3 chars "LRL", means:
+                //    our switch on Left
+                //    our scale on Right
+                //    defense for their switch on Left
+                $(el).text(value);
+                break;
+            case "/FMSInfo/ReplayNumber":
+                break;
+            case "/FMSInfo/FMSControlData":
+                break;
+            case "/FMSInfo/EventName":
+                break;
+            case "/FMSInfo/MatchType":
+                break;
+            case "/FMSInfo/MatchNumber":
+                break;
+            case "/FMSInfo/.type":
+                break;
+
             case "/SmartDashboard/AllianceStation":
+                console.log("ignoring " + key + " in favor of /FMS/IsRedAlliance");
+                break; 
                 // $(`#AutoStrategy option:contains(${value})`).attr("selected", true);
                 var el = document.getElementById("AllianceStation");
                 if(el) {
@@ -96,6 +140,12 @@ var driver = {
                         break;
                     }
                     el.value = value;
+                }
+                break;
+            default:
+                if(key.indexOf("/FMS") == 0)
+                {
+                    console.log(key + ":" + value);
                 }
                 break;
         }
