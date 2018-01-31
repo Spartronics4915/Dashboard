@@ -159,7 +159,12 @@ var app = {
     },
 
     putValue: function(nm, value) {
-        NetworkTables.putValue("SmartDashboard/"+nm, value);
+        if(name == undefined)
+        {
+            console.error("bad putvalue");
+        }
+        else
+            NetworkTables.putValue("SmartDashboard/"+nm, value);
     },
 
     getValue: function(nm, def="") {

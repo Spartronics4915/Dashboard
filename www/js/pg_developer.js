@@ -10,6 +10,7 @@ var developer = {
         "driveTuning": "Drive/TuningKnob",
         "harvesterTuning": "Harvester/TuningKnob",
         "scissorliftTuning": "ScissorLift/TuningKnob",
+        "articulatedGrabberTuning": "ArticulatedGrabber/TuningKnob",
     },
 
     netTabActions: { 
@@ -46,31 +47,35 @@ var developer = {
         "/SmartDashboard/ScissorLift/State": function(o, value) {
             $("#scissorliftState").text(value);
         },
+        "/SmartDashboard/ScissorLift/TuningKnob": function(o, value) {
+            $("#scissorliftTuning").val(Number(value));
+            $("#scissorliftTuningTxt").text(value);
+        },
         // TODO: add tuner for each height
 
 
         // Harvester --------------------------------------------------------
         "/SmartDashboard/Harvester/Status": function(o, value) {
-            $("#testbedStatus").html(o.subsystemStatus(value));
+            $("#harvesterStatus").html(o.subsystemStatus(value));
         },
         "/SmartDashboard/Harvester/State": function(o, value) {
-            $("#testbedState").text(value);
+            $("#harvesterState").text(value);
         },
         "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
-            $("#testbedTuning").val(value);
-            $("#testbedTuningTxt").text(value);
+            $("#harvesterTuning").val(value);
+            $("#harvesterTuningTxt").text(value);
         },
 
         // Articulated Grabber ----------------------------------------------
         "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
-            $("#testbedStatus").html(o.subsystemStatus(value));
+            $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
         },
         "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
-            $("#testbedState").text(value);
+            $("#articulatedGrabberState").text(value);
         },
         "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
-            $("#testbedTuning").val(value);
-            $("#testbedTuningTxt").text(value);
+            $("#articulatedGrabberTuning").val(value);
+            $("#articulatedGrabberTuningTxt").text(value);
         },
 
         // Climber --------------------------------------------------------
