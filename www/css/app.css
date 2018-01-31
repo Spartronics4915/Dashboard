@@ -131,12 +131,9 @@ div input {
   text-align: right;
 }
 
-#drivertable {
-  cellspacing: 10px;
-}
-
-#drivertable tr {
-  height: 30px; // row height for better padding
+.verticalPad {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #mainContent {

@@ -2,16 +2,10 @@
 # This file contains two classes:
 #
 #  Robotlog
-#   establishes a connection-point for the udp-based log
+#   establishes a connection-point for the tcp-based log
 #   traffic from the robot.  To deliver this udpstream
 #   to a web browser over http, we require a bridge
-#   in the form of the RobotlogEchoServer.  If broadcast
-#   packets fail to arrive, it's possible that the windows
-#   firewall is blocking them.  You'll need to either re-install
-#   your python interpretter (and answer yes to the netweork-access
-#   prompt for both private as well as public networks),  or you
-#   can attempt to edit your firewall rules (using the Advanced.. tab
-#   of the windows firewall interface).
+#   in the form of the RobotlogEchoServer.  
 #
 #  RobotlogEchoSocket
 #   establishes a connection-point for a browser. The connection
@@ -23,6 +17,8 @@ from tornado.websocket import WebSocketHandler, WebSocketClosedError
 from tornado.web import StaticFileHandler
 import socket
 import logging
+from .Netconsole import Netconsole
+import sys
 
 logger = logging.getLogger("Robotlog")
 
@@ -32,7 +28,7 @@ s_echoSockets = []
 
 class RobotlogEchoSocket(WebSocketHandler):
     '''
-        A tornado web handler that forwards values between Robotlog (udp)
+        A tornado web handler that forwards values between Robotlog (tcp)
         and a webpage via a websocket
     '''
 
@@ -41,8 +37,8 @@ class RobotlogEchoSocket(WebSocketHandler):
         self.ioloop = IOLoop.current()
         s_echoSockets.append(self)
 
-    def on_message(self, message):
-        logger.info("Unexpected message from browser:" + message)  # none expected
+    def on_message(self, msg):
+        logger.info("Unexpected message from browser:" + msg) # none expected
 
     def send_msg(self, msg):
         # logger.info("send message:" + msg)
@@ -60,30 +56,42 @@ class RobotlogEchoSocket(WebSocketHandler):
 
 class Robotlog():
     '''
-        A context to manage the udp socket connection and
+        A context to manage the tcp socket connection and
         trigger websocket activity when messages arrive.
     '''
     def __init__(self):
-        self.udpsock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        port = 6666 # this is the roborio console port
-        #self.udpsock.bind(('', port)) # this is the roborio console port
-        #addr = ' '  # doesn't work
-        #addr = '192.168.1.255'; # fails during bind
-        #addr = '192.168.1.113' # abalone (works when connected wifi, but on same host)
-        #addr = '255.255.255.255' # fails during bind
-        #addr = 'localhost' # succeeds, but fails for broadcast
-        #addr = '<broadcast>' # doesn't work
-        addr = ''  # means accept packets from all addresses, works for broadcast
-        self.udpsock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.udpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.udpsock.bind((addr, port))
-        self.udpsock.setblocking(0)
         logger.info("listening for robot logs")
+        self.netconsole = None
 
-    def getUDPSocket(self):
-        return self.udpsock
+    def initConnection(self, ioloop):
+        if 0:
+            sock = robotlog.getUDPSocket()
+            callback = functools.partial(robotlog.handleMsg, sock);
+            ioLoop.add_handler(sock.fileno(), callback, ioLoop.READ)
+        else:
+            self.netconsole = Netconsole(printfn=self.dispatchMsg,
+                                         printerrfn=self.dispatchErr);
+            self.netconsole.start("10.49.15.2", block=False)
+
+    def dispatchMsg(self, msg):
+        if len(s_echoSockets) > 0:
+            for s in s_echoSockets:
+                s.send_msg_threadsafe(msg)
+        else:
+            pass # drop a message
+
+    def dispatchErr(self, msg):
+        if len(s_echoSockets) > 0:
+            for s in s_echoSockets:
+                s.send_msg_threadsafe("ERROR:" + msg)
+        else:
+            sys.stderr.write("ERROR: " + msg)
+            
 
     def getHandlers(self):
+        """
+            return handlers for the webserver url remapping
+        """
         return [
             ('/robotlog/ws', RobotlogEchoSocket),
             ('/robotlog/(.*)', StaticFileHandler)
@@ -94,3 +102,5 @@ class Robotlog():
         # logger.info(msg + (" %d clients" % len(s_echoSockets)))
         for s in s_echoSockets:
             s.send_msg_threadsafe(msg)
+
+

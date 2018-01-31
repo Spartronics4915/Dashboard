@@ -3,12 +3,17 @@
 //
 (function(global) {
 'use strict';
-var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
 var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg"};
+var dlink4915 = {ip:"admin:@10.49.15.13", url: "/video.cgi"};
+
+// axis, usbcams here for reference, currently unused
 var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
 var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
-var dlink4915 = {ip:"admin:@10.49.15.13", url: "/video.cgi"};
 var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream"};
+
+// dlinkDefault is the ip after a factory reset
+var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
+
 var driver = {
     forwardCam: piCam,
     reverseCam: dlink4915,
@@ -162,7 +167,7 @@ var driver = {
               .removeClass("revcam");
         if(view === "Auto") {
             if(!app.robotConnected)
-                view = "None";
+                view = "Forward";
             else
             if (reverseEnabled === "Enabled")
                 view = "Reverse";
@@ -183,8 +188,22 @@ var driver = {
                 cam = null;
                 break;
         }
+        // Reference for java applet for h264 encoded stream
+        //  (required older build of firefox, since applets no longer supported)
+        //    camhtml = `
+        // <applet name="cvcs" codeBase="http://admin:@10.49.15.13:80" archive="vplug.jar?cidx=1411113015" code="vplug.class" width="640" height="480">
+        //        <param name="RemotePort" value="80">
+        //        <param name="RemoteHost" value="10.49.15.13">
+        //        <param name="Timeout" value="5000">
+        //        <param name="RotateAngle" value="0">
+        //        <param name="PreviewFrameRate" value="2">
+        //        <param name="Algorithm" value="1">
+        //        <param name="DeviceSerialNo" value="YWRtaW46">
+        //      </applet>
+	    //		`
+
         if(cam) {
-            camhtml = `<img style="width:100%" src="http://${cam.ip}${cam.url}"></img>`;
+            camhtml = `<img style="width:100% height:100%" src="http://${cam.ip}${cam.url}"></img>`;
         }
         else {
             camhtml = "<!-- empty -->";
