@@ -22,6 +22,10 @@ select {
     border: 0px;
 }
 
+label {
+    font-weight: 400;
+}
+
 div input {
     padding:6px 4px;
 }
