@@ -155,7 +155,7 @@ var app = {
 
         app.putValue("CameraView", "Auto");
         app.putValue("AutoStrategy", "None");
-        app.putValue("AllianceStation", "Unknown");
+        // app.putValue("AllianceStation", "Unknown"); now governed by FMS
     },
 
     putValue: function(nm, value) {
