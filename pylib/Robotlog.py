@@ -19,6 +19,7 @@ import socket
 import logging
 from .Netconsole import Netconsole
 import sys
+from datetime import datetime
 
 logger = logging.getLogger("Robotlog")
 
@@ -81,11 +82,14 @@ class Robotlog():
             pass # drop a message
 
     def dispatchErr(self, msg):
+        # log format is 'timestamp level namespace msg'
+        ts = datetime.now().strftime("%H:%M:%S")
+        emsg = "%s ERROR RobotLog %s" % (ts, msg)
         if len(s_echoSockets) > 0:
             for s in s_echoSockets:
-                s.send_msg_threadsafe("ERROR:" + msg)
+                s.send_msg_threadsafe(emsg)
         else:
-            sys.stderr.write("ERROR: " + msg)
+            sys.stderr.write(emsg)
             
 
     def getHandlers(self):

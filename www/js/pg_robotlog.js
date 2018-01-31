@@ -81,6 +81,8 @@ var robotlog = {
         if(filter) {
             if(-1 === msg.indexOf(filter)) return;
         }
+        // presumed message format:
+        //  timestamp errorclass namespace text
         var fields = msg.split(' ');
         var ts = fields[0];
         var lvlcls = fields[1];
