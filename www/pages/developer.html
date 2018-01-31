@@ -8,18 +8,36 @@
         <h3 class="panel-title">Drive <small id="driveStatus">status n/a</small></h3>
     </div>
     <div class="panel-body">
-        State: <span id="driveState">n/a</span><br>
-        <div class="col-sm-6 plotContainer" style="border:5px;">
+        <!-- subpanel one (left) -->
+        <div class="col-sm-6">
             <div>
-                <b>IMU Heading <span id="imuHeading">n/a</span></b>
+                State: <span id="driveState">n/a</span><br>
             </div>
-            <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
+
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    IMU Heading <span id="imuHeading">n/a</span>
+                </div>
+                <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
+            </div>
+            <div>
+                <label for="driveTuning">Tuning Knob</label>
+                <input id="driveTuning" type="range"
+                       min="0" max="1" step=".025"/>
+                <output for="driveTuning" id="driveTuningTxt">0</output>
+            </div>
         </div>
-        <div class="col-sm-6" style="border:5px;">
-            <label for="driveTuning">Tuning Knob</label>
-            <input id="driveTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="driveTuning" id="driveTuningTxt">0</output>
+
+        <!-- panel two (right) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Odometry
+                </div>
+                <div class="stripChart" id="driveOdometryPlot" style="width:326px; height:162px"></div>
+            </div>
+            <div>
+            </div>
         </div>
     </div>
 </div>

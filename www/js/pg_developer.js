@@ -5,10 +5,11 @@
 'use strict';
 var developer = {
     iteration: 0,
-    netTabIdToKey: {
+    idToSDKey: {
         "climberSpeed": "Climber Speed",
-        "driveTuning": "Drive_TuningKnob",
-        "testbedTuning": "Testbed_TuningKnob",
+        "driveTuning": "Drive/TuningKnob",
+        "harvesterTuning": "Harvester/TuningKnob",
+        "scissorliftTuning": "ScissorLift/TuningKnob",
     },
 
     netTabActions: { 
@@ -19,50 +20,75 @@ var developer = {
         },
 
         // Drive ------------------------------------------------------
-        "/SmartDashboard/Drive_SubsystemStatus": function(o, value) {
+        "/SmartDashboard/Drive/Status": function(o, value) {
             $("#driveStatus").html(o.subsystemStatus(value));
         },
-        "/SmartDashboard/Drive/state": function(o, value) {
+        "/SmartDashboard/Drive/State": function(o, value) {
             $("#driveState").text(value);
         },
-        "/SmartDashboard/Drivetrain_IMU_Heading": function(o, value) {
+        "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
             o.updateIMU(Number(value));
         },
-        "/SmartDashboard/Drive_TuningKnob": function(o, value) {
+        "/SmartDashboard/Drive/TuningKnob": function(o, value) {
             $("#driveTuning").val(Number(value));
             $("#driveTuningTxt").text(value);
         },
-
-
-        // Climber --------------------------------------------------------
-        "/SmartDashboard/Climber_SubsystemStatus": function(o, value) {
-            $("#climberStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/Climber State": function(o, value) {
-            $("#climberState").text(value);
-        },
-        "/SmartDashboard/Climber Speed": function(o, value) {
-            $("#climberSpeed").val(value);
-            $("#climberSpeedTxt").text(value);
-        },
-        "/SmartDashboard/Climber Current": function(o, value) {
-            if(o.climberCurrent) {
-                o.climberCurrent.addDataPt(value);
-            }
+        "/SmartDashboard/RobotState/pose": function(o, value) {
+            // we expect three numbers in string value: "x y angle"
+            result = value.split(" ").map(parseFloat)
+            o.updateOdometry(result[0], result[1], result[2])
         },
 
-        // Testbed --------------------------------------------------------
-        "/SmartDashboard/Testbed_SubsystemStatus": function(o, value) {
+        // ScissorLift ------------------------------------------------------
+        "/SmartDashboard/ScissorLift/Status": function(o, value) {
+            $("#scissorliftStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/ScissorLift/State": function(o, value) {
+            $("#scissorliftState").text(value);
+        },
+        // TODO: add tuner for each height
+
+
+        // Harvester --------------------------------------------------------
+        "/SmartDashboard/Harvester/Status": function(o, value) {
             $("#testbedStatus").html(o.subsystemStatus(value));
         },
-        "/SmartDashboard/Testbed_State": function(o, value) {
+        "/SmartDashboard/Harvester/State": function(o, value) {
             $("#testbedState").text(value);
         },
-        "/SmartDashboard/Testbed_TuningKnob": function(o, value) {
+        "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
             $("#testbedTuning").val(value);
             $("#testbedTuningTxt").text(value);
         },
 
+        // Articulated Grabber ----------------------------------------------
+        "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
+            $("#testbedStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
+            $("#testbedState").text(value);
+        },
+        "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
+            $("#testbedTuning").val(value);
+            $("#testbedTuningTxt").text(value);
+        },
+
+        // Climber --------------------------------------------------------
+        "/SmartDashboard/Climber/Status": function(o, value) {
+            $("#climberStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/Climber/State": function(o, value) {
+            $("#climberState").text(value);
+        },
+        "/SmartDashboard/Climber/Speed": function(o, value) {
+            $("#climberSpeed").val(value);
+            $("#climberSpeedTxt").text(value);
+        },
+        "/SmartDashboard/Climber/Current": function(o, value) {
+            if(o.climberCurrent) {
+                o.climberCurrent.addDataPt(value);
+            }
+        },
     },
     subsystemStatus: function(value) {
         return value==="ERROR"?"<span style=\"color:red\">offline</span>":"online";
@@ -91,9 +117,10 @@ var developer = {
         });
 
         // Slider support ----------------------------------------------
+        // slider id mapping must be present in idToSDKey map above
         $("input[type=range]").on('input', function() {
                 var id = $(this).attr("id");
-                var ntkey = self.netTabIdToKey[id];
+                var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
                     app.logMsg("unknown slider " + id);
                 }
@@ -132,6 +159,30 @@ var developer = {
                 max:200,
             }
         });
+        this.odometryPlot = new PathPlot({
+            id: "#driveOdometryPlot",
+            xaxis: {
+                min: 0,
+                max: 652,
+                show: true
+            },
+            yaxis: {
+                min: 0,
+                max: 324,
+                show: true
+            },
+            series: {
+                shadowSize: 0,
+                lines: {
+                    show: true,
+                },
+                points: {
+                    show: false,
+                },
+                color: "rgb(20, 120, 255)"
+            }
+                   
+        });
 
         //  Climber -------------------------------------------------------
         this.climberCurrent = new StripChart({
@@ -149,6 +200,7 @@ var developer = {
                                      .2*r));
             self.iteration++;
             self.updateIMU(angle);
+            self.odometryPlot.addRandomPt();
             self.climberCurrent.addDataPt(0);
             if(!app.robotConnected)
             {
@@ -171,6 +223,13 @@ var developer = {
         if(this.imuHeadingChart) {
             $("#imuHeading").text(num);
             this.imuHeadingChart.addDataPt(num);
+        }
+    },
+
+    updateOdometry: function(x, y, angle) {
+        if(this.odometryPlot)
+        {
+            this.odometryPlot.addDataPt(x, y, angle);
         }
     },
 
