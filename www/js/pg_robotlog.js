@@ -33,47 +33,10 @@ var robotlog = {
             }
         });
 
-        // now build a table with two columns for each logger: nm, selector
-        var loglevels = "<option data-text='DEBUG'>DEBUG</option>"+
-                       "<option data-text='INFO'>INFO</option>"+
-                       "<option data-text='NOTICE'>NOTICE</option>"+
-                       "<option data-text='WARNING'>WARNING</option>"+
-                       "<option data-text='ERROR'>ERROR</option>";
-        var table = "<table width='100%' style='border-collapse:separate;border-spacing:5px'>";
-        loggers.forEach(function(key) {
-            table += `<tr><td width="50%">${key}:</td><td width="50%"><select style="width: 100%" data-log="${key}">${loglevels}</select></span></td></tr>`;
-        });
-        table += "</table>";
-        $("#loglevels").html(table);
-
-        // install callbacks for each logger
-        $("#loglevels select").each(function() {
-            var key = $(this).attr("data-log");
-            var ntkey = "Loggers/" + key;
-            var val = app.getValue(ntkey);
-            $(this).find(`option[data-text="${val}"]`).attr("selected", true);
-
-            // Update NetworkTables on change
-            $(this).change(function() {
-                app.putValue("Loggers/${key}", 
-                            $(this).find("option:selected").text());
-            });
-        });
-
         RobotLog.setLogListener(this.onRobotMsg, true);
     },
 
     onNetTabChange: function(ntkey, value, isNew) {
-        if (isNew && ntkey.startsWith("/SmartDashboard/Loggers/"))
-        {
-            var key = ntkey.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;");
-            $(`#loglevels select[data-log="${key}"] option[data-text="${value}"]`).attr("selected", true);
-        }
-    },
-
-    onFilterChange: function () {
-        $("#robotlog").html("<hr>");
-        RobotLog.replayLogs();
     },
 
     onRobotMsg: function(msg) {
@@ -106,7 +69,8 @@ var robotlog = {
             nmspc: nmspc,
             msg: msgtxt,
         };
-        $("#robotlog").prepend(app.interpolate(msgTmplt, map));
+        console.log(msgtxt);
+        $("#robotlog").append(app.interpolate(msgTmplt, map));
     }
 };
 global.app.setPageHandler("robotlog", robotlog);

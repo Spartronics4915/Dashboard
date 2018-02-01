@@ -36,7 +36,7 @@ var developer = {
         },
         "/SmartDashboard/RobotState/pose": function(o, value) {
             // we expect three numbers in string value: "x y angle"
-            result = value.split(" ").map(parseFloat)
+            var result = value.split(" ").map(parseFloat)
             o.updateOdometry(result[0], result[1], result[2])
         },
 
