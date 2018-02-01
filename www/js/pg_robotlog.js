@@ -9,11 +9,30 @@ var msgTmplt = "<div class='logmsg'>" +
               "<span class='namespace'>{nmspc} </span>" +
               "{msg}</div>";
 var filter = "";
-var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "EXCEPTION"];
+var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", 
+                      "ERROR", "EXCEPTION"];
 var robotlog = {
     pageLoaded: function(targetElem, html) {
         var self = this;
         targetElem.innerHTML = html; // was: app.interpolate(html, map);
+
+        // first initialize selectors from network tables.
+        $(".selector").each(function() {
+            var key = $(this).attr("id");
+            var val = app.getValue(key);
+            if (val !== "")
+            {
+                $(this).val(val);
+            }
+        });
+
+        // now update network tables on changes
+        $(".selector").change(function() {
+            var value = $(this).val();
+            var key = $(this).attr("id");
+            app.putValue(key, value);
+		});
+
 
         // initialize filter callbacks
         $("#filter").val(filter);
@@ -21,22 +40,26 @@ var robotlog = {
             filter = $(this).val();
             self.onFilterChange();
         });
-
-        // populate #loglevels from SmartDashboard
-        // first initialize loggers from network tables.
-        var loggers = [];
-        NetworkTables.getKeys().forEach(function(key)
-        {
-            if (key.startsWith("/SmartDashboard/Loggers/"))
-            {
-                loggers.push(key.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;"));
-            }
-        });
-
         RobotLog.setLogListener(this.onRobotMsg, true);
     },
 
-    onNetTabChange: function(ntkey, value, isNew) {
+    onNetTabChange: function(key, value, isNew) {
+		switch(key) {
+			case "/SmartDashboard/Robot/Verbosity":
+				var sel = document.getElementById("Robot/Verbosity");
+				if(sel)
+				{
+					sel.value = value;
+				}
+				break;
+			default:
+				break;
+		}
+    },
+
+    onFilterChange: function () {
+        $("#robotlog").html("");
+        RobotLog.replayLogs();
     },
 
     onRobotMsg: function(msg) {

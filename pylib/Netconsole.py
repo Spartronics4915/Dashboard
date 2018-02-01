@@ -145,12 +145,13 @@ class Netconsole:
         # returns once the socket is connected or an exit is requested
 
         while self.running:
-            self.printerrfn("Connecting to %s:%s..." % self.sockaddr)
             
             try:
                 sock = socket.create_connection(self.sockaddr, timeout=3.0)
+                self.printerrfn("Connected to %s:%s..." % self.sockaddr)
+
             except IOError:
-                self.printerrfn(" :(\n")
+                self.printerrfn("Connecting to %s:%s..." % self.sockaddr)
                 # don't busywait, just in case
                 time.sleep(1.0)
                 continue
