@@ -69,7 +69,6 @@ var robotlog = {
             nmspc: nmspc,
             msg: msgtxt,
         };
-        console.log(msgtxt);
         $("#robotlog").append(app.interpolate(msgTmplt, map));
     }
 };
