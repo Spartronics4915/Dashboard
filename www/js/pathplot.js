@@ -37,9 +37,11 @@ var PathPlot = function(config) {
         }
         else
         {
-            lastSlot = (this.config.maxlength + this.nextSlot - 1) % this.config.maxlength;
+            lastSlot = (this.config.maxlength + this.nextSlot - 1) % 
+                            this.config.maxlength;
             lastPt = this.data[lastSlot];
-            this.addDataPt(lastPt[0] + 25*(Math.random()-.5), lastPt[1]+ 25*(Math.random()-.5), 0);
+            this.addDataPt(lastPt[0] + 25*(Math.random()-.5), 
+                          lastPt[1]+ 25*(Math.random()-.5), 0);
         }
     };
 

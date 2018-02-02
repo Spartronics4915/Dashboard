@@ -39,8 +39,11 @@ var developer = {
         },
         "/SmartDashboard/RobotState/pose": function(o, value) {
             // we expect three numbers in string value: "x y angle"
-            var result = value.split(" ").map(parseFloat)
-            o.updateOdometry(result[0], result[1], result[2])
+            if(o.odometryPlot)
+            {
+                var result = value.split(" ").map(parseFloat)
+                o.odometryPlot.addDataPt(result[0], result[1], result[2]);
+            }
         },
 
         // ScissorLift ------------------------------------------------------
@@ -77,6 +80,11 @@ var developer = {
         },
         "/SmartDashboard/Harvester/WantedState": function(o, value) {
             $("#harvesterWantedState").text(value);
+        },
+        "/SmartDashboard/Harvester/CubeRange": function(o, value) {
+            if(o.harvesterRangeChart) {
+                o.harvesterRangeChart.addDataPt(value);
+            }
         },
         "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
             $("#harvesterTuning").val(value);
@@ -198,6 +206,13 @@ var developer = {
                 max:200,
             }
         });
+        this.harvesterRangeChart = new StripChart({
+            id: "#harvesterRangeChart",
+            yaxis: {
+                min:0,
+                max:200,
+            }
+        });
         this.odometryPlot = new PathPlot({
             id: "#driveOdometryPlot",
             xaxis: {
@@ -240,6 +255,7 @@ var developer = {
             self.iteration++;
             self.updateIMU(angle);
             self.odometryPlot.addRandomPt();
+            self.harvesterRangeChart.addRandomPt();
             self.climberCurrent.addDataPt(0);
             if(!app.robotConnected)
             {
@@ -262,13 +278,6 @@ var developer = {
         if(this.imuHeadingChart) {
             $("#imuHeading").text(num);
             this.imuHeadingChart.addDataPt(num);
-        }
-    },
-
-    updateOdometry: function(x, y, angle) {
-        if(this.odometryPlot)
-        {
-            this.odometryPlot.addDataPt(x, y, angle);
         }
     },
 
