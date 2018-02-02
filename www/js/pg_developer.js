@@ -46,6 +46,14 @@ var developer = {
             }
         },
 
+        // Vision --------------------------------------------------------
+        "/SmartDashboard/Vision/Status": function(o, value) {
+            $("#visionStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/Vision/State": function(o, value) {
+            $("#visionState").text(value);
+        },
+
         // ScissorLift ------------------------------------------------------
         "/SmartDashboard/ScissorLift/Status": function(o, value) {
             $("#scissorliftStatus").html(o.subsystemStatus(value));
@@ -68,8 +76,6 @@ var developer = {
         "/SmartDashboard/ScissorLift/Target4": function(o, value) {
             $("#scissorliftTarget4").val(Number(value));
         },
-        // TODO: add tuner for each height
-
 
         // Harvester --------------------------------------------------------
         "/SmartDashboard/Harvester/Status": function(o, value) {
@@ -127,7 +133,8 @@ var developer = {
         },
     },
     subsystemStatus: function(value) {
-        return value==="ERROR"?"<span style=\"color:red\">offline</span>":"online";
+        return value === "ERROR" ?
+            "<span style=\"color:red\">offline</span>" : "online";
     },
     pageLoaded: function(targetElem, html) {
         // app.logMsg("devpgLoaded begin --------{");

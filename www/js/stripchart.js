@@ -4,6 +4,7 @@ var StripChart = function(config) {
     if (!this.config.series) {
         this.config.series = {};
     }
+    this.config.series.color = "rgb(255, 255, 10)";
     this.config.series.shadowSize = 0;
     this.config.xaxis = {show: false};
     if(!this.config.maxlength)

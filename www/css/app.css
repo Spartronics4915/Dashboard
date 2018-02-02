@@ -58,6 +58,11 @@ div input {
   border-color: #181838;
 }
 
+.panelState {
+    font-size: 14px;
+    color: #16c;
+}
+
 .buildid {
     font-size: 14px;
 }
