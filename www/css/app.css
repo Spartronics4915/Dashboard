@@ -13,6 +13,11 @@ td {
     padding: 4px;
 }
 
+input[type=number] {
+    width: 80px;
+    text-align: center;
+}
+
 input,
 select {
     color: #888888;

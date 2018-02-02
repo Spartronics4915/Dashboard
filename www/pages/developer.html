@@ -20,12 +20,14 @@
                 </div>
                 <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
             </div>
+            <!--
             <div class="verticalPad">
                 <label for="driveTuning">Tuning Knob</label>
                 <input id="driveTuning" type="range"
                        min="0" max="1" step=".025"/>
                 <output for="driveTuning" id="driveTuningTxt">0</output>
             </div>
+            -->
         </div>
 
         <!-- panel two (right) -->
@@ -52,13 +54,25 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6">
-            State: <span id="scissorliftState">n/a</span><br>
+          <div>
+            State: <span id="scissorliftState">n/a</span>
+          </div>
+          <div>
+            WantedState: <span id="scissorliftWantedState">n/a</span>
+          </div>
         </div>
         <div class="col-sm-6" style="border:5px;">
-            <label for="scissorliftTuning">Tuning Knob</label>
+            <!--
+            <label for="scissorliftTuning">Targets</label>
             <input id="scissorliftTuning" type="range"
-                   min="0" max="1" step=".025"/>
+                   min="0" max="1000" step="1"/>
             <output for="scissorliftTuning" id="scissorliftTuningTxt">0</output>
+            -->
+            Targets (low to high) 
+            <input id="scissorliftTarget1" type="number" min="0" max="1000" step="1" value="0" />
+            <input id="scissorliftTarget2" type="number" min="0" max="1000" step="1" value="200" />
+            <input id="scissorliftTarget3" type="number" min="0" max="1000" step="1" value="400" />
+            <input id="scissorliftTarget4" type="number" min="0" max="1000" step="1" value="600" />
         </div>
     </div>
 </div>
@@ -72,7 +86,12 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6">
-            State: <span id="harvesterState">n/a</span><br>
+          <div>
+            State: <span id="harvesterState">n/a</span>
+          </div>
+          <div>
+            WantedState: <span id="harvesterWantedState">n/a</span>
+          </div>
         </div>
         <div class="col-sm-6" style="border:5px;">
             <label for="harvesterTuning">Tuning Knob</label>
@@ -92,7 +111,12 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6">
-            State: <span id="articulatedGrabberState">n/a</span><br>
+          <div>
+            State: <span id="articulatedGrabberState">n/a</span>
+          </div>
+          <div>
+            WantedState: <span id="articulatedGrabberWantedState">n/a</span>
+          </div>
         </div>
         <div class="col-sm-6" style="border:5px;">
             <label for="articulatedGrabberTuning">Tuning Knob</label>
@@ -113,11 +137,16 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6">
-            State: <span id="climberState">n/a</span><br>
-            <div> <b>Climber Current</b> </div>
-            <div class="stripChart" id="climberCurrent"
-                 style="width:300px; height:100px">
-            </div>
+          <div>
+            State: <span id="climberState">n/a</span>
+          </div>
+          <div>
+            WantedState: <span id="climberWantedState">n/a</span>
+          </div>
+          <div> <b>Climber Current</b> </div>
+          <div class="stripChart" id="climberCurrent"
+                style="width:300px; height:100px">
+          </div>
         </div>
         <div class="col-sm-6">
             <label for="climberSpeed">Climber Speed</label>

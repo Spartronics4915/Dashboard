@@ -6,11 +6,14 @@
 var developer = {
     iteration: 0,
     idToSDKey: {
-        "climberSpeed": "Climber Speed",
         "driveTuning": "Drive/TuningKnob",
         "harvesterTuning": "Harvester/TuningKnob",
-        "scissorliftTuning": "ScissorLift/TuningKnob",
+        "scissorliftTarget1": "ScissorLift/Target1",
+        "scissorliftTarget2": "ScissorLift/Target2",
+        "scissorliftTarget3": "ScissorLift/Target3",
+        "scissorliftTarget4": "ScissorLift/Target4",
         "articulatedGrabberTuning": "ArticulatedGrabber/TuningKnob",
+        "climberSpeed": "Climber Speed",
     },
 
     netTabActions: { 
@@ -47,9 +50,20 @@ var developer = {
         "/SmartDashboard/ScissorLift/State": function(o, value) {
             $("#scissorliftState").text(value);
         },
-        "/SmartDashboard/ScissorLift/TuningKnob": function(o, value) {
-            $("#scissorliftTuning").val(Number(value));
-            $("#scissorliftTuningTxt").text(value);
+        "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
+            $("#scissorliftWantedState").text(value);
+        },
+        "/SmartDashboard/ScissorLift/Target1": function(o, value) {
+            $("#scissorliftTarget1").val(Number(value));
+        },
+        "/SmartDashboard/ScissorLift/Target2": function(o, value) {
+            $("#scissorliftTarget2").val(Number(value));
+        },
+        "/SmartDashboard/ScissorLift/Target3": function(o, value) {
+            $("#scissorliftTarget3").val(Number(value));
+        },
+        "/SmartDashboard/ScissorLift/Target4": function(o, value) {
+            $("#scissorliftTarget4").val(Number(value));
         },
         // TODO: add tuner for each height
 
@@ -60,6 +74,9 @@ var developer = {
         },
         "/SmartDashboard/Harvester/State": function(o, value) {
             $("#harvesterState").text(value);
+        },
+        "/SmartDashboard/Harvester/WantedState": function(o, value) {
+            $("#harvesterWantedState").text(value);
         },
         "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
             $("#harvesterTuning").val(value);
@@ -73,6 +90,9 @@ var developer = {
         "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
             $("#articulatedGrabberState").text(value);
         },
+        "/SmartDashboard/ArticulatedGrabber/WantedState": function(o, value) {
+            $("#articulatedGrabberWantedState").text(value);
+        },
         "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
             $("#articulatedGrabberTuning").val(value);
             $("#articulatedGrabberTuningTxt").text(value);
@@ -84,6 +104,9 @@ var developer = {
         },
         "/SmartDashboard/Climber/State": function(o, value) {
             $("#climberState").text(value);
+        },
+        "/SmartDashboard/Climber/WantedState": function(o, value) {
+            $("#climberWantedState").text(value);
         },
         "/SmartDashboard/Climber/Speed": function(o, value) {
             $("#climberSpeed").val(value);
@@ -119,6 +142,17 @@ var developer = {
             var value = $(this).val();
             var key = $(this).attr("id");
             app.putValue(key, value);
+        });
+
+        // Number support ----------------------------------------------
+        $("input[type=number]").on('input', function() {
+            var id = $(this).attr("id");
+            var ntkey = self.idToSDKey[id];
+            if(!ntkey) {
+                app.logMsg("unknown number " + id);
+            }
+            var value = $(this).val();
+            app.putValue(ntkey, Number(value));
         });
 
         // Slider support ----------------------------------------------
