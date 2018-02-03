@@ -63,6 +63,14 @@ var robotlog = {
     },
 
     onRobotMsg: function(msg) {
+        // nb: this isn't valid in this context
+        if(msg == null)
+        {
+            // equivalent to onFilterChange
+            $("#robotlog").html("");
+            RobotLog.replayLogs();
+            return;
+        }
         if(!(/\S/.test(msg))) return; // ignore messages with whitespace-only
         if(filter) {
             if(-1 === msg.indexOf(filter)) return;
