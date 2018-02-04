@@ -12,6 +12,8 @@ var developer = {
         "scissorliftTarget2": "ScissorLift/Target2",
         "scissorliftTarget3": "ScissorLift/Target3",
         "scissorliftTarget4": "ScissorLift/Target4",
+        "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
+        "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
         "articulatedGrabberTuning": "ArticulatedGrabber/TuningKnob",
         "climberSpeed": "Climber Speed",
     },
@@ -106,6 +108,12 @@ var developer = {
         },
         "/SmartDashboard/ArticulatedGrabber/WantedState": function(o, value) {
             $("#articulatedGrabberWantedState").text(value);
+        },
+        "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
+            $("#articulatedGrabberTarget1").val(Number(value));
+        },
+        "/SmartDashboard/ArticulatedGrabber/Target2": function(o, value) {
+            $("#articulatedGrabberTarget2").val(Number(value));
         },
         "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
             $("#articulatedGrabberTuning").val(value);

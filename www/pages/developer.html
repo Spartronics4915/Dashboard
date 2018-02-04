@@ -101,6 +101,33 @@
     </div>
 </div>
 
+<!-- ArticulatedGrabber -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">ArticulatedGrabber
+            <small id="articulatedGrabberStatus">status n/a</small>
+            <span class="panelState">
+                &nbsp;&nbsp;State: <span id="articulatedGrabberState">n/a</span>
+                &nbsp;&nbsp;WantedState: <span id="articulatedGrabberWantedState">n/a</span>
+            </span>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-6">
+            Targets (low to high) 
+            <input id="articulatedGrabberTarget1" type="number" min="0" max="1000" step="1" value="0" />
+            <input id="articulatedGrabberTarget2" type="number" min="0" max="1000" step="1" value="200" />
+        </div>
+        <div class="col-sm-6" style="border:5px;">
+            <label for="articulatedGrabberTuning">Tuning Knob</label>
+            <input id="articulatedGrabberTuning" type="range"
+                   min="0" max="1" step=".025"/>
+            <output for="articulatedGrabberTuning" id="articulatedGrabberTuningTxt">0</output>
+        </div>
+    </div>
+</div>
+
+
 <!-- Harvester -->
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
@@ -130,29 +157,6 @@
             </div>
         </div>
         <div class="col-sm-6">
-        </div>
-    </div>
-</div>
-
-<!-- ArticulatedGrabber -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">ArticulatedGrabber
-            <small id="articulatedGrabberStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="articulatedGrabberState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="articulatedGrabberWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6">
-        </div>
-        <div class="col-sm-6" style="border:5px;">
-            <label for="articulatedGrabberTuning">Tuning Knob</label>
-            <input id="articulatedGrabberTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="articulatedGrabberTuning" id="articulatedGrabberTuningTxt">0</output>
         </div>
     </div>
 </div>

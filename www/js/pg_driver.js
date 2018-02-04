@@ -203,7 +203,7 @@ var driver = {
 	    //		`
 
         if(cam) {
-            camhtml = `<img style="width:100% height:100%" src="http://${cam.ip}${cam.url}"></img>`;
+            camhtml = `<img style="width:640px height:480px" src="http://${cam.ip}${cam.url}"></img>`;
         }
         else {
             camhtml = "<!-- empty -->";
