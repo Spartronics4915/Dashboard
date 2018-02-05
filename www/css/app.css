@@ -218,6 +218,14 @@ div input {
     color: #822;
 }
 
+.LEDOn {
+    color: #F00;
+}
+
+.LEDOff {
+    color: #444;
+}
+
 @media (min-width: 1200px) {
 .container {
     width: 95%;

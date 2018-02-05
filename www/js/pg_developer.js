@@ -62,6 +62,24 @@ var developer = {
             $("#visionState").text(value);
         },
 
+        // LED --------------------------------------------------------
+        "/SmartDashboard/LED/Status": function(o, value) {
+            $("#ledStatus").html(o.subsystemStatus(value));
+        },
+        "/SmartDashboard/LED/DriverLED": function(o, value) {
+            // value is expected to be an 0/1
+            $("#ledDriverLED").attr("class", value ? "LEDOn" : "LEDOff");
+        },
+        "/SmartDashboard/LED/VisionLamp": function(o, value) {
+            // value is expected to be an 0/1 (should we select image by css class?)
+            $("#ledVisionLamp").html(value ? 
+                    "<img src='/images/pic_bulbon.gif' width='10px' />" :
+                    "<img src='/images/pic_bulboff.gif' width='10px' />");
+        },
+        "/SmartDashboard/LED/Message": function(o, value) {
+            $("#ledMessage").html(value);
+        },
+
         // ScissorLift ------------------------------------------------------
         "/SmartDashboard/ScissorLift/Status": function(o, value) {
             $("#scissorliftStatus").html(o.subsystemStatus(value));
