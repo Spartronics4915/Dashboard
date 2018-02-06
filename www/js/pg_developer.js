@@ -6,15 +6,15 @@
 var developer = {
     iteration: 0,
 
-    // table maps from id-based events, to associated networktable key
-    // used when we are writing values to networktables.
+    // idToSDKey:
+    //   table maps from id-based events, to associated networktable key
+    //   used when we are writing values to networktables.
     idToSDKey: {
         "driveTuning": "Drive/TuningKnob",
         "harvesterTuning": "Harvester/TuningKnob",
         "scissorliftTarget1": "ScissorLift/Target1",
         "scissorliftTarget2": "ScissorLift/Target2",
         "scissorliftTarget3": "ScissorLift/Target3",
-        "scissorliftTarget4": "ScissorLift/Target4",
         "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
         "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
         "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
@@ -22,8 +22,9 @@ var developer = {
         "climberSpeed": "Climber Speed",
     },
 
-    // table maps from networktable key, to per-key webpage refresh.
-    // used when we receive values from networktables.
+    // netTablActions:
+    //  table maps from networktable key, to per-key webpage refresh.
+    //  used when we receive values from networktables.
     netTabActions: { 
         // a dispatch table, trigger a function when a nettable entry changes.
         // args are (this, value)
@@ -87,6 +88,9 @@ var developer = {
         "/SmartDashboard/ScissorLift/State": function(o, value) {
             $("#scissorliftState").text(value);
         },
+        "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
+            $("#scissorliftPotentiometer").val(value);
+        },
         "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
             $("#scissorliftWantedState").text(value);
         },
@@ -95,12 +99,6 @@ var developer = {
         },
         "/SmartDashboard/ScissorLift/Target2": function(o, value) {
             $("#scissorliftTarget2").val(Number(value));
-        },
-        "/SmartDashboard/ScissorLift/Target3": function(o, value) {
-            $("#scissorliftTarget3").val(Number(value));
-        },
-        "/SmartDashboard/ScissorLift/Target4": function(o, value) {
-            $("#scissorliftTarget4").val(Number(value));
         },
 
         // Harvester --------------------------------------------------------

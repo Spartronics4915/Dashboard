@@ -56,7 +56,8 @@
                 <div>
                     IMU Heading <span id="imuHeading">n/a</span>
                 </div>
-                <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
+                <div class="stripChart" id="imuHeadingChart" 
+                    style="width:300px; height:100px"></div>
             </div>
             <!--
             <div class="verticalPad">
@@ -74,7 +75,8 @@
                 <div>
                     Odometry
                 </div>
-                <div class="stripChart" id="driveOdometryPlot" style="width:326px; height:162px"></div>
+                <div class="stripChart" id="driveOdometryPlot" 
+                    style="width:326px; height:162px"></div>
             </div>
             <div>
             </div>
@@ -89,8 +91,12 @@
         <h3 class="panel-title">ScissorLift
             <small id="scissorliftStatus">status n/a</small>
             <span class="panelState">
-                &nbsp;&nbsp;State: <span id="scissorliftState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="scissorliftWantedState">n/a</span>
+                &nbsp;&nbsp;State: 
+                    <span id="scissorliftState">n/a</span>
+                &nbsp;&nbsp;WantedState: 
+                    <span id="scissorliftWantedState">n/a</span>
+                &nbsp;&nbsp;Potentiometer: 
+                    <span id="scissorliftPotentiometer">n/a</span>
             </span>
         </h3>
     </div>
@@ -102,11 +108,13 @@
                    min="0" max="1000" step="1"/>
             <output for="scissorliftTuning" id="scissorliftTuningTxt">0</output>
             -->
-            Targets (low to high) 
-            <input id="scissorliftTarget1" type="number" min="0" max="1000" step="1" value="0" />
-            <input id="scissorliftTarget2" type="number" min="0" max="1000" step="1" value="200" />
-            <input id="scissorliftTarget3" type="number" min="0" max="1000" step="1" value="400" />
-            <input id="scissorliftTarget4" type="number" min="0" max="1000" step="1" value="600" />
+            Targets (low, med, high) 
+            <input id="scissorliftTarget1" type="number" min="0" max="4095" 
+                    step="1" value="0" />
+            <input id="scissorliftTarget2" type="number" min="0" max="4095" 
+                    step="1" value="200" />
+            <input id="scissorliftTarget3" type="number" min="0" max="4095" 
+                    step="1" value="400" />
         </div>
         <div class="col-sm-6">
         </div>
