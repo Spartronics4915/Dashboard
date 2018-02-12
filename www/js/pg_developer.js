@@ -2,210 +2,244 @@
 // javascript page handler for about.html
 //
 (function(global) {
-'use strict';
-var developer = {
-    iteration: 0,
+    "use strict";
+    var developer = {
+        iteration: 0,
 
-    // idToSDKey:
-    //   table maps from id-based events, to associated networktable key
-    //   used when we are writing values to networktables.
-    idToSDKey: {
-        "driveTuning": "Drive/TuningKnob",
-        "harvesterTuning": "Harvester/TuningKnob",
-        "scissorliftTarget1": "ScissorLift/Target1",
-        "scissorliftTarget2": "ScissorLift/Target2",
-        "scissorliftTarget3": "ScissorLift/Target3",
-        "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
-        "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
-        "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
-        "articulatedGrabberTuning": "ArticulatedGrabber/TuningKnob",
-        "climberSpeed": "Climber Speed",
-    },
-
-    // netTablActions:
-    //  table maps from networktable key, to per-key webpage refresh.
-    //  used when we receive values from networktables.
-    netTabActions: { 
-        // a dispatch table, trigger a function when a nettable entry changes.
-        // args are (this, value)
-        "/SmartDashboard/Build": function(o, value) {
-            $("#buildid").html("<span class='green'>"+value+"</span");
+        // idToSDKey:
+        //   This table maps from id-based events, to associated networktable key
+        //   Used when we are *writing* values to networktables.
+        idToSDKey: {
+            "TestMode": "TestMode",
+            "TestVariant": "TestVariant",
+            "driveTuning": "Drive/TuningKnob", // unused
+            "harvesterTuning": "Harvester/TuningKnob", // unused
+            "scissorliftTarget1": "ScissorLift/Target1",
+            "scissorliftTarget2": "ScissorLift/Target2",
+            "scissorliftTarget3": "ScissorLift/Target3",
+            "scissorliftTarget4": "ScissorLift/Target4",
+            "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
+            "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
+            "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
+            "climberSpeed": "Climber Speed",
         },
 
-        // Drive ------------------------------------------------------
-        "/SmartDashboard/Drive/Status": function(o, value) {
-            $("#driveStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/Drive/State": function(o, value) {
-            $("#driveState").text(value);
-        },
-        "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
-            o.updateIMU(Number(value));
-        },
-        "/SmartDashboard/Drive/TuningKnob": function(o, value) {
-            $("#driveTuning").val(Number(value));
-            $("#driveTuningTxt").text(value);
-        },
-        "/SmartDashboard/RobotState/pose": function(o, value) {
-            // we expect three numbers in string value: "x y angle"
-            if(o.odometryPlot)
-            {
-                var result = value.split(" ").map(parseFloat)
-                o.odometryPlot.addDataPt(result[0], result[1], result[2]);
-            }
-        },
+        // netTablActions: invoked from onNetTabChange
+        //  table maps from networktable key, to per-key webpage refresh.
+        //  used when we receive values from networktables.
+        netTabActions: {
+            // a dispatch table, trigger a function when a nettable entry changes.
+            // args are (this, value)
+            "/SmartDashboard/Build": function(o, value) {
+                $("#buildid").html("<span class='green'>"+value+"</span");
+            },
 
-        // Vision --------------------------------------------------------
-        "/SmartDashboard/Vision/Status": function(o, value) {
-            $("#visionStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/Vision/State": function(o, value) {
-            $("#visionState").text(value);
-        },
+            // Testing ------------------------------------------------------
+            "/SmartDashboard/TestModeOptions": function(o, value) {
+                var options = value.split(",");
+                var sel = document.getElementById("TestMode");
+                if(sel) {
+                    $(sel).empty();
+                    for(let i=0;i<options.length;i++) {
+                        var opt = document.createElement("option");
+                        opt.value = options[i];
+                        opt.innerHTML = opt.value;
+                        sel.appendChild(opt);
+                    }
+                }
+            },
+            "/SmartDashboard/TestMode": function(o, value) {
+                $("#TestMode").val(value);
+            },
+            "/SmartDashboard/TestVariant": function(o, value) {
+                $("#TestVariant").val(value);
+            },
 
-        // LED --------------------------------------------------------
-        "/SmartDashboard/LED/Status": function(o, value) {
-            $("#ledStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/LED/DriverLED": function(o, value) {
-            // value is expected to be an 0/1
-            $("#ledDriverLED").attr("class", value ? "LEDOn" : "LEDOff");
-        },
-        "/SmartDashboard/LED/VisionLamp": function(o, value) {
-            // value is expected to be an 0/1 (should we select image by css class?)
-            $("#ledVisionLamp").html(value ? 
-                    "<img src='/images/pic_bulbon.gif' width='10px' />" :
-                    "<img src='/images/pic_bulboff.gif' width='10px' />");
-        },
-        "/SmartDashboard/LED/Message": function(o, value) {
-            $("#ledMessage").html(value);
-        },
+            // Vision --------------------------------------------------------
+            "/SmartDashboard/Vision/Status": function(o, value) {
+                $("#visionStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/Vision/State": function(o, value) {
+                $("#visionState").text(value);
+            },
 
-        // ScissorLift ------------------------------------------------------
-        "/SmartDashboard/ScissorLift/Status": function(o, value) {
-            $("#scissorliftStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/ScissorLift/State": function(o, value) {
-            $("#scissorliftState").text(value);
-        },
-        "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
-            $("#scissorliftPotentiometer").val(value);
-        },
-        "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
-            $("#scissorliftWantedState").text(value);
-        },
-        "/SmartDashboard/ScissorLift/Target1": function(o, value) {
-            $("#scissorliftTarget1").val(Number(value));
-        },
-        "/SmartDashboard/ScissorLift/Target2": function(o, value) {
-            $("#scissorliftTarget2").val(Number(value));
-        },
+            // LED --------------------------------------------------------
+            "/SmartDashboard/LED/Status": function(o, value) {
+                $("#ledStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/LED/DriverLED": function(o, value) {
+                // value is expected to be an 0/1
+                $("#ledDriverLED").attr("class", value ? "LEDOn" : "LEDOff");
+            },
+            "/SmartDashboard/LED/VisionLamp": function(o, value) {
+                // value is expected to be an 0/1 (should we select image by css class?)
+                $("#ledVisionLamp").html(value ?
+                        "<img src='/images/pic_bulbon.gif' width='10px' />" :
+                        "<img src='/images/pic_bulboff.gif' width='10px' />");
+            },
+            "/SmartDashboard/LED/Message": function(o, value) {
+                $("#ledMessage").html(value);
+            },
 
-        // Harvester --------------------------------------------------------
-        "/SmartDashboard/Harvester/Status": function(o, value) {
-            $("#harvesterStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/Harvester/State": function(o, value) {
-            $("#harvesterState").text(value);
-        },
-        "/SmartDashboard/Harvester/WantedState": function(o, value) {
-            $("#harvesterWantedState").text(value);
-        },
-        "/SmartDashboard/Harvester/CubeRange": function(o, value) {
-            if(o.harvesterRangeChart) {
-                o.harvesterRangeChart.addDataPt(value);
-            }
-        },
-        "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
-            $("#harvesterTuning").val(value);
-            $("#harvesterTuningTxt").text(value);
-        },
 
-        // Articulated Grabber ----------------------------------------------
-        "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
-            $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
-            $("#articulatedGrabberState").text(value);
-        },
-        "/SmartDashboard/ArticulatedGrabber/WantedState": function(o, value) {
-            $("#articulatedGrabberWantedState").text(value);
-        },
-        "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
-            $("#articulatedGrabberTarget1").val(Number(value));
-        },
-        "/SmartDashboard/ArticulatedGrabber/Target2": function(o, value) {
-            $("#articulatedGrabberTarget2").val(Number(value));
-        },
-        "/SmartDashboard/ArticulatedGrabber/Target3": function(o, value) {
-            $("#articulatedGrabberTarget3").val(Number(value));
-        },
-        "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
-            $("#articulatedGrabberTuning").val(value);
-            $("#articulatedGrabberTuningTxt").text(value);
-        },
+            // Drive ------------------------------------------------------
+            "/SmartDashboard/Drive/Status": function(o, value) {
+                $("#driveStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/Drive/State": function(o, value) {
+                $("#driveState").text(value);
+            },
+            "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
+                o.updateIMU(Number(value));
+            },
+            "/SmartDashboard/Drive/TuningKnob": function(o, value) {
+                $("#driveTuning").val(Number(value));
+                $("#driveTuningTxt").text(value);
+            },
+            "/SmartDashboard/RobotState/pose": function(o, value) {
+                // we expect three numbers in string value: "x y angle"
+                if(o.odometryPlot)
+                {
+                    var result = value.split(" ").map(parseFloat)
+                    o.odometryPlot.addDataPt(result[0], result[1], result[2]);
+                }
+            },
 
-        // Climber --------------------------------------------------------
-        "/SmartDashboard/Climber/Status": function(o, value) {
-            $("#climberStatus").html(o.subsystemStatus(value));
-        },
-        "/SmartDashboard/Climber/State": function(o, value) {
-            $("#climberState").text(value);
-        },
-        "/SmartDashboard/Climber/WantedState": function(o, value) {
-            $("#climberWantedState").text(value);
-        },
-        "/SmartDashboard/Climber/Speed": function(o, value) {
-            $("#climberSpeed").val(value);
-            $("#climberSpeedTxt").text(value);
-        },
-        "/SmartDashboard/Climber/Current": function(o, value) {
-            if(o.climberCurrent) {
-                o.climberCurrent.addDataPt(value);
-            }
-        },
-    },
-    subsystemStatus: function(value) {
-        return value === "ERROR" ?
-            "<span style=\"color:red\">offline</span>" : "online";
-    },
-    pageLoaded: function(targetElem, html) {
-        // app.logMsg("devpgLoaded begin --------{");
-        var self = this;
-        targetElem.innerHTML = html;
+            // ScissorLift ------------------------------------------------------
+            "/SmartDashboard/ScissorLift/Status": function(o, value) {
+                $("#scissorliftStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/ScissorLift/State": function(o, value) {
+                $("#scissorliftState").text(value);
+            },
+            "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
+                $("#scissorliftPotentiometer").val(value);
+            },
+            "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
+                $("#scissorliftWantedState").text(value);
+            },
+            "/SmartDashboard/ScissorLift/Target1": function(o, value) {
+                $("#scissorliftTarget1").val(Number(value));
+            },
+            "/SmartDashboard/ScissorLift/Target2": function(o, value) {
+                $("#scissorliftTarget2").val(Number(value));
+            },
 
-        // Selector (pulldown menu) support ------------------------------
-        //  (currently there are none on the dev page)
-        // The asumption is that the id of the selector matches
-        // the SmartDashboard key.
-        $(".selector").each(function() {
-            var key = $(this).attr("id");
-            // var ntkey = "/SmartDashboard/" + key;
-            var val = app.getValue(key);
-            $(this).val(val);
-        });
+            // Harvester --------------------------------------------------------
+            "/SmartDashboard/Harvester/Status": function(o, value) {
+                $("#harvesterStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/Harvester/State": function(o, value) {
+                $("#harvesterState").text(value);
+            },
+            "/SmartDashboard/Harvester/WantedState": function(o, value) {
+                $("#harvesterWantedState").text(value);
+            },
+            "/SmartDashboard/Harvester/CubeRange": function(o, value) {
+                if(o.harvesterRangeChart) {
+                    o.harvesterRangeChart.addDataPt(value);
+                }
+            },
+            "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
+                $("#harvesterTuning").val(value);
+                $("#harvesterTuningTxt").text(value);
+            },
 
-        // now update network tables on changes
-        $(".selector").change(function() {
-            var value = $(this).val();
-            var key = $(this).attr("id");
-            app.putValue(key, value);
-        });
+            // Articulated Grabber ----------------------------------------------
+            "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
+                $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
+                $("#articulatedGrabberState").text(value);
+            },
+            "/SmartDashboard/ArticulatedGrabber/WantedState": function(o, value) {
+                $("#articulatedGrabberWantedState").text(value);
+            },
+            "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
+                $("#articulatedGrabberTarget1").val(Number(value));
+            },
+            "/SmartDashboard/ArticulatedGrabber/Target2": function(o, value) {
+                $("#articulatedGrabberTarget2").val(Number(value));
+            },
+            "/SmartDashboard/ArticulatedGrabber/Target3": function(o, value) {
+                $("#articulatedGrabberTarget3").val(Number(value));
+            },
+            "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
+                $("#articulatedGrabberTuning").val(value);
+                $("#articulatedGrabberTuningTxt").text(value);
+            },
 
-        // Number support ----------------------------------------------
-        $("input[type=number]").on('input', function() {
-            var id = $(this).attr("id");
-            var ntkey = self.idToSDKey[id];
-            if(!ntkey) {
-                app.logMsg("unknown number " + id);
-            }
-            var value = $(this).val();
-            app.putValue(ntkey, Number(value));
-        });
+            // Climber --------------------------------------------------------
+            "/SmartDashboard/Climber/Status": function(o, value) {
+                $("#climberStatus").html(o.subsystemStatus(value));
+            },
+            "/SmartDashboard/Climber/State": function(o, value) {
+                $("#climberState").text(value);
+            },
+            "/SmartDashboard/Climber/WantedState": function(o, value) {
+                $("#climberWantedState").text(value);
+            },
+            "/SmartDashboard/Climber/Speed": function(o, value) {
+                $("#climberSpeed").val(value);
+                $("#climberSpeedTxt").text(value);
+            },
+            "/SmartDashboard/Climber/Current": function(o, value) {
+                if(o.climberCurrent) {
+                    o.climberCurrent.addDataPt(value);
+                }
+            },
+        },
+        subsystemStatus: function(value) {
+            return value === "ERROR" ?
+                "<span style=\"color:red\">offline</span>" : "online";
+        },
+        pageLoaded: function(targetElem, html) {
+            // app.logMsg("devpgLoaded begin --------{");
+            var self = this;
+            targetElem.innerHTML = html;
 
-        // Slider support ----------------------------------------------
-        // slider id mapping must be present in idToSDKey map above
-        $("input[type=range]").on('input', function() {
+            // Selector (pulldown menu) support ------------------------------
+            // The asumption is that the id of the selector matches
+            // the SmartDashboard key.
+            $(".selector").each(function() {
+                var key = $(this).attr("id");
+                // var ntkey = "/SmartDashboard/" + key;
+                var val = app.getValue(key);
+                $(this).val(val);
+            });
+
+            // now update network tables on changes
+            $(".selector").change(function() {
+                var value = $(this).val();
+                var key = $(this).attr("id");
+                app.putValue(key, value);
+            });
+
+            // String support ----------------------------------------------
+            $("input[type=text]").on('input', function() {
+                var id = $(this).attr("id");
+                var ntkey = self.idToSDKey[id];
+                if(!ntkey) {
+                    app.logMsg("unknown entry " + id);
+                }
+                var value = $(this).val();
+                app.putValue(ntkey, value);
+            });
+
+            // Number support ----------------------------------------------
+            $("input[type=number]").on('input', function() {
+                var id = $(this).attr("id");
+                var ntkey = self.idToSDKey[id];
+                if(!ntkey) {
+                    app.logMsg("unknown number " + id);
+                }
+                var value = $(this).val();
+                app.putValue(ntkey, Number(value));
+            });
+
+            // Slider support ----------------------------------------------
+            // slider id mapping must be present in idToSDKey map above
+            $("input[type=range]").on('input', function() {
                 var id = $(this).attr("id");
                 var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
@@ -217,123 +251,122 @@ var developer = {
                 app.putValue(ntkey, Number(value));
             });
 
+            // special widgets -----------------------------------------------
+            if(false) {
+                this.imuHeadingGage = new JustGage({
+                    id: "imuHeadingGage",
+                    value: 67,
+                    min: -180,
+                    max: 180,
+                    title: "IMU Heading",
+                    valueFontColor: "#888",
+                    startAnimationTime: 150,
+                    refreshAnimationTime: 0,
+                    gaugeColor: "#333",
+                    levelColors: ["#000150", "#0025a0", "#1040f0"]
+                });
+            }
+            else {
+                this.imuHeadingGage = null;
+            }
 
-        // special widgets -----------------------------------------------
-        if(false) {
-            this.imuHeadingGage = new JustGage({
-                id: "imuHeadingGage",
-                value: 67,
-                min: -180,
-                max: 180,
-                title: "IMU Heading",
-                valueFontColor: "#888",
-                startAnimationTime: 150,
-                refreshAnimationTime: 0,
-                gaugeColor: "#333",
-                levelColors: ["#000150", "#0025a0", "#1040f0"]
+            // console.log("chartWidth:" + $("#imuHeadingChart").width());
+            // console.log("chartHeight:" + $("#imuHeadingChart").height());
+            this.imuHeadingChart = new StripChart({
+                id: "#imuHeadingChart",
+                yaxis: {
+                    min:-200,
+                    max:200,
+                }
             });
-        }
-        else {
-            this.imuHeadingGage = null;
-        }
-
-        // console.log("chartWidth:" + $("#imuHeadingChart").width());
-        // console.log("chartHeight:" + $("#imuHeadingChart").height());
-        this.imuHeadingChart = new StripChart({
-            id: "#imuHeadingChart",
-            yaxis: {
-                min:-200,
-                max:200,
-            }
-        });
-        this.harvesterRangeChart = new StripChart({
-            id: "#harvesterRangeChart",
-            yaxis: {
-                min:0,
-                max:200,
-            }
-        });
-        this.odometryPlot = new PathPlot({
-            id: "#driveOdometryPlot",
-            xaxis: {
-                min: 0,
-                max: 652,
-                show: true
-            },
-            yaxis: {
-                min: 0,
-                max: 324,
-                show: true
-            },
-            series: {
-                shadowSize: 0,
-                lines: {
-                    show: true,
+            this.harvesterRangeChart = new StripChart({
+                id: "#harvesterRangeChart",
+                yaxis: {
+                    min:0,
+                    max:200,
+                }
+            });
+            this.odometryPlot = new PathPlot({
+                id: "#driveOdometryPlot",
+                xaxis: {
+                    min: 0,
+                    max: 652,
+                    show: true
                 },
-                points: {
-                    show: false,
+                yaxis: {
+                    min: 0,
+                    max: 324,
+                    show: true
                 },
-                color: "rgb(20, 120, 255)"
-            }
-                   
-        });
+                series: {
+                    shadowSize: 0,
+                    lines: {
+                        show: true,
+                    },
+                    points: {
+                        show: false,
+                    },
+                    color: "rgb(20, 120, 255)"
+                }
 
-        //  Climber -------------------------------------------------------
-        this.climberCurrent = new StripChart({
-            id: "#climberCurrent",
-            yaxis: {
-                min:0,
-                max:60,
-            }
-        });
+            });
 
-        function updateWhenNoRobot() {
-            var r = Math.random();
-            var angle = Math.floor(180*(Math.sin(self.iteration/10) *
-                                     Math.sin(self.iteration/7) +
-                                     .2*r));
-            self.iteration++;
-            self.updateIMU(angle);
-            self.odometryPlot.addRandomPt();
-            self.harvesterRangeChart.addRandomPt();
-            self.climberCurrent.addDataPt(0);
+            //  Climber -------------------------------------------------------
+            this.climberCurrent = new StripChart({
+                id: "#climberCurrent",
+                yaxis: {
+                    min:0,
+                    max:60,
+                }
+            });
+
+            function updateWhenNoRobot() {
+                var r = Math.random();
+                var angle = Math.floor(180*(Math.sin(self.iteration/10) *
+                                         Math.sin(self.iteration/7) +
+                                         .2*r));
+                self.iteration++;
+                self.updateIMU(angle);
+                self.odometryPlot.addRandomPt();
+                self.harvesterRangeChart.addRandomPt();
+                self.climberCurrent.addDataPt(0);
+                if(!app.robotConnected)
+                {
+                    setTimeout(updateWhenNoRobot, 100);
+                }
+            }
             if(!app.robotConnected)
             {
-                setTimeout(updateWhenNoRobot, 100);
+                updateWhenNoRobot();
             }
-        }
-        if(!app.robotConnected)
-        {
-            updateWhenNoRobot();
-        }
-        // we assume that after page loaded, we'll receive a dump
-        // of all networktable values (via onNetTabChange)
-        //app.logMsg("devpgLoaded end --------}");
-    },
+            // we assume that after page loaded, we'll receive a dump
+            // of all networktable values (via onNetTabChange)
+            //app.logMsg("devpgLoaded end --------}");
+        },
 
-    updateIMU: function(num) {
-        if(this.imuHeadingGage) {
-            this.imuHeadingGage.refresh(num);
-        }
-        if(this.imuHeadingChart) {
-            $("#imuHeading").text(num);
-            this.imuHeadingChart.addDataPt(num);
-        }
-    },
+        updateIMU: function(num) {
+            if(this.imuHeadingGage) {
+                this.imuHeadingGage.refresh(num);
+            }
+            if(this.imuHeadingChart) {
+                $("#imuHeading").text(num);
+                this.imuHeadingChart.addDataPt(num);
+            }
+        },
 
-    onNetTabChange: function(key, value, isNew) {
-        var f = this.netTabActions[key];
-        if(f)
-        {
-            // app.logMsg("ntchange: " + key + ":" + value + " (" +isNew + ")");
-            // app.logMsg("this.keys: " + Object.keys(this));
-            f(this, value);
-        }
-        else {
-            // app.logMsg("skipping ntchange for:" + key);
-        }
-    },
+        onNetTabChange: function(key, value, isNew) {
+            var f = this.netTabActions[key];
+            if(f)
+            {
+                // app.logMsg("ntchange: " + key + ":" + value + " (" +isNew + ")");
+                // app.logMsg("this.keys: " + Object.keys(this));
+                f(this, value);
+            }
+            else {
+                // app.logMsg("skipping ntchange for:" + key);
+            }
+        },
 
-};
-global.app.setPageHandler("developer", developer);
+    };
+    global.app.setPageHandler("developer", developer);
 })(window);

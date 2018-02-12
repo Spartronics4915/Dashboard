@@ -1,5 +1,22 @@
 <div class="col-sm-12">
     Build <span id="buildid"><span class="amber">unknown</span></span>&nbsp;&nbsp;
+    <br/>
+    <br/>
+</div>
+
+<!-- Testing -->
+<div class="col-sm-13 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            Testing &nbsp; &nbsp;
+                Strategy
+                 <select class="selector" style="width:15em" id="TestMode">
+                        <option>None</option>
+                 </select>
+                &nbsp; &nbsp; Variant &nbsp; &nbsp;
+                <input type="text" style="width:10em" id="TestVariant" />
+        </h3>
+    </div>
 </div>
 
 <!-- LED, Vision -->
@@ -14,7 +31,7 @@
             <span id="ledVisionLamp">
                 <img src="/images/pic_bulboff.gif" width=10px\>
             </span>
-            &nbsp;&nbsp;Vision 
+            &nbsp;&nbsp;Vision
             <small id="visionStatus">status n/a</small>
             <span class="panelState">
             &nbsp;&nbsp;State: <span id="visionState">n/a</span>
@@ -24,25 +41,12 @@
             </span>
         </h3>
     </div>
-    <!--
-    <div class="panel-body">
-        <div class="col-sm-6">
-            <div class="verticalPad">
-                State: <span id="visionState">n/a</span><br>
-            </div>
-        </div>
-
-        <div class="col-sm-6">
-        </div>
-    </div>
-    -->
 </div>
-
 
 <!-- Drive -->
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Drive 
+        <h3 class="panel-title">Drive
             <small id="driveStatus">status n/a</small>
             <span class="panelState">
                 &nbsp;&nbsp;State: <span id="driveState">n/a</span>
@@ -56,7 +60,7 @@
                 <div>
                     IMU Heading <span id="imuHeading">n/a</span>
                 </div>
-                <div class="stripChart" id="imuHeadingChart" 
+                <div class="stripChart" id="imuHeadingChart"
                     style="width:300px; height:100px"></div>
             </div>
             <!--
@@ -75,7 +79,7 @@
                 <div>
                     Odometry
                 </div>
-                <div class="stripChart" id="driveOdometryPlot" 
+                <div class="stripChart" id="driveOdometryPlot"
                     style="width:326px; height:162px"></div>
             </div>
             <div>
@@ -91,30 +95,32 @@
         <h3 class="panel-title">ScissorLift
             <small id="scissorliftStatus">status n/a</small>
             <span class="panelState">
-                &nbsp;&nbsp;State: 
+                &nbsp;&nbsp;State:
                     <span id="scissorliftState">n/a</span>
-                &nbsp;&nbsp;WantedState: 
+                &nbsp;&nbsp;WantedState:
                     <span id="scissorliftWantedState">n/a</span>
-                &nbsp;&nbsp;Potentiometer: 
+                &nbsp;&nbsp;Potentiometer:
                     <span id="scissorliftPotentiometer">n/a</span>
             </span>
         </h3>
     </div>
     <div class="panel-body">
-        <div class="col-sm-6" style="border:5px;">
+        <div class="col-sm-12" style="border:5px;">
             <!--
             <label for="scissorliftTuning">Targets</label>
             <input id="scissorliftTuning" type="range"
                    min="0" max="1000" step="1"/>
             <output for="scissorliftTuning" id="scissorliftTuningTxt">0</output>
             -->
-            Targets (low, med, high) 
-            <input id="scissorliftTarget1" type="number" min="0" max="4095" 
+            Targets (low, med, high, climb)
+            <input id="scissorliftTarget1" type="number" min="0" max="4095"
                     step="1" value="0" />
-            <input id="scissorliftTarget2" type="number" min="0" max="4095" 
+            <input id="scissorliftTarget2" type="number" min="0" max="4095"
                     step="1" value="200" />
-            <input id="scissorliftTarget3" type="number" min="0" max="4095" 
+            <input id="scissorliftTarget3" type="number" min="0" max="4095"
                     step="1" value="400" />
+            <input id="scissorliftTarget4" type="number" min="0" max="4095"
+                    step="1" value="800" />
         </div>
         <div class="col-sm-6">
         </div>
@@ -139,12 +145,14 @@
             <input id="articulatedGrabberTarget2" type="number" min="0" max="1000" step="1" value="200" />
             <input id="articulatedGrabberTarget3" type="number" min="0" max="1000" step="1" value="400" />
         </div>
+        <!--
         <div class="col-sm-6" style="border:5px;">
             <label for="articulatedGrabberTuning">Tuning Knob</label>
             <input id="articulatedGrabberTuning" type="range"
                    min="0" max="1" step=".025"/>
             <output for="articulatedGrabberTuning" id="articulatedGrabberTuningTxt">0</output>
         </div>
+        -->
     </div>
 </div>
 
@@ -162,13 +170,14 @@
     </div>
     <div class="panel-body">
         <div class="col-sm-6" style="border:5px;">
+            <!--
             <div class="plotContainer" style="border:5px;">
                 <div>
                     Cube Range
                 </div>
                 <div class="stripChart" id="harvesterRangeChart" style="width:300px; height:100px"></div>
             </div>
-
+            -->
            <!--
             <label for="harvesterTuning">Tuning Knob</label>
             <input id="harvesterTuning" type="range"
@@ -209,5 +218,3 @@
         </div>
     </div>
 </div>
-
-
