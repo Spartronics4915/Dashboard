@@ -113,7 +113,7 @@
                 $("#scissorliftState").text(value);
             },
             "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
-                $("#scissorliftPotentiometer").val(value);
+                $("#scissorliftPotentiometer").text(value);
             },
             "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
                 $("#scissorliftWantedState").text(value);
