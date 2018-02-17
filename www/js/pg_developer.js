@@ -12,6 +12,7 @@
         idToSDKey: {
             "TestMode": "TestMode",
             "TestVariant": "TestVariant",
+            "TestingGUI": "TestingGUI",
             "driveTuning": "Drive/TuningKnob", // unused
             "harvesterTuning": "Harvester/TuningKnob", // unused
             "scissorliftTarget1": "ScissorLift/Target1",
@@ -54,6 +55,9 @@
             "/SmartDashboard/TestVariant": function(o, value) {
                 $("#TestVariant").val(value);
             },
+            "/SmartDashboard/TestingGUI": function(o, value) {
+                $("#TestingGUI").prop("checked", value);
+            },
 
             // Vision --------------------------------------------------------
             "/SmartDashboard/Vision/Status": function(o, value) {
@@ -72,7 +76,6 @@
                 $("#ledDriverLED").attr("class", value ? "LEDOn" : "LEDOff");
             },
             "/SmartDashboard/LED/VisionLamp": function(o, value) {
-                // value is expected to be an 0/1 (should we select image by css class?)
                 $("#ledVisionLamp").html(value ?
                         "<img src='/images/pic_bulbon.gif' width='10px' />" :
                         "<img src='/images/pic_bulboff.gif' width='10px' />");
@@ -249,6 +252,18 @@
                 $("#"+id+"Txt").text(value);
                 // app.logMsg("slider " + id + ": " + Number(value));
                 app.putValue(ntkey, Number(value));
+            });
+
+            // checkbox support --------------------------------------------
+            $("input[type=checkbox]").on('input', function() {
+                var id = $(this).attr("id");
+                var ntkey = self.idToSDKey[id];
+                if(!ntkey) {
+                    app.logMsg("unknown checkbox " + id);
+                }
+                var value = $(this).prop("checked");
+                // app.logMsg("checkbox " + id + ": " + value);
+                app.putValue(ntkey, value);
             });
 
             // special widgets -----------------------------------------------
