@@ -105,6 +105,11 @@ div input {
 @-o-keyframes blink {  67% { opacity: 0 }}
 @keyframes blink {  67% { opacity: 0 }}
 
+.rotate90 {
+    webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
 .title {
     font-size: 150%;
     color:#55b;
@@ -164,23 +169,21 @@ div input {
 }
 
 /* assume camera feeds are 320x240 (4to3)*/
-.nocam,
-.fwdcam,
-.revcam {
-    width: 600px; /* zoom factor of 600/320) */
-    height: 452px; /* height is approx max visible */
-}
 
 .nocam {
     border: 2px solid gray;
 }
 
-.fwdcam {
-    border: 2px solid rgb(17, 151, 42);
+.cubecam {
+    border: 2px solid green;
 }
 
-.revcam {
+.liftcam {
     border: 2px solid red;
+}
+
+.picam {
+    border: 2px solid blue;
 }
 
 /* robolog --*/

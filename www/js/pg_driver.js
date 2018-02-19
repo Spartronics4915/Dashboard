@@ -3,20 +3,22 @@
 //
 (function(global) {
 'use strict';
-var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg"};
-var dlink4915 = {ip:"admin:@10.49.15.13", url: "/video.cgi"};
+var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"", width:640, height:480};
+var dlink13 = {ip:"admin:@10.49.15.13", url: "/video.cgi", cls:"rotate90", width:480, height:640};
+var dlink14 = {ip:"admin:@10.49.15.14", url: "/video.cgi", cls:"", width:640, height:480};
 
 // axis, usbcams here for reference, currently unused
 var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
 var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
 var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream"};
 
-// dlinkDefault is the ip after a factory reset
+// dlinkDefault is the ip after a factory reset, here for reference only
 var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
 
 var driver = {
-    forwardCam: piCam,
-    reverseCam: dlink4915,
+    piCam: piCam,
+    cubeCam: dlink13,
+    liftCam: dlink14,
     pageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
 
@@ -66,18 +68,8 @@ var driver = {
                 }
                 break;
             case "/SmartDashboard/CameraView":
+            case "/SmartDashboard/ScissorLift/WantedState":
                 this.changeCamera();
-                break;
-            case "/SmartDashboard/ReverseEnabled":
-                if(value === "Enabled") {
-                    $("#fwdrev").text("Reverse");
-                    $("#fwdrevimg").html('<img width="20px" src="/images/reverse.gif"></img>');
-                }
-                else {
-                    $("#fwdrev").text("Forward");
-                    $("#fwdrevimg").html('<img width="20px" src="/images/forward.gif"></img>');
-                }
-                this.changeCamera(value);
                 break;
             case "/FMSInfo/IsRedAlliance":
                 var el = document.getElementById("alliance");
@@ -123,7 +115,7 @@ var driver = {
 
             case "/SmartDashboard/AllianceStation":
                 console.log("ignoring " + key + " in favor of /FMS/IsRedAlliance");
-                break; 
+                break;
                 // $(`#AutoStrategy option:contains(${value})`).attr("selected", true);
                 var el = document.getElementById("AllianceStation");
                 if(el) {
@@ -156,32 +148,36 @@ var driver = {
                 break;
         }
     },
-    changeCamera: function(reverseEnabled) {
+    changeCamera: function() {
         var camhtml, cam, view = app.getValue("CameraView", "Auto");
         var camdiv = $("#camera");
-        if(!reverseEnabled) {
-            reverseEnabled = app.getValue("ReverseEnabled", "Disabled");
-        }
+        var scissorState = app.getValue("ScissorLift/WantedState", "OFF");
         camdiv.removeClass("nocam")
-              .removeClass("fwdcam")
-              .removeClass("revcam");
+              .removeClass("cubecam")
+              .removeClass("liftcam")
+              .removeClass("picam");
         if(view === "Auto") {
-            if(!app.robotConnected)
-                view = "Forward";
+            var viewcube = (-1 !== ["OFF", "RETRACTED"].indexOf(scissorState));
+            if(viewcube || !app.robotConnected)
+                view = "CubeCam";
             else
             if (reverseEnabled === "Enabled")
-                view = "Reverse";
+                view = "LiftCam";
             else
-                view = "Forward";
+                view = "CubeCam";
         }
         switch(view) {
-            case "Forward":
-                camdiv.addClass("fwdcam");
-                cam = this.forwardCam;
+            case "CubeCam":
+                camdiv.addClass("cubecam");
+                cam = this.cubeCam;
                 break;
-            case "Reverse":
-                camdiv.addClass("revcam");
-                cam = this.reverseCam;
+            case "LiftCam":
+                camdiv.addClass("liftcam");
+                cam = this.liftCam;
+                break;
+            case "PiCam":
+                camdiv.addClass("picam");
+                cam = this.piCam;
                 break;
             default:
                 camdiv.addClass("nocam");
@@ -203,7 +199,10 @@ var driver = {
 	    //		`
 
         if(cam) {
-            camhtml = `<img style="width:640px height:480px" src="http://${cam.ip}${cam.url}"></img>`;
+            camhtml = `
+            <img style="width:${cam.width}px height:${cam.height}px"
+                src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>
+            `;
         }
         else {
             camhtml = "<!-- empty -->";

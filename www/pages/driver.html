@@ -8,7 +8,7 @@
             </div>
             <div class="col-sm-9">
                  &nbsp;&nbsp;
-                <span id="alliance">Unknown alliance</span>, 
+                <span id="alliance">Unknown alliance</span>,
                 Station <span id="allianceStation">0</span>
                 <span id="fmsGameMSG">¯\_(ツ)_/¯</span>
             </div>
@@ -25,41 +25,31 @@
           </div> <!-- end row -->
           <div class="row verticalPad">
             <div class="col-sm-3">
-                Driving Direction
-            </div>
-            <div class="col-sm-9">
-                <span id="fwdrev">&nbsp;&nbsp;Forward</span>
-                <span id="fwdrevimg">
-                    <img src="/images/forward.gif" height="20px"></img>
-                </span>
-            </div>
-          </div> <!-- end row -->
-          <div class="row verticalPad">
-            <div class="col-sm-3">
                 Camera View
             </div>
             <div class="col-sm-9">
                 <select class="selector" id="CameraView">
-                        <option value="Auto" selected>Auto</option>
-                        <option>Forward</option>
-                        <option>Reverse</option>
+                        <option>Auto</option>
+                        <option selected>CubeCam</option>
+                        <option>LiftCam</option>
+                        <option>PiCam</option>
                 </select>
             </div>
-          </div> 
+          </div>
           <!--
           <div class="row verticalPad">
-                <button class="command" style="margin:10px" 
+                <button class="command" style="margin:10px"
                         data-command="StartRecordingCommand">Start Recording</button>
-                <button class="command" style="margin:10px" 
+                <button class="command" style="margin:10px"
                         data-command="StopRecordingCommand">Stop Recording</button>
-                <button class="command" style="margin:10px" 
+                <button class="command" style="margin:10px"
                         data-command="ReplayCommand">Run Replay</button>
           </div>
           -->
         </div>
 
         <div class="col-sm-6">
-            <div id="camera" class="nocam" width="640px" height="480px">
+            <div id="camera" class="nocam">
                 <!-- this element should be empty, an img tag will be added here -->
             </div>
         </div>
