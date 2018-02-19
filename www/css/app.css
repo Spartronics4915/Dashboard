@@ -106,8 +106,17 @@ div input {
 @keyframes blink {  67% { opacity: 0 }}
 
 .rotate90 {
+    width: 640px;
+    height: 480px;
     webkit-transform: rotate(90deg);
     transform: rotate(90deg);
+    border: 2px solid gray;
+}
+
+.rotate0 {
+    width: 640px;
+    height: 480px;
+    border: 2px solid blue;
 }
 
 .title {
@@ -166,24 +175,6 @@ div input {
 
 #networktable td {
     padding: 10px;
-}
-
-/* assume camera feeds are 320x240 (4to3)*/
-
-.nocam {
-    border: 2px solid gray;
-}
-
-.cubecam {
-    border: 2px solid green;
-}
-
-.liftcam {
-    border: 2px solid red;
-}
-
-.picam {
-    border: 2px solid blue;
 }
 
 /* robolog --*/

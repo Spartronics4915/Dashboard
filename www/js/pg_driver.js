@@ -3,14 +3,14 @@
 //
 (function(global) {
 'use strict';
-var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"", width:640, height:480};
-var dlink13 = {ip:"admin:@10.49.15.13", url: "/video.cgi", cls:"rotate90", width:480, height:640};
-var dlink14 = {ip:"admin:@10.49.15.14", url: "/video.cgi", cls:"", width:640, height:480};
+var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
+var dlink13 = {ip:"admin:@10.49.15.13", url: "/video.cgi", cls:"rotate90"};
+var dlink14 = {ip:"admin:@10.49.15.14", url: "/video.cgi", cls:"rotate0"};
 
 // axis, usbcams here for reference, currently unused
-var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg"};
-var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg"};
-var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream"};
+var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg", cls:"rotate0"};
+var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg", cls:"rotate0"};
+var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream", cls:"rotate0"};
 
 // dlinkDefault is the ip after a factory reset, here for reference only
 var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
@@ -150,12 +150,7 @@ var driver = {
     },
     changeCamera: function() {
         var camhtml, cam, view = app.getValue("CameraView", "Auto");
-        var camdiv = $("#camera");
         var scissorState = app.getValue("ScissorLift/WantedState", "OFF");
-        camdiv.removeClass("nocam")
-              .removeClass("cubecam")
-              .removeClass("liftcam")
-              .removeClass("picam");
         if(view === "Auto") {
             var viewcube = (-1 !== ["OFF", "RETRACTED"].indexOf(scissorState));
             if(viewcube || !app.robotConnected)
@@ -168,19 +163,15 @@ var driver = {
         }
         switch(view) {
             case "CubeCam":
-                camdiv.addClass("cubecam");
                 cam = this.cubeCam;
                 break;
             case "LiftCam":
-                camdiv.addClass("liftcam");
                 cam = this.liftCam;
                 break;
             case "PiCam":
-                camdiv.addClass("picam");
                 cam = this.piCam;
                 break;
             default:
-                camdiv.addClass("nocam");
                 cam = null;
                 break;
         }
@@ -199,10 +190,7 @@ var driver = {
 	    //		`
 
         if(cam) {
-            camhtml = `
-            <img style="width:${cam.width}px height:${cam.height}px"
-                src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>
-            `;
+            camhtml = `<img src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
         }
         else {
             camhtml = "<!-- empty -->";
