@@ -10,7 +10,7 @@ var msgTmplt = "<div class='logmsg'>" +
               "{msg}</div>";
 var filter = "";
 var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", 
-                      "ERROR", "EXCEPTION"];
+                      "ERROR", "Exception"];
 var robotlog = {
     pageLoaded: function(targetElem, html) {
         var self = this;
@@ -84,15 +84,15 @@ var robotlog = {
         var msgtxt;
         if(!lvlcls || -1 === knownLogLevels.indexOf(lvlcls)) {
             lvlcls = "UNKNOWN";
-            ts = "";
+            ts = ts;
             nmspc = "";
-            msgtxt = msg;
+            msgtxt = fields.slice(3).join(' ');
         }
         else {
             nmspc = fields[2];
-            msgtxt = fields.slice(3).join(' ')
+            msgtxt = fields.slice(2).join(' ');
         }
-        var lvlpad = (lvlcls + ".....").slice(0,9); // EXCEPTION is longest lvl
+        var lvlpad = (lvlcls + ".....").slice(0,9); // Exception is longest lvl
         var map = {
             ts: ts,
             lvlcls: lvlcls,
