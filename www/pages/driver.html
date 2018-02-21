@@ -1,59 +1,55 @@
 <div class="col-sm-12 panel panel-default">
     <div class="panel-body">
         <div class="col-sm-6">
-            <table id="driverpanel">
-            <tr>
-               <td>Field Configuration</td>
-               <td>
-                    <select class="selector" id="AllianceStation">
-                        <option class="amber" value="Unknown" selected>Unknown</option>
-                        <option class="blueAlliance">Blue</option>
-                        <option class="redAlliance">Red</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-               <td>Auto Strategy</td>
-               <td><select class="selector" style="width:20em" id="AutoStrategy">
+          <div class="row verticalPad">
+            <div class="col-sm-3">
+               Field Configuration
+                <!-- field config isn't an option, can be selected via driverstation -->
+            </div>
+            <div class="col-sm-9">
+                 &nbsp;&nbsp;
+                <span id="alliance">Unknown alliance</span>,
+                Station <span id="allianceStation">0</span>
+                <span id="fmsGameMSG">¯\_(ツ)_/¯</span>
+            </div>
+          </div> <!-- end row -->
+          <div class="row verticalPad">
+            <div class="col-sm-3">
+                Auto Strategy
+            </div>
+            <div class="col-sm-9">
+               <select class="selector" style="width:20em" id="AutoStrategy">
                     <option>None</option>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Driving Direction</td>
-                <td>
-                    <span id="fwdrev">Forward</span>
-                    <span id="fwdrevimg">
-                        <img src="/images/forward.gif" height="20px"></img>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>Camera View</td>
-                <td>
-                    <select class="selector" id="CameraView">
-                        <option value="Auto" selected>Auto</option>
-                        <option>Forward</option>
-                        <option>Reverse</option>
-                    </select>
-                </td>
-            </tr>
-            <!--
-            <tr>
-                <td><button class="command" style="margin:10px" 
-                        data-command="StartRecordingCommand">Start Recording</button></td>
-                <td><button class="command" style="margin:10px" 
-                        data-command="StopRecordingCommand">Stop Recording</button></td>
-            </tr>
-            <tr>
-                <td colspan="2"><button class="command" style="margin:10px" 
-                        data-command="ReplayCommand">Run Replay</button></td>
-            </tr>
-            -->
-            </table>
+            </div>
+          </div> <!-- end row -->
+          <div class="row verticalPad">
+            <div class="col-sm-3">
+                Camera View
+            </div>
+            <div class="col-sm-9">
+                <select class="selector" id="CameraView">
+                        <option>Auto</option>
+                        <option>CubeCam</option>
+                        <option>LiftCam</option>
+                        <option>PiCam</option>
+                </select>
+            </div>
+          </div>
+          <!--
+          <div class="row verticalPad">
+                <button class="command" style="margin:10px"
+                        data-command="StartRecordingCommand">Start Recording</button>
+                <button class="command" style="margin:10px"
+                        data-command="StopRecordingCommand">Stop Recording</button>
+                <button class="command" style="margin:10px"
+                        data-command="ReplayCommand">Run Replay</button>
+          </div>
+          -->
         </div>
+
         <div class="col-sm-6">
-            <div id="camera" class="nocam" width="640px" height="480px">
+            <div id="camera" class="nocam">
                 <!-- this element should be empty, an img tag will be added here -->
             </div>
         </div>

@@ -1,14 +1,19 @@
 (function(global) {
 var StripChart = function(config) {
     this.config = config;
-    this.config.series = { shadowSize: 0 };
+    if (!this.config.series) {
+        this.config.series = {};
+    }
+    this.config.series.color = "rgb(255, 255, 10)";
+    this.config.series.shadowSize = 0;
     this.config.xaxis = {show: false};
     if(!this.config.maxlength)
     {
         this.config.maxlength = 300; // XXX:
     }
     this.data = new Array(this.config.maxlength);
-    this.data.fill((this.config.yaxis.max - this.config.yaxis.min) / 2);
+    this.height = this.config.yaxis.max - this.config.yaxis.min + 1;
+    this.data.fill(this.height / 2);
     this.nextSlot = 0;
 
     this.addDataPt = function(value) {
@@ -30,6 +35,28 @@ var StripChart = function(config) {
             res.push([i, this.data[j]]);
         }
         return res;
+    };
+
+    this.addRandomPt = function() {
+        if (this.data.length == 0) 
+            this.addDataPt(this.height/2);
+        else
+        {
+            lastSlot = (this.config.maxlength + this.nextSlot - 1) % 
+                            this.config.maxlength;
+            lastVal = this.data[lastSlot];
+            var rval = lastVal + this.height*.1*(Math.random()-.5);
+            this.addDataPt(this.clamp(rval));
+        }
+    };
+
+    this.clamp = function(y) {
+        if(y < 0)
+            y = 0;
+        else
+        if(y > this.height)
+            y = this.height;
+        return y;
     };
 
     this.getRandomData = function() {

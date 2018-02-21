@@ -20,6 +20,8 @@ var RobotLog = new function () {
 	var m_cnxListeners = [];
 	var m_logListener = null;
     var m_log = []; // an array of strings
+    var m_lastSlice = null;
+    var m_repeat = 0;
 
 	/**
 		Sets a function to be called when the websocket connects/disconnects
@@ -89,6 +91,26 @@ var RobotLog = new function () {
 	m_host += "//" + m_loc.host;
 	m_host += "/robotlog/ws";
 
+    function msgIsUnique(msg) {
+        // check msg against last-most, unique if tail differs (timestamp at head)
+        var result = true;
+        var newslice = msg.substr(12); // skips first 12 chars
+        if(m_lastSlice === newslice)
+        {
+            // repeated msg
+            m_log.pop();
+            m_log.push(msg + " (" + m_repeat++ + ")");
+            result = false; // not unique
+        }
+        else
+        {
+            // unique message
+            m_repeat = 1;
+            m_lastSlice = newslice;
+        }
+        return result;
+    }
+
 	function createSocket() {
 		m_socket = new WebSocket(m_host);
 		if (m_socket) {
@@ -103,8 +125,12 @@ var RobotLog = new function () {
 			m_socket.onmessage = function(msg) {
                 // currently our messages are just simple strings...
 				var data = msg.data;
-                m_log.push(data);
-                if(m_logListener) {
+                if(msgIsUnique(data))
+                    m_log.push(data);
+                else
+                    data = null; // null means replay logs
+                if(m_logListener) 
+                {
                     m_logListener(data);
                 }
 			};

@@ -13,6 +13,11 @@ td {
     padding: 4px;
 }
 
+input[type=number] {
+    width: 80px;
+    text-align: center;
+}
+
 input,
 select {
     color: #888888;
@@ -20,6 +25,10 @@ select {
     padding: 2px 4px;
     border-radius: 3px;
     border: 0px;
+}
+
+label {
+    font-weight: 400;
 }
 
 div input {
@@ -47,6 +56,11 @@ div input {
 .panel-default {
   background-color: #181818;
   border-color: #181838;
+}
+
+.panelState {
+    font-size: 14px;
+    color: #16c;
 }
 
 .buildid {
@@ -91,6 +105,20 @@ div input {
 @-o-keyframes blink {  67% { opacity: 0 }}
 @keyframes blink {  67% { opacity: 0 }}
 
+.rotate90 {
+    width: 640px;
+    height: 480px;
+    webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    border: 2px solid gray;
+}
+
+.rotate0 {
+    width: 640px;
+    height: 480px;
+    border: 2px solid blue;
+}
+
 .title {
     font-size: 150%;
     color:#55b;
@@ -131,12 +159,9 @@ div input {
   text-align: right;
 }
 
-#drivertable {
-  cellspacing: 10px;
-}
-
-#drivertable tr {
-  height: 30px; // row height for better padding
+.verticalPad {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #mainContent {
@@ -150,26 +175,6 @@ div input {
 
 #networktable td {
     padding: 10px;
-}
-
-/* assume camera feeds are 320x240 (4to3)*/
-.nocam,
-.fwdcam,
-.revcam {
-    width: 600px; /* zoom factor of 600/320) */
-    height: 452px; /* height is approx max visible */
-}
-
-.nocam {
-    border: 2px solid gray;
-}
-
-.fwdcam {
-    border: 2px solid rgb(17, 151, 42);
-}
-
-.revcam {
-    border: 2px solid red;
 }
 
 /* robolog --*/
@@ -205,6 +210,14 @@ div input {
 .ERROR,
 .EXCEPTION {
     color: #822;
+}
+
+.LEDOn {
+    color: #F00;
+}
+
+.LEDOff {
+    color: #444;
 }
 
 @media (min-width: 1200px) {

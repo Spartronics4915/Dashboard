@@ -9,11 +9,30 @@ var msgTmplt = "<div class='logmsg'>" +
               "<span class='namespace'>{nmspc} </span>" +
               "{msg}</div>";
 var filter = "";
-var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "EXCEPTION"];
+var knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", 
+                      "ERROR", "Exception"];
 var robotlog = {
     pageLoaded: function(targetElem, html) {
         var self = this;
         targetElem.innerHTML = html; // was: app.interpolate(html, map);
+
+        // first initialize selectors from network tables.
+        $(".selector").each(function() {
+            var key = $(this).attr("id");
+            var val = app.getValue(key);
+            if (val !== "")
+            {
+                $(this).val(val);
+            }
+        });
+
+        // now update network tables on changes
+        $(".selector").change(function() {
+            var value = $(this).val();
+            var key = $(this).attr("id");
+            app.putValue(key, value);
+		});
+
 
         // initialize filter callbacks
         $("#filter").val(filter);
@@ -21,66 +40,43 @@ var robotlog = {
             filter = $(this).val();
             self.onFilterChange();
         });
-
-        // populate #loglevels from SmartDashboard
-        // first initialize loggers from network tables.
-        var loggers = [];
-        NetworkTables.getKeys().forEach(function(key)
-        {
-            if (key.startsWith("/SmartDashboard/Loggers/"))
-            {
-                loggers.push(key.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;"));
-            }
-        });
-
-        // now build a table with two columns for each logger: nm, selector
-        var loglevels = "<option data-text='DEBUG'>DEBUG</option>"+
-                       "<option data-text='INFO'>INFO</option>"+
-                       "<option data-text='NOTICE'>NOTICE</option>"+
-                       "<option data-text='WARNING'>WARNING</option>"+
-                       "<option data-text='ERROR'>ERROR</option>";
-        var table = "<table width='100%' style='border-collapse:separate;border-spacing:5px'>";
-        loggers.forEach(function(key) {
-            table += `<tr><td width="50%">${key}:</td><td width="50%"><select style="width: 100%" data-log="${key}">${loglevels}</select></span></td></tr>`;
-        });
-        table += "</table>";
-        $("#loglevels").html(table);
-
-        // install callbacks for each logger
-        $("#loglevels select").each(function() {
-            var key = $(this).attr("data-log");
-            var ntkey = "Loggers/" + key;
-            var val = app.getValue(ntkey);
-            $(this).find(`option[data-text="${val}"]`).attr("selected", true);
-
-            // Update NetworkTables on change
-            $(this).change(function() {
-                app.putValue("Loggers/${key}", 
-                            $(this).find("option:selected").text());
-            });
-        });
-
         RobotLog.setLogListener(this.onRobotMsg, true);
     },
 
-    onNetTabChange: function(ntkey, value, isNew) {
-        if (isNew && ntkey.startsWith("/SmartDashboard/Loggers/"))
-        {
-            var key = ntkey.replace("/SmartDashboard/Loggers/", "").replace(/</g, "&lt;");
-            $(`#loglevels select[data-log="${key}"] option[data-text="${value}"]`).attr("selected", true);
-        }
+    onNetTabChange: function(key, value, isNew) {
+		switch(key) {
+			case "/SmartDashboard/Robot/Verbosity":
+				var sel = document.getElementById("Robot/Verbosity");
+				if(sel)
+				{
+					sel.value = value;
+				}
+				break;
+			default:
+				break;
+		}
     },
 
     onFilterChange: function () {
-        $("#robotlog").html("<hr>");
+        $("#robotlog").html("");
         RobotLog.replayLogs();
     },
 
     onRobotMsg: function(msg) {
+        // nb: this isn't valid in this context
+        if(msg == null)
+        {
+            // equivalent to onFilterChange
+            $("#robotlog").html("");
+            RobotLog.replayLogs();
+            return;
+        }
         if(!(/\S/.test(msg))) return; // ignore messages with whitespace-only
         if(filter) {
             if(-1 === msg.indexOf(filter)) return;
         }
+        // presumed message format:
+        //  timestamp errorclass namespace text
         var fields = msg.split(' ');
         var ts = fields[0];
         var lvlcls = fields[1];
@@ -88,15 +84,15 @@ var robotlog = {
         var msgtxt;
         if(!lvlcls || -1 === knownLogLevels.indexOf(lvlcls)) {
             lvlcls = "UNKNOWN";
-            ts = "";
+            ts = ts;
             nmspc = "";
-            msgtxt = msg;
+            msgtxt = fields.slice(3).join(' ');
         }
         else {
             nmspc = fields[2];
-            msgtxt = fields.slice(3).join(' ')
+            msgtxt = fields.slice(2).join(' ');
         }
-        var lvlpad = (lvlcls + ".....").slice(0,9); // EXCEPTION is longest lvl
+        var lvlpad = (lvlcls + ".....").slice(0,9); // Exception is longest lvl
         var map = {
             ts: ts,
             lvlcls: lvlcls,
@@ -104,7 +100,7 @@ var robotlog = {
             nmspc: nmspc,
             msg: msgtxt,
         };
-        $("#robotlog").prepend(app.interpolate(msgTmplt, map));
+        $("#robotlog").append(app.interpolate(msgTmplt, map));
     }
 };
 global.app.setPageHandler("robotlog", robotlog);

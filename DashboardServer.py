@@ -58,17 +58,18 @@ if __name__ == '__main__':
                       help="Robot's IP address")
 
     parser.add_option('--dashboard', default=False, action='store_true',
-                      help='Use this instead of --robot to receive the IP from the driver station. WARNING: It will not work if you are not on the same host as the DS!')
+                      help='Use this instead of --robot to receive the IP '
+                    'from the driver station. WARNING: It will not work '
+                    'if you are not on the same host as the DS!')
 
     options, args = parser.parse_args()
 
     # Setup logging
     log_datefmt = "%H:%M:%S"
-    #log_format = "%(asctime)s:%(msecs)03d %(levelname)-6s: %(name)-8s: %(message)s"
     log_format = "%(asctime)s %(levelname)-6s: %(name)-8s: %(message)s"
     logging.basicConfig(datefmt=log_datefmt,
-                        format=log_format,
-                        level=logging.DEBUG if options.verbose else logging.INFO)
+                       format=log_format,
+                       level=logging.DEBUG if options.verbose else logging.INFO)
 
     if options.dashboard and options.robot != '10.49.15.2':
         parser.error("Cannot specify --robot and --dashboard")
@@ -102,8 +103,7 @@ if __name__ == '__main__':
     logger.info("Listening on http://localhost:%s/", options.port)
 
     app.listen(options.port)
-    ioLoop = tornado.ioloop.IOLoop.current()
-    sock = robotlog.getUDPSocket()
-    callback = functools.partial(robotlog.handleMsg, sock);
-    ioLoop.add_handler(sock.fileno(), callback, ioLoop.READ)
-    IOLoop.current().start()
+    ioLoop = IOLoop.current()
+    robotlog.initConnection(ioLoop)
+    ioLoop.start()
+
