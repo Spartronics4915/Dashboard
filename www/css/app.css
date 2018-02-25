@@ -238,7 +238,11 @@ div input {
   color: #fff;
   border-radius: 5px;
   padding: 20px;
-  font-size: 150%;
+  text-shadow: 0px 0px 17px rgba(0, 0, 0, 0.8);
+}
+
+.path:hover {
+  filter: brightness(95%);
 }
 
 .btn-dark {
