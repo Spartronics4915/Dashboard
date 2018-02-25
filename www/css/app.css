@@ -225,3 +225,43 @@ div input {
     width: 95%;
 }
 }
+
+.pathwrapper {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  grid-gap: 10px;
+  background-color: #fff;
+  color: #444;
+}
+
+.path {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  font-size: 150%;
+}
+
+.btn-dark {
+  background-color: hsl(69, 0%, 19%) !important;
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.00);
+  -webkit-font-smoothing: antialiased;
+}
+
+.modal-content.dark {
+  background-color: #111111;
+  color: #888888;
+}
+
+.modal-header.dark {
+  border-bottom: 1px solid #3b3b3b;
+}
+
+.modal-footer.dark {
+  border-top: 1px solid #3b3b3b;
+}
+
+.btn.active::after {
+  content: " ✓";
+}

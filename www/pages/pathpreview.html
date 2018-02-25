@@ -1,22 +1,64 @@
-<div class="col-sm-12">
-    Build <span id="buildid"><span class="amber">unknown</span></span>&nbsp;&nbsp;
+<h3>Autonomous Path Previews &nbsp;
+<div class="navbar-right" style="font-size:80%;display:inline-block;">
+  <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#importmodal">Import a path</button>
+</div>
+</h3>
+
+<!-- Modal -->
+<div id="importmodal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content dark">
+      <div class="modal-header dark">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+        <h4 class="modal-title">Import an Autonomous Path</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="name">Path name</label><br>
+          <input id="name" type="text" placeholder='E.g. "A: Place cube optimized"' style="width:100%;">
+        </div>
+        <div id="fieldchangers" class="form-group row">
+          <div class="col-sm-6">
+            <label for="pivotstatus">Color of C Side Switch LED</label><br>
+            <div class="btn-group colors" data-toggle="buttons">
+              <label class="btn btn-primary active" id="switchisblue">
+                <input type="radio" name="pivotstatus" value="switchblue" autocomplete="off" checked> Blue
+              </label>
+              <label class="btn btn-danger">
+                <input type="radio" name="pivotstatus" value="switchred" autocomplete="off"> Red
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label for="pivotstatus">Color of C Side Scale LED</label><br>
+            <div class="btn-group colors" data-toggle="buttons">
+              <label class="btn btn-primary active" id="scaleisblue">
+                <input type="radio" name="pivotstatus" value="scaleblue" autocomplete="off" checked> Blue
+              </label>
+              <label class="btn btn-danger">
+                <input type="radio" name="pivotstatus" value="scalered" autocomplete="off"> Red
+              </label>
+            </div>
+          </div>
+        </div>
+        <div id="compositecontainer" style="padding: 3px; height: 600px; border: 1px solid grey; border-radius: 3px; overflow: none;">
+          <!-- Path composites get inserted here !-->
+
+          <div class="well well-sm" data-fieldconfig="all"><a id="addcomp" href="#pathpreview">+ Add a path composite</a></div>
+
+        </div>
+      </div>
+      <div class="modal-footer dark">
+        <button id="discardpath" type="button" class="btn btn-danger" data-dismiss="modal">Discard</button>
+        <button id="addpath" type="button" class="btn btn-success" data-dismiss="modal">Add</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Drivetrain <small id="drivetrainStatus">status n/a</small></h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6 plotContainer" style="border:5px;">
-            <div>
-                <b>IMU Heading <span id="imuHeading">n/a</span></b>
-            </div>
-            <div class="stripChart" id="imuHeadingChart" style="width:300px; height:100px"></div>
-        </div>
-        <!--
-        <div class="col-sm-6">
-            <div id="imuHeadingGage" style="width:300;height:120px"></div>
-        </div>
-        -->
-    </div>
+<div class="pathcontainer">
+  <!-- Paths get put here by js !-->
 </div>
