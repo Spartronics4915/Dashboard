@@ -45,6 +45,37 @@ var pathpreview = {
       return importData;
     },
 
+    refreshPathDisplay: function() {
+      $("#pathcon").empty();
+
+      var data = pathpreview.getPathData();
+      var arrayLength = data.length;
+      for (var i = 0; i < arrayLength; i++) {
+        var v = data[i];
+        if (!(v.composites instanceof Map)) { // JSON can't store maps
+          console.log("Rebuilding a map...");
+          v.composites = new Map(v.composites);
+        }
+        $("#pathcon").prepend(`
+          <div class="path" style="background-image: url(${pathpreview.compositePaths(v.composites)});">
+            ${v.name}
+          </div>
+          `)
+      }
+    },
+
+    compositePaths: function(composites) {
+      return composites.get(new FieldConfiguration(PivotColor.RED, PivotColor.BLUE).toString())[0].file;
+    },
+
+    getPathData: function() {
+      var pathData = JSON.parse(localStorage.getItem(PATH_DATA_KEY));
+      if (pathData === null || !typeof pathData.push === "function") {
+        pathData = [];
+      }
+      return pathData;
+    },
+
     pageLoaded: function(targetElem, html) {
         targetElem.innerHTML = html;
 
@@ -57,6 +88,7 @@ var pathpreview = {
         }
 
         pathpreview.initializeComposites();
+        pathpreview.refreshPathDisplay();
 
         $("#addcomp").click(function() { // There will be multiple elements with this id, but this convieniently selects the first one in the tree, which is the one we want
           var data = pathpreview.getFieldConfiguration().toString();
@@ -130,16 +162,11 @@ var pathpreview = {
         });
 
         $("#addpath").click(function() {
-          var pathData = JSON.parse(localStorage.getItem(PATH_DATA_KEY));
-          if (pathData === null || !typeof pathData.push === "function") {
-            pathData = [];
-          }
+          var pathData = pathpreview.getPathData();
           pathData.push(new PathData($("#name").val(), Array.from(importData.entries())));
           localStorage.setItem(PATH_DATA_KEY, JSON.stringify(pathData));
-        });
 
-        $(window).bind('storage', function (e) {
-            console.log(e.originalEvent.key, e.originalEvent.newValue);
+          pathpreview.refreshPathDisplay(); // Not very efficient, because it re-adds every path
         });
     },
 };
