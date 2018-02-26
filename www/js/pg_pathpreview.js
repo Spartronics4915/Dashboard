@@ -24,13 +24,18 @@ class PathData {
   }
 }
 
-var importData = new Map(); // Should be of type map[FieldConfiguration][]{file: string, reversed: boolean}
-var reader = new FileReader();
+const importData = new Map(); // Should be of type map[FieldConfiguration][]{file: string, reversed: boolean}
+const reader = new FileReader();
 var ctx;
 var canvas;
 var fieldImage;
 
 const PATH_DATA_KEY = Object.freeze("autopaths");
+
+const TOP_SWITCH = new Path2D();
+const BOTTOM_SWITCH = new Path2D();
+const TOP_SCALE = new Path2D();
+const BOTTOM_SCALE = new Path2D();
 
 var pathpreview = {
     getFieldConfiguration: function() {
@@ -44,8 +49,11 @@ var pathpreview = {
       importData.set(new FieldConfiguration(PivotColor.BLUE, PivotColor.BLUE).toString(), []);
     },
 
-    com: function() {
-      return importData;
+    adjustCoordinatesForCanvas: function(canvas, mouseEvent){
+      const rect = canvas.getBoundingClientRect()
+      const y = mouseEvent.clientY - rect.top
+      const x = mouseEvent.clientX - rect.left
+      return {x:x, y:y}
     },
 
     refreshPathDisplay: function() {
@@ -55,40 +63,42 @@ var pathpreview = {
       var arrayLength = data.length;
       for (var i = 0; i < arrayLength; i++) {
         var v = data[i];
-        if (!(v.composites instanceof Map)) { // JSON can't store maps
-          console.log("Rebuilding a map...");
-          v.composites = new Map(v.composites);
-        }
-        pathpreview.compositePaths(v.composites, new FieldConfiguration(PivotColor.RED, PivotColor.BLUE).toString()).then(dataURL => {
-          $("#pathcon").prepend(`
-            <div class="path" style="background-image: url(${dataURL}); background-repeat: no-repeat; background-size: cover;">
-              <h1 style="font-size: 150%;">${v.name}</h1>
-              <h5 style="font-size: 100%;"><a id="showpath" href="#pathpreview">Display path &raquo;</a></h5>
-            </div>
-            `);
-        }).catch(err => {
+        $("#pathcon").prepend(`
+          <div class="path">
+            <canvas id="canvasbackground"></canvas>
+            <h1 style="font-size: 150%;">${v.name}</h1>
+            <h5 style="font-size: 100%;"><a id="showpath" href="#pathpreview">Display path &raquo;</a></h5>
+          </div>
+          `);
+          $("#showpath").click(function() {
+            $("#pathdisplay").show();
+          });
+        // JSON can't store maps
+        v.composites = new Map(v.composites);
+        $("#canvasbackground")[0].width = fieldImage.width;
+        $("#canvasbackground")[0].height = fieldImage.height;
+        pathpreview.compositePaths($("#canvasbackground")[0].getContext("2d"), v.composites, new FieldConfiguration(PivotColor.RED, PivotColor.BLUE).toString()).catch(err => {
           console.error("Couldn't composite paths: " + err);
         });
       }
     },
 
-    compositePaths: async function(composites, fieldConfig) { // This uses the display canvas for compositing
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(fieldImage, 0, 0);
+    compositePaths: async function(c, composites, fieldConfig) { // This uses the display canvas for compositing
+      c.clearRect(0, 0, c.canvas.width, c.canvas.height);
+      c.drawImage(fieldImage, 0, 0);
       var array = composites.get(fieldConfig);
       var arrayLength = array.length;
       for (var i = 0; i < arrayLength; i++) {
         let image = await app.loadImage(array[i].file);
         if (array[i].reversed) {
-          ctx.save();
-          ctx.rotate(180);
-          ctx.drawImage(image, 0, 0);
-          ctx.restore();
+          c.save();
+          c.rotate(180);
+          c.drawImage(image, 0, 0);
+          c.restore();
         } else {
-          ctx.drawImage(image, 0, 0);
+          c.drawImage(image, 0, 0);
         }
       }
-      return canvas.toDataURL();
     },
 
     getPathData: function() {
@@ -97,6 +107,16 @@ var pathpreview = {
         pathData = [];
       }
       return pathData;
+    },
+
+    clearImport: function() {
+      pathpreview.initializeComposites();
+      $("#compositecontainer").children("div").each(function() {
+        if ($(this).data("fieldconfig") !== "all") {
+          $(this).remove();
+        }
+      });
+      $("#name").val("");
     },
 
     pageLoaded: async function(targetElem, html) {
@@ -183,12 +203,7 @@ var pathpreview = {
         });
 
         $("#discardpath").click(function() {
-          pathpreview.initializeComposites();
-          $("#compositecontainer").children("div").each(function() {
-            if ($(this).data("fieldconfig") !== "all") {
-              $(this).remove();
-            }
-          });
+          pathpreview.clearImport();
         });
 
         $("#addpath").click(function() {
@@ -196,7 +211,13 @@ var pathpreview = {
           pathData.push(new PathData($("#name").val(), Array.from(importData.entries())));
           localStorage.setItem(PATH_DATA_KEY, JSON.stringify(pathData));
 
+          pathpreview.clearImport();
+
           pathpreview.refreshPathDisplay(); // Not very efficient, because it re-adds every path
+        });
+
+        $("#closedisplay").click(function() {
+          $("#pathdisplay").hide();
         });
     },
 };

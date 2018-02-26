@@ -234,11 +234,12 @@ div input {
 }
 
 .path {
-  background-color: #444;
+  background-color: #4444441a;
   color: #fff;
   border-radius: 5px;
   padding: 20px;
-  text-shadow: 0px 0px 17px rgba(0, 0, 0, 0.8);
+  text-shadow: 0px 0px 3px rgb(0, 0, 0) !important;
+  position: relative;
 }
 
 .path:hover {
@@ -267,4 +268,52 @@ div input {
 
 .btn.active::after {
   content: " ✓";
+}
+
+#pathdisplay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #111111;
+  z-index: 100000;
+}
+
+#pathcanvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.wrapper {
+  width: 100%;
+  padding-bottom: 50%; /* 2:1 */
+  position: relative;
+
+  background: blue;
+}
+
+.floating-close {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  z-index: 2000000;
+}
+
+#canvasbackground {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: -1;
+  border-radius: 5px;
+  object-fit: cover;
 }
