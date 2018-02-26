@@ -46,7 +46,7 @@
         <div id="compositecontainer" style="padding: 3px; height: 600px; border: 1px solid grey; border-radius: 3px; overflow: none;">
           <!-- Path composites get inserted here !-->
 
-          <div class="well well-sm" data-fieldconfig="all"><a id="addcomp" href="#pathpreview">+ Add a path composite</a></div>
+          <div class="well well-sm" data-fieldconfig="all"><a id="addcomp" href="#pathpreview" role="button">+ Add a path composite</a></div>
 
         </div>
       </div>
@@ -67,7 +67,11 @@
   <div class="wrapper">
     <canvas id="pathcanvas"></canvas>
   </div>
+  <div class="btn-group btn-group-justified" role="group" aria-label="...">
+    <a id="togswitch" href="#pathpreview" class="btn btn-dark" role="button">Toggle Switch Color</a>
+    <a id="togscale" href="#pathpreview" class="btn btn-dark" role="button">Toggle Scale Color</a>
+  </div>
   <div class="floating-close">
-    <a id="closedisplay" href="#pathpreview"><h1 style="margin: 0px;"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></h1></a>
+    <a id="closedisplay" href="#pathpreview" role="button"><h1 style="margin: 0px;"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></h1></a>
   </div>
 </div>

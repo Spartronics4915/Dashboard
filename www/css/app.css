@@ -249,6 +249,7 @@ div input {
 .btn-dark {
   background-color: hsl(69, 0%, 19%) !important;
   color: #fff !important;
+  border-color: hsl(69, 0%, 23%) !important;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.00);
   -webkit-font-smoothing: antialiased;
 }
