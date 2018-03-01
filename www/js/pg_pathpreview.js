@@ -1,6 +1,9 @@
 //
 // javascript page handler for pathpreview.html
 //
+
+// Set the about:config preference "dom.storage.default_quota" to something like 10000000 on the driver station for this to work well
+
 (function(global) {
 'use strict';
 
@@ -58,7 +61,7 @@ const SCALE_TOP = new Path2D();
 const SCALE_BOTTOM = new Path2D();
 
 var pathpreview = {
-    getFieldConfiguration: function() {
+    getImportFieldConfig: function() {
       return new FieldConfiguration($("#switchisblue").hasClass("active") ? PivotColor.BLUE : PivotColor.RED, $("#scaleisblue").hasClass("active") ? PivotColor.BLUE : PivotColor.RED);
     },
 
@@ -69,15 +72,8 @@ var pathpreview = {
       importData.set(new FieldConfiguration(PivotColor.BLUE, PivotColor.BLUE).toString(), []);
     },
 
-    pivCol: function() {
-      return PivotColor.RED;
-    },
-
-    adjustCoordinatesForCanvas: function(canvas, mouseEvent){
-      const rect = canvas.getBoundingClientRect()
-      const y = mouseEvent.clientY - rect.top
-      const x = mouseEvent.clientX - rect.left
-      return {x:x, y:y}
+    getFieldConfig: function() {
+      return fieldConfig;
     },
 
     refreshPathDisplay: function() {
@@ -129,10 +125,8 @@ var pathpreview = {
       for (var i = 0; i < arrayLength; i++) {
         let image = await app.loadImage(array[i].file);
         if (array[i].reversed) {
-          c.save();
-          c.rotate(180);
+          c.scale(1, -1);
           c.drawImage(image, 0, 0);
-          c.restore();
         } else {
           c.drawImage(image, 0, 0);
         }
@@ -158,8 +152,6 @@ var pathpreview = {
     },
 
     drawPivots: function(fieldConfig) {
-      ctx.restore();
-
       ctx.strokeStyle = PivotColor.toColor(fieldConfig.scaleTopColor);
       ctx.stroke(SCALE_TOP);
       ctx.strokeStyle = PivotColor.toColor(PivotColor.inverse(fieldConfig.scaleTopColor));
@@ -188,8 +180,6 @@ var pathpreview = {
         canvas.width = fieldImage.width;
         canvas.height = fieldImage.height;
 
-        ctx.save();
-
         pathpreview.drawPivots(fieldConfig);
 
         if (!app.storageAvailable("localStorage")) {
@@ -204,7 +194,7 @@ var pathpreview = {
         pathpreview.refreshPathDisplay();
 
         $("#addcomp").click(function() { // There will be multiple elements with this id, but this convieniently selects the first one in the tree, which is the one we want
-          var data = pathpreview.getFieldConfiguration().toString();
+          var data = pathpreview.getImportFieldConfig().toString();
           $("#compositecontainer").prepend(`
             <div id="composite" class="well well-sm" data-fieldconfig="${data}">
               <div class="row">
@@ -224,7 +214,7 @@ var pathpreview = {
 
             var reader = new FileReader();
             reader.addEventListener("load", function () {
-              importData.get(pathpreview.getFieldConfiguration().toString()).push({file: reader.result, reversed: reversedCheck.is(":checked")});
+              importData.get(pathpreview.getImportFieldConfig().toString()).push({file: reader.result, reversed: reversedCheck.is(":checked")});
             }, false);
 
             // Assumes only one file, because we don't have the "multiple" attribute on the input
@@ -236,7 +226,7 @@ var pathpreview = {
             reader.addEventListener("load", function () {
               var file = reader.result;
               if (file !== undefined) {
-                var a = importData.get(pathpreview.getFieldConfiguration().toString());
+                var a = importData.get(pathpreview.getImportFieldConfig().toString());
                 var arrayLength = a.length;
                 for (var i = 0; i < arrayLength; i++) {
                     if (a[i].file === file && a[i].reversed === $(this).parent().find("[id=compreversed]").is(":checked")) {
@@ -253,7 +243,7 @@ var pathpreview = {
 
         $('input:radio[name=pivotstatus]').change(function() {
           $("#compositecontainer").children("div").each(function() {
-            if ($(this).data("fieldconfig") === pathpreview.getFieldConfiguration().toString()) {
+            if ($(this).data("fieldconfig") === pathpreview.getImportFieldConfig().toString()) {
               $(this).show();
             } else if ($(this).data("fieldconfig") !== "all") {
               $(this).hide();
