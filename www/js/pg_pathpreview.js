@@ -51,6 +51,7 @@ var ctx;
 var canvas;
 var fieldConfig = new FieldConfiguration(PivotColor.BLUE, PivotColor.BLUE);
 var curComposites;
+var bulkData;
 
 var fieldImage;
 const PATH_DATA_KEY = Object.freeze("autopaths");
@@ -267,6 +268,26 @@ var pathpreview = {
           pathpreview.clearImport();
 
           pathpreview.refreshPathDisplay(); // Not very efficient, because it re-adds every path
+        });
+
+        $("#downloadbulk").click(function() {
+          app.downloadURI("data:application/json,"+localStorage.getItem(PATH_DATA_KEY), "bulkpaths.json");
+        });
+
+        $("#bulkupload")[0].addEventListener("change", function(evt) {
+          var reader = new FileReader();
+          reader.addEventListener("load", function () {
+            bulkData = atob(reader.result.replace("data:application/json;base64,", ""));
+            console.log(bulkData)
+          }, false);
+
+          // Assumes only one file, because we don't have the "multiple" attribute on the input
+          reader.readAsDataURL(evt.target.files[0]);
+        }, false);
+
+        $("#importbulk").click(function() {
+          localStorage.setItem(PATH_DATA_KEY, bulkData);
+          pathpreview.refreshPathDisplay();
         });
 
         $("#closedisplay").click(function() {

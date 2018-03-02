@@ -1,10 +1,35 @@
 <h3>Autonomous Path Previews &nbsp;
 <div class="navbar-right" style="font-size:80%;display:inline-block;">
   <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#importmodal">Import a path</button>
+  <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#bulkmodal">Import/export bulk data</button>
 </div>
 </h3>
 
-<!-- Modal -->
+<!-- Single import modal -->
+<div id="bulkmodal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content dark">
+      <div class="modal-header dark">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+        <h4 class="modal-title">Import or Export Bulk Data</h4>
+      </div>
+      <div class="modal-body">
+        <h5>All current data will be <strong>overriden</strong>!</h5>
+        <input type="file" id="bulkupload" style="background-color: transparent;">
+      </div>
+      <div class="modal-footer dark">
+        <button id="downloadbulk" type="button" class="btn btn-primary pull-left" data-dismiss="modal">Download bulk data</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button id="importbulk" type="button" class="btn btn-success" data-dismiss="modal">Import</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Single import modal -->
 <div id="importmodal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 

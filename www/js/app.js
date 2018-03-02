@@ -250,7 +250,17 @@ var app = {
 
     loadImage: function(url) {
       return new Promise(resolve => { let i = new Image(); i.onload = ()=>{resolve(i)}; i.src=url; });
-    }
+    },
+
+    downloadURI: function(uri, name) {
+      var link = document.createElement("a");
+      link.target = "_blank";
+      link.download = name;
+      link.href = uri;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
 
 }; // end of app definition
 
