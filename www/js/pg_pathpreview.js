@@ -126,12 +126,7 @@ var pathpreview = {
       var arrayLength = array.length;
       for (var i = 0; i < arrayLength; i++) {
         let image = await app.loadImage(array[i].file);
-        if (array[i].reversed) {
-          c.scale(1, -1);
-          c.drawImage(image, 0, 0);
-        } else {
-          c.drawImage(image, 0, 0);
-        }
+        c.drawImage(image, 0, 0);
       }
     },
 
