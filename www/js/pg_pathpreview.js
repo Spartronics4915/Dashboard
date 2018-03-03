@@ -97,6 +97,7 @@ var pathpreview = {
           `);
         $("#showpath").click(function() {
           $("#pathdisplay").show();
+          $("#pathname").text(v.name);
           pathpreview.compositePaths(ctx, v.composites, fieldConfig.toString()).catch(err => {
             console.error("Couldn't composite paths: " + err);
           });
@@ -278,7 +279,6 @@ var pathpreview = {
           var reader = new FileReader();
           reader.addEventListener("load", function () {
             bulkData = atob(reader.result.replace("data:application/json;base64,", ""));
-            console.log(bulkData)
           }, false);
 
           // Assumes only one file, because we don't have the "multiple" attribute on the input
@@ -287,6 +287,7 @@ var pathpreview = {
 
         $("#importbulk").click(function() {
           localStorage.setItem(PATH_DATA_KEY, bulkData);
+          bulkData = null;
           pathpreview.refreshPathDisplay();
         });
 

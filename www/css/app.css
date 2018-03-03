@@ -318,3 +318,41 @@ div input {
   border-radius: 5px;
   object-fit: cover;
 }
+
+#pathname {
+  position: fixed;
+  top: 3px;
+  left: 6%;
+  z-index: 2000000;
+  margin: 0px;
+  color: white;
+  text-shadow: 1px 1px 9px rgba(0, 0, 0, 1);
+}
+
+.pathtog {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  font-size: 90px;
+  text-align: center;
+  top: calc((100vw/2)/2 - 10px);
+  position: fixed;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.pathtog:hover {
+  box-shadow: 0 2.5px 20px 0 rgba(0,0,0,0.3);
+}
+
+.pathtog:active {
+  background-color: grey;
+}
+
+#togswitch {
+  left: calc(25% + 7px);
+}
+
+#togscale {
+  left: calc(50% - 10px);
+}
