@@ -1,10 +1,35 @@
 <h3>Autonomous Path Previews &nbsp;
 <div class="navbar-right" style="font-size:80%;display:inline-block;">
   <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#importmodal">Import a path</button>
+  <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#bulkmodal">Import/export bulk data</button>
 </div>
 </h3>
 
-<!-- Modal -->
+<!-- Single import modal -->
+<div id="bulkmodal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content dark">
+      <div class="modal-header dark">
+        <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+        <h4 class="modal-title">Import or Export Bulk Data</h4>
+      </div>
+      <div class="modal-body">
+        <h5>All current data will be <strong>overriden</strong>!</h5>
+        <input type="file" id="bulkupload" style="background-color: transparent;">
+      </div>
+      <div class="modal-footer dark">
+        <button id="downloadbulk" type="button" class="btn btn-primary pull-left" data-dismiss="modal">Download bulk data</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button id="importbulk" type="button" class="btn btn-success" data-dismiss="modal">Import</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Single import modal -->
 <div id="importmodal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -21,7 +46,7 @@
         </div>
         <div id="fieldchangers" class="form-group row">
           <div class="col-sm-6">
-            <label for="pivotstatus">Color of C Side Switch LED</label><br>
+            <label for="pivotstatus">Color of Top Switch LED</label><br>
             <div class="btn-group colors" data-toggle="buttons">
               <label class="btn btn-primary active" id="switchisblue">
                 <input type="radio" name="pivotstatus" value="switchblue" autocomplete="off" checked> Blue
@@ -32,7 +57,7 @@
             </div>
           </div>
           <div class="col-sm-6">
-            <label for="pivotstatus">Color of C Side Scale LED</label><br>
+            <label for="pivotstatus">Color of Top Scale LED</label><br>
             <div class="btn-group colors" data-toggle="buttons">
               <label class="btn btn-primary active" id="scaleisblue">
                 <input type="radio" name="pivotstatus" value="scaleblue" autocomplete="off" checked> Blue
@@ -64,13 +89,12 @@
 </div>
 
 <div id="pathdisplay" style="display: none;">
+  <h1 id="pathname"></h1>
   <div class="wrapper">
     <canvas id="pathcanvas"></canvas>
   </div>
-  <div class="btn-group btn-group-justified" role="group" aria-label="...">
-    <a id="togswitch" href="#pathpreview" class="btn btn-dark" role="button">Toggle Switch Color</a>
-    <a id="togscale" href="#pathpreview" class="btn btn-dark" role="button">Toggle Scale Color</a>
-  </div>
+  <a id="togswitch" href="#pathpreview" class="pathtog" role="button"></a>
+  <a id="togscale" href="#pathpreview" class="pathtog" role="button"></a>
   <div class="floating-close">
     <a id="closedisplay" href="#pathpreview" role="button"><h1 style="margin: 0px;"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></h1></a>
   </div>
