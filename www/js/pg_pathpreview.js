@@ -267,7 +267,8 @@ var pathpreview = {
         });
 
         $("#downloadbulk").click(function() {
-          app.downloadURI("data:application/json,"+localStorage.getItem(PATH_DATA_KEY), "bulkpaths.json");
+          console.log(localStorage.getItem(PATH_DATA_KEY));
+          app.downloadURI("data:text/json,"+localStorage.getItem(PATH_DATA_KEY), "bulkpaths.json");
         });
 
         $("#bulkupload")[0].addEventListener("change", function(evt) {
