@@ -149,7 +149,8 @@ var driver = {
         }
     },
     changeCamera: function() {
-        var camhtml, cam, view = app.getValue("CameraView", "Auto");
+        // nb: Auto is unused for POWERUP
+        var camhtml, cam, view = app.getValue("CameraView", "CubeCam");
         var scissorState = app.getValue("ScissorLift/WantedState", "OFF");
         if(view === "Auto") {
             var viewcube = (-1 !== ["OFF", "RETRACTED"].indexOf(scissorState));
