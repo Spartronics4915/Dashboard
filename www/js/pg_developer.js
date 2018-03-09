@@ -299,7 +299,8 @@
                 yaxis: {
                     min:-200,
                     max:200,
-                }
+                },
+                widths: [1]
             });
             this.harvesterRangeChart = new StripChart({
                 id: "#harvesterRangeChart",
@@ -324,6 +325,7 @@
                     shadowSize: 0,
                     lines: {
                         show: true,
+                        lineWidth: 1,
                     },
                     points: {
                         show: false,
@@ -340,7 +342,8 @@
                 fillvalue: 0,
                 channelcount: 2,
                 colors: ["rgb(20, 120, 255)", "rgb(200, 200, 10)"],
-                widths: [3, 1],
+                widths: [2, 1],
+                maxlength: 400,
             });
             this.rightSpeedChart = new StripChart({
                 id: "#rightSpeedChart",  // inches/sec
@@ -352,6 +355,7 @@
                 channelcount: 2,
                 colors: ["rgb(20, 120, 255)", "rgb(200, 200, 10)"],
                 widths: [2, 1],
+                maxlength: 400,
             });
 
             //  Climber -------------------------------------------------------

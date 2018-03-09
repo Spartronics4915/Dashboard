@@ -10,7 +10,7 @@ window.StripChart = function(config) {
     if(!this.config.series.shadowSize)
         this.config.series.shadowSize = 0;
     this.config.xaxis = {show: false}; // always time
-    if(!this.config.maxlength)
+    if(this.config.maxlength == undefined)
         this.config.maxlength = 300; // XXX:
     if(this.config.channelcount == undefined)
         this.config.channelcount = 1;
