@@ -65,14 +65,6 @@
                 <div class="stripChart" id="imuHeadingChart"
                     style="width:300px; height:100px"></div>
             </div>
-            <!--
-            <div class="verticalPad">
-                <label for="driveTuning">Tuning Knob</label>
-                <input id="driveTuning" type="range"
-                       min="0" max="1" step=".025"/>
-                <output for="driveTuning" id="driveTuningTxt">0</output>
-            </div>
-            -->
         </div>
 
         <!-- panel two (right) -->
@@ -82,11 +74,37 @@
                     Odometry
                 </div>
                 <div class="stripChart" id="driveOdometryPlot"
-                    style="width:326px; height:162px"></div>
+                    style="width:326px; height:162px">
+                </div>
             </div>
             <div>
             </div>
         </div>
+
+        <!-- subpanel one (left) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Left Speed (ips) <span id="leftSpeedTxt"></span>
+                </div>
+                <div class="stripChart" id="leftSpeedChart"
+                    style="width:300px; height:200px">
+                </div>
+            </div>
+        </div>
+
+        <!-- subpanel one (right) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Right Speed (ips) <span id="rightSpeedTxt"></span>
+                </div>
+                <div class="stripChart" id="rightSpeedChart"
+                    style="width:300px; height:200px">
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

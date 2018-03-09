@@ -1,6 +1,5 @@
-//
+/* global $ StripChart PathPlot app */
 // javascript page handler for about.html
-//
 (function(global) {
     "use strict";
     var developer = {
@@ -95,17 +94,25 @@
             "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
                 o.updateIMU(Number(value));
             },
-            "/SmartDashboard/Drive/TuningKnob": function(o, value) {
-                $("#driveTuning").val(Number(value));
-                $("#driveTuningTxt").text(value);
-            },
             "/SmartDashboard/RobotState/pose": function(o, value) {
                 // we expect three numbers in string value: "x y angle"
                 if(o.odometryPlot)
                 {
-                    var result = value.split(" ").map(parseFloat)
+                    var result = value.split(" ").map(parseFloat);
                     o.odometryPlot.addDataPt(result[0], result[1], result[2]);
                 }
+            },
+            "/SmartDashboard/RobotState/leftSpeed": function(o, value) {
+                o.updateSpeedChart("left", value);
+            },
+            "/SmartDashboard/RobotState/leftSpeedErr": function(o, value) {
+                o.updateSpeedChart("lefterr", value);
+            },
+            "/SmartDashboard/RobotState/rightSpeed": function(o, value) {
+                o.updateSpeedChart("right", value);
+            },
+            "/SmartDashboard/RobotState/rightSpeedErr": function(o, value) {
+                o.updateSpeedChart("righterr", value);
             },
 
             // ScissorLift ------------------------------------------------------
@@ -219,7 +226,7 @@
             });
 
             // String support ----------------------------------------------
-            $("input[type=text]").on('input', function() {
+            $("input[type=text]").on("input", function() {
                 var id = $(this).attr("id");
                 var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
@@ -230,7 +237,7 @@
             });
 
             // Number support ----------------------------------------------
-            $("input[type=number]").on('input', function() {
+            $("input[type=number]").on("input", function() {
                 var id = $(this).attr("id");
                 var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
@@ -242,7 +249,7 @@
 
             // Slider support ----------------------------------------------
             // slider id mapping must be present in idToSDKey map above
-            $("input[type=range]").on('input', function() {
+            $("input[type=range]").on("input", function() {
                 var id = $(this).attr("id");
                 var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
@@ -255,7 +262,7 @@
             });
 
             // checkbox support --------------------------------------------
-            $("input[type=checkbox]").on('input', function() {
+            $("input[type=checkbox]").on("input", function() {
                 var id = $(this).attr("id");
                 var ntkey = self.idToSDKey[id];
                 if(!ntkey) {
@@ -323,7 +330,28 @@
                     },
                     color: "rgb(20, 120, 255)"
                 }
-
+            });
+            this.leftSpeedChart = new StripChart({
+                id: "#leftSpeedChart",
+                yaxis: {
+                    min:0,
+                    max:80,
+                },
+                fillvalue: 0,
+                channelcount: 2,
+                colors: ["rgb(20, 120, 255)", "rgb(200, 200, 10)"],
+                widths: [3, 1],
+            });
+            this.rightSpeedChart = new StripChart({
+                id: "#rightSpeedChart",  // inches/sec
+                yaxis: {
+                    min:0,
+                    max:80,
+                },
+                fillvalue: 0,
+                channelcount: 2,
+                colors: ["rgb(20, 120, 255)", "rgb(200, 200, 10)"],
+                widths: [2, 1],
             });
 
             //  Climber -------------------------------------------------------
@@ -335,24 +363,32 @@
                 }
             });
 
-            function updateWhenNoRobot() {
+            this.updateWhenNoRobot = function()
+            {
                 var r = Math.random();
                 var angle = Math.floor(180*(Math.sin(self.iteration/10) *
                                          Math.sin(self.iteration/7) +
                                          .2*r));
-                self.iteration++;
-                self.updateIMU(angle);
-                self.odometryPlot.addRandomPt();
-                self.harvesterRangeChart.addRandomPt();
-                self.climberCurrent.addDataPt(0);
+                this.iteration++;
+                this.updateIMU(angle);
+                this.odometryPlot.addRandomPt();
+                this.harvesterRangeChart.addRandomPt();
+                this.climberCurrent.addDataPt(0);
+
+                let speed = 15 * (2 + Math.sin(this.iteration/20) + Math.sin(this.iteration/15));
+                let speedErr = 10 * (r - .5);
+                this.updateSpeedChart("left", speed);
+                this.updateSpeedChart("lefterr", speedErr);
+                this.updateSpeedChart("right", .9*speed);
+                this.updateSpeedChart("righterr", 1.5*speedErr - 5);
+
                 if(!app.robotConnected)
-                {
-                    setTimeout(updateWhenNoRobot, 100);
-                }
-            }
+                    setTimeout(this.updateWhenNoRobot.bind(this), 100);
+            };
+
             if(!app.robotConnected)
             {
-                updateWhenNoRobot();
+                this.updateWhenNoRobot();
             }
             // we assume that after page loaded, we'll receive a dump
             // of all networktable values (via onNetTabChange)
@@ -366,6 +402,39 @@
             if(this.imuHeadingChart) {
                 $("#imuHeading").text(num);
                 this.imuHeadingChart.addDataPt(num);
+            }
+        },
+
+        // data arrives in parts (speed, speederr).
+        //  we assume that speed arrives first (speederr only arrives in vel mode)
+        updateSpeedChart: function(w, num)
+        {
+            switch(w)
+            {
+            case "left":
+                this.leftSpeed = num;
+                $("#leftSpeedTxt").text(num.toFixed(2));
+                this.leftSpeedChart.addDataPt(num, 0);
+                break;
+            case "right":
+                this.rightSpeed = num;
+                $("#rightSpeedTxt").text(num.toFixed(2));
+                this.rightSpeedChart.addDataPt(num, 0);
+                break;
+            case "lefterr":
+                if(this.leftSpeed != undefined)
+                {
+                    let pts = [this.leftSpeed, this.leftSpeed + num];
+                    this.leftSpeedChart.changeDataPts(pts);
+                }
+                break;
+            case "righterr":
+                if(this.rightSpeed != undefined)
+                {
+                    let pts = [this.rightSpeed, this.rightSpeed + num];
+                    this.rightSpeedChart.changeDataPts(pts);
+                }
+                break;
             }
         },
 

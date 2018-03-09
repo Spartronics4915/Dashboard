@@ -1,56 +1,121 @@
-(function(global) {
-var StripChart = function(config) {
+/* global $ */
+// StripChart requires jquery.flot plot package
+window.StripChart = function(config) {
     this.config = config;
     if (!this.config.series) {
         this.config.series = {};
     }
-    this.config.series.color = "rgb(255, 255, 10)";
-    this.config.series.shadowSize = 0;
-    this.config.xaxis = {show: false};
+    if(!this.config.series.color)
+        this.config.series.color = "rgb(255, 255, 10)";
+    if(!this.config.series.shadowSize)
+        this.config.series.shadowSize = 0;
+    this.config.xaxis = {show: false}; // always time
     if(!this.config.maxlength)
-    {
         this.config.maxlength = 300; // XXX:
+    if(this.config.channelcount == undefined)
+        this.config.channelcount = 1;
+    this.data = [];
+    if(this.config.colors == undefined)
+    {
+        this.config.colors = [];
+        for(let i=0;i<this.config.channelcount;i++)
+            this.config.colors[i] = this.config.series.color;
     }
-    this.data = new Array(this.config.maxlength);
+    if(this.config.widths == undefined)
+    {
+        this.config.widths = [];
+        for(let i=0;i<this.config.channelcount;i++)
+            this.config.widths[i] = 2;
+    }
     this.height = this.config.yaxis.max - this.config.yaxis.min + 1;
-    this.data.fill(this.height / 2);
+    for(let i=0;i<this.config.channelcount;i++)
+    {
+        this.data[i] = new Array(this.config.maxlength);
+        if(this.config.fillvalue != undefined)
+            this.data[i].fill(this.config.fillvalue);
+        else
+            this.data[i].fill(this.height / 2);
+    }
     this.nextSlot = 0;
 
-    this.addDataPt = function(value) {
-        this.data[this.nextSlot] = value;
+    this.init = function() // called at end of function/Class definition
+    {
+        // app.logMsg("plotting: " + this.config.id);
+        this.plot = $.plot(this.config.id, this.getStripData(), this.config);
+    };
+
+    this.addDataPt = function(value, chan)
+    {
+        if(chan == undefined)
+            chan = 0;
+        this.data[chan][this.nextSlot] = value;
         this.nextSlot++;
-        if(this.nextSlot === this.config.maxlength) {
+        if(this.nextSlot === this.config.maxlength)
             this.nextSlot = 0;
-        }
-        this.plot.setData([this.getStripData()]);
+        this.plot.setData(this.getStripData());
         this.plot.draw();
     };
 
-    this.getStripData = function() {
-        var res = [];
-        // oldest data is at this.nextSlot, we want to run oldest to newest
-        for(var i=0; i<this.data.length; i++)
+    this.addDataPts = function(values)
+    {
+        for(let i=0;i<this.data.length;i++)
+            this.data[i][this.nextSlot] = values[i];
+        this.nextSlot++;
+        if(this.nextSlot === this.config.maxlength)
+            this.nextSlot = 0;
+        this.plot.setData(this.getStripData());
+        this.plot.draw();
+    },
+
+    // changes the data at the last slot
+    this.changeDataPts = function(values)
+    {
+        let slot = this.nextSlot - 1;
+        if(slot == -1)
+            slot = this.config.maxlength - 1;
+        for(let i=0;i<this.data.length;i++)
+            this.data[i][slot] = values[i];
+        this.plot.setData(this.getStripData());
+        this.plot.draw();
+    },
+
+    this.getStripData = function()
+    {
+        var result = []; // array of objects, one per channel
+        for(let i=0;i<this.data.length;i++) // ie number of channels
         {
-            var j = (i + this.nextSlot) % this.config.maxlength;
-            res.push([i, this.data[j]]);
+            result.push({
+                color: this.config.colors[i],
+                data: [],
+                lines: {
+                    lineWidth: this.config.widths[i],
+                },
+            });
+            let d = result[i].data;
+            for(let j=0; j<this.data[i].length; j++)
+            {
+                var k = (j + this.nextSlot) % this.config.maxlength;
+                d.push([j, this.data[i][k]]);
+            }
         }
-        return res;
+        return result;
     };
 
-    this.addRandomPt = function() {
-        if (this.data.length == 0) 
-            this.addDataPt(this.height/2);
-        else
+    this.addRandomPt = function()
+    {
+        var lastSlot = (this.config.maxlength + this.nextSlot - 1) %
+                        this.config.maxlength;
+        let pts = [];
+        for(let i=0;i<this.data.length;i++) // ie num channels
         {
-            lastSlot = (this.config.maxlength + this.nextSlot - 1) % 
-                            this.config.maxlength;
-            lastVal = this.data[lastSlot];
-            var rval = lastVal + this.height*.1*(Math.random()-.5);
-            this.addDataPt(this.clamp(rval));
+            var lastVal = this.data[i][lastSlot];
+            pts.push(this.clamp(lastVal + this.height*.1*(Math.random()-.5)));
         }
+        this.addDataPts(pts);
     };
 
-    this.clamp = function(y) {
+    this.clamp = function(y)
+    {
         if(y < 0)
             y = 0;
         else
@@ -59,7 +124,8 @@ var StripChart = function(config) {
         return y;
     };
 
-    this.getRandomData = function() {
+    this.getRandomData = function()
+    {
         if(this.randomData.length > 0)
         {
             this.randomData = this.randomData.slice(1);
@@ -88,10 +154,6 @@ var StripChart = function(config) {
         }
         return res;
     };
-    // app.logMsg("plotting: " + this.config.id);
-    this.plot = $.plot(this.config.id, [this.getStripData()], this.config);
+
+    this.init();
 };
-
-global.StripChart = StripChart;
-
-})(window);
