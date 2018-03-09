@@ -418,12 +418,12 @@
             case "left":
                 this.leftSpeed = num;
                 $("#leftSpeedTxt").text(num.toFixed(2));
-                this.leftSpeedChart.addDataPt(num, 0);
+                this.leftSpeedChart.addDataPts([num,0], 0);
                 break;
             case "right":
                 this.rightSpeed = num;
                 $("#rightSpeedTxt").text(num.toFixed(2));
-                this.rightSpeedChart.addDataPt(num, 0);
+                this.rightSpeedChart.addDataPts([num,0], 0);
                 break;
             case "lefterr":
                 if(this.leftSpeed != undefined)
