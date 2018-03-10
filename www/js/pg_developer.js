@@ -83,7 +83,6 @@
                 $("#ledMessage").html(value);
             },
 
-
             // Drive ------------------------------------------------------
             "/SmartDashboard/Drive/Status": function(o, value) {
                 $("#driveStatus").html(o.subsystemStatus(value));
@@ -94,6 +93,20 @@
             "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
                 o.updateIMU(Number(value));
             },
+            "/SmartDashboard/Drive/leftSpeed": function(o, value) {
+                o.updateSpeedChart("left", value);
+            },
+            "/SmartDashboard/Drive/leftSpeedErr": function(o, value) {
+                o.updateSpeedChart("lefterr", value);
+            },
+            "/SmartDashboard/Drive/rightSpeed": function(o, value) {
+                o.updateSpeedChart("right", value);
+            },
+            "/SmartDashboard/Drive/rightSpeedErr": function(o, value) {
+                o.updateSpeedChart("righterr", value);
+            },
+
+            // RobotState ------------------
             "/SmartDashboard/RobotState/pose": function(o, value) {
                 // we expect three numbers in string value: "x y angle"
                 if(o.odometryPlot)
@@ -101,18 +114,6 @@
                     var result = value.split(" ").map(parseFloat);
                     o.odometryPlot.addDataPt(result[0], result[1], result[2]);
                 }
-            },
-            "/SmartDashboard/RobotState/leftSpeed": function(o, value) {
-                o.updateSpeedChart("left", value);
-            },
-            "/SmartDashboard/RobotState/leftSpeedErr": function(o, value) {
-                o.updateSpeedChart("lefterr", value);
-            },
-            "/SmartDashboard/RobotState/rightSpeed": function(o, value) {
-                o.updateSpeedChart("right", value);
-            },
-            "/SmartDashboard/RobotState/rightSpeedErr": function(o, value) {
-                o.updateSpeedChart("righterr", value);
             },
 
             // ScissorLift ------------------------------------------------------
@@ -413,6 +414,7 @@
         //  we assume that speed arrives first (speederr only arrives in vel mode)
         updateSpeedChart: function(w, num)
         {
+            num = Number(num); // defensive
             switch(w)
             {
             case "left":
