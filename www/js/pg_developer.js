@@ -6,8 +6,8 @@
         iteration: 0,
 
         // idToSDKey:
-        //   This table maps from id-based events, to associated networktable key
-        //   Used when we are *writing* values to networktables.
+        //  This table maps from id-based events, to associated networktable key
+        //  Used when we are *writing* values to networktables.
         idToSDKey: {
             "TestMode": "TestMode",
             "TestVariant": "TestVariant",
@@ -28,8 +28,8 @@
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
         netTabActions: {
-            // a dispatch table, trigger a function when a nettable entry changes.
-            // args are (this, value)
+            // a dispatch table, trigger a function when a nettable entry 
+            // changes. args are (this, value)
             "/SmartDashboard/Build": function(o, value) {
                 $("#buildid").html("<span class='green'>"+value+"</span");
             },
@@ -96,14 +96,8 @@
             "/SmartDashboard/Drive/leftSpeed": function(o, value) {
                 o.updateSpeedChart("left", value);
             },
-            "/SmartDashboard/Drive/leftSpeedErr": function(o, value) {
-                o.updateSpeedChart("lefterr", value);
-            },
             "/SmartDashboard/Drive/rightSpeed": function(o, value) {
                 o.updateSpeedChart("right", value);
-            },
-            "/SmartDashboard/Drive/rightSpeedErr": function(o, value) {
-                o.updateSpeedChart("righterr", value);
             },
 
             // RobotState ------------------
@@ -116,7 +110,7 @@
                 }
             },
 
-            // ScissorLift ------------------------------------------------------
+            // ScissorLift ----------------------------------------------------
             "/SmartDashboard/ScissorLift/Status": function(o, value) {
                 $("#scissorliftStatus").html(o.subsystemStatus(value));
             },
@@ -136,7 +130,7 @@
                 $("#scissorliftTarget2").val(Number(value));
             },
 
-            // Harvester --------------------------------------------------------
+            // Harvester -----------------------------------------------------
             "/SmartDashboard/Harvester/Status": function(o, value) {
                 $("#harvesterStatus").html(o.subsystemStatus(value));
             },
@@ -156,14 +150,14 @@
                 $("#harvesterTuningTxt").text(value);
             },
 
-            // Articulated Grabber ----------------------------------------------
+            // Articulated Grabber --------------------------------------------
             "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
                 $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
             },
             "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
                 $("#articulatedGrabberState").text(value);
             },
-            "/SmartDashboard/ArticulatedGrabber/WantedState": function(o, value) {
+            "/SmartDashboard/ArticulatedGrabber/WantedState":function(o,value) {
                 $("#articulatedGrabberWantedState").text(value);
             },
             "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
@@ -175,7 +169,7 @@
             "/SmartDashboard/ArticulatedGrabber/Target3": function(o, value) {
                 $("#articulatedGrabberTarget3").val(Number(value));
             },
-            "/SmartDashboard/ArticulatedGrabber/TuningKnob": function(o, value) {
+            "/SmartDashboard/ArticulatedGrabber/TuningKnob":function(o,value) {
                 $("#articulatedGrabberTuning").val(value);
                 $("#articulatedGrabberTuningTxt").text(value);
             },
@@ -380,12 +374,10 @@
                 this.harvesterRangeChart.addRandomPt();
                 this.climberCurrent.addDataPt(0);
 
-                let speed = 15 * (2 + Math.sin(this.iteration/20) + Math.sin(this.iteration/15));
-                let speedErr = 10 * (r - .5);
+                let speed = 15 * (2 + Math.sin(this.iteration/20) + 
+                                      Math.sin(this.iteration/15));
                 this.updateSpeedChart("left", speed);
-                this.updateSpeedChart("lefterr", speedErr);
                 this.updateSpeedChart("right", .9*speed);
-                this.updateSpeedChart("righterr", 1.5*speedErr - 5);
 
                 if(!app.robotConnected)
                     setTimeout(this.updateWhenNoRobot.bind(this), 100);
@@ -410,8 +402,7 @@
             }
         },
 
-        // data arrives in parts (speed, speederr).
-        //  we assume that speed arrives first (speederr only arrives in vel mode)
+        // speed data each frame, targetVel only on change
         updateSpeedChart: function(w, num)
         {
             num = Number(num); // defensive
@@ -420,26 +411,14 @@
             case "left":
                 this.leftSpeed = num;
                 $("#leftSpeedTxt").text(num.toFixed(2));
-                this.leftSpeedChart.addDataPts([num,0], 0);
+                var leftSetPoint = app.getValue("Drive/targetVelL", 0);
+                this.leftSpeedChart.addDataPts([num,leftSetPoint], 0);
                 break;
             case "right":
                 this.rightSpeed = num;
                 $("#rightSpeedTxt").text(num.toFixed(2));
-                this.rightSpeedChart.addDataPts([num,0], 0);
-                break;
-            case "lefterr":
-                if(this.leftSpeed != undefined)
-                {
-                    let pts = [this.leftSpeed, this.leftSpeed + num];
-                    this.leftSpeedChart.changeDataPts(pts);
-                }
-                break;
-            case "righterr":
-                if(this.rightSpeed != undefined)
-                {
-                    let pts = [this.rightSpeed, this.rightSpeed + num];
-                    this.rightSpeedChart.changeDataPts(pts);
-                }
+                var rightSetPoint = app.getValue("Drive/targetVelR", 0);
+                this.rightSpeedChart.addDataPts([num,rightSetPoint], 0);
                 break;
             }
         },
@@ -448,7 +427,7 @@
             var f = this.netTabActions[key];
             if(f)
             {
-                // app.logMsg("ntchange: " + key + ":" + value + " (" +isNew + ")");
+                // app.logMsg("ntchange: "+key+":"+value+" (" +isNew + ")");
                 // app.logMsg("this.keys: " + Object.keys(this));
                 f(this, value);
             }

@@ -153,9 +153,14 @@ var app = {
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
 
-        app.putValue("CameraView", "Auto");
-        app.putValue("AutoStrategy", "None");
-        // app.putValue("AllianceStation", "Unknown"); now governed by FMS
+        if(app.getValue("CameraView", "") == "")
+            app.putValue("CameraView", "CubeCam");
+
+        var defAuto = "All: Cross Baseline";
+        if(app.getValue("AutoStrategyOptions", "") == "")
+            app.putValue("AutoStrategyOptions", defAuto);
+        if(app.getValue("AutoStrategy", "") == "")
+            app.putValue("AutoStrategy", defAuto);
     },
 
     putValue: function(nm, value) {

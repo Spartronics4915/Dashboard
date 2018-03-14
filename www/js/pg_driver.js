@@ -16,6 +16,7 @@ var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream", cls:"rotate0"};
 var dlinkDefault = {ip:"192.168.0.10", url: "/video.cgi"};
 
 var driver = {
+    defaultAuto: "All: Cross Baseline",
     piCam: piCam,
     cubeCam: dlink13,
     liftCam: dlink14,
@@ -25,7 +26,6 @@ var driver = {
         // first initialize selectors from network tables.
         $(".selector").each(function() {
             var key = $(this).attr("id");
-            // var ntkey = "/SmartDashboard/" + key;
             var val = app.getValue(key);
             $(this).val(val);
         });
@@ -55,20 +55,37 @@ var driver = {
                 break;
             case "/SmartDashboard/AutoStrategyOptions":
                 // we assume that value is a comma separated list
+                // we expect to receive this upon robot connection,
+                // and to ensure reasonable default behavior we
+                // auto-select the defaultAuto
                 var options = value.split(",").sort();
                 var sel = document.getElementById("AutoStrategy");
-                if(sel) {
-                    $(sel).empty();
-                    for(let i=0;i<options.length;i++) {
+                var val = app.getValue("AutoStrategy", "");
+                if(val == "")
+                {
+                    val = this.defaultAuto;
+                    app.putValue("AutoStrategy", val);
+                }
+                if(sel) 
+                {
+                    var oldval = sel.value;
+                    $(sel).empty(); // clear out all strategy fields
+                    for(let i=0;i<options.length;i++) 
+                    {
                         var opt = document.createElement("option");
                         opt.value = options[i];
+                        if(opt.value == oldval) found = true;
                         opt.innerHTML = opt.value;
                         sel.appendChild(opt);
                     }
+                    sel.value = val;
                 }
                 break;
             case "/SmartDashboard/CameraView":
-            case "/SmartDashboard/ScissorLift/WantedState":
+                var sel = document.getElementById("CameraView");
+                if(sel) {
+                    sel.value = value;
+                }
                 this.changeCamera();
                 break;
             case "/FMSInfo/IsRedAlliance":
@@ -151,17 +168,6 @@ var driver = {
     changeCamera: function() {
         // nb: Auto is unused for POWERUP
         var camhtml, cam, view = app.getValue("CameraView", "CubeCam");
-        var scissorState = app.getValue("ScissorLift/WantedState", "OFF");
-        if(view === "Auto") {
-            var viewcube = (-1 !== ["OFF", "RETRACTED"].indexOf(scissorState));
-            if(viewcube || !app.robotConnected)
-                view = "CubeCam";
-            else
-            if (reverseEnabled === "Enabled")
-                view = "LiftCam";
-            else
-                view = "CubeCam";
-        }
         switch(view) {
             case "CubeCam":
                 cam = this.cubeCam;
@@ -176,20 +182,6 @@ var driver = {
                 cam = null;
                 break;
         }
-        // Reference for java applet for h264 encoded stream
-        //  (required older build of firefox, since applets no longer supported)
-        //    camhtml = `
-        // <applet name="cvcs" codeBase="http://admin:@10.49.15.13:80" archive="vplug.jar?cidx=1411113015" code="vplug.class" width="640" height="480">
-        //        <param name="RemotePort" value="80">
-        //        <param name="RemoteHost" value="10.49.15.13">
-        //        <param name="Timeout" value="5000">
-        //        <param name="RotateAngle" value="0">
-        //        <param name="PreviewFrameRate" value="2">
-        //        <param name="Algorithm" value="1">
-        //        <param name="DeviceSerialNo" value="YWRtaW46">
-        //      </applet>
-	    //		`
-
         if(cam) {
             camhtml = `<img src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
         }
