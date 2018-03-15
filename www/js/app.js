@@ -153,14 +153,19 @@ var app = {
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
 
-        if(app.getValue("CameraView", "") == "")
-            app.putValue("CameraView", "CubeCam");
-
-        var defAuto = "All: Cross Baseline";
-        if(app.getValue("AutoStrategyOptions", "") == "")
-            app.putValue("AutoStrategyOptions", defAuto);
-        if(app.getValue("AutoStrategy", "") == "")
-            app.putValue("AutoStrategy", defAuto);
+        
+        // We shouldn't putValue here, since it may overwrite
+        // robotInit state.
+        if(false)
+        {
+            if(app.getValue("CameraView", "") == "")
+                app.putValue("CameraView", "CubeCam");
+            var defAuto = "All: Cross Baseline";
+            if(app.getValue("AutoStrategyOptions", "") == "")
+                app.putValue("AutoStrategyOptions", defAuto);
+            if(app.getValue("AutoStrategy", "") == "")
+                app.putValue("AutoStrategy", defAuto);
+        }
     },
 
     putValue: function(nm, value) {
