@@ -94,10 +94,12 @@
                 o.updateIMU(Number(value));
             },
             "/SmartDashboard/Drive/leftSpeed": function(o, value) {
-                o.updateSpeedChart("left", value);
+                var target = app.getValue("Drive/targetVelL", 0);
+                o.updateSpeedChart("left", value, target);
             },
             "/SmartDashboard/Drive/rightSpeed": function(o, value) {
-                o.updateSpeedChart("right", value);
+                var target = app.getValue("Drive/targetVelR", 0);
+                o.updateSpeedChart("right", value, target);
             },
 
             // RobotState ------------------
@@ -364,7 +366,7 @@
 
             this.updateWhenNoRobot = function()
             {
-                var r = Math.random();
+                var r = 2*(Math.random() - .5);
                 var angle = Math.floor(180*(Math.sin(self.iteration/10) *
                                          Math.sin(self.iteration/7) +
                                          .2*r));
@@ -376,8 +378,23 @@
 
                 let speed = 15 * (2 + Math.sin(this.iteration/20) + 
                                       Math.sin(this.iteration/15));
-                this.updateSpeedChart("left", speed);
-                this.updateSpeedChart("right", .9*speed);
+                let delta;
+                if(!this.lastSpeed)
+                    delta = speed;
+                else
+                    delta = speed - this.lastSpeed;
+                this.lastSpeed = speed;
+
+                if(this.inflection == undefined)
+                    this.inflection = speed;
+                else
+                if(Math.sign(this.lastDelta) != Math.sign(delta))
+                    this.inflection = speed;
+                this.lastDelta = delta;
+
+                let target = this.inflection + r;
+                this.updateSpeedChart("left", speed, target);
+                this.updateSpeedChart("right", .9*speed, target);
 
                 if(!app.robotConnected)
                     setTimeout(this.updateWhenNoRobot.bind(this), 100);
@@ -403,7 +420,7 @@
         },
 
         // speed data each frame, targetVel only on change
-        updateSpeedChart: function(w, num)
+        updateSpeedChart: function(w, num, target)
         {
             num = Number(num); // defensive
             switch(w)
@@ -411,14 +428,12 @@
             case "left":
                 this.leftSpeed = num;
                 $("#leftSpeedTxt").text(num.toFixed(2));
-                var leftSetPoint = app.getValue("Drive/targetVelL", 0);
-                this.leftSpeedChart.addDataPts([num,leftSetPoint], 0);
+                this.leftSpeedChart.addDataPts([num,target], 0);
                 break;
             case "right":
                 this.rightSpeed = num;
                 $("#rightSpeedTxt").text(num.toFixed(2));
-                var rightSetPoint = app.getValue("Drive/targetVelR", 0);
-                this.rightSpeedChart.addDataPts([num,rightSetPoint], 0);
+                this.rightSpeedChart.addDataPts([num,target], 0);
                 break;
             }
         },
