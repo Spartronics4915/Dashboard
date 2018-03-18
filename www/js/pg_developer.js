@@ -95,11 +95,11 @@
             },
             "/SmartDashboard/Drive/leftSpeed": function(o, value) {
                 var target = app.getValue("Drive/targetVelL", 0);
-                o.updateSpeedChart("left", value, target);
+                o.updateSpeedChart("left", value, Math.abs(target));
             },
             "/SmartDashboard/Drive/rightSpeed": function(o, value) {
                 var target = app.getValue("Drive/targetVelR", 0);
-                o.updateSpeedChart("right", value, target);
+                o.updateSpeedChart("right", value, Math.abs(target));
             },
 
             // RobotState ------------------
@@ -422,7 +422,7 @@
         // speed data each frame, targetVel only on change
         updateSpeedChart: function(w, num, target)
         {
-            num = Number(num); // defensive
+            num = Math.abs(Number(num)); // defensive
             switch(w)
             {
             case "left":
