@@ -23,8 +23,6 @@
             "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
             "climberSpeed": "Climber Speed",
         },
-
-        // netTablActions: invoked from onNetTabChange
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
         netTabActions: {
@@ -104,6 +102,14 @@
             },
             "/SmartDashboard/Harvester DOWN": function(o, value) {
                 $("#harvesterDOWN").val(value)
+            },
+            "/SmartDashboard/IsBallHeld": function(o, value) {
+                $('#ballHeld').html(value ?
+                        "<img src='/images/pic_ballheld.png' width='10px' />":
+                        "<img src='/images/pic_ballnotheld.png' width='10px' />");
+            },
+            "/SmartDashboard/LauncherClosed": function(o, value) {
+                $('#closed').val(value)
             }
         },
         subsystemStatus: function(value) {
