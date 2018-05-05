@@ -104,9 +104,12 @@
                 $("#harvesterDOWN").val(value)
             },
             "/SmartDashboard/IsBallHeld": function(o, value) {
+                $("#ballStat").val(value)
+            },
+            "/SmartDashboard/IsBallHeld": function(o, value) {
                 $('#ballHeld').html(value ?
-                        "<img src='/images/pic_ballheld.png' width='10px' />":
-                        "<img src='/images/pic_ballnotheld.png' width='10px' />");
+                        "<img src='/images/pic_ballnotheld.png' width='10px' />":
+                        "<img src='/images/pic_ballheld.png' width='10px' />");
             },
             "/SmartDashboard/LauncherClosed": function(o, value) {
                 $('#closed').val(value)
