@@ -14,17 +14,9 @@
             "TestingGUI": "TestingGUI",
             "driveTuning": "Drive/TuningKnob", // unused
             "harvesterTuning": "Harvester/TuningKnob", // unused
-            "scissorliftTarget1": "ScissorLift/Target1",
-            "scissorliftTarget2": "ScissorLift/Target2",
-            "scissorliftTarget3": "ScissorLift/Target3",
-            "scissorliftTarget4": "ScissorLift/Target4",
-            "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
-            "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
-            "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
             "climberSpeed": "Climber Speed",
+            "launcherSpeed": "LauncherWindingMotorSpeed"
         },
-
-        // netTablActions: invoked from onNetTabChange
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
         netTabActions: {
@@ -104,7 +96,28 @@
             },
             "/SmartDashboard/Harvester DOWN": function(o, value) {
                 $("#harvesterDOWN").val(value)
-            }
+            },
+            // Both of these reference the same keys, One is for the image, and one for 
+            // the 'text' state
+            "/SmartDashboard/IsBallHeld": function(o, value) {
+                $("#ballStat").val(value)
+            },
+            "/SmartDashboard/IsBallHeld": function(o, value) {
+                $('#ballHeld').html(value ?
+                        "<img src='/images/pic_ballheld.png' width='10px' />":
+                        "<img src='/images/pic_ballnotheld.png' width='10px' />");
+            },
+            "/SmartDashboard/LauncherClosed": function(o, value) {
+                $('#closed').val(value)
+            },
+            "/SmartDashboard/launcherSpeed": function(o, value) {
+                $('#launcherSpeed').val(value);
+                $('#launcherTxt').text(value); 
+            }           
+
+
+
+
         },
         subsystemStatus: function(value) {
             return value === "ERROR" ?
