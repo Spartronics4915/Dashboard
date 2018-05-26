@@ -15,7 +15,7 @@
             "driveTuning": "Drive/TuningKnob", // unused
             "harvesterTuning": "Harvester/TuningKnob", // unused
             "climberSpeed": "Climber Speed",
-            "launcherSpeed": "LauncherWindingMotorSpeed"
+            "launcherSpeed": "mLauncherWindingMotorDefaultSpeed"
         },
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
@@ -76,44 +76,31 @@
             },
 
             // Keys     ------------------------------------------------------
-            "/SmartDashboard/Gyroscope": function(o, value) {
-                $("#gyroDeg").val(value)
-            },
-            "/SmartDashboard/Launcher Limit Switch": function(o, value) {
-                $("#launcherSwitch").val(value)
-            },
-            "/SmartDashboard/BatteryVoltage: ": function(o,value) {
-                $("#batVoltage").val(value)
-            },
-            "/SmartDashboard/Range (in mm): ": function(o,value) {
-                $("#mmRange").val(value)
-            },
-            "/SmartDashboard/Range (raw value)": function(o,value) {
+            "mDistanceToBall": function(o,value) {
                 $("#rawRange").val(value)
             },
-            "/SmartDashboard/Harvester UP": function(o, value) {
-                $("#harvesterUP").val(value)
-            },
-            "/SmartDashboard/Harvester DOWN": function(o, value) {
-                $("#harvesterDOWN").val(value)
+            "mLauncherRewoundSwitchTriggered": function(o, value) {
+                $("#rewindState").val(value)
             },
             // Both of these reference the same keys, One is for the image, and one for 
             // the 'text' state
-            "/SmartDashboard/IsBallHeld": function(o, value) {
-                $("#ballStat").val(value)
+            "mLauncherSolenoidState": function(o, value) {
+                $("#launchState").val(value)
+
             },
-            "/SmartDashboard/IsBallHeld": function(o, value) {
+            "mBallPresent": function(o, value) {
                 $('#ballHeld').html(value ?
                         "<img src='/images/pic_ballheld.png' width='10px' />":
                         "<img src='/images/pic_ballnotheld.png' width='10px' />");
             },
-            "/SmartDashboard/LauncherClosed": function(o, value) {
-                $('#closed').val(value)
-            },
-            "/SmartDashboard/launcherSpeed": function(o, value) {
-                $('#launcherSpeed').val(value);
-                $('#launcherTxt').text(value); 
-            }           
+            // This is the speed that is read from
+            "mLauncherWindingMotorDefaultSpeed": function(o, value) {
+                $('#launcherSpeed').val(value); 
+            },           
+            "mLauncherWindingMotorCurrentSpeed": function(o, value) {
+                $('#launcherCurrentSpeed').val(value);
+            }
+
 
 
 
