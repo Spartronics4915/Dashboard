@@ -177,9 +177,9 @@ var app = {
         {
             // for 18.0.1 
             // pynetworktables2js version isn't readily avilable here
-            NetworkTables.putValue("SmartDashboard/"+nm, value);
+            //NetworkTables.putValue("SmartDashboard/"+nm, value);
             // for 18.0.2
-            // NetworkTables.putValue("/SmartDashboard/"+nm, value);
+             NetworkTables.putValue("/SmartDashboard/"+nm, value);
         }
     },
 

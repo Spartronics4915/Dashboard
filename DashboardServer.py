@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
-    This is our dashboard server application, using the tornado handlers,
-    that you can use to connect your HTML/Javascript dashboard code to
+This is our dashboard server application, using the tornado handlers,
+     that you can use to connect your HTML/Javascript dashboard code to
     your robot via NetworkTables.
 
     Run this application with python, then you can open your browser to

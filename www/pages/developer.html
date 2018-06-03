@@ -45,197 +45,23 @@
     </div>
 </div>
 
-<!-- Drive -->
+<!-- All launcher panels -->
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Drive
-            <small id="driveStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="driveState">n/a</span>
+        <h3 class="panel-title">
+            Launcher
+            <small id="launchState">status: unknown</small>
+            <span id="ballHeld">
+                <img src="/images/pic_ballnotheld.png" width=10px\>
             </span>
         </h3>
     </div>
-    <div class="panel-body">
-        <!-- subpanel one (left) -->
-        <div class="col-sm-6">
-            <div class="plotContainer" style="border:5px;">
-                <div>
-                    IMU Heading <span id="imuHeading">n/a</span>
-                </div>
-                <div class="stripChart" id="imuHeadingChart"
-                    style="width:300px; height:100px"></div>
-            </div>
-        </div>
-
-        <!-- subpanel one (right) -->
-        <div class="col-sm-6">
-            <div class="plotContainer" style="border:5px;">
-                <div>
-                    Left Speed <span id="leftSpeedTxt">0</span> ips
-                </div>
-                <div class="stripChart" id="leftSpeedChart"
-                    style="width:626px; height:200px">
-                </div>
-            </div>
-        </div>
-
-
-        <!-- subpanel two (left) -->
-        <div class="col-sm-6">
-            <div class="plotContainer" style="border:5px;">
-                <div>
-                    Odometry
-                </div>
-                <div class="stripChart" id="driveOdometryPlot"
-                    style="width:326px; height:162px">
-                </div>
-            </div>
-            <div>
-            </div>
-        </div>
-
-        <!-- subpanel left (right) -->
-        <div class="col-sm-6">
-            <div class="plotContainer" style="border:5px;">
-                <div>
-                    Right Speed <span id="rightSpeedTxt">0</span> ips
-                </div>
-                <div class="stripChart" id="rightSpeedChart"
-                    style="width:626px; height:200px">
-                </div>
-            </div>
-        </div>
-
+    <div class="col-sm-6">
+             <label for="launcherSpeed">Climber Speed</label>
+             <input id="launcherSpeed" type="range"
+                 min="0" max="1" step=".025"/>
+             <output for="launcherSpeed" id="launcherSpeedTxt">0</output>
     </div>
+
 </div>
 
-
-<!-- ScissorLift -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">ScissorLift
-            <small id="scissorliftStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State:
-                    <span id="scissorliftState">n/a</span>
-                &nbsp;&nbsp;WantedState:
-                    <span id="scissorliftWantedState">n/a</span>
-                &nbsp;&nbsp;Potentiometer:
-                    <span id="scissorliftPotentiometer">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-12" style="border:5px;">
-            <!--
-            <label for="scissorliftTuning">Targets</label>
-            <input id="scissorliftTuning" type="range"
-                   min="0" max="1000" step="1"/>
-            <output for="scissorliftTuning" id="scissorliftTuningTxt">0</output>
-            -->
-            Targets (low, med, high, climb)
-            <input id="scissorliftTarget1" type="number" min="0" max="4095"
-                    step="1" value="0" />
-            <input id="scissorliftTarget2" type="number" min="0" max="4095"
-                    step="1" value="200" />
-            <input id="scissorliftTarget3" type="number" min="0" max="4095"
-                    step="1" value="400" />
-            <input id="scissorliftTarget4" type="number" min="0" max="4095"
-                    step="1" value="800" />
-        </div>
-        <div class="col-sm-6">
-        </div>
-    </div>
-</div>
-
-<!-- ArticulatedGrabber -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">ArticulatedGrabber
-            <small id="articulatedGrabberStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="articulatedGrabberState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="articulatedGrabberWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6">
-            Targets (hold, place, pick)
-            <input id="articulatedGrabberTarget1" type="number" min="0" max="1000" step="1" value="20" />
-            <input id="articulatedGrabberTarget2" type="number" min="0" max="1000" step="1" value="200" />
-            <input id="articulatedGrabberTarget3" type="number" min="0" max="1000" step="1" value="400" />
-        </div>
-        <!--
-        <div class="col-sm-6" style="border:5px;">
-            <label for="articulatedGrabberTuning">Tuning Knob</label>
-            <input id="articulatedGrabberTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="articulatedGrabberTuning" id="articulatedGrabberTuningTxt">0</output>
-        </div>
-        -->
-    </div>
-</div>
-
-
-<!-- Harvester -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Harvester
-            <small id="harvesterStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="harvesterState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="harvesterWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6" style="border:5px;">
-            <!--
-            <div class="plotContainer" style="border:5px;">
-                <div>
-                    Cube Range
-                </div>
-                <div class="stripChart" id="harvesterRangeChart" style="width:300px; height:100px"></div>
-            </div>
-            -->
-           <!--
-            <label for="harvesterTuning">Tuning Knob</label>
-            <input id="harvesterTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="harvesterTuning" id="harvesterTuningTxt">0</output>
-            -->
-            </div>
-        </div>
-        <div class="col-sm-6">
-        </div>
-    </div>
-</div>
-
-
-<!-- Climber -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Climber
-            <small id="climberStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="climberState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="climberWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6">
-          <div> <b>Climber Current</b> </div>
-          <div class="stripChart" id="climberCurrent"
-                style="width:300px; height:100px">
-          </div>
-        </div>
-        <div class="col-sm-6">
-            <label for="climberSpeed">Climber Speed</label>
-            <input id="climberSpeed" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="climberSpeed" id="climberSpeedTxt">0</output>
-        </div>
-    </div>
-</div>

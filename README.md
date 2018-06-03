@@ -1,4 +1,5 @@
-# Dashboard
+
+# Atlas Dashboard
 
 Repository with the Spartronics dashboard code. This dashboard is built atop the python
 implementation of networktables.  Coupled with standard python

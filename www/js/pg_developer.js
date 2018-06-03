@@ -14,17 +14,9 @@
             "TestingGUI": "TestingGUI",
             "driveTuning": "Drive/TuningKnob", // unused
             "harvesterTuning": "Harvester/TuningKnob", // unused
-            "scissorliftTarget1": "ScissorLift/Target1",
-            "scissorliftTarget2": "ScissorLift/Target2",
-            "scissorliftTarget3": "ScissorLift/Target3",
-            "scissorliftTarget4": "ScissorLift/Target4",
-            "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
-            "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
-            "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
             "climberSpeed": "Climber Speed",
+            "launcherSpeed": "mLauncherWindingMotorDefaultSpeed"
         },
-
-        // netTablActions: invoked from onNetTabChange
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
         netTabActions: {
@@ -58,7 +50,7 @@
                 $("#TestingGUI").prop("checked", value);
             },
 
-            // Vision --------------------------------------------------------
+            // Vision (used for demo) ----------------------------------------
             "/SmartDashboard/Vision/Status": function(o, value) {
                 $("#visionStatus").html(o.subsystemStatus(value));
             },
@@ -66,7 +58,7 @@
                 $("#visionState").text(value);
             },
 
-            // LED --------------------------------------------------------
+            // LED (Used for demo) -------------------------------------------
             "/SmartDashboard/LED/Status": function(o, value) {
                 $("#ledStatus").html(o.subsystemStatus(value));
             },
@@ -83,118 +75,36 @@
                 $("#ledMessage").html(value);
             },
 
-            // Drive ------------------------------------------------------
-            "/SmartDashboard/Drive/Status": function(o, value) {
-                $("#driveStatus").html(o.subsystemStatus(value));
+            // Keys     ------------------------------------------------------
+            "/mDistanceToBall": function(o,value) {
+                $("#rawRange").val(value)
             },
-            "/SmartDashboard/Drive/State": function(o, value) {
-                $("#driveState").text(value);
+            "/mLauncherRewoundSwitchTriggered": function(o, value) {
+                $("#rewindState").val(value)
             },
-            "/SmartDashboard/Drive/IMU_Heading": function(o, value) {
-                o.updateIMU(Number(value));
-            },
-            "/SmartDashboard/Drive/leftSpeed": function(o, value) {
-                var target = app.getValue("Drive/targetVelL", 0);
-                o.updateSpeedChart("left", value, Math.abs(target));
-            },
-            "/SmartDashboard/Drive/rightSpeed": function(o, value) {
-                var target = app.getValue("Drive/targetVelR", 0);
-                o.updateSpeedChart("right", value, Math.abs(target));
-            },
+            // Both of these reference the same keys, One is for the image, and one for 
+            // the 'text' state
+            "/mLauncherSolenoidState": function(o, value) {
+                $("#launchState").val(value)
 
-            // RobotState ------------------
-            "/SmartDashboard/RobotState/pose": function(o, value) {
-                // we expect three numbers in string value: "x y angle"
-                if(o.odometryPlot)
-                {
-                    var result = value.split(" ").map(parseFloat);
-                    o.odometryPlot.addDataPt(result[0], result[1], result[2]);
-                }
             },
+            "/mBallPresent": function(o, value) {
+                $('#ballHeld').html(value ?
+                        "<img src='/images/pic_ballheld.png' width='10px' />":
+                        "<img src='/images/pic_ballnotheld.png' width='10px' />");
+            },
+            // This is the speed that is read from
+            "/mLauncherWindingMotorDefaultSpeed": function(o, value) {
+                $('#launcherSpeed').val(value); 
+            },          
+            "/mLauncherWindingMotorCurrentSpeed": function(o, value) {
+                $('#launcherCurrentSpeed').val(value);
+            }
 
-            // ScissorLift ----------------------------------------------------
-            "/SmartDashboard/ScissorLift/Status": function(o, value) {
-                $("#scissorliftStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/ScissorLift/State": function(o, value) {
-                $("#scissorliftState").text(value);
-            },
-            "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
-                $("#scissorliftPotentiometer").text(value);
-            },
-            "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
-                $("#scissorliftWantedState").text(value);
-            },
-            "/SmartDashboard/ScissorLift/Target1": function(o, value) {
-                $("#scissorliftTarget1").val(Number(value));
-            },
-            "/SmartDashboard/ScissorLift/Target2": function(o, value) {
-                $("#scissorliftTarget2").val(Number(value));
-            },
 
-            // Harvester -----------------------------------------------------
-            "/SmartDashboard/Harvester/Status": function(o, value) {
-                $("#harvesterStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/Harvester/State": function(o, value) {
-                $("#harvesterState").text(value);
-            },
-            "/SmartDashboard/Harvester/WantedState": function(o, value) {
-                $("#harvesterWantedState").text(value);
-            },
-            "/SmartDashboard/Harvester/CubeRange": function(o, value) {
-                if(o.harvesterRangeChart) {
-                    o.harvesterRangeChart.addDataPt(value);
-                }
-            },
-            "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
-                $("#harvesterTuning").val(value);
-                $("#harvesterTuningTxt").text(value);
-            },
 
-            // Articulated Grabber --------------------------------------------
-            "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
-                $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
-                $("#articulatedGrabberState").text(value);
-            },
-            "/SmartDashboard/ArticulatedGrabber/WantedState":function(o,value) {
-                $("#articulatedGrabberWantedState").text(value);
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
-                $("#articulatedGrabberTarget1").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target2": function(o, value) {
-                $("#articulatedGrabberTarget2").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target3": function(o, value) {
-                $("#articulatedGrabberTarget3").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/TuningKnob":function(o,value) {
-                $("#articulatedGrabberTuning").val(value);
-                $("#articulatedGrabberTuningTxt").text(value);
-            },
 
-            // Climber --------------------------------------------------------
-            "/SmartDashboard/Climber/Status": function(o, value) {
-                $("#climberStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/Climber/State": function(o, value) {
-                $("#climberState").text(value);
-            },
-            "/SmartDashboard/Climber/WantedState": function(o, value) {
-                $("#climberWantedState").text(value);
-            },
-            "/SmartDashboard/Climber/Speed": function(o, value) {
-                $("#climberSpeed").val(value);
-                $("#climberSpeedTxt").text(value);
-            },
-            "/SmartDashboard/Climber/Current": function(o, value) {
-                if(o.climberCurrent) {
-                    o.climberCurrent.addDataPt(value);
-                }
-            },
+
         },
         subsystemStatus: function(value) {
             return value === "ERROR" ?
