@@ -76,28 +76,28 @@
             },
 
             // Keys     ------------------------------------------------------
-            "mDistanceToBall": function(o,value) {
+            "/mDistanceToBall": function(o,value) {
                 $("#rawRange").val(value)
             },
-            "mLauncherRewoundSwitchTriggered": function(o, value) {
+            "/mLauncherRewoundSwitchTriggered": function(o, value) {
                 $("#rewindState").val(value)
             },
             // Both of these reference the same keys, One is for the image, and one for 
             // the 'text' state
-            "mLauncherSolenoidState": function(o, value) {
+            "/mLauncherSolenoidState": function(o, value) {
                 $("#launchState").val(value)
 
             },
-            "mBallPresent": function(o, value) {
+            "/mBallPresent": function(o, value) {
                 $('#ballHeld').html(value ?
                         "<img src='/images/pic_ballheld.png' width='10px' />":
                         "<img src='/images/pic_ballnotheld.png' width='10px' />");
             },
             // This is the speed that is read from
-            "mLauncherWindingMotorDefaultSpeed": function(o, value) {
+            "/mLauncherWindingMotorDefaultSpeed": function(o, value) {
                 $('#launcherSpeed').val(value); 
-            },           
-            "mLauncherWindingMotorCurrentSpeed": function(o, value) {
+            },          
+            "/mLauncherWindingMotorCurrentSpeed": function(o, value) {
                 $('#launcherCurrentSpeed').val(value);
             }
 
