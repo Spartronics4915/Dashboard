@@ -1,0 +1,144 @@
+/* general ------------------------------------------*/
+body
+{
+    background-color: #111111;
+    color: #888888;
+}
+  
+hr 
+{
+    color:#25b;
+    border-color: #25b;
+}
+
+.bigfont
+{
+  font-size: 30px;
+}
+
+@-moz-keyframes spin {
+    100% { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
+}
+@-webkit-keyframes blink { 67% { opacity: 0 }}
+@-moz-keyframes blink {  67% { opacity: 0 }}
+@-o-keyframes blink {  67% { opacity: 0 }}
+@keyframes blink {  67% { opacity: 0 }}
+
+.rotate90 {
+    width: 640px;
+    height: 480px;
+    webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    border: 2px solid gray;
+}
+
+.rotate0
+{
+    width: 640px;
+    height: 480px;
+    border: 2px solid blue;
+}
+
+.amber
+{
+  color: rgb(200,130,0);
+}
+
+.green
+{
+  color: rgb(17, 151, 42);
+}
+
+.blinkRed {
+  color: rgb(255,30,30);
+  -webkit-animation-name: blink;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+  -webkit-animation-duration: 1s;
+}
+
+/* navbar -------------------------------------------*/
+#navtitle
+{
+    font-size: 18px;
+}
+
+.navLink
+{
+    font-size: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.navbar-dark .navbar-nav .active>.nav-link, 
+.navbar-dark .navbar-nav .nav-link.active, 
+.navbar-dark .navbar-nav .nav-link.show, 
+.navbar-dark .navbar-nav .show>.nav-link
+{
+    color:#25b;
+    font-weight: bold;
+}
+
+.navbar-dark .navbar-nav .nav-link
+{
+    color:#555;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover
+{
+    color:#28a;
+}
+
+#nettabState, #robotState
+{
+  text-align: right;
+}
+
+/* robolog -------------------------------------------*/
+.logmsg 
+{
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.timestamp 
+{
+    color: #555;
+}
+
+.namespace 
+{
+    color: #383;
+}
+
+.DEBUG 
+{
+   color: #555;
+}
+
+.INFO 
+{
+   color: #248;
+}
+
+.NOTICE 
+{
+   color: #24F;
+}
+
+.WARNING 
+{
+    color: #842;
+}
+
+.ERROR,
+.EXCEPTION 
+{
+    color: #822;
+}

@@ -27,6 +27,10 @@ select {
     border: 0px;
 }
 
+button {
+  color: #888;
+}
+
 label {
     font-weight: 400;
 }

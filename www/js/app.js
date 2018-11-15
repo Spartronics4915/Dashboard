@@ -1,5 +1,9 @@
+/* global NetworkTables RobotLog $ */
+
 (function(global) {
-'use strict';
+
+"use strict";
+
 var app = {
     mainContent: "#mainContent",
     mainNav: "#mainNavList",
@@ -10,63 +14,102 @@ var app = {
     pageHandlers: {},
     varRegExp: /{\s*(\w+)\s*}/g, /* w is alphnum, s is space*/
 
-    initialize: function() {
-        document.addEventListener("DOMContentLoaded", this.onReady, false);
+    initialize: function()
+    {
+        document.addEventListener("DOMContentLoaded", 
+            this.onReady.bind(this), false);
     },
 
-    logMsg: function(msg, force) {
-        if(force || true) {
+    logMsg: function(msg, force)
+    {
+        if(force || true)
+        {
             console.log(msg);
         }
     },
 
-    setPageHandler: function(page, handler) {
+    debug: function(msg)
+    {
+        this.logMsg("DEBUG   " + msg);
+    },
+
+    info: function(msg)
+    {
+        this.logMsg("INFO    " + msg);
+    },
+
+    notice: function(msg)
+    {
+        this.logMsg("NOTICE  " + msg);
+    },
+
+    warning: function(msg)
+    {
+        this.logMsg("WARNING " + msg);
+    },
+
+    setPageHandler: function(page, handler)
+    {
         this.pageHandlers[page] = handler;
     },
 
     // onReady is invoked after all scripts have finished loading.
-    onReady: function() { // event callback, 'this' not valid
-        // app.logMsg("deviceready");
+    onReady: function()
+    {
+        this.debug("deviceready");
+
+        if(window.Layout)
+        {
+            this.layout = new window.Layout({
+                layout: "/layouts/ShuffleBoardLayout.json"
+            });
+            this.layout.init();
+        }
+        else
+            this.layout = null;
+
         var initURL = app.homeHref;
         if(window.location.hash)
         {
             // app.logMsg("using window.location.hash: " + window.location.hash);
             initURL = window.location.hash;
-            app.navigate(window.location.hash);
+            this.navigate(window.location.hash);
         }
-        app.navigate(initURL);
+        this.navigate(initURL);
 
         // do this after first navigate
         global.onhashchange = function(arg) {
-            app.navigate(window.location.hash);
-        }
+            this.navigate(window.location.hash);
+        }.bind(this);
 
-        NetworkTables.addWsConnectionListener(app.onNetTabConnect, true);
-        NetworkTables.addRobotConnectionListener(app.onRobotConnect, true);
-        NetworkTables.addGlobalListener(app.onNetTabChange, true);
+        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
+        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
+        NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
 
         RobotLog.addWsConnectionListener(app.onLogConnect, true);
     },
 
     // navigate: is the primary entrypoint for switch views
-    navigate: function(url) {
+    navigate: function(url)
+    {
         var fields = url.split("?");
         var params = (fields.length == 2) ? fields[1] : null;
         var page = this.urlToPage(fields[0]);
         if(this.currentPage !== page)
         {
-            // this.logMsg("navigate: " + page);
+            this.info("navigate: " + page);
             this.currentPage = page;
             this.loadPage(page, this.mainContent);
         }
         if(params !== null)
         {
-            this.logMsg("url params not current supported");
+            this.warning("url params not currently supported");
             // this.updateParams(params);
         }
     },
 
-    updateNav: function() {
+    updateNav: function()
+    {
         // this.logMsg("updateNav ---------------------------------");
         $("#mainNavList").find(".active").removeClass("active");
         // find the parent of the <a> whose href endswith the current page.
@@ -74,24 +117,36 @@ var app = {
                                                            .addClass("active");
     },
 
-    urlToPage: function(href) {
+    urlToPage: function(href)
+    {
         var i = href.lastIndexOf("/");
         return href.slice(i+2); // eliminate hash
     },
 
-    loadPage: function(page, target) {
-        // this.logMsg("loadPage: " + page);
-        var fileref = "/pages/" + page + ".html";
-        RobotLog.setLogListener(null, false);
-        this.sendGetRequest(fileref, function(html) {
-            var targetElem = document.querySelector(target);
-            app.pageHandlers[page].pageLoaded(targetElem, html);
-            app.replayNetTab(); // triggers onNetTabChange
-            app.updateNav();
-        });
+    loadPage: function(page, target)
+    {
+        if(this.layout)
+        {
+            this.info("loadPage from layout:" + page);
+            this.layout.buildPage();
+            this.updateNav();
+        }
+        else
+        {
+            // this.logMsg("loadPage: " + page);
+            var fileref = "/pages/" + page + ".html";
+            RobotLog.setLogListener(null, false);
+            this.sendGetRequest(fileref, function(html) {
+                var targetElem = document.querySelector(target);
+                this.pageHandlers[page].pageLoaded(targetElem, html);
+                this.replayNetTab(); // triggers onNetTabChange
+                this.updateNav();
+            }.bind(this));
+        }
     },
 
-    interpolate: function(body, map) {
+    interpolate: function(body, map)
+    {
         var result = body.replace(this.varRegExp,
             function(match, capture) {
                 var mm = map[capture];
@@ -107,20 +162,23 @@ var app = {
     },
 
     // robotlog callbacks ------------------------------------------------
-    onLogConnect: function(cnx) {
-        app.logMsg("RobotLog connected");
+    onLogConnect: function(cnx)
+    {
+        app.notice("RobotLog connected");
     },
 
     // network table callbacks ------------------------------------------------
-    onRobotConnect: function(cnx) {
+    onRobotConnect: function(cnx)
+    {
         app.robotConnected = cnx;
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
-                                    "<span class='blinkRed bigfont'>off-line</span>");
+                                    "<span class='blinkRed'>off-line</span>");
         $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
         app.updateCANStatus();
     },
 
-    updateCANStatus: function() {
+    updateCANStatus: function()
+    {
         if(this.robotConnected)
         {
             var value = app.getValue("CANBusStatus");
@@ -131,21 +189,24 @@ var app = {
         }
         else
         {
-            $("#robotCANStatus").html(``);
+            $("#robotCANStatus").html("");
         }
     },
 
-    onNetTabConnect: function(cnx) {
+    onNetTabConnect: function(cnx)
+    {
         if(cnx)
         {
             $("#nettabState").html("<span class='green'>connected</span>");
-            if(app.pageHandlers[app.currentPage].onNetTabConnect) {
+            if(app.pageHandlers[app.currentPage] &&
+               app.pageHandlers[app.currentPage].onNetTabConnect) 
+            {
                 app.pageHandlers[app.currentPage].onNetTabConnect();
             }
         }
         else
         {
-            $("#nettabState").html("<span class='blinkRed bigfont'>off-line</span>");
+            $("#nettabState").html("<span class='blinkRed'>off-line</span>");
         }
 
         var tval = app.getValue("Build");
@@ -168,7 +229,8 @@ var app = {
         }
     },
 
-    putValue: function(nm, value) {
+    putValue: function(nm, value)
+    {
         if(name == undefined)
         {
             console.error("bad putvalue");
@@ -183,11 +245,13 @@ var app = {
         }
     },
 
-    getValue: function(nm, def="") {
+    getValue: function(nm, def="")
+    {
         return NetworkTables.getValue("/SmartDashboard/"+nm, def);
     },
 
-    replayNetTab: function() {
+    replayNetTab: function()
+    {
         var keys = NetworkTables.getKeys();
         for(var i=0;i<keys.length; i++)
         {
@@ -196,7 +260,8 @@ var app = {
         }
     },
 
-    onNetTabChange: function(key, value, isNew) {
+    onNetTabChange: function(key, value, isNew)
+    {
         if(false) {
             app.logMsg("nettab entry changed: " + key +
                   " = " + value +
@@ -209,6 +274,7 @@ var app = {
             default:
                 break;
         }
+        if(!app.pageHandlers[app.currentPage]) return;
         if(app.pageHandlers[app.currentPage].onNetTabChange)
         {
             app.pageHandlers[app.currentPage].onNetTabChange(key, value, isNew);
@@ -216,16 +282,18 @@ var app = {
     },
 
     // ajax utils -------------------------------------------------------------
-    sendGetRequest: function(url, responseHandler) {
+    sendGetRequest: function(url, responseHandler)
+    {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
             app.handleResponse(req, responseHandler, false);
-        }
+        };
         req.open("GET", url, true);
         req.send(null);
     },
 
-    handleResponse: function(request, responseHandler, isJSON) {
+    handleResponse: function(request, responseHandler, isJSON)
+    {
         if((request.readyState == 4) && (request.status == 200))
         {
             if(isJSON)
@@ -240,10 +308,11 @@ var app = {
     },
 
     // from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-    storageAvailable: function(type) {
+    storageAvailable: function(type)
+    {
       try {
           var storage = window[type],
-              x = '__storage_test__';
+              x = "__storage_test__";
           storage.setItem(x, x);
           storage.removeItem(x);
           return true;
@@ -256,19 +325,27 @@ var app = {
               e.code === 1014 ||
               // test name field too, because code might not be present
               // everything except Firefox
-              e.name === 'QuotaExceededError' ||
+              e.name === "QuotaExceededError" ||
               // Firefox
-              e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+              e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
               // acknowledge QuotaExceededError only if there's something already stored
               storage.length !== 0;
         }
     },
 
-    loadImage: function(url) {
-      return new Promise(resolve => { let i = new Image(); i.onload = ()=>{resolve(i)}; i.src=url; });
+    loadImage: function(url)
+    {
+      return new Promise(resolve => { 
+          let i = new Image(); 
+          i.onload = () => {
+            resolve(i);
+          }; 
+          i.src=url; 
+      });
     },
 
-    downloadURI: function(uri, name) {
+    downloadURI: function(uri, name)
+    {
       var link = document.createElement("a");
       link.target = "_blank";
       link.download = name;
@@ -282,6 +359,6 @@ var app = {
 
 app.initialize();
 global.app = app;
-app.logMsg("Dashboard loaded", true);
+app.notice("Dashboard loaded");
 
 })(window);
