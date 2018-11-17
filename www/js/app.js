@@ -175,11 +175,14 @@ var app = {
         }
         else
         {
-            // for 18.0.1 
-            // pynetworktables2js version isn't readily avilable here
-            NetworkTables.putValue("SmartDashboard/"+nm, value);
-            // for 18.0.2
-            // NetworkTables.putValue("/SmartDashboard/"+nm, value);
+            // We're stuck with this because there's no good way
+            // to get pynetworktables' version here.
+
+            // for version < 2018 
+            //NetworkTables.putValue("SmartDashboard/"+nm, value);
+
+            // for version >= 2018
+            NetworkTables.putValue("/SmartDashboard/"+nm, value);
         }
     },
 

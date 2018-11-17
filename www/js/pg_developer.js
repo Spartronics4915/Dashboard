@@ -13,22 +13,13 @@
             "TestVariant": "TestVariant",
             "TestingGUI": "TestingGUI",
             "driveTuning": "Drive/TuningKnob", // unused
-            "harvesterTuning": "Harvester/TuningKnob", // unused
-            "scissorliftTarget1": "ScissorLift/Target1",
-            "scissorliftTarget2": "ScissorLift/Target2",
-            "scissorliftTarget3": "ScissorLift/Target3",
-            "scissorliftTarget4": "ScissorLift/Target4",
-            "articulatedGrabberTarget1": "ArticulatedGrabber/Target1",
-            "articulatedGrabberTarget2": "ArticulatedGrabber/Target2",
-            "articulatedGrabberTarget3": "ArticulatedGrabber/Target3",
-            "climberSpeed": "Climber Speed",
         },
 
         // netTablActions: invoked from onNetTabChange
         //  table maps from networktable key, to per-key webpage refresh.
         //  used when we receive values from networktables.
         netTabActions: {
-            // a dispatch table, trigger a function when a nettable entry 
+            // a dispatch table, trigger a function when a nettable entry
             // changes. args are (this, value)
             "/SmartDashboard/Build": function(o, value) {
                 $("#buildid").html("<span class='green'>"+value+"</span");
@@ -102,7 +93,7 @@
                 o.updateSpeedChart("right", value, Math.abs(target));
             },
 
-            // RobotState ------------------
+            // RobotState -------------------------------------------------
             "/SmartDashboard/RobotState/pose": function(o, value) {
                 // we expect three numbers in string value: "x y angle"
                 if(o.odometryPlot)
@@ -112,89 +103,37 @@
                 }
             },
 
-            // ScissorLift ----------------------------------------------------
-            "/SmartDashboard/ScissorLift/Status": function(o, value) {
-                $("#scissorliftStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/ScissorLift/State": function(o, value) {
-                $("#scissorliftState").text(value);
-            },
-            "/SmartDashboard/ScissorLift/Potentiometer": function(o, value) {
-                $("#scissorliftPotentiometer").text(value);
-            },
-            "/SmartDashboard/ScissorLift/WantedState": function(o, value) {
-                $("#scissorliftWantedState").text(value);
-            },
-            "/SmartDashboard/ScissorLift/Target1": function(o, value) {
-                $("#scissorliftTarget1").val(Number(value));
-            },
-            "/SmartDashboard/ScissorLift/Target2": function(o, value) {
-                $("#scissorliftTarget2").val(Number(value));
+            // Turret -----------------------------------------------------
+            "/SmartDashboard/Turret/state": function(o, value) {
+              $("#turretState").text(value);
             },
 
-            // Harvester -----------------------------------------------------
-            "/SmartDashboard/Harvester/Status": function(o, value) {
-                $("#harvesterStatus").html(o.subsystemStatus(value));
+            // LIDAR ------------------------------------------------------
+            "/SmartDashboard/Lidar/status": function(o, value) {
+              $("#lidarStatus").text(value)
             },
-            "/SmartDashboard/Harvester/State": function(o, value) {
-                $("#harvesterState").text(value);
+            "/SmartDashboard/Lidar/angle": function(o, value) {
+              $("#lidarAngle").text(value)
             },
-            "/SmartDashboard/Harvester/WantedState": function(o, value) {
-                $("#harvesterWantedState").text(value);
-            },
-            "/SmartDashboard/Harvester/CubeRange": function(o, value) {
-                if(o.harvesterRangeChart) {
-                    o.harvesterRangeChart.addDataPt(value);
+            "/SmartDashboard/Lidar/points": function(o, value) {
+              if(o.lidarPointPlot)
+              {
+                if(value === "new") {
+                  o.lidarPointPlot.clearPts();
+                  return
                 }
-            },
-            "/SmartDashboard/Harvester/TuningKnob": function(o, value) {
-                $("#harvesterTuning").val(value);
-                $("#harvesterTuningTxt").text(value);
-            },
 
-            // Articulated Grabber --------------------------------------------
-            "/SmartDashboard/ArticulatedGrabber/Status": function(o, value) {
-                $("#articulatedGrabberStatus").html(o.subsystemStatus(value));
+                var result = value.split(" ").map(parseFloat);
+                o.lidarPointPlot.addDataPt(result[0], result[1], 0.0);
+              }
             },
-            "/SmartDashboard/ArticulatedGrabber/State": function(o, value) {
-                $("#articulatedGrabberState").text(value);
-            },
-            "/SmartDashboard/ArticulatedGrabber/WantedState":function(o,value) {
-                $("#articulatedGrabberWantedState").text(value);
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target1": function(o, value) {
-                $("#articulatedGrabberTarget1").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target2": function(o, value) {
-                $("#articulatedGrabberTarget2").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/Target3": function(o, value) {
-                $("#articulatedGrabberTarget3").val(Number(value));
-            },
-            "/SmartDashboard/ArticulatedGrabber/TuningKnob":function(o,value) {
-                $("#articulatedGrabberTuning").val(value);
-                $("#articulatedGrabberTuningTxt").text(value);
-            },
-
-            // Climber --------------------------------------------------------
-            "/SmartDashboard/Climber/Status": function(o, value) {
-                $("#climberStatus").html(o.subsystemStatus(value));
-            },
-            "/SmartDashboard/Climber/State": function(o, value) {
-                $("#climberState").text(value);
-            },
-            "/SmartDashboard/Climber/WantedState": function(o, value) {
-                $("#climberWantedState").text(value);
-            },
-            "/SmartDashboard/Climber/Speed": function(o, value) {
-                $("#climberSpeed").val(value);
-                $("#climberSpeedTxt").text(value);
-            },
-            "/SmartDashboard/Climber/Current": function(o, value) {
-                if(o.climberCurrent) {
-                    o.climberCurrent.addDataPt(value);
-                }
-            },
+            "/SmartDashboard/Lidar/pose": function(o, value) {
+              if(o.lidarOdometryPlot)
+              {
+                var result = value.split(" ").map(parseFloat);
+                o.lidarOdometryPlot.addDataPt(result[0], result[1], result[2]);
+              }
+            }
         },
         subsystemStatus: function(value) {
             return value === "ERROR" ?
@@ -299,13 +238,6 @@
                 },
                 widths: [1]
             });
-            this.harvesterRangeChart = new StripChart({
-                id: "#harvesterRangeChart",
-                yaxis: {
-                    min:0,
-                    max:200,
-                }
-            });
             this.odometryPlot = new PathPlot({
                 id: "#driveOdometryPlot",
                 xaxis: {
@@ -354,13 +286,54 @@
                 widths: [2, 1],
                 maxlength: 400,
             });
-
-            //  Climber -------------------------------------------------------
-            this.climberCurrent = new StripChart({
-                id: "#climberCurrent",
+            this.lidarPointPlot = new PathPlot({
+              id: "#lidarPointPlot",
+              xaxis: {
+                  min: 0,
+                  max: 652,
+                  show: true
+              },
+              yaxis: {
+                  min: 0,
+                  max: 324,
+                  show: true
+              },
+              series: {
+                  shadowSize: 0,
+                  lines: {
+                      show: false, // We don't want to connect the lines
+                  },
+                  points: {
+                      show: true, // We *do* want to show the points
+                      radius: 0.05,
+                      fill: false,
+                  },
+                  color: "rgb(20, 120, 255)"
+              },
+              maxlength: 1e5 // This is probably the most LIDAR points we'll collect
+            });
+            this.lidarOdometryPlot = new PathPlot({
+                id: "#lidarOdometryPlot",
+                xaxis: {
+                    min: 0,
+                    max: 652,
+                    show: true
+                },
                 yaxis: {
-                    min:0,
-                    max:60,
+                    min: 0,
+                    max: 324,
+                    show: true
+                },
+                series: {
+                    shadowSize: 0,
+                    lines: {
+                        show: true,
+                        lineWidth: 1,
+                    },
+                    points: {
+                        show: false,
+                    },
+                    color: "rgb(20, 120, 255)"
                 }
             });
 
@@ -373,10 +346,10 @@
                 this.iteration++;
                 this.updateIMU(angle);
                 this.odometryPlot.addRandomPt();
-                this.harvesterRangeChart.addRandomPt();
-                this.climberCurrent.addDataPt(0);
+                this.lidarOdometryPlot.addRandomPt();
+                this.lidarPointPlot.addRandomPt();
 
-                let speed = 15 * (2 + Math.sin(this.iteration/20) + 
+                let speed = 15 * (2 + Math.sin(this.iteration/20) +
                                       Math.sin(this.iteration/15));
                 let delta;
                 if(!this.lastSpeed)

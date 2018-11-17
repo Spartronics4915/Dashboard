@@ -90,8 +90,6 @@
                     style="width:326px; height:162px">
                 </div>
             </div>
-            <div>
-            </div>
         </div>
 
         <!-- subpanel left (right) -->
@@ -109,133 +107,38 @@
     </div>
 </div>
 
-
-<!-- ScissorLift -->
+<!-- LIDAR -->
 <div class="col-sm-12 panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">ScissorLift
-            <small id="scissorliftStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State:
-                    <span id="scissorliftState">n/a</span>
-                &nbsp;&nbsp;WantedState:
-                    <span id="scissorliftWantedState">n/a</span>
-                &nbsp;&nbsp;Potentiometer:
-                    <span id="scissorliftPotentiometer">n/a</span>
-            </span>
+        <h3 class="panel-title">LIDAR
+            <small id="lidarStatus">status n/a</small>
+            &nbsp;&nbsp;Angle: <small id="lidarAngle">n/a</small>°
+            &nbsp;&nbsp;Turret State: <small id="turretState">n/a</small>44
         </h3>
     </div>
     <div class="panel-body">
-        <div class="col-sm-12" style="border:5px;">
-            <!--
-            <label for="scissorliftTuning">Targets</label>
-            <input id="scissorliftTuning" type="range"
-                   min="0" max="1000" step="1"/>
-            <output for="scissorliftTuning" id="scissorliftTuningTxt">0</output>
-            -->
-            Targets (low, med, high, climb)
-            <input id="scissorliftTarget1" type="number" min="0" max="4095"
-                    step="1" value="0" />
-            <input id="scissorliftTarget2" type="number" min="0" max="4095"
-                    step="1" value="200" />
-            <input id="scissorliftTarget3" type="number" min="0" max="4095"
-                    step="1" value="400" />
-            <input id="scissorliftTarget4" type="number" min="0" max="4095"
-                    step="1" value="800" />
-        </div>
+        <!-- subpanel two (left) -->
         <div class="col-sm-6">
-        </div>
-    </div>
-</div>
-
-<!-- ArticulatedGrabber -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">ArticulatedGrabber
-            <small id="articulatedGrabberStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="articulatedGrabberState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="articulatedGrabberWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6">
-            Targets (hold, place, pick)
-            <input id="articulatedGrabberTarget1" type="number" min="0" max="1000" step="1" value="20" />
-            <input id="articulatedGrabberTarget2" type="number" min="0" max="1000" step="1" value="200" />
-            <input id="articulatedGrabberTarget3" type="number" min="0" max="1000" step="1" value="400" />
-        </div>
-        <!--
-        <div class="col-sm-6" style="border:5px;">
-            <label for="articulatedGrabberTuning">Tuning Knob</label>
-            <input id="articulatedGrabberTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="articulatedGrabberTuning" id="articulatedGrabberTuningTxt">0</output>
-        </div>
-        -->
-    </div>
-</div>
-
-
-<!-- Harvester -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Harvester
-            <small id="harvesterStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="harvesterState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="harvesterWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
-        <div class="col-sm-6" style="border:5px;">
-            <!--
             <div class="plotContainer" style="border:5px;">
                 <div>
-                    Cube Range
+                    Odometry
                 </div>
-                <div class="stripChart" id="harvesterRangeChart" style="width:300px; height:100px"></div>
-            </div>
-            -->
-           <!--
-            <label for="harvesterTuning">Tuning Knob</label>
-            <input id="harvesterTuning" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="harvesterTuning" id="harvesterTuningTxt">0</output>
-            -->
+                <div class="stripChart" id="lidarOdometryPlot"
+                    style="width:326px; height:162px">
+                </div>
             </div>
         </div>
-        <div class="col-sm-6">
-        </div>
-    </div>
-</div>
 
-
-<!-- Climber -->
-<div class="col-sm-12 panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Climber
-            <small id="climberStatus">status n/a</small>
-            <span class="panelState">
-                &nbsp;&nbsp;State: <span id="climberState">n/a</span>
-                &nbsp;&nbsp;WantedState: <span id="climberWantedState">n/a</span>
-            </span>
-        </h3>
-    </div>
-    <div class="panel-body">
+        <!-- subpanel left (right) -->
         <div class="col-sm-6">
-          <div> <b>Climber Current</b> </div>
-          <div class="stripChart" id="climberCurrent"
-                style="width:300px; height:100px">
+          <div class="plotContainer" style="border:5px;">
+              <div>
+                  Point Cloud
+              </div>
+              <div class="stripChart" id="lidarPointPlot"
+                  style="width:326px; height:162px">
+              </div>
           </div>
-        </div>
-        <div class="col-sm-6">
-            <label for="climberSpeed">Climber Speed</label>
-            <input id="climberSpeed" type="range"
-                   min="0" max="1" step=".025"/>
-            <output for="climberSpeed" id="climberSpeedTxt">0</output>
         </div>
     </div>
 </div>
