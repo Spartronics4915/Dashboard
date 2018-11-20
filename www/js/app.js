@@ -1,74 +1,83 @@
 /* global NetworkTables RobotLog $ */
 
-(function(global) {
-
-"use strict";
-
-var app = {
-    mainContent: "#mainContent",
-    mainNav: "#mainNavList",
-    homeHref: "#driver",
-    caret: " <span class='caret'></span>",
-    openURL: null,
-    currentPage: null,
-    pageHandlers: {},
-    varRegExp: /{\s*(\w+)\s*}/g, /* w is alphnum, s is space*/
-
-    initialize: function()
+class App
+{
+    constructor()
     {
+        this.mainContent = "#mainContent";
+        this.mainNav = "#mainNavList";
+        this.homeHref = "#driver";
+        this.caret = " <span class='caret'></span>";
+        this.openURL = null;
+        this.currentPage = null;
+        this.pageHandlers = {};
+        this.varRegExp = /{\s*(\w+)\s*}/g; /* w is alphnum, s is space*/
+        this.config = {}; // XXX: load via .json file?
+        this.config.debug = false;
+        this.config.netTabVersion = 1802;
+        this.robotLog = null;
+
         document.addEventListener("DOMContentLoaded", 
             this.onReady.bind(this), false);
-    },
+        
+        // nb: initialization of js members occurs in 'onReady'
+    }
 
-    logMsg: function(msg, force)
+    logMsg(msg)
     {
-        if(force || true)
-        {
-            console.log(msg);
-        }
-    },
+        console.log(msg);
+    }
 
-    debug: function(msg)
+    debug(msg)
     {
-        this.logMsg("DEBUG   " + msg);
-    },
+        if(this.config.debug)
+            this.logMsg("DEBUG   " + msg);
+    }
 
-    info: function(msg)
+    info(msg)
     {
         this.logMsg("INFO    " + msg);
-    },
+    }
 
-    notice: function(msg)
+    notice(msg)
     {
         this.logMsg("NOTICE  " + msg);
-    },
+    }
 
-    warning: function(msg)
+    warning(msg)
     {
         this.logMsg("WARNING " + msg);
-    },
+    }
 
-    setPageHandler: function(page, handler)
+    error(msg)
+    {
+        // todo add alert?
+        this.logMsg("ERROR " + msg);
+    }
+
+    setPageHandler(page, handler)
     {
         this.pageHandlers[page] = handler;
-    },
+    }
 
     // onReady is invoked after all scripts have finished loading.
-    onReady: function()
+    onReady()
     {
         this.debug("deviceready");
 
+        this.robotLog = new RobotLog();
+
         if(window.Layout)
         {
+            // XXX: make this configurable via json?
             this.layout = new window.Layout({
-                layout: "/layouts/ShuffleBoardLayout.json"
+                layout: "/layouts/layout2019.json"
             });
-            this.layout.init();
         }
         else
             this.layout = null;
 
-        var initURL = app.homeHref;
+        var initURL = this.homeHref;
         if(window.location.hash)
         {
             // app.logMsg("using window.location.hash: " + window.location.hash);
@@ -78,7 +87,7 @@ var app = {
         this.navigate(initURL);
 
         // do this after first navigate
-        global.onhashchange = function(arg) {
+        window.onhashchange = function(arg) {
             this.navigate(window.location.hash);
         }.bind(this);
 
@@ -86,11 +95,11 @@ var app = {
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
 
-        RobotLog.addWsConnectionListener(app.onLogConnect, true);
-    },
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
+    }
 
     // navigate: is the primary entrypoint for switch views
-    navigate: function(url)
+    navigate(url)
     {
         var fields = url.split("?");
         var params = (fields.length == 2) ? fields[1] : null;
@@ -99,43 +108,45 @@ var app = {
         {
             this.info("navigate: " + page);
             this.currentPage = page;
-            this.loadPage(page, this.mainContent);
+            this.loadPage(page);
         }
         if(params !== null)
         {
             this.warning("url params not currently supported");
             // this.updateParams(params);
         }
-    },
+    }
 
-    updateNav: function()
+    updateNav()
     {
-        // this.logMsg("updateNav ---------------------------------");
-        $("#mainNavList").find(".active").removeClass("active");
+        $("nav").find(".active").removeClass("active");
         // find the parent of the <a> whose href endswith the current page.
-        $("#mainNavList a[href$='" + this.currentPage + "']").parent()
-                                                           .addClass("active");
-    },
+        $("nav a[href$='" + this.currentPage + "']").parent()
+                                                    .addClass("active");
+    }
 
-    urlToPage: function(href)
+    urlToPage(href)
     {
         var i = href.lastIndexOf("/");
         return href.slice(i+2); // eliminate hash
-    },
+    }
 
-    loadPage: function(page, target)
+    loadPage(page)
     {
+        this.robotLog.setLogListener(null, false); // clear log listener
         if(this.layout)
         {
             this.info("loadPage from layout:" + page);
-            this.layout.buildPage();
+            let ph = this.layout.buildContentPage(page);
+            if(!this.pageHandlers[page])
+                this.pageHandlers[page] = ph;
             this.updateNav();
         }
         else
         {
             // this.logMsg("loadPage: " + page);
+            let target = this.mainContent;
             var fileref = "/pages/" + page + ".html";
-            RobotLog.setLogListener(null, false);
             this.sendGetRequest(fileref, function(html) {
                 var targetElem = document.querySelector(target);
                 this.pageHandlers[page].pageLoaded(targetElem, html);
@@ -143,9 +154,9 @@ var app = {
                 this.updateNav();
             }.bind(this));
         }
-    },
+    }
 
-    interpolate: function(body, map)
+    interpolate(body, map)
     {
         var result = body.replace(this.varRegExp,
             function(match, capture) {
@@ -159,29 +170,29 @@ var app = {
                 }
             });
         return result;
-    },
+    }
 
     // robotlog callbacks ------------------------------------------------
-    onLogConnect: function(cnx)
+    onLogConnect(cnx)
     {
-        app.notice("RobotLog connected");
-    },
+        this.notice("RobotLog connected");
+    }
 
     // network table callbacks ------------------------------------------------
-    onRobotConnect: function(cnx)
+    onRobotConnect(cnx)
     {
-        app.robotConnected = cnx;
+        this.robotConnected = cnx;
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='blinkRed'>off-line</span>");
         $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
-        app.updateCANStatus();
-    },
+        this.updateCANStatus();
+    }
 
-    updateCANStatus: function()
+    updateCANStatus()
     {
         if(this.robotConnected)
         {
-            var value = app.getValue("CANBusStatus");
+            var value = this.getValue("CANBusStatus");
             if(value === "OK")
                 $("#robotCANStatus").html("CAN Status:<span class='green'>OK</span>");
             else
@@ -191,17 +202,17 @@ var app = {
         {
             $("#robotCANStatus").html("");
         }
-    },
+    }
 
-    onNetTabConnect: function(cnx)
+    onNetTabConnect(cnx)
     {
         if(cnx)
         {
             $("#nettabState").html("<span class='green'>connected</span>");
-            if(app.pageHandlers[app.currentPage] &&
-               app.pageHandlers[app.currentPage].onNetTabConnect) 
+            if(this.pageHandlers[this.currentPage] &&
+               this.pageHandlers[this.currentPage].onNetTabConnect) 
             {
-                app.pageHandlers[app.currentPage].onNetTabConnect();
+                this.pageHandlers[this.currentPage].onNetTabConnect();
             }
         }
         else
@@ -209,8 +220,9 @@ var app = {
             $("#nettabState").html("<span class='blinkRed'>off-line</span>");
         }
 
-        var tval = app.getValue("Build");
-        if(tval) {
+        var tval = this.getValue("Build");
+        if(tval) 
+        {
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
 
@@ -219,80 +231,88 @@ var app = {
         // robotInit state.
         if(false)
         {
-            if(app.getValue("CameraView", "") == "")
-                app.putValue("CameraView", "CubeCam");
+            if(this.getValue("CameraView", "") == "")
+                this.putValue("CameraView", "CubeCam");
             var defAuto = "All: Cross Baseline";
-            if(app.getValue("AutoStrategyOptions", "") == "")
-                app.putValue("AutoStrategyOptions", defAuto);
-            if(app.getValue("AutoStrategy", "") == "")
-                app.putValue("AutoStrategy", defAuto);
+            if(this.getValue("AutoStrategyOptions", "") == "")
+                this.putValue("AutoStrategyOptions", defAuto);
+            if(this.getValue("AutoStrategy", "") == "")
+                this.putValue("AutoStrategy", defAuto);
         }
-    },
+    }
 
-    putValue: function(nm, value)
+    putValue(nm, value)
     {
-        if(name == undefined)
+        if(nm == undefined)
         {
-            console.error("bad putvalue");
+            this.error("bad putvalue");
         }
         else
         {
-            // for 18.0.1 
-            // pynetworktables2js version isn't readily avilable here
-            NetworkTables.putValue("SmartDashboard/"+nm, value);
-            // for 18.0.2
-            // NetworkTables.putValue("/SmartDashboard/"+nm, value);
+            if(this.config.netTabVersion <= 1801)
+            {
+                // for 18.0.1 
+                NetworkTables.putValue("SmartDashboard/"+nm, value);
+            }
+            else
+            {
+                // for 18.0.2
+                NetworkTables.putValue("/SmartDashboard/"+nm, value);
+            }
         }
-    },
+    }
 
-    getValue: function(nm, def="")
+    getValue(nm, def="")
     {
         return NetworkTables.getValue("/SmartDashboard/"+nm, def);
-    },
+    }
 
-    replayNetTab: function()
+    replayNetTab()
     {
         var keys = NetworkTables.getKeys();
         for(var i=0;i<keys.length; i++)
         {
             var key = keys[i];
-            app.onNetTabChange(key, NetworkTables.getValue(key), true);
+            this.onNetTabChange(key, NetworkTables.getValue(key), true);
         }
-    },
+    }
 
-    onNetTabChange: function(key, value, isNew)
+    onNetTabChange(key, value, isNew)
     {
-        if(false) {
-            app.logMsg("nettab entry changed: " + key +
+        this.debug("nettab entry changed: " + key +
                   " = " + value +
                  " new: " + isNew);
-        }
-        switch(key) {
+        switch(key) 
+        {
             case "/SmartDashboard/CANBusStatus":
-                app.updateCANStatus();
+                this.updateCANStatus();
                 break;
             default:
                 break;
         }
-        if(!app.pageHandlers[app.currentPage]) return;
-        if(app.pageHandlers[app.currentPage].onNetTabChange)
+        if(!this.pageHandlers[this.currentPage]) 
         {
-            app.pageHandlers[app.currentPage].onNetTabChange(key, value, isNew);
+            this.warning("missing page handler for " + this.currentPage);
+            return;
         }
-    },
+        if(this.pageHandlers[this.currentPage].onNetTabChange)
+        {
+            this.pageHandlers[this.currentPage].onNetTabChange(key, value, isNew);
+        }
+    }
 
     // ajax utils -------------------------------------------------------------
-    sendGetRequest: function(url, responseHandler)
+    sendGetRequest(url, responseHandler)
     {
         var req = new XMLHttpRequest();
         req.onreadystatechange = function() {
-            app.handleResponse(req, responseHandler, false);
-        };
+            this.handleResponse(req, responseHandler, false);
+        }.bind(this);
         req.open("GET", url, true);
         req.send(null);
-    },
+    }
 
-    handleResponse: function(request, responseHandler, isJSON)
+    handleResponse(request, responseHandler, isJSON)
     {
         if((request.readyState == 4) && (request.status == 200))
         {
@@ -305,60 +325,57 @@ var app = {
                 responseHandler(request.responseText);
             }
         }
-    },
+    }
 
     // from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-    storageAvailable: function(type)
+    storageAvailable(type)
     {
-      try {
-          var storage = window[type],
-              x = "__storage_test__";
-          storage.setItem(x, x);
-          storage.removeItem(x);
-          return true;
-      }
-      catch(e) {
-          return e instanceof DOMException && (
-              // everything except Firefox
-              e.code === 22 ||
-              // Firefox
-              e.code === 1014 ||
-              // test name field too, because code might not be present
-              // everything except Firefox
-              e.name === "QuotaExceededError" ||
-              // Firefox
-              e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-              // acknowledge QuotaExceededError only if there's something already stored
-              storage.length !== 0;
+        try 
+        {
+            var storage = window[type], x = "__storage_test__";
+            storage.setItem(x, x);
+            storage.removeItem(x);
+            return true;
         }
-    },
+        catch(e) 
+        {
+            return e instanceof DOMException && (
+                // everything except Firefox
+                e.code === 22 ||
+                // Firefox
+                e.code === 1014 ||
+                // test name field too, because code might not be present
+                // everything except Firefox
+                e.name === "QuotaExceededError" ||
+                // Firefox
+                e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+                // acknowledge QuotaExceededError only if there's something already stored
+                storage.length !== 0;
+        }
+    }
 
-    loadImage: function(url)
+    loadImage(url)
     {
-      return new Promise(resolve => { 
-          let i = new Image(); 
-          i.onload = () => {
-            resolve(i);
-          }; 
-          i.src=url; 
-      });
-    },
+        return new Promise(resolve => { 
+            let i = new Image(); 
+            i.onload = () => {
+                resolve(i);
+            }; 
+            i.src = url; 
+        });
+    }
 
-    downloadURI: function(uri, name)
+    downloadURI(uri, name)
     {
-      var link = document.createElement("a");
-      link.target = "_blank";
-      link.download = name;
-      link.href = uri;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    },
+        var link = document.createElement("a");
+        link.target = "_blank";
+        link.download = name;
+        link.href = uri;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+} // end of App class 
 
-}; // end of app definition
-
-app.initialize();
-global.app = app;
-app.notice("Dashboard loaded");
-
-})(window);
+window.app = new App();
+window.app.notice("Dashboard loaded");

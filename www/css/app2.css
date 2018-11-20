@@ -1,10 +1,16 @@
 /* general ------------------------------------------*/
-body
+html, body
 {
+    height: 100%;
+    padding: 5px;
+    margin: 0px;
     background-color: #111111;
     color: #888888;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
 }
-  
+
 hr 
 {
     color:#25b;
@@ -14,35 +20,6 @@ hr
 .bigfont
 {
   font-size: 30px;
-}
-
-@-moz-keyframes spin {
-    100% { -moz-transform: rotate(360deg); }
-}
-@-webkit-keyframes spin {
-    100% { -webkit-transform: rotate(360deg); }
-}
-@keyframes spin {
-    100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
-}
-@-webkit-keyframes blink { 67% { opacity: 0 }}
-@-moz-keyframes blink {  67% { opacity: 0 }}
-@-o-keyframes blink {  67% { opacity: 0 }}
-@keyframes blink {  67% { opacity: 0 }}
-
-.rotate90 {
-    width: 640px;
-    height: 480px;
-    webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
-    border: 2px solid gray;
-}
-
-.rotate0
-{
-    width: 640px;
-    height: 480px;
-    border: 2px solid blue;
 }
 
 .amber
@@ -55,49 +32,125 @@ hr
   color: rgb(17, 151, 42);
 }
 
-.blinkRed {
-  color: rgb(255,30,30);
-  -webkit-animation-name: blink;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
-  -webkit-animation-duration: 1s;
+.blinkRed 
+{
+  animation:blinkingRed 0.8s infinite;
+}
+
+.spinimg 
+{
+    width: 60%;
+    animation: spin 4s linear infinite;
+}
+
+/* animation --------------------------------------*/
+@-moz-keyframes spin {
+    100% { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
+}
+
+@keyframes blinkingRed
+{
+    0% { color: red; }
+    49% { color: transparent; }
+    50% { color: transparent; }
+    100% { color:red; }
+}
+
+.rotate90 {
+    width: 640px;
+    height: 480px;
+    transform: rotate(90deg);
+    border: 2px solid gray;
+}
+
+.rotate0
+{
+    width: 640px;
+    height: 480px;
+    border: 2px solid blue;
+}
+
+/* widget layout --------------------------------------*/
+/* learn css grid: https://scrimba.com/g/gR8PTE */
+.container
+{
+    height: 100%;
+    display: grid;
+    grid-gap: 3px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
+    /* grid-auto-flow: row/dense */
+}
+
+.container > div
+{
+    background-color: #222;
 }
 
 /* navbar -------------------------------------------*/
+nav
+{
+    display: flex;
+    align-items: center;
+    border-bottom: 4px solid black;
+    background-color: #222;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+nav > div
+{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-radius: 5px;
+}
+
+#navlogo > img
+{
+    width: 35px;
+}
+
 #navtitle
 {
     font-size: 18px;
+    padding-left: 0px;
 }
 
-.navLink
+.navtab
 {
-    font-size: 20px;
-    padding-left: 5px;
-    padding-right: 5px;
+    font-size: 16px;
 }
 
-.navbar-dark .navbar-nav .active>.nav-link, 
-.navbar-dark .navbar-nav .nav-link.active, 
-.navbar-dark .navbar-nav .nav-link.show, 
-.navbar-dark .navbar-nav .show>.nav-link
+.navtab.active,
+.navtab.active:hover
 {
-    color:#25b;
-    font-weight: bold;
+    background-image: linear-gradient(#ff2, #aa2);
 }
 
-.navbar-dark .navbar-nav .nav-link
+.navtab > a
 {
-    color:#555;
+    text-decoration: none;
+    color:#24F;
 }
 
-.navbar-dark .navbar-nav .nav-link:hover
+.navtab:hover
 {
-    color:#28a;
+    background-image: linear-gradient(rgba(63,34,170,.5), rgb(63, 34, 170));
 }
 
-#nettabState, #robotState
+#navstatus
 {
-  text-align: right;
+    font-size: 14px;
+    text-align: right;
+    margin-left: auto;
 }
 
 /* robolog -------------------------------------------*/

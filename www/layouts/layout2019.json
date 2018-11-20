@@ -1,0 +1,61 @@
+{
+    "pageTemplates": [
+        {
+            "title": "Driver",
+            "widgets": [
+            ]
+        },
+        {
+            "title": "Developer"
+        },
+        {
+            "title": "Network Tables",
+            "widgets": [
+                {
+                    "id": "nettab",
+                    "type": "html",
+                    "size": "fillXfill",
+                    "pagehandler": "NetTabPH",
+                    "params": {
+                        "url": "/pages/nettab.html"
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Robot Log",
+            "widgets": [
+                {
+                    "id": "robotlog",
+                    "type": "html",
+                    "size": "fillXfill",
+                    "pagehandler": "RobotLogPH",
+                    "params": {
+                        "url": "/pages/robotlog.html"
+                    }
+                }
+            ]
+        },
+        {
+            "title": "About",
+            "widgets": [
+                {
+                    "id": "about",
+                    "type": "html",
+                    "size": "3X16",
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "id": "about2",
+                    "type": "html",
+                    "size": "3X16",
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                }
+            ]
+        }
+    ]
+}

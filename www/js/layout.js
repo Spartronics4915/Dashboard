@@ -1,71 +1,65 @@
-/* global $ app PageHandler */
+/* global $ app */
 
 "use_strict";
 
-window.Layout = function(config) 
+class Layout
 {
-    this.config = config ? config : {};
-
-    this.init = function()
+    constructor(config)
     {
+        this.config = config ? config : {};
+        this.pageHandlers = {};
         if(this.config.layout)
-        {
-            $.getJSON(this.config.layout, this.initJSON.bind(this));
-        }
+            $.getJSON(this.config.layout, this._initJSON.bind(this));
         else
             app.warning("Layout requires config.layout");
     }
 
-    this.initJSON = function(jsonObj)
+    _initJSON(jsonObj)
     {
         this.layout = jsonObj;
-        this.navTabs = this.layout.tabPane;
+        this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];
-        for(let i=0;i<this.navTabs.length;i++)
+        for(let i=0;i<this.pageTemplates.length;i++)
         {
-            let title = this.navTabs[i].title;
-            let url = `#tab${i}`;
-            htmlList.push(`<li class="navLink"><a href="${url}">${title}</a></li>`);
-            app.setPageHandler(url, this.buildPageHandler(this.navTabs[i]));
+            let title = this.pageTemplates[i].title;
+            let page = `tab${i}`;
+            htmlList.push(`<div class="navtab"><a href="#${page}">${title}</a></div>`);
+            this.pageHandlers[page] = this._buildPageHandler(this.pageTemplates[i]);
         }
-        $("#mainNav").html(htmlList.join(" "));
+        $("#navplaceholder").replaceWith(htmlList.join(" "));
+    }
 
-        // now install a pageHandler for each url (#tab[0-n])
-    };
+    // buildContentPage: occurs on tab changes
+    buildContentPage(url)
+    {
+        let ph = this.pageHandlers[url];
+        if(!ph)
+        {
+            app.error("no page handler for " + url);
+            this._loadHtml(`<div class="ERROR">No Page Handler for ${url}</div>`);
+        }
+        else
+        {
+            ph.buildPage(this._loadHtml.bind(this));
+        }
+        return ph;
+    }
 
-    this.buildPageHandler = function(navTab)
+    _loadHtml(html, onDoneCB)
+    {
+        $("#layoutContents").html(html);
+        if(onDoneCB)
+            onDoneCB();
+    }
+
+    _buildPageHandler(pageTemplate)
     {
         let config = {};
-        let ph = new PageHandler(config);
-        // build pagehandler based on navTab recipe
-        // https://wpilib.screenstepslive.com/s/currentCS/m/shuffleboard/l/821652-displaying-data-from-your-robot
-        //
-        // prefer css grids over bootstrap
-        // https://scrimba.com/g/gR8PTE
-        //
-        // widgetPane:
-        //  gridSize: 64.0
-        //  showGrid: true/false   
-        //  hgap, vgap: 16.0
-        //  tiles[]:
-        //      locKey ("9,2")
-        //          size: [2,2]
-        //          content:
-        //              _type: Graph
-        //                     Number Bar, 
-        //                     Number Slider, 
-        //                     Simple Dial, 
-        //                     Text View, 
-        //                     Voltage View,
-        //                     Encoder, 
-        //                     Boolean Box,
-        //              _source0:  nettabURL
-        //              _title: "a title"
-        //              .. _type-specific-params__
+        var ph = "PageHandler";
+        if(pageTemplate && pageTemplate.pagehandler)
+            ph = pageTemplate.pagehandler;
+        return new window[ph](config, pageTemplate);
+    }
+}
 
-        let widgetPane = navTab.widgetPane;
-
-        return ph;
-    };
-
-};
+window.Layout = Layout;
