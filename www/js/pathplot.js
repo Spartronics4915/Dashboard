@@ -30,17 +30,21 @@ var PathPlot = function(config) {
         this.plot.draw();
     };
 
+    this.clearPts = function() {
+      this.data = [];
+    }
+
     this.addRandomPt = function() {
-        if (this.data.length == 0) 
+        if (this.data.length == 0)
         {
             this.addDataPt(this.width/2, this.height/2, 0);
         }
         else
         {
-            lastSlot = (this.config.maxlength + this.nextSlot - 1) % 
+            lastSlot = (this.config.maxlength + this.nextSlot - 1) %
                             this.config.maxlength;
             lastPt = this.data[lastSlot];
-            this.addDataPt(lastPt[0] + 25*(Math.random()-.5), 
+            this.addDataPt(lastPt[0] + 25*(Math.random()-.5),
                           lastPt[1]+ 25*(Math.random()-.5), 0);
         }
     };
@@ -82,7 +86,7 @@ var PathPlot = function(config) {
     // console.log("plotting: " + this.config.id);
     // we use flot for plotting.  In their terminology we have
     // a single series for our data. Configuration options are generally
-    // established during this constructor. We can, importantly, update 
+    // established during this constructor. We can, importantly, update
     // the data on the fly.
     this.plot = $.plot(this.config.id, [this.getPathData()], this.config);
 };
