@@ -57,7 +57,14 @@ class Layout
         let config = {};
         var ph = "PageHandler";
         if(pageTemplate && pageTemplate.pagehandler)
+        {
             ph = pageTemplate.pagehandler;
+            if(!window[ph])
+            {
+                app.warning("can't find page handler named " + ph);
+                ph = "PageHandler";
+            }
+        }
         return new window[ph](config, pageTemplate);
     }
 }

@@ -1,4 +1,4 @@
-/* global PageHandler, $, NetworkTables, app, RobotLog */
+/* global PageHandler, $, NetworkTables, app */
 // javascript page handler for robotlog.html
 //
 
@@ -17,10 +17,9 @@ class RobotlogPH extends PageHandler
                                 "ERROR", "Exception"];
     }
 
-    pageLoaded(targetElem, html) 
+    pageLoaded()
     {
-        let self = this;
-        targetElem.innerHTML = html; // was: app.interpolate(html, map);
+        let self = this; // don't step on jquery's $(this)
 
         // first initialize selectors from network tables.
         $(".selector").each(function() {
@@ -45,7 +44,7 @@ class RobotlogPH extends PageHandler
             self.onFilterChange();
         });
 
-        RobotLog.setLogListener(this.onRobotMsg.bind(this), true);
+        app.robotLog.setLogListener(this.onRobotMsg.bind(this), true);
     }
 
     onNetTabChange(key, value, isNew) 
@@ -67,7 +66,7 @@ class RobotlogPH extends PageHandler
     onFilterChange() 
     {
         $("#robotlog").html("");
-        RobotLog.replayLogs();
+        app.robotLog.replayLogs();
     }
 
     onRobotMsg(msg) 
@@ -77,7 +76,7 @@ class RobotlogPH extends PageHandler
         {
             // equivalent to onFilterChange
             $("#robotlog").html("");
-            RobotLog.replayLogs();
+            app.robotLog.replayLogs();
             return;
         }
         if(!(/\S/.test(msg))) return; // ignore messages with whitespace-only

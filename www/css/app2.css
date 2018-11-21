@@ -9,12 +9,24 @@ html, body
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     box-sizing: border-box;
+    border-color: yellow;
 }
 
 hr 
 {
     color:#25b;
     border-color: #25b;
+}
+
+label
+{
+    font-size: 14px;
+    font-weight: normal;
+}
+
+input:focus
+{
+    border-color: yellow;
 }
 
 .bigfont
@@ -85,12 +97,34 @@ hr
     grid-gap: 3px;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
+    border-left-style: solid;
+    border-left-color:#222; /* rgb(1, 25, 49);*/
+    border-left-width: 5px;
     /* grid-auto-flow: row/dense */
 }
 
 .container > div
 {
     background-color: #222;
+}
+
+.container .data
+{
+    color: #aaa;
+}
+
+.systemstate
+{
+    padding-top: 5px;
+    color: #16c;
+    background-image: linear-gradient(#111, #111);
+    vertical-align: baseline;  
+}
+
+.systemstate > label
+{
+    font-size: 20px;
+    vertical-align: baseline;  
 }
 
 /* navbar -------------------------------------------*/
@@ -151,6 +185,21 @@ nav > div
     font-size: 14px;
     text-align: right;
     margin-left: auto;
+}
+
+/* widgets -------------------------------------------*/
+input[type=number] {
+    width: 80px;
+    text-align: center;
+}
+
+input,
+select {
+    color: #888888;
+    background-color: #111;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 0px;
 }
 
 /* robolog -------------------------------------------*/

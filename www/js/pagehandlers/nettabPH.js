@@ -9,14 +9,14 @@ class NetTabPH extends PageHandler
         this.ntfilter = "";
     }
 
-    pageLoaded(targetElem, html)
+    pageLoaded()
     {
-        targetElem.innerHTML = html;
+        let self = this; // don't step on jquery's idea of $(this)
         $("#ntfilter").val(this.ntfilter);
         $("#ntfilter").on("input", function() {
-            this.ntfilter = $(this).val();
-            this.rebuildNetTab();
-        }.bind(this));
+            self.ntfilter = $(this).val();
+            self.rebuildNetTab();
+        });
     }
 
     // rebuildNetTab: triggers callback to app, which distributes

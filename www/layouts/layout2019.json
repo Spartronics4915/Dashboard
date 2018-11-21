@@ -6,16 +6,109 @@
             ]
         },
         {
-            "title": "Developer"
+            "title": "Developer",
+            "widgets": [
+                {
+                    "id": "drive",
+                    "label": "Drive Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", 2],
+                    "ntkey": "/SmartDashboard/Drive"
+                },
+                {
+                    "id": "driveSpeedLeft",
+                    "label": "Left Speed",
+                    "type": "stripchart",
+                    "size": [3, 6],
+                    "ntkey": "/SmartDashboard/Drive/leftSpeed",
+                    "params": {
+                        "yaxis": [0, 80],
+                        "fillvalue": 0,
+                        "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                        "channelcount": 2,
+                        "widths": [2, 1],
+                        "maxlength": 400
+                    }
+                },
+                {
+                    "id": "driveSpeedRight",
+                    "label": "Right Speed",
+                    "type": "stripchart",
+                    "size": [3, 6],
+                    "ntkey": "/SmartDashboard/Drive/rightSpeed",
+                    "params": {
+                        "yaxis": {
+                            "min": 0, 
+                            "max": 80
+                        },
+                        "fillvalue": 0,
+                        "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                        "channelcount": 2,
+                        "widths": [2, 1],
+                        "maxlength": 400
+                    }
+                },
+                {
+                    "id": "driveIMU",
+                    "label": "IMU Heading",
+                    "type": "stripchart",
+                    "size": [3, 6],
+                    "ntkey": "/SmartDashboard/Drive/imuHeading",
+                    "params": {
+                        "yaxis": {
+                            "min": -200, 
+                            "max": 200
+                        },
+                        "widths": [1]
+                    }
+                },
+                {
+                    "id": "driveOdometry",
+                    "label": "Odometry",
+                    "type": "pathplot",
+                    "size": [3, 6],
+                    "ntkey": "/SmartDashboard/Drive/odometry",
+                    "params": {
+                        "xaxis": {
+                            "min": 0,
+                            "max": 652,
+                            "show": 1
+                        },
+                        "yaxis": {
+                            "min": 0,
+                            "max": 324,
+                            "show": 1
+                        },
+                        "series": {
+                            "shadowSize": 0,
+                            "lines": {
+                                "show": 1,
+                                "lineWidth": 1
+                            },
+                            "points": {
+                                "show": 0
+                            },
+                            "color": "rgb(20, 120, 255)"
+                        }
+                    }
+                },
+                {
+                    "id": "climb",
+                    "label": "Climb Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", 2],
+                    "ntkey": "/SmartDashboard/Climb"
+                }
+            ]
         },
         {
             "title": "Network Tables",
+            "pagehandler": "NetTabPH",
             "widgets": [
                 {
                     "id": "nettab",
                     "type": "html",
-                    "size": "fillXfill",
-                    "pagehandler": "NetTabPH",
+                    "size": ["fill", "fill"],
                     "params": {
                         "url": "/pages/nettab.html"
                     }
@@ -24,12 +117,12 @@
         },
         {
             "title": "Robot Log",
+            "pagehandler": "RobotlogPH",
             "widgets": [
                 {
-                    "id": "robotlog",
+                    "id": "robolog",
                     "type": "html",
-                    "size": "fillXfill",
-                    "pagehandler": "RobotLogPH",
+                    "size": ["fill", "fill"],
                     "params": {
                         "url": "/pages/robotlog.html"
                     }
@@ -42,7 +135,7 @@
                 {
                     "id": "about",
                     "type": "html",
-                    "size": "3X16",
+                    "size": [3, 16],
                     "params": {
                         "url": "/pages/about.html"
                     }
@@ -50,7 +143,7 @@
                 {
                     "id": "about2",
                     "type": "html",
-                    "size": "3X16",
+                    "size": [3, 16],
                     "params": {
                         "url": "/pages/about.html"
                     }

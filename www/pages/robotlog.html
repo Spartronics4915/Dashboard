@@ -1,24 +1,20 @@
 
-<h3>robologs
-    </span> &nbsp; &nbsp;
-    <div style="font-size:50%;display:inline-block;">
-        Filter <input id="filter" style="width:7em"></input>
-    </div>
-    <div style="font-size:50%;display:inline-block;">
-        &nbsp; &nbsp; Robot Verbosity
-        <select class="selector" style="width:9em" id="Robot/Verbosity">
+<h3>robologs &nbsp; &nbsp; 
+    <label>Filter</label>
+    <input id="filter" style="width:7em"></input>
+    &nbsp; &nbsp; <label>Robot Verbosity</label>
+    <select class="selector" style="width:9em" id="Robot/Verbosity">
             <option>NOTICE</option>
             <option>INFO</option>
             <option>DEBUG</option>
-        </select>
-    </div>
-    <span class="hdetail">
+    </select>
+    <label>
         <i>&nbsp;&nbsp;&nbsp;reloading this page clears the logs</i>
-    </span>
+    </label>
 </h3>
 
 <hr>
 
-<div class="col-xs-12" id="robotlog">
+<div id="robotlog">
     <!-- messages are added here -->
 </div>
