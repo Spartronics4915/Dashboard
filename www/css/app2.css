@@ -95,8 +95,8 @@ input:focus
     height: 100%;
     display: grid;
     grid-gap: 3px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     border-left-style: solid;
     border-left-color:#222; /* rgb(1, 25, 49);*/
     border-left-width: 5px;

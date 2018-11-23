@@ -6,7 +6,7 @@ class App
     {
         this.mainContent = "#mainContent";
         this.mainNav = "#mainNavList";
-        this.homeHref = "#driver";
+        this.homeHref = "#tab0";
         this.caret = " <span class='caret'></span>";
         this.openURL = null;
         this.currentPage = null;
@@ -29,7 +29,7 @@ class App
     }
 
     debug(msg)
-    {
+    { 
         if(this.config.debug)
             this.logMsg("DEBUG   " + msg);
     }
@@ -67,16 +67,20 @@ class App
 
         this.robotLog = new RobotLog();
 
-        if(window.Layout)
-        {
-            // XXX: make this configurable via json?
-            this.layout = new window.Layout({
-                layout: "/layouts/layout2019.json"
-            });
-        }
-        else
-            this.layout = null;
+        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
+        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
+        NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
+        this.layout = new window.Layout({
+            layout: "/layouts/layout2019.json",
+            onLoad: this.onLayoutLoaded.bind(this)
+        });
+
+    }
+
+    onLayoutLoaded()
+    {
         var initURL = this.homeHref;
         if(window.location.hash)
         {
@@ -90,12 +94,6 @@ class App
         window.onhashchange = function(arg) {
             this.navigate(window.location.hash);
         }.bind(this);
-
-        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
-        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
-        NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
-
-        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
     }
 
     // navigate: is the primary entrypoint for switch views
@@ -134,26 +132,11 @@ class App
     loadPage(page)
     {
         this.robotLog.setLogListener(null, false); // clear log listener
-        if(this.layout)
-        {
-            this.info("loadPage from layout:" + page);
-            let ph = this.layout.buildContentPage(page);
-            if(!this.pageHandlers[page])
-                this.pageHandlers[page] = ph;
-            this.updateNav();
-        }
-        else
-        {
-            // this.logMsg("loadPage: " + page);
-            let target = this.mainContent;
-            var fileref = "/pages/" + page + ".html";
-            this.sendGetRequest(fileref, function(html) {
-                var targetElem = document.querySelector(target);
-                this.pageHandlers[page].pageLoaded(targetElem, html);
-                this.replayNetTab(); // triggers onNetTabChange
-                this.updateNav();
-            }.bind(this));
-        }
+        this.debug("loadPage layout " + page);
+        let ph = this.layout.buildContentPage(page);
+        if(!this.pageHandlers[page])
+            this.pageHandlers[page] = ph;
+        this.updateNav();
     }
 
     interpolate(body, map)

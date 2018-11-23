@@ -1,50 +1,50 @@
 /* global $ */
 // StripChart requires jquery.flot plot package
-window.StripChart = function(config) {
-    this.config = config;
-    if (!this.config.series) {
-        this.config.series = {};
-    }
-    if(!this.config.series.color)
-        this.config.series.color = "rgb(255, 255, 10)";
-    if(!this.config.series.shadowSize)
-        this.config.series.shadowSize = 0;
-    this.config.xaxis = {show: false}; // always time
-    if(this.config.maxlength == undefined)
-        this.config.maxlength = 300; // XXX:
-    if(this.config.channelcount == undefined)
-        this.config.channelcount = 1;
-    this.data = [];
-    if(this.config.colors == undefined)
+class StripChart
+{
+    constructor(config) 
     {
-        this.config.colors = [];
+        this.config = config;
+        if (!this.config.series)
+            this.config.series = {};
+        if(!this.config.series.color)
+            this.config.series.color = "rgb(255, 255, 10)";
+        if(!this.config.series.shadowSize)
+            this.config.series.shadowSize = 0;
+        this.config.xaxis = {show: false}; // always time
+        if(this.config.maxlength == undefined)
+            this.config.maxlength = 300; // XXX:
+        if(this.config.channelcount == undefined)
+            this.config.channelcount = 1;
+        this.data = [];
+        if(this.config.colors == undefined)
+        {
+            this.config.colors = [];
+            for(let i=0;i<this.config.channelcount;i++)
+                this.config.colors[i] = this.config.series.color;
+        }
+        if(this.config.widths == undefined)
+        {
+            this.config.widths = [];
+            for(let i=0;i<this.config.channelcount;i++)
+                this.config.widths[i] = 2;
+        }
+        this.height = this.config.yaxis.max - this.config.yaxis.min + 1;
         for(let i=0;i<this.config.channelcount;i++)
-            this.config.colors[i] = this.config.series.color;
-    }
-    if(this.config.widths == undefined)
-    {
-        this.config.widths = [];
-        for(let i=0;i<this.config.channelcount;i++)
-            this.config.widths[i] = 2;
-    }
-    this.height = this.config.yaxis.max - this.config.yaxis.min + 1;
-    for(let i=0;i<this.config.channelcount;i++)
-    {
-        this.data[i] = new Array(this.config.maxlength);
-        if(this.config.fillvalue != undefined)
-            this.data[i].fill(this.config.fillvalue);
-        else
-            this.data[i].fill(this.height / 2);
-    }
-    this.nextSlot = 0;
+        {
+            this.data[i] = new Array(this.config.maxlength);
+            if(this.config.fillvalue != undefined)
+                this.data[i].fill(this.config.fillvalue);
+            else
+                this.data[i].fill(this.height / 2);
+        }
+        this.nextSlot = 0;
 
-    this.init = function() // called at end of function/Class definition
-    {
         // app.logMsg("plotting: " + this.config.id);
         this.plot = $.plot(this.config.id, this.getStripData(), this.config);
-    };
+    }
 
-    this.addDataPt = function(value, chan)
+    addDataPt(value, chan)
     {
         if(chan == undefined)
             chan = 0;
@@ -54,9 +54,9 @@ window.StripChart = function(config) {
             this.nextSlot = 0;
         this.plot.setData(this.getStripData());
         this.plot.draw();
-    };
+    }
 
-    this.addDataPts = function(values)
+    addDataPts(values)
     {
         for(let i=0;i<this.data.length;i++)
             this.data[i][this.nextSlot] = values[i];
@@ -65,10 +65,10 @@ window.StripChart = function(config) {
             this.nextSlot = 0;
         this.plot.setData(this.getStripData());
         this.plot.draw();
-    },
+    }
 
     // changes the data at the last slot
-    this.changeDataPts = function(values)
+    changeDataPts(values)
     {
         let slot = this.nextSlot - 1;
         if(slot == -1)
@@ -77,9 +77,9 @@ window.StripChart = function(config) {
             this.data[i][slot] = values[i];
         this.plot.setData(this.getStripData());
         this.plot.draw();
-    },
+    }
 
-    this.getStripData = function()
+    getStripData()
     {
         var result = []; // array of objects, one per channel
         for(let i=0;i<this.data.length;i++) // ie number of channels
@@ -99,9 +99,9 @@ window.StripChart = function(config) {
             }
         }
         return result;
-    };
+    }
 
-    this.addRandomPt = function()
+    addRandomPt()
     {
         var lastSlot = (this.config.maxlength + this.nextSlot - 1) %
                         this.config.maxlength;
@@ -112,19 +112,19 @@ window.StripChart = function(config) {
             pts.push(this.clamp(lastVal + this.height*.1*(Math.random()-.5)));
         }
         this.addDataPts(pts);
-    };
+    }
 
-    this.clamp = function(y)
+    clamp(y)
     {
-        if(y < 0)
-            y = 0;
+        if(y < this.config.yaxis.min)
+            y = this.config.yaxis.min;
         else
-        if(y > this.height)
-            y = this.height;
+        if(y > this.config.yaxis.max)
+            y = this.config.yaxis.max;
         return y;
-    };
+    }
 
-    this.getRandomData = function()
+    getRandomData()
     {
         if(this.randomData.length > 0)
         {
@@ -153,7 +153,7 @@ window.StripChart = function(config) {
             res.push([i, this.randomData[i]]);
         }
         return res;
-    };
+    }
+}
 
-    this.init();
-};
+window.StripChart = StripChart;

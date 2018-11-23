@@ -16,6 +16,7 @@ class Layout
 
     _initJSON(jsonObj)
     {
+        app.info("init layout with ", jsonObj.layoutName);
         this.layout = jsonObj;
         this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];
@@ -27,6 +28,8 @@ class Layout
             this.pageHandlers[page] = this._buildPageHandler(this.pageTemplates[i]);
         }
         $("#navplaceholder").replaceWith(htmlList.join(" "));
+        if(this.config.onLoad)
+            this.config.onLoad();
     }
 
     // buildContentPage: occurs on tab changes

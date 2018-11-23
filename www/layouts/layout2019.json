@@ -1,4 +1,5 @@
 {
+    "layoutName": "Test2019.json",
     "pageTemplates": [
         {
             "title": "Driver",
@@ -12,17 +13,20 @@
                     "id": "drive",
                     "label": "Drive Subsystem",
                     "type": "systemstate",
-                    "size": ["fill", 2],
+                    "size": ["fill", 40],
                     "ntkey": "/SmartDashboard/Drive"
                 },
                 {
                     "id": "driveSpeedLeft",
                     "label": "Left Speed",
                     "type": "stripchart",
-                    "size": [3, 6],
+                    "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/leftSpeed",
                     "params": {
-                        "yaxis": [0, 80],
+                        "yaxis": {
+                            "min": 0, 
+                            "max": 80
+                        },
                         "fillvalue": 0,
                         "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
                         "channelcount": 2,
@@ -34,7 +38,7 @@
                     "id": "driveSpeedRight",
                     "label": "Right Speed",
                     "type": "stripchart",
-                    "size": [3, 6],
+                    "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/rightSpeed",
                     "params": {
                         "yaxis": {
@@ -52,7 +56,7 @@
                     "id": "driveIMU",
                     "label": "IMU Heading",
                     "type": "stripchart",
-                    "size": [3, 6],
+                    "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/imuHeading",
                     "params": {
                         "yaxis": {
@@ -66,7 +70,7 @@
                     "id": "driveOdometry",
                     "label": "Odometry",
                     "type": "pathplot",
-                    "size": [3, 6],
+                    "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/odometry",
                     "params": {
                         "xaxis": {
@@ -96,7 +100,7 @@
                     "id": "climb",
                     "label": "Climb Subsystem",
                     "type": "systemstate",
-                    "size": ["fill", 2],
+                    "size": ["fill", 40],
                     "ntkey": "/SmartDashboard/Climb"
                 }
             ]
@@ -135,7 +139,7 @@
                 {
                     "id": "about",
                     "type": "html",
-                    "size": [3, 16],
+                    "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"
                     }
@@ -143,7 +147,23 @@
                 {
                     "id": "about2",
                     "type": "html",
-                    "size": [3, 16],
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "id": "about3",
+                    "type": "html",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "id": "about4",
+                    "type": "html",
+                    "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"
                     }

@@ -7,6 +7,7 @@ class PageHandler
         this.config = config;
         this.netTabHandlers = {};
         this.pageTemplate = pageTemplate;
+        this.ntkeyMap = {};
     }
 
     // buildPage: return html representation of tab contents.  For
@@ -28,7 +29,6 @@ class PageHandler
     //
     buildPage(loadHtmlCB)
     {
-        this.widgets = [];
         if(this.pageTemplate.widgets)
         {
             let htmllist = [];
@@ -41,11 +41,11 @@ class PageHandler
                 if(sz[0] == "fill")
                     style += "grid-column:1/-1;";
                 else
-                    style += `grid-column:span ${sz[0]};`;
+                    style += `grid-column:span ${sz[0]/10};`; // assume 10px per grid
                 if(sz[1] == "fill")
                     style += "grid-row:1/-1;";
                 else
-                    style += `grid-row:span ${sz[1]};`;
+                    style += `grid-row:span ${sz[1]/10};`; // assume 10px per grid
                 style += "'></div>";
                 htmllist.push(style);
             }
@@ -57,9 +57,11 @@ class PageHandler
                 for(let i=0;i<this.pageTemplate.widgets.length;i++)
                 {
                     let w = this.pageTemplate.widgets[i];
-                    var targetElem = $(`#${w.id}`);
+                    if(w.ntkey)
+                        this.ntkeyMap[w.ntkey] = w;
                     if(w.type == "html")
                     {
+                        let targetElem = $(`#${w.id}`);
                         var fileref = w.params.url;
                         app.sendGetRequest(fileref, function(html) {
                             targetElem.html(html);
@@ -69,6 +71,7 @@ class PageHandler
                     else
                     {
                         let html;
+                        let targetElem = $(`#${w.id}`);
                         switch(w.type)
                         {
                         case "systemstate":
@@ -79,20 +82,33 @@ class PageHandler
                             html += "STATUS <span class='data' id='${w.id}Status'>n/a</span>";
                             html += "<hr />";
                             html += "</div>";
+                            targetElem.html(html);
                             break;
                         case "stripchart":
+                            w.params.id = `${w.id}Chart`;
                             html = "<div class='plotContainer'>";
-                            html += `<label>${w.label}</label>`;
-                            html += "<div id='${w.id}' class='stripChart'></div>";
+                            html +=   `<label>${w.label}</label>`;
+                            html +=   `<div id='${w.params.id}' `;
+                            html +=      "style='width:326px;height:162px' ";
+                            html +=      "class='stripChart'>";
+                            html +=    "</div>";
                             html += "</div>";
-                            this.widgets.push(new StripChart(w.params));
+                            targetElem.html(html);
+                            w.params.id = "#" + w.params.id;
+                            w.widget = new StripChart(w.params);
                             break;
                         case "pathplot":
+                            w.params.id = `${w.id}Plot`;
                             html = "<div class='plotContainer'>";
-                            html += `<label>${w.label}</label>`;
-                            html += "<div id='${w.id}' class='pathPlot'></div>";
+                            html +=  `<label>${w.label}</label>`;
+                            html +=  `<div id='${w.params.id}'`;
+                            html +=      "style='width:326px;height:162px' ";
+                            html +=      "class='pathPlot'>";
+                            html +=  "</div>";
                             html += "</div>";
-                            this.widgets.push(new PathPlot(w.params));
+                            targetElem.html(html);
+                            w.params.id = "#" + w.params.id;
+                            w.widget = new PathPlot(w.params);
                             break;
                         case "slider":
                             break; 
@@ -109,7 +125,6 @@ class PageHandler
                         }
                         if(html)
                         {
-                            targetElem.html(html);
                             this._widgetLoaded();
                         }
                     }
@@ -140,6 +155,7 @@ class PageHandler
     pageLoaded()
     {
         // may be overridden by subclasses
+        let self = this;
 
         // Selector (pulldown menu) support ------------------------------
         // assume that the id of the selector matches the SmartDashboard key.
@@ -162,7 +178,7 @@ class PageHandler
             var id = $(this).attr("id");
             var ntkey = self.idToSDKey[id];
             if(!ntkey) {
-                app.logMsg("unknown entry " + id);
+                app.warning("unknown entry " + id);
             }
             var value = $(this).val();
             app.putValue(ntkey, value);
@@ -173,7 +189,7 @@ class PageHandler
             var id = $(this).attr("id");
             var ntkey = self.idToSDKey[id];
             if(!ntkey) {
-                app.logMsg("unknown number " + id);
+                app.warning("unknown number " + id);
             }
             var value = $(this).val();
             app.putValue(ntkey, Number(value));
@@ -185,7 +201,7 @@ class PageHandler
             var id = $(this).attr("id");
             var ntkey = self.idToSDKey[id];
             if(!ntkey) {
-                app.logMsg("unknown slider " + id);
+                app.warning("unknown slider " + id);
             }
             var value = $(this).val();
             $("#"+id+"Txt").text(value);
@@ -198,19 +214,35 @@ class PageHandler
             var id = $(this).attr("id");
             var ntkey = self.idToSDKey[id];
             if(!ntkey) {
-                app.logMsg("unknown checkbox " + id);
+                app.warning("unknown checkbox " + id);
             }
             var value = $(this).prop("checked");
             // app.logMsg("checkbox " + id + ": " + value);
             app.putValue(ntkey, value);
         });
+
+        this.updateWhenNoRobot();
     }
 
     onNetTabChange(key, value, isNew)
     {
-        let f = this.netTabHandlers[key];
-        if(f == undefined) return;
-        f(value, isNew);
+        let w = this.ntkeyMap[key];
+        if(w == undefined) return;
+        w.valueChanged(key, value, isNew);
+    }
+
+    updateWhenNoRobot()
+    {
+        if(!app.robotConnected)
+        {
+            for(let k in this.ntkeyMap)
+            {
+                let w = this.ntkeyMap[k].widget;
+                if(w && w.addRandomPt)
+                    w.addRandomPt();
+            }
+            setTimeout(this.updateWhenNoRobot.bind(this), 10);
+        }
     }
 }
 
