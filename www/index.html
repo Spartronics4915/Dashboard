@@ -1,99 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other
-         head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" 
+       content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="/favicon.ico">
+    <title>Spartronics4915 Dashboard </title>
 
-    <title>Spartronics4915 Dashboard</title>
-
-    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/app.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
     <link href="/css/slider.css" rel="stylesheet">
   </head>
 
   <body>
-
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed"
-				data-toggle="collapse" data-target="#navbar"
-				aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <span class="navbar-brand">
-           <img src="/images/SpartronicsLogo80px.png" width="35px" align="left"
-                style="padding-right:10px">
-            Dashboard
-          </span>
+    <header>
+        <nav>
+            <div id="navlogo">
+                <img src="/images/SpartronicsLogo80px.png" />
+            </div>
+            <div id="navtitle"> Dashboard </div>
+            <div id="navplaceholder"></div>
+        </nav>
+    </header>
+    <div id="layoutContents" class="container">
+        <div class="size1x2">
+            1. Hello, world, this is long text.
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav" id="mainNavList">
-            <li><a href="#driver">Driver</a></li>
-            <li><a href="#developer">Developer</a></li>
-            <!-- <li><a href="#controlmanager">Control Manager</a></li> -->
-            <li><a href="#pathpreview">Path Preview</a></li>
-            <li><a href="#nettab">Network Tables</a></li>
-            <li><a href="#robotlog">Robot Log</a></li>
-            <li><a href="#about">About</a></li>
-          </ul>
-          <div class="container" id="status" style="padding-top:10px;">
-              <span id="nettab-status">
-              	NetworkTables <span id="nettabState">Unknown state</span>,
-              	Robot <span id="robotState">Unknown state</span>
-                        <span id="robotAddress"></span>
-                        <span id="robotCANStatus"></span>
-              </span>
-          </div>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-
-    <!--
-    <div class="container" id="status" style="padding-top:5px;">
-        <span>
-            Build: <span id="buildid"><span class="amber">unknown</span></span>&nbsp;&nbsp;
-        </span>
-        <span id="nettab-status">
-        	NetworkTables <span id="nettabState">Unknown state</span>,
-        	Robot <span id="robotState">Unknown state</span>
-                  <span id="robotAddress"></span>
-        </span>
+        <div class="size2x2">
+            2. Hello, world
+        </div>
+        <div>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in u
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla 
+            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+            culpa qui officia deserunt mollit anim id est laborum.
+        </div>
     </div>
-    -->
+    <div id="extraspace">
+    </div>
 
-    <div id="mainContent" class="container">
-        <!-- all dynamic content is loaded herein -->
-    </div><!-- /.container -->
+    <footer>
+        <div id="cnxstatus">
+            Build
+            <span id='buildid'>
+                <span class='amber'>unknown</span>
+            </span>
+            &nbsp; &nbsp; &nbsp;
+            <span id="nettab-status">
+            NetworkTables <span id="nettabState">Unknown state</span>,
+            Robot <span id="robotState">unknown state</span>
+                    <span id="robotAddress"></span>
+                    <span id="robotCANStatus"></span>
+            </span>
+            &nbsp; &nbsp; &nbsp;
+            <span id="statusmsg"> 
+            </span>
+        </div>
+    </footer>
 
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/js/nih/jquery.min.js"></script>
-    <script src="/js/nih/jquery.flot.min.js"></script>
-    <script src="/js/nih/bootstrap.min.js"></script>
-    <script src="/js/pynetworktables2js/networktables.js"></script>
-    <script src="/js/pynetworktables2js/camera.js"></script>
-    <script src="/js/nih/raphael-2.1.4.min.js"></script>
-    <script src="/js/nih/justgage.js"></script>
-    <script src="/js/stripchart.js"></script>
-    <script src="/js/pathplot.js"></script>
-    <script src="/js/robotlog.js"></script>
-    <script src="/js/nettabSample.js"></script>
+    <!-- jQuery first, then Popper.js (no bootstrap)-->
+    <script src="/nih/jquery-3.3.1.min.js"></script>
+    <script src="/nih/jquery.flot.min.js"></script>
+    <script src="/nih/popper.min.js"></script>
+    <script src="/nih/pynetworktables2js/networktables.js"></script>
+    <script src="/nih/pynetworktables2js/camera.js"></script>
+    <script src="/nih/raphael-2.1.4.min.js"></script>
+    <script src="/nih/justgage.js"></script>
+
     <script src="/js/app.js"></script>
-    <script src="/js/pg_about.js"></script>
-    <script src="/js/pg_developer.js"></script>
-    <script src="/js/pg_driver.js"></script>
-    <script src="/js/pg_nettab.js"></script>
-    <script src="/js/pg_robotlog.js"></script>
-    <!-- <script src="/js/pg_controlmanager.js"></script> -->
-    <script src="/js/pg_pathpreview.js"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/robotlog.js"></script>
+
+    <script src="/js/pagehandlers/pagehandler.js"></script>
+    <script src="/js/pagehandlers/robotlogPH.js"></script>
+    <script src="/js/pagehandlers/nettabPH.js"></script>
+
+    <script src="/js/widgets/widget.js"></script>
+   <script src="/js/widgets/pathplot.js"></script>
+    <script src="/js/widgets/stripchart.js"></script>
+    <script src="/js/widgets/systemstate.js"></script>
+
+    <script src="/_test/nettabSample.js"></script>
+
   </body>
 </html>

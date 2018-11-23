@@ -209,6 +209,12 @@ class App
             $("#buildid").html("<span class='green'>"+tval+"</span");
         }
 
+        tval = this.getValue("Status");
+        if(tval) 
+        {
+            $("#statusmsg").html(tval);
+        }
+
         
         // We shouldn't putValue here, since it may overwrite
         // robotInit state.

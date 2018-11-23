@@ -58,7 +58,16 @@ class PageHandler
                 {
                     let w = this.pageTemplate.widgets[i];
                     if(w.ntkey)
-                        this.ntkeyMap[w.ntkey] = w;
+                    {
+                        if(Array.isArray(w.ntkey))
+                        {
+                            // widget listens to multiple keys
+                            for(let j=0;j<w.ntkey.length;j++)
+                                this.ntkeyMap[w.ntkey[j]] = w;
+                        }
+                        else
+                            this.ntkeyMap[w.ntkey] = w;
+                    }
                     if(w.type == "html")
                     {
                         let targetElem = $(`#${w.id}`);
@@ -75,40 +84,13 @@ class PageHandler
                         switch(w.type)
                         {
                         case "systemstate":
-                            html = "<div class='systemstate'>";
-                            html += `<label>${w.label}</label>&nbsp;&nbsp;`;
-                            html += "STATE <span class='data' id='${w.id}State'>n/a</span>";
-                            html += "&nbsp;";
-                            html += "STATUS <span class='data' id='${w.id}Status'>n/a</span>";
-                            html += "<hr />";
-                            html += "</div>";
-                            targetElem.html(html);
+                            w.widget = new SystemState(w, targetElem);
                             break;
                         case "stripchart":
-                            w.params.id = `${w.id}Chart`;
-                            html = "<div class='plotContainer'>";
-                            html +=   `<label>${w.label}</label>`;
-                            html +=   `<div id='${w.params.id}' `;
-                            html +=      "style='width:326px;height:162px' ";
-                            html +=      "class='stripChart'>";
-                            html +=    "</div>";
-                            html += "</div>";
-                            targetElem.html(html);
-                            w.params.id = "#" + w.params.id;
-                            w.widget = new StripChart(w.params);
+                            w.widget = new StripChart(w, targetElem);
                             break;
                         case "pathplot":
-                            w.params.id = `${w.id}Plot`;
-                            html = "<div class='plotContainer'>";
-                            html +=  `<label>${w.label}</label>`;
-                            html +=  `<div id='${w.params.id}'`;
-                            html +=      "style='width:326px;height:162px' ";
-                            html +=      "class='pathPlot'>";
-                            html +=  "</div>";
-                            html += "</div>";
-                            targetElem.html(html);
-                            w.params.id = "#" + w.params.id;
-                            w.widget = new PathPlot(w.params);
+                            w.widget = new PathPlot(w, targetElem);
                             break;
                         case "slider":
                             break; 
@@ -123,10 +105,8 @@ class PageHandler
                             app.warning("unimplemented widget type " + w.type);
                             break;
                         }
-                        if(html)
-                        {
+                        if(w.widget)
                             this._widgetLoaded();
-                        }
                     }
                 }
             }.bind(this));
@@ -152,9 +132,8 @@ class PageHandler
         this.netTabHandlers[key] = handler;
     }
 
-    pageLoaded()
+    pageLoaded() // may be overridden by subclasses
     {
-        // may be overridden by subclasses
         let self = this;
 
         // Selector (pulldown menu) support ------------------------------
@@ -235,13 +214,13 @@ class PageHandler
     {
         if(!app.robotConnected)
         {
-            for(let k in this.ntkeyMap)
+            for(let i=0;i<this.pageTemplate.widgets.length;i++)
             {
-                let w = this.ntkeyMap[k].widget;
-                if(w && w.addRandomPt)
+                let w = this.pageTemplate.widgets[i].widget;
+                if(w)
                     w.addRandomPt();
             }
-            setTimeout(this.updateWhenNoRobot.bind(this), 10);
+            setTimeout(this.updateWhenNoRobot.bind(this), 20);  // 50 fps
         }
     }
 }

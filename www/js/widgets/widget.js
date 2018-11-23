@@ -3,19 +3,20 @@
 // all widgets.
 class Widget
 {
-    constructor(config)
+    constructor(config, targetElem)
     {
         this.config = config;
-    }
-
-    addRandomPt()
-    {
-        app.notice("addRandomPt: override me");
+        this.targetElem = targetElem;
     }
 
     valueChanged(key, value, isNew)
     {
-        app.notice("valueChanged: override me");
+        app.notice(`${this.config.label} valueChanged: override me!`);
+    }
+
+    addRandomPt()
+    {
+        app.notice(`${this.config.label} addRandomPt: override me!`);
     }
 
 }

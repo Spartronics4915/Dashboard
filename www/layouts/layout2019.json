@@ -7,14 +7,15 @@
             ]
         },
         {
-            "title": "Developer",
+            "title": "Drivetrain",
             "widgets": [
                 {
                     "id": "drive",
                     "label": "Drive Subsystem",
                     "type": "systemstate",
                     "size": ["fill", 40],
-                    "ntkey": "/SmartDashboard/Drive"
+                    "ntkey": ["/SmartDashboard/Drive/State",
+                              "/SmartDashbaord/Drive/Status"]
                 },
                 {
                     "id": "driveSpeedLeft",
@@ -95,7 +96,12 @@
                             "color": "rgb(20, 120, 255)"
                         }
                     }
-                },
+                }
+            ]
+        },
+        {
+            "title": "Climber",
+            "widgets": [
                 {
                     "id": "climb",
                     "label": "Climb Subsystem",
