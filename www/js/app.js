@@ -15,7 +15,10 @@ class App
         this.config = {}; // XXX: load via .json file?
         this.config.debug = false;
         this.config.netTabVersion = 1802;
+        this.config.demoMode = true;
+        this.config.layout = "/layouts/layout2019.json";
         this.robotLog = null;
+        this.robotConnected = false;
 
         document.addEventListener("DOMContentLoaded", 
             this.onReady.bind(this), false);
@@ -73,10 +76,9 @@ class App
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
         this.layout = new window.Layout({
-            layout: "/layouts/layout2019.json",
+            layout: this.config.layout,
             onLoad: this.onLayoutLoaded.bind(this)
         });
-
     }
 
     onLayoutLoaded()
@@ -203,19 +205,6 @@ class App
             $("#nettabState").html("<span class='blinkRed'>off-line</span>");
         }
 
-        var tval = this.getValue("Build");
-        if(tval) 
-        {
-            $("#buildid").html("<span class='green'>"+tval+"</span");
-        }
-
-        tval = this.getValue("Status");
-        if(tval) 
-        {
-            $("#statusmsg").html(tval);
-        }
-
-        
         // We shouldn't putValue here, since it may overwrite
         // robotInit state.
         if(false)
@@ -238,6 +227,9 @@ class App
         }
         else
         {
+            if(nm[0] == '/')
+                NetworkTables.putValue(nm, value);
+            else
             if(this.config.netTabVersion <= 1801)
             {
                 // for 18.0.1 
@@ -253,7 +245,10 @@ class App
 
     getValue(nm, def="")
     {
-        return NetworkTables.getValue("/SmartDashboard/"+nm, def);
+        if(nm[0] == '/')
+            return NetworkTables.getValue(nm, def);
+        else
+            return NetworkTables.getValue("/SmartDashboard/"+nm, def);
     }
 
     replayNetTab()
@@ -271,19 +266,32 @@ class App
         this.debug("nettab entry changed: " + key +
                   " = " + value +
                  " new: " + isNew);
+        
+        //  app must handle its own special vals
         switch(key) 
         {
-            case "/SmartDashboard/CANBusStatus":
-                this.updateCANStatus();
-                break;
-            default:
-                break;
+        case "/SmartDashboard/CANBusStatus":
+            this.updateCANStatus();
+            break;
+        case "/SmartDashboard/Build":
+            $("#buildid").html("<span class='receding'>"+value+"</span");
+            break;
+        case "/SmartDashboard/Status":
+            $("#statusmsg").html(value);
+            break;
+        default:
+            break;
         }
+
         if(!this.pageHandlers[this.currentPage]) 
         {
-            this.warning("missing page handler for " + this.currentPage);
+            this.debug("onNetTabChange: missing page handler for " + this.currentPage);
             return;
         }
+        // Currently we only distribute changes to current page.
+        // This means that any history is lost for non-visible changes.
+        // On the other hand, we don't waste cycles and memory on history
+        // that the user may not care about.
         if(this.pageHandlers[this.currentPage].onNetTabChange)
         {
             this.pageHandlers[this.currentPage].onNetTabChange(key, value, isNew);

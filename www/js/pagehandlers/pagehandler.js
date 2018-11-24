@@ -205,14 +205,30 @@ class PageHandler
 
     onNetTabChange(key, value, isNew)
     {
-        let w = this.ntkeyMap[key];
-        if(w == undefined) return;
-        w.valueChanged(key, value, isNew);
+        let hh = this.ntkeyMap[key];
+        if(!hh) return;
+        let w = hh.widget;
+        if(!w) return;
+
+        if(!hh.ntkeyRefs)
+            w.valueChanged(key, value, isNew);
+        else
+        {
+            let vals =  [value];
+            if(Array.isArray(hh.ntkeyRefs))
+            {
+                for(let i=0;i<hh.ntkeyRefs.length;i++)
+                    vals.push(app.getValue(hh.ntkeyRefs[i]));
+            }
+            else
+                vals.push(app.getValue(hh.ntkeyRefs))
+            w.valueChanged(key, vals, isNew);
+        }
     }
 
     updateWhenNoRobot()
     {
-        if(!app.robotConnected)
+        if(!app.robotConnected && app.config.demoMode)
         {
             for(let i=0;i<this.pageTemplate.widgets.length;i++)
             {

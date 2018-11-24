@@ -2,12 +2,14 @@
     "layoutName": "Test2019.json",
     "pageTemplates": [
         {
-            "title": "Driver",
+            "icon": "fas fa-gamepad primary",
+            "title": "Compete",
             "widgets": [
             ]
         },
         {
-            "title": "Drivetrain",
+            "title": "Drive",
+            "icon":  "fas fa-tachometer-alt",
             "widgets": [
                 {
                     "id": "drive",
@@ -23,6 +25,9 @@
                     "type": "stripchart",
                     "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/leftSpeed",
+                    "ntkeyRefs":[
+                        "/SmartDashboard/Drive/leftSpeedTarget"
+                    ],
                     "params": {
                         "yaxis": {
                             "min": 0, 
@@ -41,6 +46,9 @@
                     "type": "stripchart",
                     "size": [270, 160],
                     "ntkey": "/SmartDashboard/Drive/rightSpeed",
+                    "ntkeyRefs":[
+                        "/SmartDashboard/Drive/rightSpeedTarget"
+                    ],
                     "params": {
                         "yaxis": {
                             "min": 0, 
@@ -64,7 +72,8 @@
                             "min": -200, 
                             "max": 200
                         },
-                        "widths": [1]
+                        "widths": [1],
+                        "colors":["rgb(20,120,255)"]
                     }
                 },
                 {
@@ -100,7 +109,8 @@
             ]
         },
         {
-            "title": "Climber",
+            "title": "Climb",
+            "icon":  "fas fa-rocket",
             "widgets": [
                 {
                     "id": "climb",
@@ -112,7 +122,27 @@
             ]
         },
         {
+            "title": "Vision",
+            "icon":  "fas fa-eye",
+            "widgets": [
+                {
+                    "id": "vision",
+                    "label": "Vision Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", 40],
+                    "ntkey": "/SmartDashboard/Vision"
+                }
+            ]
+        },
+        {
+            "title": "Test",
+            "icon": "fas fa-vial",
+            "widgets": [
+            ]
+        },
+        {
             "title": "Network Tables",
+            "icon": "fas fa-network-wired",
             "pagehandler": "NetTabPH",
             "widgets": [
                 {
@@ -127,6 +157,7 @@
         },
         {
             "title": "Robot Log",
+            "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
             "widgets": [
                 {
@@ -141,6 +172,7 @@
         },
         {
             "title": "About",
+            "icon": "fas fa-cogs",
             "widgets": [
                 {
                     "id": "about",

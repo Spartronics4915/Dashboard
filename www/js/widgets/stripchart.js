@@ -7,6 +7,8 @@ class StripChart extends Widget
         super(config, targetElem);
         this.plotConfig = this.config.params;
         this.plotConfig.id = `#${this.config.id}Plot`;
+        this.txtConfig = {};
+        this.txtConfig.id = `${this.config.id}Txt`;
         if (!this.plotConfig.series)
             this.plotConfig.series = {};
         if(!this.plotConfig.series.color)
@@ -43,8 +45,11 @@ class StripChart extends Widget
         this.nextSlot = 0;
 
         let html = "<div class='plotContainer'>";
-        html +=   `<label>${this.config.label}</label>`;
-        html +=   `<div id='${this.plotConfig.id.slice(1)}' `;
+        html +=   `<label>${this.config.label}</label> `;
+        html +=   `<label id=${this.txtConfig.id} `;
+        html +=        `style='display:inline-block;width:4em;color:${this.plotConfig.colors[0]};text-align:right'>`;
+        html +=    "0 </label>";
+        html +=   `<div id='${this.plotConfig.id.slice(1)}' `; // eliminate #
         html +=      "style='width:326px;height:162px' ";
         html +=      "class='stripChart'>";
         html +=    "</div>";
@@ -53,6 +58,17 @@ class StripChart extends Widget
         // app.logMsg("plotting: " + this.config.id);
         this.plot = $.plot(this.plotConfig.id, this.getStripData(), 
                             this.plotConfig);
+    }
+
+    valueChanged(key,  vals, isnew)
+    {
+        // currently we only support a single key, so no need to 
+        // check it.
+
+        if(Array.isArray(vals))
+            this.addDataPts(vals);
+        else
+            this.addDataPt(vals);
     }
 
     addDataPt(value, chan)
@@ -65,6 +81,7 @@ class StripChart extends Widget
             this.nextSlot = 0;
         this.plot.setData(this.getStripData());
         this.plot.draw();
+        $("#"+this.txtConfig.id).html(value.toFixed(2));
     }
 
     addDataPts(values)
@@ -76,6 +93,7 @@ class StripChart extends Widget
             this.nextSlot = 0;
         this.plot.setData(this.getStripData());
         this.plot.draw();
+        $("#"+this.txtConfig.id).html(values[0].toFixed(2));
     }
 
     // changes the data at the last slot

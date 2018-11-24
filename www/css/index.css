@@ -27,6 +27,7 @@ label
 input:focus
 {
     border-color: yellow;
+    border-width:  1px;
 }
 
 .bigfont
@@ -41,7 +42,12 @@ input:focus
 
 .green
 {
-  color: rgb(17, 151, 42);
+  color: rgb(3, 83, 17);
+}
+
+.receding
+{
+    color: #666;
 }
 
 .blinkRed 
@@ -112,6 +118,16 @@ nav > div
     border-radius: 5px;
 }
 
+nav .fas
+{
+    font-size: 32px;
+}
+
+nav .fas.primary
+{
+    font-size: 50px;
+}
+
 #navlogo > img
 {
     width: 35px;
@@ -155,6 +171,7 @@ footer
     font-size: 14px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+    background-color: #111;
 }
 
 #extraspace

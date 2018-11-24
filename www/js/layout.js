@@ -22,9 +22,20 @@ class Layout
         let htmlList = [];
         for(let i=0;i<this.pageTemplates.length;i++)
         {
-            let title = this.pageTemplates[i].title;
             let page = `tab${i}`;
-            htmlList.push(`<div class="navtab"><a href="#${page}">${title}</a></div>`);
+            let icon = this.pageTemplates[i].icon;
+            if(icon)
+            {
+                htmlList.push(`<div class="navtab">`+
+                       `<a href="#${page}">` +
+                        `<span class="${icon}"></span>` +
+                       "</a></div>");
+            }
+            else
+            {
+                let title = this.pageTemplates[i].title;
+                htmlList.push(`<div class="navtab"><a href="#${page}">${title}</a></div>`);
+            }
             this.pageHandlers[page] = this._buildPageHandler(this.pageTemplates[i]);
         }
         $("#navplaceholder").replaceWith(htmlList.join(" "));
