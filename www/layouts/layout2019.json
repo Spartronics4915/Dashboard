@@ -12,19 +12,19 @@
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
                 {
-                    "id": "drive",
+                    "id": "Drive",
                     "label": "Drive Subsystem",
                     "type": "systemstate",
                     "size": ["fill", 40],
-                    "ntkey": ["/SmartDashboard/Drive/State",
-                              "/SmartDashbaord/Drive/Status"]
+                    "ntkeys": ["/SmartDashboard/Drive/State",
+                              "/SmartDashboard/Drive/Status"]
                 },
                 {
                     "id": "driveSpeedLeft",
                     "label": "Left Speed",
                     "type": "stripchart",
                     "size": [270, 160],
-                    "ntkey": "/SmartDashboard/Drive/leftSpeed",
+                    "ntkeys": "/SmartDashboard/Drive/leftSpeed",
                     "ntkeyRefs":[
                         "/SmartDashboard/Drive/leftSpeedTarget"
                     ],
@@ -45,7 +45,7 @@
                     "label": "Right Speed",
                     "type": "stripchart",
                     "size": [270, 160],
-                    "ntkey": "/SmartDashboard/Drive/rightSpeed",
+                    "ntkeys": "/SmartDashboard/Drive/rightSpeed",
                     "ntkeyRefs":[
                         "/SmartDashboard/Drive/rightSpeedTarget"
                     ],
@@ -66,7 +66,7 @@
                     "label": "IMU Heading",
                     "type": "stripchart",
                     "size": [270, 160],
-                    "ntkey": "/SmartDashboard/Drive/imuHeading",
+                    "ntkeys": "/SmartDashboard/Drive/imuHeading",
                     "params": {
                         "yaxis": {
                             "min": -200, 
@@ -81,7 +81,7 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [270, 160],
-                    "ntkey": "/SmartDashboard/Drive/odometry",
+                    "ntkeys": "/SmartDashboard/Drive/odometry",
                     "params": {
                         "xaxis": {
                             "min": 0,
@@ -105,6 +105,78 @@
                             "color": "rgb(20, 120, 255)"
                         }
                     }
+                },
+                {
+                    "id": "Lidar",
+                    "label": "Lidar",
+                    "type": "systemstate",
+                    "size": ["fill", 40],
+                    "ntkeys": ["/SmartDashboard/Lidar/status",
+                               "/SmartDashboard/Lidar/angle",
+                               "/SmartDashboard/Turret/state"
+                            ]
+                },
+                {
+                    "id": "lidarOdometry",
+                    "label": "LIDAR Odometry",
+                    "type": "pathplot",
+                    "size": [270, 160],
+                    "ntkeys": "/SmartDashboard/Lidar/pose",
+                    "params": {
+                        "xaxis": {
+                            "min": 0,
+                            "max": 652,
+                            "show": 1
+                        },
+                        "yaxis": {
+                            "min": 0,
+                            "max": 324,
+                            "show": 1
+                        },
+                        "series": {
+                            "shadowSize": 0,
+                            "lines": {
+                                "show": 1,
+                                "lineWidth": 1
+                            },
+                            "points": {
+                                "show": 0
+                            },
+                            "color": "rgb(20, 120, 255)"
+                        }
+                    }
+                },
+                {
+                    "id": "lidarPoints",
+                    "label": "LIDAR Points",
+                    "type": "pathplot",
+                    "size": [270, 160],
+                    "ntkeys": "/SmartDashboard/Lidar/points",
+                    "params": {
+                        "xaxis": {
+                            "min": 0,
+                            "max": 652,
+                            "show": 1
+                        },
+                        "yaxis": {
+                            "min": 0,
+                            "max": 324,
+                            "show": 1
+                        },
+                        "series": {
+                            "shadowSize": 0,
+                            "lines": {
+                                "show": 0
+                            },
+                            "points": {
+                                "show": 1,
+                                "radius": 0.05,
+                                "fill": 0
+                            },
+                            "color": "rgb(20, 120, 255)"
+                        },
+                        "maxlength":  1e4
+                    }
                 }
             ]
         },
@@ -113,11 +185,14 @@
             "icon":  "fas fa-rocket",
             "widgets": [
                 {
-                    "id": "climb",
+                    "id": "Climb",
                     "label": "Climb Subsystem",
                     "type": "systemstate",
                     "size": ["fill", 40],
-                    "ntkey": "/SmartDashboard/Climb"
+                    "ntkeys": [
+                        "/SmartDashboard/Climb/State",
+                        "/SmartDashboard/Climb/Status"
+                    ]
                 }
             ]
         },
@@ -130,7 +205,7 @@
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", 40],
-                    "ntkey": "/SmartDashboard/Vision"
+                    "ntkeys": "/SmartDashboard/Vision"
                 }
             ]
         },
@@ -147,11 +222,8 @@
             "widgets": [
                 {
                     "id": "nettab",
-                    "type": "html",
-                    "size": ["fill", "fill"],
-                    "params": {
-                        "url": "/pages/nettab.html"
-                    }
+                    "type": "nettab",
+                    "size": ["fill", "fill"]
                 }
             ]
         },
@@ -161,12 +233,9 @@
             "pagehandler": "RobotlogPH",
             "widgets": [
                 {
-                    "id": "robolog",
-                    "type": "html",
-                    "size": ["fill", "fill"],
-                    "params": {
-                        "url": "/pages/robotlog.html"
-                    }
+                    "id": "robotlog",
+                    "type": "robotlog",
+                    "size": ["fill", "fill"]
                 }
             ]
         },

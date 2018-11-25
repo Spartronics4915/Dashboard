@@ -3,14 +3,20 @@ class SystemState extends Widget
     constructor(config, targetElem)
     {
         super(config, targetElem);
+        let w = this.config;
         this.counter = 0;
+        this.subsys  = w.id;
+        this.numKeys = this.config.ntkeys.length;
 
         let html = "<div class='systemstate'>";
-        let w = this.config;
         html += `<label>${w.label}</label>&nbsp;&nbsp;`;
-        html += `STATE <span class='data' id='${w.id}State'>n/a</span>`;
-        html += "&nbsp;";
-        html += `STATUS <span class='data' id='${w.id}Status'>n/a</span>`;
+        for(let i=0;i<this.numKeys;i++)
+        {
+            let key = this.config.ntkeys[i];
+            let labelId = this.ntkeyToDOMId(key);
+            // infer label from network table name
+            html  += `${labelId[0]} <span class='strong' id='${labelId[1]}'>n/a</span> `;
+        }
         html += "<hr />";
         html += "</div>";
         targetElem.html(html);
@@ -18,30 +24,21 @@ class SystemState extends Widget
 
     valueChanged(key, value, isNew)
     {
-        let w = this.config;
-        if(key.indexOf("/State") != -1)
-        {
-            $('#{w.id}State').html(value);
-        }
-        else
-        if(key.indexOf("/Status") != -1)
-        {
-            $('#{w.id}Status').html(value);
-        }
-        else
-            app.warning("unexpected ntkey " + key);
+        let labelId = this.ntkeyToDOMId(key);
+        $("#"+labelId[1]).html(value);
     }
 
     addRandomPt()
     {
         this.counter++;
-        if(this.counter % 50 == 0)
-            $(`#${this.config.id}Status`).html((this.counter / 50).toFixed(2));
-        if(this.counter % 1000 == 0)
-            $(`#${this.config.id}State`).html("OK");
-        else
-        if(this.counter %  500  == 0)
-            $(`#${this.config.id}State`).html("hmm");
+        let mod = this.counter % 100;
+        if(mod < this.numKeys)
+        {
+            let key = this.config.ntkeys[mod];
+            let r = Math.floor(7 * Math.random() - .01);
+            let val  = ["OK", "Fuzzy", "Hrm", "Ahem..", "Er..", "Gulp", "Nominal"][r];
+            app.putValue(key,  val, true);
+            //this.valueChanged(key, value, true);;
+        }
     }
-
 }

@@ -184,5 +184,3 @@ class StripChart extends Widget
         return res;
     }
 }
-
-window.StripChart = StripChart;

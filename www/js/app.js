@@ -139,6 +139,7 @@ class App
         if(!this.pageHandlers[page])
             this.pageHandlers[page] = ph;
         this.updateNav();
+        this.replayNetTab();
     }
 
     interpolate(body, map)
@@ -274,7 +275,7 @@ class App
             this.updateCANStatus();
             break;
         case "/SmartDashboard/Build":
-            $("#buildid").html("<span class='receding'>"+value+"</span");
+            $("#buildid").html("<span class='weak'>"+value+"</span");
             break;
         case "/SmartDashboard/Status":
             $("#statusmsg").html(value);

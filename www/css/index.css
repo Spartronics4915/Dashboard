@@ -18,16 +18,21 @@ hr
     border-color: #25b;
 }
 
+td
+{
+    padding: 4px;
+}
+
 label
 {
     font-size: 14px;
     font-weight: normal;
 }
 
-input:focus
+.flex
 {
-    border-color: yellow;
-    border-width:  1px;
+    display: flex;
+    align-items: center;
 }
 
 .bigfont
@@ -45,7 +50,12 @@ input:focus
   color: rgb(3, 83, 17);
 }
 
-.receding
+.strong
+{
+    color: #aaa;
+}
+
+.weak
 {
     color: #666;
 }
@@ -201,7 +211,7 @@ footer
     background-color: #222;
 }
 
-.container .data
+.container strong
 {
     color: #aaa;
 }
@@ -226,14 +236,26 @@ input[type=number] {
     text-align: center;
 }
 
+input:focus,
+input:hover,
+select:focus,
+select:hover
+{
+    outline: 1px solid rgb(136, 128, 24);
+}
+
 input,
-select {
+select
+{
     color: #888888;
     background-color: #111;
-    padding: 2px 4px;
-    border-radius: 3px;
+    padding: 4px 4px;
+    margin-left: 5px;
+    border-radius: 5px;
     border: 0px;
+    font-size: 16px;
 }
+
 
 /* robolog -------------------------------------------*/
 .logmsg 

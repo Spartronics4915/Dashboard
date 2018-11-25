@@ -1,13 +1,12 @@
-/* global $ app StripChart PathPlot */
+/* global $ app StripChart PathPlot SelectorWidget */
 
 class PageHandler
 {
     constructor(config, pageTemplate)
     {
         this.config = config;
-        this.netTabHandlers = {};
         this.pageTemplate = pageTemplate;
-        this.ntkeyMap = {};
+        this.ntkeyMap = {}; // maps to widget
     }
 
     // buildPage: return html representation of tab contents.  For
@@ -23,7 +22,7 @@ class PageHandler
     //              html - a generic html template rep for a widget
     //              slider -
     //              plot -
-    //          .nettab is the optional network table entry or pattern
+    //          .ntkey is the optional network table entrylist 
     //          .params are widget-type-specific parameters
     //              html: url
     //
@@ -42,31 +41,29 @@ class PageHandler
                     style += "grid-column:1/-1;";
                 else
                     style += `grid-column:span ${sz[0]/10};`; // assume 10px per grid
+
                 if(sz[1] == "fill")
                     style += "grid-row:1/-1;";
+                else
+                if(sz[1] == "row")
+                    style += "grid-row: span 4;"; // 40px rows
                 else
                     style += `grid-row:span ${sz[1]/10};`; // assume 10px per grid
                 style += "'></div>";
                 htmllist.push(style);
             }
             app.debug("pagegrid " + htmllist.join(""));
-            loadHtmlCB(htmllist.join(""), function() {
+            loadHtmlCB(htmllist.join(""), function() 
+            {
                 // we'd like a single callback after all the dust associated
                 // with loading widgets settles.   
                 this.numWidgetsToLoad = this.pageTemplate.widgets.length;
                 for(let i=0;i<this.pageTemplate.widgets.length;i++)
                 {
                     let w = this.pageTemplate.widgets[i];
-                    if(w.ntkey)
+                    if(w.ntkeys)
                     {
-                        if(Array.isArray(w.ntkey))
-                        {
-                            // widget listens to multiple keys
-                            for(let j=0;j<w.ntkey.length;j++)
-                                this.ntkeyMap[w.ntkey[j]] = w;
-                        }
-                        else
-                            this.ntkeyMap[w.ntkey] = w;
+                        this.setNetTabHandler(w.ntkeys, w);
                     }
                     if(w.type == "html")
                     {
@@ -91,6 +88,15 @@ class PageHandler
                             break;
                         case "pathplot":
                             w.widget = new PathPlot(w, targetElem);
+                            break;
+                        case "nettab":
+                            w.widget =  new NetTabWidget(w, targetElem, this);
+                            break;
+                        case "robotlog":
+                            w.widget =  new RobotLogWidget(w, targetElem, this);
+                            break;
+                        case "selector":
+                            w.widget  = new SelectorWidget(w, targetElem);
                             break;
                         case "slider":
                             break; 
@@ -121,36 +127,27 @@ class PageHandler
             // subclasses may wish to install handlers fork widgets after
             // loading.
             this.pageLoaded(); // overridden by subclasses
-            app.replayNetTab(); // triggers onNetTabChange
         }
     }
 
-    setNetTabHandler(key, handler)
+    setNetTabHandler(keys, handler)
     {
-        if(this.netTabHandlers[key])
-            app.warning("nettab collision for " + key);
-        this.netTabHandlers[key] = handler;
+        if(!Array.isArray(keys)) // handler may listen to multiple keys
+            keys = [keys];
+        for(let j=0;j<keys.length;j++)
+        {
+            let key = keys[j];
+            if(this.ntkeyMap[key])
+                app.warning("nettab collision for " + key);
+            this.ntkeyMap[key] = handler;
+        }
     }
 
     pageLoaded() // may be overridden by subclasses
     {
         let self = this;
 
-        // Selector (pulldown menu) support ------------------------------
-        // assume that the id of the selector matches the SmartDashboard key.
-        $(".selector").each(function() {
-            var key = $(this).attr("id");
-            // var ntkey = "/SmartDashboard/" + key;
-            var val = app.getValue(key);
-            $(this).val(val);
-        });
-
-        // now update network tables on changes
-        $(".selector").change(function() {
-            var value = $(this).val();
-            var key = $(this).attr("id");
-            app.putValue(key, value);
-        });
+        SelectorWidget.installSelectorSupport();
 
         // String support ----------------------------------------------
         $("input[type=text]").on("input", function() {
@@ -239,6 +236,8 @@ class PageHandler
             setTimeout(this.updateWhenNoRobot.bind(this), 20);  // 50 fps
         }
     }
+
+    
 }
 
 window.PageHandler = PageHandler;

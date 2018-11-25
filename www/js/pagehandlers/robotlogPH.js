@@ -15,28 +15,13 @@ class RobotlogPH extends PageHandler
         this.filter = "";
         this.knownLogLevels = ["DEBUG", "INFO", "NOTICE", "WARNING", 
                                 "ERROR", "Exception"];
+        this.msgsId = "#robotlogMsgs";
     }
 
     pageLoaded()
     {
+        super.pageLoaded();
         let self = this; // don't step on jquery's $(this)
-
-        // first initialize selectors from network tables.
-        $(".selector").each(function() {
-            var key = $(this).attr("id");
-            var val = app.getValue(key);
-            if (val !== "")
-            {
-                $(this).val(val);
-            }
-        });
-
-        // now update network tables on changes
-        $(".selector").change(function() {
-            var value = $(this).val();
-            var key = $(this).attr("id");
-            app.putValue(key, value);
-		});
 
         $("#filter").val(this.filter);
         $("#filter").on("input", function() {
@@ -47,25 +32,9 @@ class RobotlogPH extends PageHandler
         app.robotLog.setLogListener(this.onRobotMsg.bind(this), true);
     }
 
-    onNetTabChange(key, value, isNew) 
-    {
-        switch(key) 
-        {
-        case "/SmartDashboard/Robot/Verbosity":
-            var sel = document.getElementById("Robot/Verbosity");
-            if(sel)
-            {
-                sel.value = value;
-            }
-            break;
-        default:
-            break;
-		}
-    }
-
     onFilterChange() 
     {
-        $("#robotlog").html("");
+        $(this.msgsId).html("");
         app.robotLog.replayLogs();
     }
 
@@ -75,7 +44,7 @@ class RobotlogPH extends PageHandler
         if(msg == null)
         {
             // equivalent to onFilterChange
-            $("#robotlog").html("");
+            $(this.msgsId).html("");
             app.robotLog.replayLogs();
             return;
         }
@@ -109,7 +78,7 @@ class RobotlogPH extends PageHandler
             nmspc: nmspc,
             msg: msgtxt,
         };
-        $("#robotlog").append(app.interpolate(this.msgTmplt, map));
+        $(this.msgsId).append(app.interpolate(this.msgTmplt, map));
     }
 }
 
