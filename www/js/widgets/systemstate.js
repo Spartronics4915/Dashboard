@@ -13,9 +13,10 @@ class SystemState extends Widget
         for(let i=0;i<this.numKeys;i++)
         {
             let key = this.config.ntkeys[i];
-            let labelId = this.ntkeyToDOMId(key);
+            let domid = this.ntkeyToDOMId(key);
+            let label = this.ntkeyToLabel(key, this.subsys);
             // infer label from network table name
-            html  += `${labelId[0]} <span class='strong' id='${labelId[1]}'>n/a</span> `;
+            html += `${label} <span class='strong' id='${domid}'>n/a</span> `;
         }
         html += "<hr />";
         html += "</div>";
@@ -24,8 +25,11 @@ class SystemState extends Widget
 
     valueChanged(key, value, isNew)
     {
-        let labelId = this.ntkeyToDOMId(key);
-        $("#"+labelId[1]).html(value);
+        let id = this.ntkeyToDOMId(key);
+        // since jquery doesn't like '/' in ids, we must avoid it
+        // $("#"+id).html(value);
+        let el = document.getElementById(id);
+        el.innerHTML = value;
     }
 
     addRandomPt()
@@ -37,8 +41,10 @@ class SystemState extends Widget
             let key = this.config.ntkeys[mod];
             let r = Math.floor(7 * Math.random() - .01);
             let val  = ["OK", "Fuzzy", "Hrm", "Ahem..", "Er..", "Gulp", "Nominal"][r];
-            app.putValue(key,  val, true);
+            app.putValue(key, val, true);
             //this.valueChanged(key, value, true);;
         }
     }
 }
+
+Widget.AddWidgetClass("systemstate", SystemState);

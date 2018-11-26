@@ -133,3 +133,5 @@ class SelectorWidget extends Widget
         document.addEventListener("click", closeAllSelect);
     }
 }
+
+Widget.AddWidgetClass("selector", SelectorWidget);

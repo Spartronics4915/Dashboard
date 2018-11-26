@@ -5,6 +5,24 @@
             "icon": "fas fa-gamepad primary",
             "title": "Compete",
             "widgets": [
+                {
+                    "title": "Field Configuration",
+                    "id": "fieldconfig",
+                    "type": "fieldconfig",
+                    "size": [400, 800],
+                    "params": {
+
+                    }
+                },
+                {
+                    "title": "Cameras",
+                    "id": "cameras",
+                    "type": "cameras",
+                    "size": [400, 800],
+                    "params": {
+
+                    }
+                }
             ]
         },
         {

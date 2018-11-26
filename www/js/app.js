@@ -17,6 +17,7 @@ class App
         this.config.netTabVersion = 1802;
         this.config.demoMode = true;
         this.config.layout = "/layouts/layout2019.json";
+
         this.robotLog = null;
         this.robotConnected = false;
 

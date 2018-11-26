@@ -28,6 +28,7 @@ class PageHandler
     //
     buildPage(loadHtmlCB)
     {
+        this.ntkeyMap = {}; // reset on each page load
         if(this.pageTemplate.widgets)
         {
             let htmllist = [];
@@ -62,9 +63,7 @@ class PageHandler
                 {
                     let w = this.pageTemplate.widgets[i];
                     if(w.ntkeys)
-                    {
                         this.setNetTabHandler(w.ntkeys, w);
-                    }
                     if(w.type == "html")
                     {
                         let targetElem = $(`#${w.id}`);
@@ -76,43 +75,16 @@ class PageHandler
                     }
                     else
                     {
-                        let html;
                         let targetElem = $(`#${w.id}`);
-                        switch(w.type)
-                        {
-                        case "systemstate":
-                            w.widget = new SystemState(w, targetElem);
-                            break;
-                        case "stripchart":
-                            w.widget = new StripChart(w, targetElem);
-                            break;
-                        case "pathplot":
-                            w.widget = new PathPlot(w, targetElem);
-                            break;
-                        case "nettab":
-                            w.widget =  new NetTabWidget(w, targetElem, this);
-                            break;
-                        case "robotlog":
-                            w.widget =  new RobotLogWidget(w, targetElem, this);
-                            break;
-                        case "selector":
-                            w.widget  = new SelectorWidget(w, targetElem);
-                            break;
-                        case "slider":
-                            break; 
-                        case "checkbox":
-                            break; 
-                        case "menubutton":
-                            break; 
-                        case "gage":
-                            break;
-                        // more widgets here.
-                        default:
+                        w.widget = Widget.BuildWidgetByName(w.type, 
+                                                        w, targetElem, this);
+                        if(!w.widget)
                             app.warning("unimplemented widget type " + w.type);
-                            break;
-                        }
-                        if(w.widget)
+                        else
+                        {
+                            this.setNetTabHandler(w.widget.getHiddenNTKeys(), w);
                             this._widgetLoaded();
+                        }
                     }
                 }
             }.bind(this));
@@ -132,6 +104,7 @@ class PageHandler
 
     setNetTabHandler(keys, handler)
     {
+        if(!keys) return;
         if(!Array.isArray(keys)) // handler may listen to multiple keys
             keys = [keys];
         for(let j=0;j<keys.length;j++)

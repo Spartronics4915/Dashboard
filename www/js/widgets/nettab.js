@@ -26,3 +26,5 @@ class NetTabWidget extends Widget
         // no-op, managed explicitly by our pagehandler
     }
 }
+
+Widget.AddWidgetClass("nettab", NetTabWidget);

@@ -100,3 +100,5 @@ class PathPlot extends Widget
         return [x, y]; // for now we drop angle
     }
 }
+
+Widget.AddWidgetClass("pathplot", PathPlot);

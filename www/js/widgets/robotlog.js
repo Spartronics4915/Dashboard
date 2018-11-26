@@ -48,3 +48,5 @@ class RobotLogWidget extends Widget
         // no-op, managed explicitly by our pagehandler
     }
 }
+
+Widget.AddWidgetClass("robotlog", RobotLogWidget);

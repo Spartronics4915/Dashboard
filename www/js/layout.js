@@ -38,7 +38,7 @@ class Layout
             }
             this.pageHandlers[page] = this._buildPageHandler(this.pageTemplates[i]);
         }
-        $("#navplaceholder").replaceWith(htmlList.join(" "));
+        $("#navlayout").replaceWith(htmlList.join(" "));
         if(this.config.onLoad)
             this.config.onLoad();
     }
@@ -61,7 +61,7 @@ class Layout
 
     _loadHtml(html, onDoneCB)
     {
-        $("#layoutContents").html(html);
+        $("#mainlayout").html(html);
         if(onDoneCB)
             onDoneCB();
     }

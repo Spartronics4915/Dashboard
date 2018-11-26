@@ -184,3 +184,5 @@ class StripChart extends Widget
         return res;
     }
 }
+
+Widget.AddWidgetClass("stripchart", StripChart);

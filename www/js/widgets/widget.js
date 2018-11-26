@@ -1,6 +1,9 @@
 /* global app */
 // Widget describes the required interface for all widgets.
 // It also offers methods useful to subclasses.
+
+s_widgetFactory = {};
+
 class Widget
 {
     constructor(config, targetElem)
@@ -11,15 +14,47 @@ class Widget
         this.targetElem = targetElem;
     }
 
+    static AddWidgetClass(name, classObj)
+    {
+        if(s_widgetFactory[name])
+            app.warning("widget factory collision for " + name);
+        s_widgetFactory[name] = classObj;
+    }
+
+    static BuildWidgetByName(name, config, targetElem, pageHandler)
+    {
+        let c = s_widgetFactory[name];
+        if(c)
+            return new c(config, targetElem, pageHandler);
+        else
+            return undefined;
+    }
+
+    // shared mechanism to equate domid with nettab key, also
+    // useful to create a label. HTML5 allows any character 
+    // except any type of space character.
     ntkeyToDOMId(key)
     {
-        // HTML5 allows any character except any type of space character.
+        return key.replace(/ /g, "__");
+    }
+
+    domIdToNTkey(id)
+    {
+        return id.replace(/__/g, " ");
+    }
+
+    // shared mechanism to convert ntkey to label,  if subsysCtx
+    // matches the incoming value, it's not part of the label.
+    ntkeyToLabel(key, subsysCtx)
+    {
         let keys = key.split("/"); // expect ['', SmartDashboard, Subsys, Key]
-        let label = (keys[2] == this.subsys) ? keys[3] : (keys[2]+" "+keys[3]);
-        let id = this.subsys + keys[3];
-        if(id.indexOf(" "))
-            app.warning("DOM id botch for "  + key);
-        return [label, id];
+        return (keys[2] == subsysCtx) ? keys[3] : (keys[2]+" "+keys[3]);
+    }
+
+    getHiddenNTKeys()
+    {
+        // useful for macro-widgets (eg fieldconfig)
+        return null;
     }
 
     valueChanged(key, value, isNew)
@@ -32,3 +67,5 @@ class Widget
         app.notice(`${this.config.label} addRandomPt: override me!`);
     }
 }
+
+Widget.AddWidgetClass("widget", Widget);
