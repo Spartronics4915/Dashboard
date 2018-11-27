@@ -223,13 +223,13 @@ class App
 
     putValue(nm, value)
     {
-        if(nm == undefined)
+        if(!nm)
         {
-            this.error("bad putvalue");
+            this.error("unnamed putValue with value " + value);
         }
         else
         {
-            if(nm[0] == '/')
+            if(nm[0] == "/")
                 NetworkTables.putValue(nm, value);
             else
             if(this.config.netTabVersion <= 1801)
@@ -265,9 +265,7 @@ class App
 
     onNetTabChange(key, value, isNew)
     {
-        this.debug("nettab entry changed: " + key +
-                  " = " + value +
-                 " new: " + isNew);
+        this.debug(`nettab entry changed: ${key}=${value}, new:${isNew}`);
         
         //  app must handle its own special vals
         switch(key) 

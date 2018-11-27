@@ -51,6 +51,7 @@ class Widget
         return (keys[2] == subsysCtx) ? keys[3] : (keys[2]+" "+keys[3]);
     }
 
+    // required/advised overrides ------------------------------------------
     getHiddenNTKeys()
     {
         // useful for macro-widgets (eg fieldconfig)

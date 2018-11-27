@@ -6,10 +6,10 @@ class SystemState extends Widget
         let w = this.config;
         this.counter = 0;
         this.subsys  = w.id;
-        this.numKeys = this.config.ntkeys.length;
+        this.numKeys = this.config.ntkeys ? this.config.ntkeys.length : 0;
 
         let html = "<div class='systemstate'>";
-        html += `<label>${w.label}</label>&nbsp;&nbsp;`;
+        html += `<span class='bigfont'>${w.label}</span>`;
         for(let i=0;i<this.numKeys;i++)
         {
             let key = this.config.ntkeys[i];

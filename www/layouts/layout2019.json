@@ -6,10 +6,28 @@
             "title": "Compete",
             "widgets": [
                 {
+                    "id": "Compete",
+                    "label": "Driver Main Interface",
+                    "type": "systemstate",
+                    "size": ["fill", 40]
+                },
+                {
                     "title": "Field Configuration",
                     "id": "fieldconfig",
                     "type": "fieldconfig",
                     "size": [400, 800],
+                    "ntkeys": [
+                        "/SmartDashboard/AutoStrategy",
+                        "/SmartDashboard/AutoStrategyOptions",
+                        "/FMSInfo/IsRedAlliance",
+                        "/FMSInfo/StationNumber",
+                        "/FMSInfo/GameSpecificMessage",
+                        "/FMSInfo/ReplayNumber",
+                        "/FMSInfo/FMSControlData",
+                        "/FMSInfo/EventName",
+                        "/FMSInfo/MatchType",
+                        "/FMSInfo/MatchNumber"
+                    ],
                     "params": {
 
                     }
@@ -19,8 +37,30 @@
                     "id": "cameras",
                     "type": "cameras",
                     "size": [400, 800],
+                    "ntkeys": [
+                        "/SmartDashboard/CameraView"
+                    ],
                     "params": {
-
+                        "CubeCam": 
+                        {
+                            "_notes": "dlink13",
+                            "ip": "admin:@10.49.15.13",
+                            "url": "/video.cgi",
+                            "cls": "rotate90"
+                        },
+                        "LiftCam": 
+                        {
+                            "_notes": "dlink14",
+                            "ip": "admin:@10.49.15.14",
+                            "url": "/cam/mjpg",
+                            "cls": "rotate0"
+                        },
+                        "PiCam": 
+                        {
+                            "ip": "10.49.15.10:5080",
+                            "url": "/cam/mjpg",
+                            "cls": "rotate0"
+                        }
                     }
                 }
             ]

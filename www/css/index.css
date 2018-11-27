@@ -37,12 +37,22 @@ label
 
 .bigfont
 {
-  font-size: 30px;
+  font-size: 30px; /* overridden when in .container below */
 }
 
 .amber
 {
   color: rgb(200,130,0);
+}
+
+.red 
+{
+    color: rgb(200, 30, 30);
+}
+
+.blue 
+{
+    color: rgb(30, 90, 255);
 }
 
 .green
@@ -191,10 +201,14 @@ footer
 
 /* widget layout --------------------------------------*/
 /* learn css grid: https://scrimba.com/g/gR8PTE */
-.container
+
+#mainlayout
 {
     margin-top: 50px;
-    /* height: 100%; (want to allow for scrolling) */
+}
+
+.container
+{
     display: grid;
     grid-gap: 3px;
     grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
@@ -203,6 +217,11 @@ footer
     border-left-color:#222; /* rgb(1, 25, 49);*/
     border-left-width: 5px;
     /* grid-auto-flow: row/dense */
+}
+
+.fullheight
+{
+    height: 100%; /* nb: prevents scrolling */
 }
 
 .container > div
@@ -215,17 +234,20 @@ footer
     color: #aaa;
 }
 
+.container .bigfont
+{
+    font-size: 20px;
+    vertical-align: baseline;  
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+}
+
 .systemstate
 {
     padding-top: 5px;
     color: #16c;
     background-image: linear-gradient(#111, #111);
-    vertical-align: baseline;  
-}
-
-.systemstate > label
-{
-    font-size: 20px;
     vertical-align: baseline;  
 }
 

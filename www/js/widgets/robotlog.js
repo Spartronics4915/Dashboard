@@ -7,7 +7,7 @@ class RobotLogWidget extends Widget
         super(config, targetElem);
         let w = this.config;
         let html = "<div class='flex'>";
-        html += "<span class='bigfont'>robologs</span> &nbsp;&nbsp;<label>Filter</label>";
+        html += "<span class='bigfont'>robologs</span> <label>Filter</label>";
         html += "<input id='filter' style='width:7em'></input>";
         html += "<div id='verbosityWidget' class='custom-select-container' style='width:250px'></div>";
         html += "<label>";

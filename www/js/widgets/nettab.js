@@ -5,11 +5,11 @@ class NetTabWidget extends Widget
         super(config, targetElem);
         let w = this.config;
 
-        let html = "<h3>Network Table Explorer &nbsp; &nbsp;";
+        let html = "<div class='flex'>";
+        html += "<span class='bigfont'>networktables</span>";
         html +=  "<label>Filter</label> ";
-        html +=  "<input id='ntfilter' style='width:7em'>";
-        html +=  "</input>";
-        html += "<hr/></h3>";
+        html +=  "<input id='ntfilter' style='width:7em'></input>";
+        html += "</div> <hr/>";
         html += "<table id='networktable' border='0'>";
         html +=     "<tbody></tbody>";
         html += "</table>";
