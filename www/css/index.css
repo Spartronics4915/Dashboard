@@ -108,18 +108,21 @@ label
 }
 
 /* rotate0,90 are used by camera */
-.rotate90 {
-    width: 640px;
-    height: 480px;
-    transform: rotate(90deg);
-    border: 2px solid gray;
+.rotate90 
+{
+    transform: rotate(90deg) translate(12%, 0%);
+    border: 1px solid gray;
 }
 
 .rotate0
 {
-    width: 640px;
-    height: 480px;
-    border: 2px solid blue;
+    transform: rotate(0deg);
+    border: 1px solid blue;
+}
+
+.invalid
+{
+    border: 1px solid rgb(200,130,0);
 }
 
 /* navbar -------------------------------------------*/
@@ -135,6 +138,7 @@ nav
     top: 0; /* Position the navbar at the top of the page */
     width: 100%; /* Full width */
     height: 50px; /* This should match .container margin */
+    z-index: 10;
 }
 
 nav > div
@@ -218,7 +222,7 @@ footer
 .container
 {
     display: grid;
-    grid-gap: 3px;
+    grid-gap: 2px;
     grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     border-left-style: solid;
@@ -229,12 +233,18 @@ footer
 
 .containerrow
 {
-    padding-top:10px;
-    padding-bottom:10px;
     grid-column: 1/-1;
     grid-row: span 4;
     display: flex;
     align-items: center;
+    padding-top:5px;
+    padding-bottom:0px;
+}
+
+.xtrapad
+{
+    padding-top:10px;
+    padding-bottom:10px;
 }
 
 .fullheight
@@ -293,6 +303,13 @@ select
     border-radius: 5px;
     border: 0px;
     font-size: 16px;
+}
+
+.cameraViewImg
+{
+    width: 640px;
+    height: 480px;
+    background-color: black;
 }
 
 

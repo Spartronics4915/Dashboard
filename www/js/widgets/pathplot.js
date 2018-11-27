@@ -10,7 +10,7 @@ class PathPlot extends Widget
     constructor(config, targetElem)
     {
         super(config, targetElem);
-        this.plotConfig = config.params;
+        this.plotConfig = config.params.plot;
         this.width = this.plotConfig.xaxis.max - this.plotConfig.xaxis.min + 1;
         this.height = this.plotConfig.yaxis.max - this.plotConfig.yaxis.min + 1;
         if(!this.plotConfig.maxlength)

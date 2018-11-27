@@ -41,15 +41,15 @@ class PageHandler
                 if(sz[0] == "fill")
                     style += "grid-column:1/-1;";
                 else
-                    style += `grid-column:span ${sz[0]/10};`; // assume 10px per grid
+                    style += `grid-column:span ${Math.round(sz[0]/12)};`; // assume 10px per grid, 2px gap
 
                 if(sz[1] == "fill")
                     style += "grid-row:1/-1;";
                 else
                 if(sz[1] == "row")
-                    style += "grid-row: span 4;"; // 40px rows
+                    style += "grid-row: span 4;"; // 48px rows (4x12)
                 else
-                    style += `grid-row:span ${sz[1]/10};`; // assume 10px per grid
+                    style += `grid-row:span ${Math.round(sz[1]/12)};`; // assume 10px per grid, 2px gap
                 style += "'></div>";
                 htmllist.push(style);
             }

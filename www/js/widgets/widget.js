@@ -2,16 +2,17 @@
 // Widget describes the required interface for all widgets.
 // It also offers methods useful to subclasses.
 
-s_widgetFactory = {};
+let s_widgetFactory = {};
 
 class Widget
 {
-    constructor(config, targetElem)
+    constructor(config, targetElem, pageHandler)
     {
         this.config = config;
         if(this.config.ntkeys && !Array.isArray(this.config.ntkeys))
             this.config.ntkeys = [this.config.ntkeys];
         this.targetElem = targetElem;
+        this.pageHandler = pageHandler;
     }
 
     static AddWidgetClass(name, classObj)

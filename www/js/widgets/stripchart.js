@@ -5,7 +5,7 @@ class StripChart extends Widget
     constructor(config, targetElem) 
     {
         super(config, targetElem);
-        this.plotConfig = this.config.params;
+        this.plotConfig = this.config.params.plot;
         this.plotConfig.id = `#${this.config.id}Plot`;
         this.txtConfig = {};
         this.txtConfig.id = `${this.config.id}Txt`;

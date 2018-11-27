@@ -3,13 +3,13 @@ class FieldConfig extends Widget
 {
     constructor(config, targetElem, pageHandler)
     {
-        super(config, targetElem);
+        super(config, targetElem, pageHandler);
 
         let html="";
         // Field Configuration  alliance (Red/Blue)  station (0/1/2) gamemsg
         html += "<div class='container'>";
-        html +=     "<div style='grid-column:1/-1;grid-row:span 4;'>";
-        html +=         "<span class='title'>Field Config</span> ";
+        html +=     "<div class='containerrow xtrapad'>";
+        html +=         "<span class='title'>Field Config</span>";
         html +=         "<span id='allianceColor' class='amber'>";
         html +=             "<span id='alliance'>unknown alliance</span>";
         html +=             ", Station <span id='allianceStation'>?</span>";
@@ -26,7 +26,7 @@ class FieldConfig extends Widget
         targetElem.html(html);
 
         this.strategyConfig = {
-            id: "AutoStrategy",
+            id: "/SmartDashboard/AutoStrategy",
             label: "",
             type: "selector",
             size: [0, 0], // ignored since we're in charge of layout (above)
@@ -39,8 +39,7 @@ class FieldConfig extends Widget
         };
         let el = $("#strategyWidget");
         this.strategyConfig.widget = new SelectorWidget(this.strategyConfig, el);
-        if(pageHandler)
-            pageHandler.setNetTabHandler([], this.strategyConfig);
+        // no need to expose ntkey for selector, we distribute it below
     }
 
     valueChanged(key, value, isNew)
