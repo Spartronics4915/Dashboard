@@ -9,7 +9,7 @@ class FieldConfig extends Widget
         // Field Configuration  alliance (Red/Blue)  station (0/1/2) gamemsg
         html += "<div class='container'>";
         html +=     "<div style='grid-column:1/-1;grid-row:span 4;'>";
-        html +=         "<span class='bigfont'>Field Configuration</span>";
+        html +=         "<span class='title'>Field Config</span> ";
         html +=         "<span id='allianceColor' class='amber'>";
         html +=             "<span id='alliance'>unknown alliance</span>";
         html +=             ", Station <span id='allianceStation'>?</span>";
@@ -17,9 +17,9 @@ class FieldConfig extends Widget
         html +=         "</span>";
         html +=     "</div>";
         // Auto Strategy (filled with our custom selector widget below)
-        html +=     "<div class='flex' style='grid-column:1/-1;grid-row:span 4;'>";
-        html +=         "<span class='bigfont'>AutoStrategy</span>";
-        html +=         "<div id='strategyWidget' class='custom-select-container' style='width:250px'>";
+        html +=     "<div class='containerrow'>";
+        html +=         "<span class='title'>AutoStrategy</span>";
+        html +=         "<div id='strategyWidget' class='custom-select-container'>";
         html +=         "</div>";
         html +=     "</div>";
         html += "</div>";
@@ -41,11 +41,6 @@ class FieldConfig extends Widget
         this.strategyConfig.widget = new SelectorWidget(this.strategyConfig, el);
         if(pageHandler)
             pageHandler.setNetTabHandler([], this.strategyConfig);
-    }
-
-    getHiddenNTKeys()
-    {
-        return null;
     }
 
     valueChanged(key, value, isNew)
@@ -76,7 +71,7 @@ class FieldConfig extends Widget
             else
             {
                 $("#allianceColor").addClass("amber").removeClass("red blue");
-                $("#alliance").text("Unknown Alliance");
+                $("#alliance").text("No Alliance");
             }
             break;
         case "/FMSInfo/StationNumber": 
@@ -84,6 +79,10 @@ class FieldConfig extends Widget
             break;
         case "/FMSInfo/GameSpecificMessage": 
             $("#fmsGameMSG").text(value);
+            // 2018: 3 chars "LRL", means:
+            //    our switch on Left
+            //    our scale on Right
+            //    defense for their switch on Left
             break;
         case "/FMSInfo/ReplayNumber":
             break;

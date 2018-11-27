@@ -6,10 +6,11 @@ class RobotLogWidget extends Widget
     {
         super(config, targetElem);
         let w = this.config;
-        let html = "<div class='flex'>";
-        html += "<span class='bigfont'>robologs</span> <label>Filter</label>";
+        let html = "<div class='containerrow'>";
+        html += "<span class='title'>robologs</span> <label>Filter</label>";
         html += "<input id='filter' style='width:7em'></input>";
-        html += "<div id='verbosityWidget' class='custom-select-container' style='width:250px'></div>";
+        html += "&nbsp;&nbsp;";
+        html += "<div id='verbosityWidget' class='custom-select-container'></div>";
         html += "<label>";
         html +=  "<i>&nbsp;&nbsp;&nbsp; - reloading this page clears the logs</i>";
         html += "</label>";

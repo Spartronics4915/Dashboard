@@ -38,7 +38,8 @@
                     "type": "cameras",
                     "size": [400, 800],
                     "ntkeys": [
-                        "/SmartDashboard/CameraView"
+                        "/SmartDashboard/CameraView",
+                        "/SmartDashboard/CameraView1"
                     ],
                     "params": {
                         "CubeCam": 

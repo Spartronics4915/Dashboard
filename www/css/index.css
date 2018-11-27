@@ -40,6 +40,13 @@ label
   font-size: 30px; /* overridden when in .container below */
 }
 
+.title
+{
+    font-size: 150%;
+    color:#25b;
+    padding-right: 10px;
+}
+
 .amber
 {
   color: rgb(200,130,0);
@@ -100,6 +107,7 @@ label
     100% { color:red; }
 }
 
+/* rotate0,90 are used by camera */
 .rotate90 {
     width: 640px;
     height: 480px;
@@ -217,6 +225,16 @@ footer
     border-left-color:#222; /* rgb(1, 25, 49);*/
     border-left-width: 5px;
     /* grid-auto-flow: row/dense */
+}
+
+.containerrow
+{
+    padding-top:10px;
+    padding-bottom:10px;
+    grid-column: 1/-1;
+    grid-row: span 4;
+    display: flex;
+    align-items: center;
 }
 
 .fullheight

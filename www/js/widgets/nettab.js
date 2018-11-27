@@ -5,8 +5,8 @@ class NetTabWidget extends Widget
         super(config, targetElem);
         let w = this.config;
 
-        let html = "<div class='flex'>";
-        html += "<span class='bigfont'>networktables</span>";
+        let html = "<div class='containerrow'>";
+        html += "<span class='title'>networktables</span>";
         html +=  "<label>Filter</label> ";
         html +=  "<input id='ntfilter' style='width:7em'></input>";
         html += "</div> <hr/>";

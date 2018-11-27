@@ -4,7 +4,8 @@
 {
     display: flex;
     align-items: center;
-    padding-left: 10px;
+    box-shadow: 3px 3px 4px #0000004d;
+    border-radius: 5px;
 }
 
 /*the container must be positioned relative:*/
@@ -47,7 +48,7 @@
 .select-items div,.select-selected 
 {
     color: #ffffff;
-    padding: 8px 16px;
+    padding: 4px 8px;
     border: 1px solid transparent;
     border-color: transparent transparent rgba(0, 0, 0, 0.25) transparent;
     cursor: pointer;
