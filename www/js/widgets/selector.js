@@ -1,12 +1,17 @@
 /* global $, Widget, app */
 class SelectorWidget extends Widget
 {
+    // usage:
+    //  - config.id is the id of a div into which we place our widget
+    //  - config.params.ntkey is the ntkey to putValue on changes.
+    //  - config.optionsntkeyh is the optional ntkey of a comma-separated 
+    //    string that, when changed, triggers an update to our options menu.
     // magic html notes:
     //  - a select within a custom-select div is hidden, then
     //    replaced with extra styleable divs
     //  - we need to convey our nettab key to the code-point where
     //    user selects new options.
-    //  - we establish our relative nt key: (eg Robot/Verbosity) as
+    //  - we establish our nt key: (eg Robot/Verbosity) as
     //     the id of custom selector.  Now during pick event, we would pull
     //     the nettab key off the DOM select node. 
     //  - Similarly, if the valueChanged method is called, we need to locate
@@ -14,22 +19,29 @@ class SelectorWidget extends Widget
     //  - NB: for "fancy" element selector expressions, the / and likely
     //      ' ' characters will be problematic. To skirt the /  problem we
     //      use the targetId as the outer container to qualify the search.
-    constructor(config, targetElem)
+    constructor(config, targetElem, pageHandler)
     {
-        super(config, targetElem);
+        super(config, targetElem, pageHandler);
         this.params = this.config.params;
         this.targetId = targetElem.attr("id");
-
+        targetElem.addClass("custom-select-container");
         if(!this.params.width)
-            this.params.width = "50px";
+            this.params.width = "10em";
         if(!this.params.options)
             this.params.options = ["No options", "Have been",  "Provided"];
-        let html = `<span class='custom-select-title'>${this.config.label}</span>`;
+        if(!this.params.ntkey)
+        {
+            app.warning(`${this.config.label} missing selector params.ntkey`);
+            this.params.ntkey = "/SmartDashboard/boguskey";
+        }
+        let html = "";
+        html += `<span class='custom-select-title'>${this.config.label}</span>`;
         html += `<div class='custom-select' style='width:${this.params.width}'>`;
-        html += `<select id='${this.config.id}'>`; // this is hidden and replaced by installSelectorSupport
+        html +=     `<select id='${this.config.params.ntkey}'>`; // this is hidden and replaced by installSelectorSupport
         for(let i=0;i<this.params.options.length;i++)
             html += `<option>${this.params.options[i]}</option>`;
-        html += "</select></div>";
+        html +=     "</select>";
+        html += "</div>";
         targetElem.html(html);
     }
 
@@ -46,15 +58,23 @@ class SelectorWidget extends Widget
         let menuEl = $(`#${this.targetId} .select-items`)[0];
         SelectorWidget.buildOptions(menuEl, selEl);
 
-        // finally should we update the value? (no: it still holds its prior)
-
+        // finally should we update the value? 
+        //  (no: it still holds its prior)
+        //  (yes: what if the new option set doesn't include current val?)
     }
 
     valueChanged(key, value, isNew)
     {
-        app.notice(`${key} -> ${value}`);
-        let selectEl = $(`#${this.targetId} .select-selected`)[0];
-        selectEl.innerHTML = value;
+        app.notice(`selector: ${key} -> ${value}`);
+        if(key == this.params.optionsntkey)
+        {
+            this.optionsChanged(value.split(","));
+        }
+        else
+        {
+            let selectEl = $(`#${this.targetId} .select-selected`)[0];
+            selectEl.innerHTML = value;
+        }
     }
 
     addRandomPt()

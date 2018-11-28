@@ -223,7 +223,7 @@ class App
 
     putValue(nm, value)
     {
-        if(!nm)
+        if(!nm || nm == "undefined")
         {
             this.error("unnamed putValue with value " + value);
         }
@@ -247,7 +247,7 @@ class App
 
     getValue(nm, def="")
     {
-        if(nm[0] == '/')
+        if(nm[0] == "/")
             return NetworkTables.getValue(nm, def);
         else
             return NetworkTables.getValue("/SmartDashboard/"+nm, def);

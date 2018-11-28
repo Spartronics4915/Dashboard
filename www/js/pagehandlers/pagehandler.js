@@ -1,4 +1,4 @@
-/* global $ app StripChart PathPlot SelectorWidget */
+/* global $ app SelectorWidget Widget */
 
 class PageHandler
 {
@@ -7,6 +7,7 @@ class PageHandler
         this.config = config;
         this.pageTemplate = pageTemplate;
         this.ntkeyMap = {}; // maps to widget
+        this.idToNTKeyMap = {}; // maps widget id to ntkey
     }
 
     // buildPage: return html representation of tab contents.  For
@@ -29,6 +30,7 @@ class PageHandler
     buildPage(loadHtmlCB)
     {
         this.ntkeyMap = {}; // reset on each page load
+        this.idToNTKeyMap = {};
         if(this.pageTemplate.widgets)
         {
             let htmllist = [];
@@ -36,20 +38,29 @@ class PageHandler
             for(let i=0;i<this.pageTemplate.widgets.length;i++)
             {
                 let w = this.pageTemplate.widgets[i];
+                let gridsize = 12; // 10x10 with gap of 2
                 let sz = w.size;
+                if(!sz) sz = [100, 100];
                 let style = `<div id='${w.id}' style='`;
                 if(sz[0] == "fill")
                     style += "grid-column:1/-1;";
                 else
-                    style += `grid-column:span ${Math.round(sz[0]/12)};`; // assume 10px per grid, 2px gap
+                {
+                    let cols = Math.round(sz[0]/gridsize);
+                    style += `grid-column:span ${cols};`;
+                }
 
                 if(sz[1] == "fill")
                     style += "grid-row:1/-1;";
                 else
-                if(sz[1] == "row")
-                    style += "grid-row: span 4;"; // 48px rows (4x12)
-                else
-                    style += `grid-row:span ${Math.round(sz[1]/12)};`; // assume 10px per grid, 2px gap
+                {
+                    let rows;
+                    if(sz[1] == "row")
+                        rows = 3;
+                    else
+                        rows = Math.round(sz[1]/gridsize);
+                    style += `grid-row: span ${rows}; min-height:${rows*gridsize}px`; 
+                }
                 style += "'></div>";
                 htmllist.push(style);
             }
@@ -83,6 +94,7 @@ class PageHandler
                         else
                         {
                             this.setNetTabHandler(w.widget.getHiddenNTKeys(), w);
+                            this.appendIdToNTKeyMap(w.widget.getIdToNTKeyMap());
                             this._widgetLoaded();
                         }
                     }
@@ -99,6 +111,19 @@ class PageHandler
             // subclasses may wish to install handlers fork widgets after
             // loading.
             this.pageLoaded(); // overridden by subclasses
+        }
+    }
+
+    appendIdToNTKeyMap(m)
+    {
+        if(!m) return;
+        let keys = Object.keys(m);
+        if(keys.length == 0) return;
+        for(let k of keys)
+        {
+            if(this.idToNTKeyMap[k])
+                app.warning("idToNTKeyMap collision for " + k);
+            this.idToNTKeyMap[k] = m[k];
         }
     }
 
@@ -125,49 +150,56 @@ class PageHandler
         // String support ----------------------------------------------
         $("input[type=text]").on("input", function() {
             var id = $(this).attr("id");
-            var ntkey = self.idToSDKey[id];
-            if(!ntkey) {
+            var ntkey = self.idToNTKeyMap[id];
+            if(!ntkey)
                 app.warning("unknown entry " + id);
+            else
+            {
+                var value = $(this).val();
+                app.putValue(ntkey, value);
             }
-            var value = $(this).val();
-            app.putValue(ntkey, value);
         });
 
         // Number support ----------------------------------------------
         $("input[type=number]").on("input", function() {
             var id = $(this).attr("id");
-            var ntkey = self.idToSDKey[id];
-            if(!ntkey) {
+            var ntkey = self.idToNTKeyMap[id];
+            if(!ntkey)
                 app.warning("unknown number " + id);
+            else
+            {
+                var value = $(this).val();
+                app.putValue(ntkey, Number(value));
             }
-            var value = $(this).val();
-            app.putValue(ntkey, Number(value));
         });
 
         // Slider support ----------------------------------------------
-        // slider id mapping must be present in idToSDKey map above
+        // slider id mapping must be present in idToNTKeyMap map above
         $("input[type=range]").on("input", function() {
             var id = $(this).attr("id");
-            var ntkey = self.idToSDKey[id];
-            if(!ntkey) {
+            var ntkey = self.idToNTKeyMap[id];
+            if(!ntkey)
                 app.warning("unknown slider " + id);
+            else
+            {
+                var value = $(this).val();
+                // app.logMsg("slider " + id + ": " + Number(value));
+                app.putValue(ntkey, Number(value));
             }
-            var value = $(this).val();
-            $("#"+id+"Txt").text(value);
-            // app.logMsg("slider " + id + ": " + Number(value));
-            app.putValue(ntkey, Number(value));
         });
 
         // checkbox support --------------------------------------------
         $("input[type=checkbox]").on("input", function() {
             var id = $(this).attr("id");
-            var ntkey = self.idToSDKey[id];
-            if(!ntkey) {
+            var ntkey = self.idToNTKeyMap[id];
+            if(!ntkey)
                 app.warning("unknown checkbox " + id);
+            else
+            {
+                var value = $(this).prop("checked");
+                // app.logMsg("checkbox " + id + ": " + value);
+                app.putValue(ntkey, value);
             }
-            var value = $(this).prop("checked");
-            // app.logMsg("checkbox " + id + ": " + value);
-            app.putValue(ntkey, value);
         });
 
         this.updateWhenNoRobot();

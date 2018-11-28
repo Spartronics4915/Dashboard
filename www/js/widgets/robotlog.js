@@ -7,10 +7,10 @@ class RobotLogWidget extends Widget
         super(config, targetElem);
         let w = this.config;
         let html = "<div class='containerrow'>";
-        html += "<span class='title'>robologs</span> <label>Filter</label>";
+        html += `<span class='title'>${this.config.label}</span> <label>Filter</label>`;
         html += "<input id='filter' style='width:7em'></input>";
         html += "&nbsp;&nbsp;";
-        html += "<div id='verbosityWidget' class='custom-select-container'></div>";
+        html += "<div id='verbosityWidget'></div>";
         html += "<label>";
         html +=  "<i>&nbsp;&nbsp;&nbsp; - reloading this page clears the logs</i>";
         html += "</label>";
@@ -19,12 +19,13 @@ class RobotLogWidget extends Widget
         targetElem.html(html);
 
         this.wconfig = {
-            id: "Robot/Verbosity",
-            label: "Robot Verbosity",
             type: "selector",
+            label: "Robot Verbosity",
+            id: "verbosityWidget",
             size: [0, 0], // ignored since we're in charge of layout
             ntkeys: ["/SmartDashboard/Robot/Verbosity"],
             params: {
+                ntkey: "/SmartDashboard/Robot/Verbosity",
                 width: "8em", // space for arrow
                 options: [
                     "NOTICE", "INFO", "DEBUG"
@@ -34,9 +35,6 @@ class RobotLogWidget extends Widget
         };
         let el = $("#verbosityWidget");
         this.wconfig.widget = new SelectorWidget(this.wconfig, el);
-        if(pageHandler)
-            pageHandler.setNetTabHandler(this.wconfig.ntkeys, this.wconfig);
-
     }
 
     valueChanged(key, value, isNew)

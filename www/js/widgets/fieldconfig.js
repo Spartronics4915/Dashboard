@@ -9,7 +9,7 @@ class FieldConfig extends Widget
         // Field Configuration  alliance (Red/Blue)  station (0/1/2) gamemsg
         html += "<div class='container'>";
         html +=     "<div class='containerrow xtrapad'>";
-        html +=         "<span class='title'>Field Config</span>";
+        html +=         `<span class='title'>${this.config.label}</span>`;
         html +=         "<span id='allianceColor' class='amber'>";
         html +=             "<span id='alliance'>unknown alliance</span>";
         html +=             ", Station <span id='allianceStation'>?</span>";
@@ -19,19 +19,24 @@ class FieldConfig extends Widget
         // Auto Strategy (filled with our custom selector widget below)
         html +=     "<div class='containerrow'>";
         html +=         "<span class='title'>AutoStrategy</span>";
-        html +=         "<div id='strategyWidget' class='custom-select-container'>";
-        html +=         "</div>";
+        html +=         "<div id='strategyWidget'></div>";
         html +=     "</div>";
         html += "</div>";
         targetElem.html(html);
 
         this.strategyConfig = {
-            id: "/SmartDashboard/AutoStrategy",
+            id: "strategyWidget",
             label: "",
             type: "selector",
             size: [0, 0], // ignored since we're in charge of layout (above)
+            ntkeys: [
+                "/SmartDashboard/AutoStrategy",
+                "/SmartDashboard/AutoStrategyOptions"
+            ],
             params: {
                 width:"15em",
+                ntkey: "/SmartDashboard/AutoStrategy",
+                optionsntkey: "/SmartDashboard/AutoStrategyOptions",
                 options: [
                     "<i>no strategy</i>",
                 ]

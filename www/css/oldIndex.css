@@ -13,9 +13,20 @@ td {
     padding: 4px;
 }
 
-input[type=number] {
+input[type="number"] {
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 0px;
+    background-color: #222;
     width: 80px;
     text-align: center;
+}
+
+input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-inner-spin-button 
+{
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input,

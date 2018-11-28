@@ -3,19 +3,19 @@
     "pageTemplates": [
         {
             "icon": "fas fa-gamepad primary",
-            "title": "Compete",
+            "navtext": "Compete",
             "widgets": [
                 {
-                    "id": "Compete",
-                    "label": "Driver Main Interface",
                     "type": "systemstate",
-                    "size": ["fill", 40]
+                    "id": "compete",
+                    "label": "Driver Interface",
+                    "size": ["fill", "row"]
                 },
                 {
-                    "title": "Field Configuration",
-                    "id": "fieldconfig",
                     "type": "fieldconfig",
-                    "size": [400, 490],
+                    "label": "Field Config",
+                    "id": "fieldconfig",
+                    "size": [450, 490],
                     "ntkeys": [
                         "/SmartDashboard/AutoStrategy",
                         "/SmartDashboard/AutoStrategyOptions",
@@ -33,10 +33,10 @@
                     }
                 },
                 {
-                    "title": "Cameras",
-                    "id": "cameras",
                     "type": "cameras",
-                    "size": [650, 650],
+                    "label": "Camera View",
+                    "id": "cameras",
+                    "size": [660, 700],
                     "ntkeys": [
                         "/SmartDashboard/CameraView"
                     ],
@@ -66,14 +66,14 @@
             ]
         },
         {
-            "title": "Drive",
+            "navtext": "Drive",
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
                 {
                     "id": "Drive",
                     "label": "Drive Subsystem",
                     "type": "systemstate",
-                    "size": ["fill", 40],
+                    "size": ["fill", "row"],
                     "ntkeys": ["/SmartDashboard/Drive/State",
                               "/SmartDashboard/Drive/Status"]
                 },
@@ -95,7 +95,7 @@
                             "fillvalue": 0,
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
                             "channelcount": 2,
-                            "widths": [2, 1],
+                            "widths": [1, 1],
                             "maxlength": 400
                         }
                     }
@@ -118,7 +118,7 @@
                             "fillvalue": 0,
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
                             "channelcount": 2,
-                            "widths": [2, 1],
+                            "widths": [1, 1],
                             "maxlength": 400
                         }
                     }
@@ -135,7 +135,7 @@
                                 "min": -200, 
                                 "max": 200
                             },
-                            "widths": [2],
+                            "widths": [1],
                             "colors":["rgb(20,120,255)"]
                         }
                     }
@@ -251,14 +251,14 @@
             ]
         },
         {
-            "title": "Climb",
+            "navtext": "Climb",
             "icon":  "fas fa-rocket",
             "widgets": [
                 {
                     "id": "Climb",
                     "label": "Climb Subsystem",
                     "type": "systemstate",
-                    "size": ["fill", 40],
+                    "size": ["fill", "row"],
                     "ntkeys": [
                         "/SmartDashboard/Climb/State",
                         "/SmartDashboard/Climb/Status"
@@ -267,79 +267,182 @@
             ]
         },
         {
-            "title": "Vision",
+            "navtext": "Vision",
             "icon":  "fas fa-eye",
             "widgets": [
                 {
-                    "id": "vision",
+                    "id": "Vision",
                     "label": "Vision Subsystem",
                     "type": "systemstate",
-                    "size": ["fill", 40],
+                    "size": ["fill", "row"],
                     "ntkeys": "/SmartDashboard/Vision/State"
                 }
             ]
         },
         {
-            "title": "Test",
+            "navtext": "Test",
             "icon": "fas fa-vial",
             "widgets": [
+                {
+                    "type": "systemstate",
+                    "id": "Test",
+                    "label": "Test Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "selector",
+                    "label": "Test Mode",
+                    "id": "testmode",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/TestMode",
+                               "/SmartDashboard/TestModeOptions"],
+                    "params": {
+                        "width": "9em",
+                        "ntkey": "/SmartDashboard/TestMode",
+                        "optionsntkey": "/SmartDashboard/TestModeOptions"
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "label": "Variant",
+                    "id": "testvariant",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/TestVariant"],
+                    "params": {
+                        "width": "10em"
+                    }
+                },
+                {
+                    "type": "checkbox",
+                    "label": "Enable testing buttons",
+                    "id": "testenabled",
+                    "size": [180, "row"],
+                    "ntkeys": ["/SmartDashboard/TestingGUI"]
+                },
+                {
+                    "type": "systemstate",
+                    "id": "widgets",
+                    "label": "Example Widgets",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "slider",
+                    "id": "s1",
+                    "label": "A Slider",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "numberinput",
+                    "id": "s2",
+                    "label": "A Number",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Number1"],
+                    "params": {
+                        "min": 0,
+                        "max": 1,
+                        "step": 0.01
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "id": "s3",
+                    "label": "Some Text",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Text1"],
+                    "params": {
+                        "width": "8em"
+                    }
+                },
+                {
+                    "type": "checkbox",
+                    "label": "A Checkbox",
+                    "id": "s4",
+                    "size": [120, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Check1"]
+                },
+                {
+                    "type": "selector",
+                    "label": "A Selector",
+                    "id": "s5",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Sel1"],
+                    "params": {
+                        "width": "8em",
+                        "ntkey": "/SmartDashboard/Test/Sel1",
+                        "options": [
+                             "blue pill",
+                             "red pill"
+                        ]
+                    }
+                }
             ]
         },
         {
-            "title": "Network Tables",
+            "navtext": "Network Tables",
             "icon": "fas fa-network-wired",
             "pagehandler": "NetTabPH",
             "widgets": [
                 {
-                    "id": "nettab",
                     "type": "nettab",
+                    "label": "networktables",
+                    "id": "nettab",
                     "size": ["fill", "fill"]
                 }
             ]
         },
         {
-            "title": "Robot Log",
+            "navtext": "Robot Log",
             "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
             "widgets": [
                 {
-                    "id": "robotlog",
                     "type": "robotlog",
-                    "size": ["fill", "fill"]
+                    "label": "robologs",
+                    "id": "robotlog",
+                    "size": ["fill", "fill"],
+                    "ntkeys": ["/SmartDashboard/Robot/Verbosity"]
                 }
             ]
         },
         {
-            "title": "About",
+            "navtext": "About",
             "icon": "fas fa-cogs",
             "widgets": [
                 {
+                    "type": "html",
                     "id": "about",
-                    "type": "html",
                     "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"
                     }
                 },
                 {
+                    "type": "html",
                     "id": "about2",
-                    "type": "html",
                     "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"
                     }
                 },
                 {
+                    "type": "html",
                     "id": "about3",
-                    "type": "html",
                     "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"
                     }
                 },
                 {
-                    "id": "about4",
                     "type": "html",
+                    "id": "about4",
                     "size": [400, 280],
                     "params": {
                         "url": "/pages/about.html"

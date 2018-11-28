@@ -6,7 +6,7 @@ class NetTabWidget extends Widget
         let w = this.config;
 
         let html = "<div class='containerrow'>";
-        html += "<span class='title'>networktables</span>";
+        html += `<span class='title'>${this.config.label}</span>`;
         html +=  "<label>Filter</label> ";
         html +=  "<input id='ntfilter' style='width:7em'></input>";
         html += "</div> <hr/>";

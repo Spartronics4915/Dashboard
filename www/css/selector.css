@@ -4,11 +4,9 @@
 {
     display: flex;
     align-items: center;
-    box-shadow: 3px 3px 4px #0000004d;
-    border-radius: 5px;
 }
 
-/*the container must be positioned relative:*/
+/*the container must be posit888888relative:*/
 .custom-select 
 {
     position: relative;
@@ -22,6 +20,7 @@
 .select-selected 
 {
     background-color: #222;
+    box-shadow: 2px 2px 5px #113;
 }
 
 /*style the arrow inside the select element:*/

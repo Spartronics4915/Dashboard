@@ -59,6 +59,14 @@ class Widget
         return null;
     }
 
+    getIdToNTKeyMap()
+    {
+        // some underlying controls (eg select) assume that the id
+        // is the ntkey, others provide a map from control id to 
+        // ntkey.
+        return null;
+    }
+
     valueChanged(key, value, isNew)
     {
         app.notice(`${this.config.label} valueChanged: override me!`);
@@ -68,6 +76,7 @@ class Widget
     {
         app.notice(`${this.config.label} addRandomPt: override me!`);
     }
+
 }
 
 Widget.AddWidgetClass("widget", Widget);

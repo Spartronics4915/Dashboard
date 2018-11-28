@@ -1,4 +1,13 @@
 /* global SelectorWidget, Widget, $, app */
+
+// legacy cams here for reference, now expressed in per-season layout files.
+// var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
+// var dlink13 = {ip:"admin:@10.49.15.13", url: "/video.cgi", cls:"rotate90"};
+// var dlink14 = {ip:"admin:@10.49.15.14", url: "/video.cgi", cls:"rotate0"};
+// var axis1 = {ip:"10.49.15.11", url: "/mjpg/video.mjpg", cls:"rotate0"};
+// var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg", cls:"rotate0"};
+// var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream", cls:"rotate0"};
+
 class CamerasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -11,9 +20,8 @@ class CamerasWidget extends Widget
         this.imgId = `${this.baseId}Img`;
         html += "<div class='container'>";
         html +=     "<div class='containerrow xtrapad'>";
-        html +=        "<span class='title'>Camera View</span>";
-        html +=        `<div id='${this.baseId}Sel' class='custom-select-container'>`;
-        html +=        "</div>";
+        html +=        `<span class='title'>${this.config.label}</span>`;
+        html +=        `<div id='${this.selWidgetId}'></div>`;
         html +=     "</div>";
         html +=     `<div id='${this.imgId}' class='cameraViewImg'>`;
         html +=     "</div>";
@@ -25,6 +33,7 @@ class CamerasWidget extends Widget
             type: "selector",
             size: [0, 0], // means we're in control of layout
             params: {
+                ntkey: this.config.ntkeys[0],
                 width: "10em",
                 options: Object.keys(this.config.params)
             }

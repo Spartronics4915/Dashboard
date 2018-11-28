@@ -26,14 +26,14 @@ class Layout
             let icon = this.pageTemplates[i].icon;
             if(icon)
             {
-                htmlList.push(`<div class='navtab'>`+
-                       `<a href="#${page}">` +
-                       `<span class="${icon}"></span>` +
-                       "</a></div>");
+                htmlList.push("<div class='navtab'>" +
+                       `<a href='#${page}'>` +
+                            `<span class='${icon}'></span>` + 
+                        "</a></div>");
             }
             else
             {
-                let title = this.pageTemplates[i].title;
+                let title = this.pageTemplates[i].navtext;
                 htmlList.push(`<div class="navtab"><a href="#${page}">${title}</a></div>`);
             }
             this.pageHandlers[page] = this._buildPageHandler(this.pageTemplates[i]);
