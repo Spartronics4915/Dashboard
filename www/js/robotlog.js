@@ -1,5 +1,5 @@
-//
-// robotllog.js:
+/* global app */
+// robotlog.js:
 //      is the browser-side communication portal to the robolog server
 //      residing within the python/tornado webserver running usually
 //      on localhost.  In the server, udp messages are received. These
@@ -8,20 +8,40 @@
 //
 //      The structure of this class is based upon networktables2js
 //
-"use strict";
+class RobotLog
+{
+	constructor()
+	{
+		if (!("WebSocket" in window))
+		{
+			alert("Your browser does not support websockets, this will fail!");
+			return;
+		}
+	
+		this.m_cnxListeners = [];
+		this.m_logListener = null;
+		this.m_log = []; // an array of strings
+		this.m_lastSlice = null;
+		this.m_repeat = 0;
 
-var RobotLog = new function () {
+		// RobotLog socket code ------
+		this.m_socket;
+		this.m_socketOpen = false;
+		this.m_robotConnected = false;
+		this.m_robotAddress = null;
 
-	if (!("WebSocket" in window)) {
-		alert("Your browser does not support websockets, this will fail!");
-		return;
+		// construct the websocket URI, presumed to be on the same site that
+		// served this page.
+		this.m_loc = window.location;
+		if (this.m_loc.protocol === "https:")
+			this.m_host = "wss:";
+		else
+			this.m_host = "ws:";
+		this.m_host += "//" + this.m_loc.host;
+		this.m_host += "/robotlog/ws";
+
+		this.createSocket();
 	}
-
-	var m_cnxListeners = [];
-	var m_logListener = null;
-    var m_log = []; // an array of strings
-    var m_lastSlice = null;
-    var m_repeat = 0;
 
 	/**
 		Sets a function to be called when the websocket connects/disconnects
@@ -31,14 +51,13 @@ var RobotLog = new function () {
 	    :param immediateNotify: If true, the function will be immediately called
 	                            with the current status of the websocket
     */
-	this.addWsConnectionListener = function(f, immediateNotify) {
-        if (m_cnxListeners.indexOf(f) != -1) {
-    		m_cnxListeners.push(f);
-        }
-		if (immediateNotify) {
-			f(m_socketOpen);
-		}
-	};
+	addWsConnectionListener(f, immediateNotify) 
+	{
+		if (this.m_cnxListeners.indexOf(f) != -1)
+			this.m_cnxListeners.push(f);
+		if (immediateNotify)
+			f(this.m_socketOpen);
+	}
 
 	/**
 		Set a function that will be called whenever any log message is received
@@ -48,109 +67,93 @@ var RobotLog = new function () {
 	    :param immediateNotify: If true, the function will be immediately called
 	                            with the all existing log msgs.
     */
-	this.setLogListener = function(f, immediateNotify) {
-		m_logListener = f;
-		if (immediateNotify) {
+	setLogListener(f, immediateNotify)
+	{
+		this.m_logListener = f;
+		if (immediateNotify)
             this.replayLogs();
-		}
-	};
-
-    this.replayLogs = function() {
-        if(m_logListener) {
-            for(var i=0;i<m_log.length;i++) {
-				m_logListener(m_log[i]);
-			};
-        }
-    },
-
-	this.isWsConnected = function() {
-		return m_socketOpen;
-	};
-
-	//
-	// RobotLog socket code
-	//
-
-	var m_socket;
-	var m_socketOpen = false;
-	var m_robotConnected = false;
-	var m_robotAddress = null;
-    var self = this;
-
-	// construct the websocket URI, presumed to be on the same site that
-    // served this page.
-	var m_loc = window.location;
-	var m_host;
-
-	if (m_loc.protocol === "https:") {
-		m_host = "wss:";
-	} else {
-		m_host = "ws:";
 	}
 
-	m_host += "//" + m_loc.host;
-	m_host += "/robotlog/ws";
+	replayLogs() 
+	{
+		if(this.m_logListener) 
+		{
+			for(var i=0;i<this.m_log.length;i++)
+				this.m_logListener(this.m_log[i]);
+        }
+    }
 
-    function msgIsUnique(msg) {
+	isWsConnected () 
+	{
+		return this.m_socketOpen;
+	}
+
+	msgIsUnique(msg)
+	{
         // check msg against last-most, unique if tail differs (timestamp at head)
         var result = true;
         var newslice = msg.substr(12); // skips first 12 chars
-        if(m_lastSlice === newslice)
+        if(this.m_lastSlice === newslice)
         {
             // repeated msg
-            m_log.pop();
-            m_log.push(msg + " (" + m_repeat++ + ")");
+            this.m_log.pop();
+            this.m_log.push(msg + " (" + this.m_repeat++ + ")");
             result = false; // not unique
         }
         else
         {
             // unique message
-            m_repeat = 1;
-            m_lastSlice = newslice;
+            this.m_repeat = 1;
+            this.m_lastSlice = newslice;
         }
         return result;
     }
 
-	function createSocket() {
-		m_socket = new WebSocket(m_host);
-		if (m_socket) {
-
-			m_socket.onopen = function() {
-				m_socketOpen = true;
-				for (var i in m_cnxListeners) {
-					m_cnxListeners[i](true);
+	createSocket()
+	{
+		this.m_socket = new WebSocket(this.m_host);
+		if (this.m_socket) 
+		{
+			this.m_socket.onopen = function() 
+			{
+				this.m_socketOpen = true;
+				for (var i in this.m_cnxListeners) {
+					this.m_cnxListeners[i](true);
 				}
-			};
+			}.bind(this);
 
-			m_socket.onmessage = function(msg) {
+			this.m_socket.onmessage = function(msg) 
+			{
                 // currently our messages are just simple strings...
 				var data = msg.data;
-                if(msgIsUnique(data))
-                    m_log.push(data);
+                if(this.msgIsUnique(data))
+                    this.m_log.push(data);
                 else
                     data = null; // null means replay logs
-                if(m_logListener) 
+                if(this.m_logListener) 
                 {
-                    m_logListener(data);
+                    this.m_logListener(data);
                 }
-			};
+			}.bind(this);
 
-			m_socket.onclose = function() {
-				if (m_socketOpen) {
-					for (var i in m_cnxListeners) {
-						m_cnxListeners[i](false);
-					}
+			this.m_socket.onclose = function() 
+			{
+				if (this.m_socketOpen) 
+				{
+					for (var i in this.m_cnxListeners)
+						this.m_cnxListeners[i](false);
+
 					// clear log, it's no longer valid
-                    m_log = [];
-					m_socketOpen = false;
-					console.log("RobotLog WebSocket closed");
+                    this.m_log = [];
+					this.m_socketOpen = false;
+					app.notice("RobotLog WebSocket closed");
 				}
 
 				// respawn the websocket
-				setTimeout(createSocket, 300);
-			};
+				setTimeout(this.createSocket.bind(this), 300);
+			}.bind(this);
 		}
 	}
-
-	createSocket();
 }
+
+window.RobotLog = RobotLog;

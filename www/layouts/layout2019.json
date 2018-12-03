@@ -1,0 +1,454 @@
+{
+    "layoutName": "Test2019.json",
+    "pageTemplates": [
+        {
+            "icon": "fas fa-gamepad primary",
+            "navtext": "Compete",
+            "widgets": [
+                {
+                    "type": "systemstate",
+                    "id": "compete",
+                    "label": "Driver Interface",
+                    "size": ["fill", "row"]
+                },
+                {
+                    "type": "fieldconfig",
+                    "label": "Field Config",
+                    "id": "fieldconfig",
+                    "size": [450, 490],
+                    "ntkeys": [
+                        "/SmartDashboard/AutoStrategy",
+                        "/SmartDashboard/AutoStrategyOptions",
+                        "/FMSInfo/IsRedAlliance",
+                        "/FMSInfo/StationNumber",
+                        "/FMSInfo/GameSpecificMessage",
+                        "/FMSInfo/ReplayNumber",
+                        "/FMSInfo/FMSControlData",
+                        "/FMSInfo/EventName",
+                        "/FMSInfo/MatchType",
+                        "/FMSInfo/MatchNumber"
+                    ],
+                    "params": {
+
+                    }
+                },
+                {
+                    "type": "cameras",
+                    "label": "Camera View",
+                    "id": "cameras",
+                    "size": [660, 700],
+                    "ntkeys": [
+                        "/SmartDashboard/CameraView"
+                    ],
+                    "params": {
+                        "CubeCam": 
+                        {
+                            "_notes": "dlink13",
+                            "ip": "admin:@10.49.15.13",
+                            "url": "/video.cgi",
+                            "cls": "rotate90"
+                        },
+                        "LiftCam": 
+                        {
+                            "_notes": "dlink14",
+                            "ip": "admin:@10.49.15.14",
+                            "url": "/cam/mjpg",
+                            "cls": "rotate0"
+                        },
+                        "PiCam": 
+                        {
+                            "ip": "10.49.15.10:5080",
+                            "url": "/cam/mjpg",
+                            "cls": "rotate0"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "navtext": "Drive",
+            "icon":  "fas fa-tachometer-alt",
+            "widgets": [
+                {
+                    "id": "Drive",
+                    "label": "Drive Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["/SmartDashboard/Drive/State",
+                              "/SmartDashboard/Drive/Status"]
+                },
+                {
+                    "id": "driveSpeedLeft",
+                    "label": "Left Speed",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Drive/leftSpeed",
+                    "ntkeyRefs":[
+                        "/SmartDashboard/Drive/leftSpeedTarget"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0, 
+                                "max": 80
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "driveSpeedRight",
+                    "label": "Right Speed",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Drive/rightSpeed",
+                    "ntkeyRefs":[
+                        "/SmartDashboard/Drive/rightSpeedTarget"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0, 
+                                "max": 80
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "driveIMU",
+                    "label": "IMU Heading",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Drive/imuHeading",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -200, 
+                                "max": 200
+                            },
+                            "widths": [1],
+                            "colors":["rgb(20,120,255)"]
+                        }
+                    }
+                },
+                {
+                    "id": "driveOdometry",
+                    "label": "Odometry",
+                    "type": "pathplot",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Drive/odometry",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 652,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 324,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "Lidar",
+                    "label": "Lidar",
+                    "type": "systemstate",
+                    "size": ["fill", 40],
+                    "ntkeys": ["/SmartDashboard/Lidar/status",
+                               "/SmartDashboard/Lidar/angle",
+                               "/SmartDashboard/Turret/state"
+                            ]
+                },
+                {
+                    "id": "lidarOdometry",
+                    "label": "LIDAR Odometry",
+                    "type": "pathplot",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Lidar/pose",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 652,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 324,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "lidarPoints",
+                    "label": "LIDAR Points",
+                    "type": "pathplot",
+                    "size": [330, 170],
+                    "ntkeys": "/SmartDashboard/Lidar/points",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 652,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 324,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.05,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            },
+                            "maxlength":  1e4
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "navtext": "Climb",
+            "icon":  "fas fa-rocket",
+            "widgets": [
+                {
+                    "id": "Climb",
+                    "label": "Climb Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": [
+                        "/SmartDashboard/Climb/State",
+                        "/SmartDashboard/Climb/Status"
+                    ]
+                }
+            ]
+        },
+        {
+            "navtext": "Vision",
+            "icon":  "fas fa-eye",
+            "widgets": [
+                {
+                    "id": "Vision",
+                    "label": "Vision Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": "/SmartDashboard/Vision/State"
+                }
+            ]
+        },
+        {
+            "navtext": "Test",
+            "icon": "fas fa-vial",
+            "widgets": [
+                {
+                    "type": "systemstate",
+                    "id": "Test",
+                    "label": "Test Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "selector",
+                    "label": "Test Mode",
+                    "id": "testmode",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/TestMode",
+                               "/SmartDashboard/TestModeOptions"],
+                    "params": {
+                        "width": "9em",
+                        "ntkey": "/SmartDashboard/TestMode",
+                        "optionsntkey": "/SmartDashboard/TestModeOptions"
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "label": "Variant",
+                    "id": "testvariant",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/TestVariant"],
+                    "params": {
+                        "width": "10em"
+                    }
+                },
+                {
+                    "type": "checkbox",
+                    "label": "Enable testing buttons",
+                    "id": "testenabled",
+                    "size": [180, "row"],
+                    "ntkeys": ["/SmartDashboard/TestingGUI"]
+                },
+                {
+                    "type": "systemstate",
+                    "id": "widgets",
+                    "label": "Example Widgets",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "slider",
+                    "id": "s1",
+                    "label": "A Slider",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "numberinput",
+                    "id": "s2",
+                    "label": "A Number",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Number1"],
+                    "params": {
+                        "min": 0,
+                        "max": 1,
+                        "step": 0.01
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "id": "s3",
+                    "label": "Some Text",
+                    "size": [220, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Text1"],
+                    "params": {
+                        "width": "8em"
+                    }
+                },
+                {
+                    "type": "checkbox",
+                    "label": "A Checkbox",
+                    "id": "s4",
+                    "size": [120, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Check1"]
+                },
+                {
+                    "type": "selector",
+                    "label": "A Selector",
+                    "id": "s5",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/Test/Sel1"],
+                    "params": {
+                        "width": "8em",
+                        "ntkey": "/SmartDashboard/Test/Sel1",
+                        "options": [
+                             "blue pill",
+                             "red pill"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "navtext": "Network Tables",
+            "icon": "fas fa-network-wired",
+            "pagehandler": "NetTabPH",
+            "widgets": [
+                {
+                    "type": "nettab",
+                    "label": "networktables",
+                    "id": "nettab",
+                    "size": ["fill", "fill"]
+                }
+            ]
+        },
+        {
+            "navtext": "Robot Log",
+            "icon":  "fas fa-robot",
+            "pagehandler": "RobotlogPH",
+            "widgets": [
+                {
+                    "type": "robotlog",
+                    "label": "robologs",
+                    "id": "robotlog",
+                    "size": ["fill", "fill"],
+                    "ntkeys": ["/SmartDashboard/Robot/Verbosity"]
+                }
+            ]
+        },
+        {
+            "navtext": "About",
+            "icon": "fas fa-cogs",
+            "widgets": [
+                {
+                    "type": "html",
+                    "id": "about",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about2",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about3",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about4",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                }
+            ]
+        }
+    ]
+}
