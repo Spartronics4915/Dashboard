@@ -24,6 +24,7 @@ from networktables import NetworkTables
 import pynetworktables2js
 
 import pylib.Robotlog as Robotlog
+import pylib.WebAPI as WebAPI
 
 import functools
 import logging
@@ -90,14 +91,15 @@ if __name__ == '__main__':
 
     app = tornado.web.Application(
         pynetworktables2js.get_handlers() +
-        robotlog.getHandlers() + [
+        robotlog.getHandlers() + 
+        WebAPI.getHandlers() + 
+        [
             (r"/()", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": index_html}),
             (r"/(.*)", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": www_dir})
         ]
     )
-
 
     # Start the app
     logger.info("Listening on http://localhost:%s/", options.port)

@@ -1,4 +1,4 @@
-/* global NetworkTables RobotLog $ */
+/* global NetworkTables RobotLog WebAPI $ */
 
 class App
 {
@@ -20,6 +20,8 @@ class App
 
         this.robotLog = null;
         this.robotConnected = false;
+
+        this.webapi = null;
 
         document.addEventListener("DOMContentLoaded", 
             this.onReady.bind(this), false);
@@ -70,11 +72,14 @@ class App
         this.debug("deviceready");
 
         this.robotLog = new RobotLog();
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
+
+        this.webapi = new WebAPI();
+        this.webapi.addWsConnectionListener(this.onAPIConnect.bind(this));
 
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
-        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
         this.layout = new window.Layout({
             layout: this.config.layout,
@@ -157,6 +162,12 @@ class App
                 }
             });
         return result;
+    }
+
+    // webapi callbacks --------------------------------------------------
+    onAPIConnect(cnx)
+    {
+        this.notice("webapi connected");
     }
 
     // robotlog callbacks ------------------------------------------------

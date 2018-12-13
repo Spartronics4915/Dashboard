@@ -1,14 +1,14 @@
 /* global app */
-// robotlog.js:
-//      is the browser-side communication portal to the robolog server
-//      residing within the python/tornado webserver running usually
-//      on localhost.  In the server, messages (was udp, now tcp) are received. 
-//		These are forwarded to our websocket for consumption by javascript
-//      for presentation.
+// webapi.js:
+//  is the browser-side communication portal to the webapi server
+//  residing within the python/tornado webserver running usually
+//  on localhost.  In the server, messages are received from arbitrary
+//	clients via posts.	The post contents are forwarded to our (single) 
+//  websocket for consumption by javascript for presentation. Posts are 
+//  categorized by api family. javascript consumers can register interest in a
+//	an api family and will be notified as messages arrive.
 //
-//      The structure of this class is based upon networktables2js
-//
-class RobotLog
+class WebAPI
 {
 	constructor()
 	{
@@ -18,13 +18,8 @@ class RobotLog
 			return;
 		}
 	
-		this.m_cnxListeners = [];
-		this.m_logListener = null;
-		this.m_log = []; // an array of strings
-		this.m_lastSlice = null;
-		this.m_repeat = 0;
-
-		// RobotLog socket code ------
+		this.m_cnxListeners = []; // notification of websocket connect/disconnect
+		this.m_apiListeners = {}; // table of lists, keyed by protocol family
 		this.m_socket;
 		this.m_socketOpen = false;
 		this.m_robotConnected = false;
@@ -38,9 +33,9 @@ class RobotLog
 		else
 			this.m_host = "ws:";
 		this.m_host += "//" + this.m_loc.host;
-		this.m_host += "/robotlog/ws";
+		this.m_host += "/webapi/_subscribe_";
 
-		this.createSocket();
+		this._createSocket();
 	}
 
 	/**
@@ -67,49 +62,23 @@ class RobotLog
 	    :param immediateNotify: If true, the function will be immediately called
 	                            with the all existing log msgs.
     */
-	setLogListener(f, immediateNotify)
+	setAPIListener(apifamily, f)
 	{
-		this.m_logListener = f;
-		if (immediateNotify)
-            this.replayLogs();
-	}
-
-	replayLogs() 
-	{
-		if(this.m_logListener) 
+		let tgt = this.m_apiListeners[apifamily];
+		if(!tgt)
 		{
-			for(var i=0;i<this.m_log.length;i++)
-				this.m_logListener(this.m_log[i]);
-        }
-    }
+			tgt = [];
+			this.m_apiListeners = tgt;
+		}
+		tgt.push(f);
+	}
 
 	isWsConnected () 
 	{
 		return this.m_socketOpen;
 	}
 
-	msgIsUnique(msg)
-	{
-        // check msg against last-most, unique if tail differs (timestamp at head)
-        var result = true;
-        var newslice = msg.substr(12); // skips first 12 chars
-        if(this.m_lastSlice === newslice)
-        {
-            // repeated msg
-            this.m_log.pop();
-            this.m_log.push(msg + " (" + this.m_repeat++ + ")");
-            result = false; // not unique
-        }
-        else
-        {
-            // unique message
-            this.m_repeat = 1;
-            this.m_lastSlice = newslice;
-        }
-        return result;
-    }
-
-	createSocket()
+	_createSocket()
 	{
 		this.m_socket = new WebSocket(this.m_host);
 		if (this.m_socket) 
@@ -124,16 +93,23 @@ class RobotLog
 
 			this.m_socket.onmessage = function(msg) 
 			{
-                // currently our messages are just simple strings...
+				// currently our messages are assumed to take the form:
+				//	family/jsondump
 				var data = msg.data;
-                if(this.msgIsUnique(data))
-                    this.m_log.push(data);
-                else
-                    data = null; // null means replay logs
-                if(this.m_logListener) 
-                {
-                    this.m_logListener(data);
-                }
+				var sep = data.indexOf("/");
+				var family = data.slice(0, sep);
+				var jstr = data.slice(sep+1); 
+				var obj = JSON.parse(jstr); // XXX: error check!
+				let listeners = this.m_apiListeners[family];
+				if(listeners)
+				{
+					for(let lfunc of listeners)
+						lfunc(obj);
+				}
+				else
+				{
+					app.debug(`no listeners for webapi ${family}, (${jstr})`);
+				}
 			}.bind(this);
 
 			this.m_socket.onclose = function() 
@@ -150,10 +126,10 @@ class RobotLog
 				}
 
 				// respawn the websocket
-				setTimeout(this.createSocket.bind(this), 300);
+				setTimeout(this._createSocket.bind(this), 300);
 			}.bind(this);
 		}
 	}
 }
 
-window.RobotLog = RobotLog;
+window.WebAPI = WebAPI;

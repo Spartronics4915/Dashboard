@@ -18,7 +18,7 @@ this approach may be for you.
 
 To run the dashboard:
 
-  1. make sure you have python installed (tested with both 3.6 and 2.7)
+  1. make sure you have python3 installed (3.6, 3.7 tested)
   2. make sure the correct python moduleis are installed (pynetworktables)
   3. make sure the javascript side of pynetworktable2js is up to date 
     (below www/js).
