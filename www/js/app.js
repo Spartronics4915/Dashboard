@@ -1,4 +1,4 @@
-/* global NetworkTables RobotLog WebAPI $ */
+/* global NetworkTables RobotLog WebAPISubscriber $ */
 
 class App
 {
@@ -74,8 +74,9 @@ class App
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
-        this.webapi = new WebAPI();
-        this.webapi.addWsConnectionListener(this.onAPIConnect.bind(this));
+        this.webapi = new WebAPISubscriber();
+        this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
+        this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
 
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
@@ -165,10 +166,28 @@ class App
     }
 
     // webapi callbacks --------------------------------------------------
-    onAPIConnect(cnx)
+    onWebSubConnect(cnx)
     {
-        this.notice("webapi connected");
+        this.notice("webapi subscriber connected");
     }
+
+    onWebSubMsg(cls, data)
+    {
+        if(!this.pageHandlers[this.currentPage]) 
+        {
+            this.debug("onWebSubMsg missing page handler for " + 
+                        this.currentPage);
+        }
+        // Currently we only distribute changes to current page.
+        // This means that any history is lost for non-visible changes.
+        // On the other hand, we don't waste cycles and memory on history
+        // that the user may not care about.
+        if(this.pageHandlers[this.currentPage].onWebSubMsg)
+        {
+            this.pageHandlers[this.currentPage].onWebSubMsg(cls, data);
+        }
+    }
+
 
     // robotlog callbacks ------------------------------------------------
     onLogConnect(cnx)
@@ -309,7 +328,7 @@ class App
         }
     }
 
-    // ajax utils -------------------------------------------------------------
+    // ajax utils -------------------------------------------------------
     sendGetRequest(url, responseHandler)
     {
         var req = new XMLHttpRequest();

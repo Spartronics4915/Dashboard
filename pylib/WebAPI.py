@@ -21,7 +21,7 @@ from datetime import datetime
 s_subscriberSockets = []
 s_logger = logging.getLogger("WebAPI")
 
-class WebAPI(tornado.web.RequestHandler):
+class WebAPIPost(tornado.web.RequestHandler):
     """
     WebAPI for Spartronics4915.  Of potential use when testing components
     without access to networktables.  For example, a lidar test program
@@ -49,31 +49,59 @@ class WebAPI(tornado.web.RequestHandler):
 
 class WebAPISubscriber(WebSocketHandler):
     """
-        A tornado web handler that forwards values between WebAPI (http/post)
-        and a webpage via a websocket.
+        A tornado web handler that forwards values from connected provider
+        to a webpage via a websocket.
     """
-
     def open(self):
-        s_logger.info("websocket opened")
+        s_logger.info("subscriber websocket opened")
         self.ioloop = IOLoop.current()
         s_subscriberSockets.append(self)
 
     def on_message(self, msg):
-        s_logger.info("Unexpected message from browser:" + msg) # none expected
+        s_logger.info("Unexpected message received from subscriber:" + msg)
+
+    def send_msg_threadsafe(self, data):
+        self.ioloop.add_callback(self.send_msg, data)
 
     def send_msg(self, msg):
-        # s_logger.info("send message:" + msg)
+        # (invoked form send_msg_threadsafe)
         try:
             self.write_message(msg, False)
         except WebSocketClosedError:
-            logger.warn("WebAPI websocket closed when sending message")
+            s_logger.warn("WebAPI websocket closed when sending message")
+
+    def on_close(self):
+        s_logger.info("websocket closed")
+        s_subscriberSockets.remove(self)
+
+class WebAPIPublisher(WebSocketHandler):
+    """
+        A tornado websocket handler that forwards values from connected 
+        publisher to a webpage via a websocket.
+    """
+    def open(self):
+        s_logger.info("publisher websocket opened")
+        self.ioloop = IOLoop.current()
+
+    def on_message(self, msg):
+        if len(s_subscriberSockets) > 0:
+            for s in s_subscriberSockets:
+                s.send_msg_threadsafe(msg)
+        else:
+            s_logger.info("no one subscribed to webapi, " +  msg[:20] + "...")
+
+    def send_msg(self, msg):
+        s_logger.warning("Unexpected message for publisher " + msg)
+        try:
+            self.write_message(msg, False)
+        except WebSocketClosedError:
+            s_logger.warn("WebAPI websocket closed when sending message")
 
     def send_msg_threadsafe(self, data):
         self.ioloop.add_callback(self.send_msg, data)
 
     def on_close(self):
         s_logger.info("websocket closed")
-        s_subscriberSockets.remove(self)
 
 def getHandlers():
     """
@@ -81,5 +109,6 @@ def getHandlers():
     """
     return [
         ('/webapi/_subscribe_', WebAPISubscriber),
-        ('/webapi/(.*)', WebAPI),
+        ('/webapi/_publish_', WebAPIPublisher),
+        ('/webapi/(.*)', WebAPIPost),
     ]

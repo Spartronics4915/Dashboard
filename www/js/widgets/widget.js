@@ -77,6 +77,11 @@ class Widget
         app.notice(`${this.config.label} addRandomPt: override me!`);
     }
 
+    onWebsubMsg(cls, data)
+    {
+        app.notice(`${this.config.label} websubChanged: override me!`);
+    }
+
 }
 
 Widget.AddWidgetClass("widget", Widget);

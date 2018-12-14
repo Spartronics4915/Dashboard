@@ -1,4 +1,4 @@
-/* global app */
+/* global app Widget */
 
 // Our job is to collect points in a circular array and to
 // update the flot-based plot (see http://www.flotcharts.org)

@@ -8,7 +8,7 @@
 //  categorized by api family. javascript consumers can register interest in a
 //	an api family and will be notified as messages arrive.
 //
-class WebAPI
+class WebAPISubscriber
 {
 	constructor()
 	{
@@ -19,11 +19,9 @@ class WebAPI
 		}
 	
 		this.m_cnxListeners = []; // notification of websocket connect/disconnect
-		this.m_apiListeners = {}; // table of lists, keyed by protocol family
+		this.m_subscribers = []; // 
 		this.m_socket;
 		this.m_socketOpen = false;
-		this.m_robotConnected = false;
-		this.m_robotAddress = null;
 
 		// construct the websocket URI, presumed to be on the same site that
 		// served this page.
@@ -62,15 +60,10 @@ class WebAPI
 	    :param immediateNotify: If true, the function will be immediately called
 	                            with the all existing log msgs.
     */
-	setAPIListener(apifamily, f)
+	addSubscriber(f)
 	{
-		let tgt = this.m_apiListeners[apifamily];
-		if(!tgt)
-		{
-			tgt = [];
-			this.m_apiListeners = tgt;
-		}
-		tgt.push(f);
+		if (this.m_subscribers.indexOf(f) != -1)
+			this.m_subscribers.push(f);
 	}
 
 	isWsConnected () 
@@ -94,21 +87,29 @@ class WebAPI
 			this.m_socket.onmessage = function(msg) 
 			{
 				// currently our messages are assumed to take the form:
-				//	family/jsondump
 				var data = msg.data;
-				var sep = data.indexOf("/");
-				var family = data.slice(0, sep);
-				var jstr = data.slice(sep+1); 
-				var obj = JSON.parse(jstr); // XXX: error check!
-				let listeners = this.m_apiListeners[family];
-				if(listeners)
+				var jobj;
+				try
 				{
-					for(let lfunc of listeners)
-						lfunc(obj);
+					jobj = JSON.parse(data);
 				}
-				else
+				catch(e)
 				{
-					app.debug(`no listeners for webapi ${family}, (${jstr})`);
+					app.error(e);
+				}
+				if(jobj)
+				{
+					var cls = jobj.class;
+					let subs = this.m_subscribers[cls];
+					if(subs)
+					{
+						for(let lfunc of subs)
+							lfunc(cls, jobj);
+					}
+					else
+					{
+						app.debug(`no listeners for webapi ${cls}`);
+					}
 				}
 			}.bind(this);
 
@@ -122,7 +123,7 @@ class WebAPI
 					// clear log, it's no longer valid
                     this.m_log = [];
 					this.m_socketOpen = false;
-					app.notice("RobotLog WebSocket closed");
+					app.notice("WebAPI WebSocket closed");
 				}
 
 				// respawn the websocket
@@ -132,4 +133,4 @@ class WebAPI
 	}
 }
 
-window.WebAPI = WebAPI;
+window.WebAPISubscriber = WebAPISubscriber;

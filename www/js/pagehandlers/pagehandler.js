@@ -7,6 +7,7 @@ class PageHandler
         this.config = config;
         this.pageTemplate = pageTemplate;
         this.ntkeyMap = {}; // maps to widget
+        this.websubMap = {}; // maps to widget
         this.idToNTKeyMap = {}; // maps widget id to ntkey
     }
 
@@ -75,6 +76,8 @@ class PageHandler
                     let w = this.pageTemplate.widgets[i];
                     if(w.ntkeys)
                         this.setNetTabHandler(w.ntkeys, w);
+                    if(w.webSubKeys)
+                        this.setWebSub(w.webSubKeys, w);
                     if(w.type == "html")
                     {
                         let targetElem = $(`#${w.id}`);
@@ -124,6 +127,20 @@ class PageHandler
             if(this.idToNTKeyMap[k])
                 app.warning("idToNTKeyMap collision for " + k);
             this.idToNTKeyMap[k] = m[k];
+        }
+    }
+
+    setWebSubHandler(keys, handler)
+    {
+        if(!keys) return;
+        if(!Array.isArray(keys)) // handler may listen to multiple keys
+            keys = [keys];
+        for(let j=0;j<keys.length;j++)
+        {
+            let key = keys[j];
+            if(this.websubMap[key])
+                app.warning("websub collision for " + key);
+            this.websubMap[key] = handler;
         }
     }
 
@@ -203,6 +220,15 @@ class PageHandler
         });
 
         this.updateWhenNoRobot();
+    }
+
+    onWebSubMsg(cls, data)
+    {
+        let hh = this.websubMap[cls];
+        if(!hh) return;
+        let w = hh.widget;
+        if(!w) return;
+        w.onWebSubMsg(cls, data);
     }
 
     onNetTabChange(key, value, isNew)
