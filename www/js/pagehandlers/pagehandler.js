@@ -249,7 +249,7 @@ class PageHandler
                     vals.push(app.getValue(hh.ntkeyRefs[i]));
             }
             else
-                vals.push(app.getValue(hh.ntkeyRefs))
+                vals.push(app.getValue(hh.ntkeyRefs));
             w.valueChanged(key, vals, isNew);
         }
     }

@@ -69,17 +69,17 @@ class Widget
 
     valueChanged(key, value, isNew)
     {
-        app.notice(`${this.config.label} valueChanged: override me!`);
+        app.notice(`${this.config.label} valueChanged override me!`);
     }
 
     addRandomPt()
     {
-        app.notice(`${this.config.label} addRandomPt: override me!`);
+        app.notice(`${this.config.label} addRandomPt override me!`);
     }
 
-    onWebsubMsg(cls, data)
+    onWebSubMsg(cls, data)
     {
-        app.notice(`${this.config.label} websubChanged: override me!`);
+        app.notice(`${this.config.label} onWebSubMsg override me! (${cls})`);
     }
 
 }
