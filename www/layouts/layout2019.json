@@ -188,6 +188,7 @@
                     "type": "pathplot",
                     "size": [330, 170],
                     "ntkeys": "/SmartDashboard/Lidar/pose",
+                    "websubkeys": "lidarscan",
                     "params": {
                         "plot": {
                             "xaxis": {

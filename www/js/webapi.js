@@ -62,7 +62,7 @@ class WebAPISubscriber
     */
 	addSubscriber(f)
 	{
-		if (this.m_subscribers.indexOf(f) != -1)
+		if (this.m_subscribers.indexOf(f) == -1)
 			this.m_subscribers.push(f);
 	}
 
@@ -100,8 +100,8 @@ class WebAPISubscriber
 				if(jobj)
 				{
 					var cls = jobj.class;
-					let subs = this.m_subscribers[cls];
-					if(subs)
+					let subs = this.m_subscribers;
+					if(subs.length > 0)
 					{
 						for(let lfunc of subs)
 							lfunc(cls, jobj);

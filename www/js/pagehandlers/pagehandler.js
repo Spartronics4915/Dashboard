@@ -76,8 +76,8 @@ class PageHandler
                     let w = this.pageTemplate.widgets[i];
                     if(w.ntkeys)
                         this.setNetTabHandler(w.ntkeys, w);
-                    if(w.webSubKeys)
-                        this.setWebSub(w.webSubKeys, w);
+                    if(w.websubkeys)
+                        this.setWebSubHandler(w.websubkeys, w);
                     if(w.type == "html")
                     {
                         let targetElem = $(`#${w.id}`);

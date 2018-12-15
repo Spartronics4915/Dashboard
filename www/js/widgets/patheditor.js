@@ -1,3 +1,4 @@
+/* global $ */
 let waypoints = [];
 let splinePoints = [];
 let ctx;
@@ -24,7 +25,8 @@ const splineWidth = 2;
 const kEps = 1E-9;
 const pi = Math.PI;
 
-class Translation2d {
+class Translation2d 
+{
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -77,7 +79,7 @@ class Translation2d {
 
     static getAngle(a, b) {
         let cos_angle = this.dot(a, b) / (a.norm() * b.norm());
-        if (Double.isNaN(cos_angle)) {
+        if (Number.isNaN(cos_angle)) {
             return new Rotation2d(1, 0, false);
         }
 
@@ -112,8 +114,43 @@ class Translation2d {
     }
 }
 
-class Rotation2d {
-    constructor(x, y, normalize) {
+class Twist2d
+{
+    constructor(dx, dy, dtheta)
+    {
+        this.dx = dx;
+        this.dy = dy;
+        this.dtheta = dtheta;
+    }
+
+    scaled(scale)
+    {
+        return new Twist2d(this.dx*scale, this.dy*scale,
+                            this.dtheta*scale);
+    }
+
+    norm()
+    {
+        if(this.dy == 0)
+            return Math.abs(this.dx);
+        else
+            return Math.hypot(this.dx, this.dy);
+
+    }
+
+    curvature()
+    {
+        if(Math.abs(this.dtheta) < kEps)
+            return 0;
+        else
+            return this.dtheta / this.norm();
+    }
+}
+
+class Rotation2d 
+{
+    constructor(x, y, normalize) 
+    {
         this.cos = x;
         this.sin = y;
         this.normalize = normalize;
@@ -122,15 +159,19 @@ class Rotation2d {
         }
     }
 
-    static fromRadians(angle_radians) {
-        return new Rotation2d(Math.cos(angle_radians), Math.sin(angle_radians), false);
+    static fromRadians(angle_radians) 
+    {
+        return new Rotation2d(Math.cos(angle_radians), 
+                              Math.sin(angle_radians), false);
     }
 
-    static fromDegrees(angle_degrees) {
+    static fromDegrees(angle_degrees) 
+    {
         return this.fromRadians(d2r(angle_degrees));
     }
 
-    normalizeFunc() {
+    normalizeFunc()
+    {
         let magnitude = Math.hypot(this.cos, this.sin);
         if (magnitude > kEps) {
             this.cos /= magnitude;
@@ -141,35 +182,42 @@ class Rotation2d {
         }
     }
 
-    tan() {
-        if (Math.abs(this.cos) < kEps) {
-            if (this.sin >= 0.0) {
+    tan() 
+    {
+        if (Math.abs(this.cos) < kEps) 
+        {
+            if (this.sin >= 0.0)
                 return Number.POSITIVE_INFINITY;
-            } else {
+            else
                 return Number.NEGATIVE_INFINITY;
-            }
         }
         return this.sin / this.cos;
     }
 
-    getRadians() {
+    getRadians() 
+    {
         return Math.atan2(this.sin, this.cos);
     }
 
-    getDegrees() {
+    getDegrees() 
+    {
         return r2d(this.getRadians());
     }
 
-    rotateBy(other) {
-        return new Rotation2d(this.cos * other.cos - this.sin * other.sin,
+    rotateBy(other) 
+    {
+        return new Rotation2d(
+            this.cos * other.cos - this.sin * other.sin,
             this.cos * other.sin + this.sin * other.cos, true);
     }
 
-    normal() {
+    normal() 
+    {
         return new Rotation2d(-this.sin, this.cos, false);
     }
 
-    inverse() {
+    inverse() 
+    {
         return new Rotation2d(this.cos, -this.sin, false);
     }
 
@@ -188,7 +236,8 @@ class Rotation2d {
     }
 }
 
-class Pose2d {
+class Pose2d 
+{
     constructor(translation, rotation, comment) {
         this.translation = translation;
         this.rotation = rotation;
@@ -212,14 +261,18 @@ class Pose2d {
             new Rotation2d(cos_theta, sin_theta, false));
     }
 
-    static log(transform) {
+    static log(transform) 
+    {
         let dtheta = transform.getRotation().getRadians();
         let half_dtheta = 0.5 * dtheta;
         let cos_minus_one = transform.getRotation().cos() - 1.0;
         let halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < kEps) {
+        if (Math.abs(cos_minus_one) < kEps) 
+        {
             halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
-        } else {
+        } 
+        else 
+        {
             halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().sin()) / cos_minus_one;
         }
         let translation_part = transform.getTranslation()
@@ -267,7 +320,8 @@ class Pose2d {
         return Math.atan2(this.translation.y - other.translation.y, this.translation.x - other.translation.x);
     }
 
-    draw(drawHeading, radius) {
+    draw(drawHeading, radius) 
+    {
         this.translation.draw(null, radius);
 
         if (!drawHeading) {
@@ -296,15 +350,18 @@ class Pose2d {
     }
 }
 
-function d2r(d) {
+function d2r(d) 
+{
     return d * (Math.PI / 180);
 }
 
-function r2d(r) {
+function r2d(r) 
+{
     return r * (180 / Math.PI);
 }
 
-function fillRobot(position, heading, color) {
+function fillRobot(position, heading, color) 
+{
     let previous = ctx.globalCompositeOperation;
     ctx.globalCompositeOperation = "destination-over";
 
@@ -327,7 +384,8 @@ function fillRobot(position, heading, color) {
 let r = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotHeight, 2)) / 2;
 let t = Math.atan2(robotHeight, robotWidth);
 
-function drawRobot(position, heading) {
+function drawRobot(position, heading)
+{
     let h = heading;
     let angles = [h + (pi / 2) + t, h - (pi / 2) + t, h + (pi / 2) - t, h - (pi / 2) - t];
 
@@ -341,10 +399,11 @@ function drawRobot(position, heading) {
     });
 }
 
-function init() {
-    let field = $('#field');
-    let background = $('#background');
-    let canvases = $('#canvases');
+function init() 
+{
+    let field = $("#field");
+    let background = $("#background");
+    let canvases = $("#canvases");
     let widthString = (width / 1.5) + "px";
     let heightString = (height / 1.5) + "px";
 
@@ -355,29 +414,30 @@ function init() {
     canvases.css("width", widthString);
     canvases.css("height", heightString);
 
-    ctx = document.getElementById('field').getContext('2d');
+    ctx = document.getElementById("field").getContext("2d");
     ctx.canvas.width = width;
     ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#FF0000";
 
-    ctxBackground = document.getElementById('background').getContext('2d');
+    ctxBackground = document.getElementById("background").getContext("2d");
     ctxBackground.canvas.width = width;
     ctxBackground.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
 
     image = new Image();
-    image.src = '/resources/img/field.png';
+    image.src = "/resources/img/field.png";
     image.onload = function () {
         ctxBackground.drawImage(image, 0, 0, width, height);
         update();
     };
     imageFlipped = new Image();
-    imageFlipped.src = '/resources/img/fieldFlipped.png';
+    imageFlipped.src = "/resources/img/fieldFlipped.png";
     rebind();
 }
 
-function clear() {
+function clear() 
+{
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#FF0000";
 
@@ -386,8 +446,9 @@ function clear() {
     ctxBackground.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
 }
 
-function rebind() {
-    let input = $('input');
+function rebind() 
+{
+    let input = $("input");
     input.unbind(change);
     input.bind(change, function () {
         clearTimeout(wto);
@@ -397,7 +458,8 @@ function rebind() {
     });
 }
 
-function addPoint() {
+function addPoint() 
+{
     let prev;
     if (waypoints.length > 0) prev = waypoints[waypoints.length - 1].translation;
     else prev = new Translation2d(50, 50);
@@ -412,7 +474,8 @@ function addPoint() {
     rebind();
 }
 
-function draw(style) {
+function draw(style) 
+{
     clear();
     drawWaypoints();
 
@@ -431,14 +494,16 @@ function draw(style) {
     }
 }
 
-function update() {
-    if (animating) {
+function update() 
+{
+    if (animating)
         return;
-    }
 
     waypoints = [];
     let data = "";
-    $('tbody').children('tr').each(function () {
+    $("tbody").children("tr").each(
+    function () 
+    {
         let x = parseInt($($($(this).children()).children()[0]).val());
         let y = parseInt($($($(this).children()).children()[1]).val());
         let heading = parseInt($($($(this).children()).children()[2]).val());
@@ -446,7 +511,7 @@ function update() {
             heading = 0;
         }
         let comment = ($($($(this).children()).children()[3]).val());
-        let enabled = ($($($(this).children()).children()[4]).prop('checked'));
+        let enabled = ($($($(this).children()).children()[4]).prop("checked"));
         if (enabled) {
             waypoints.push(new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(heading), comment));
             data += x + "," + y + "," + heading + ";";
@@ -458,21 +523,22 @@ function update() {
     $.post({
         url: "/api/calculate_splines",
         data: data,
-        success: function (data) {
-            if (data === "no") {
+        success: function (data) 
+        {
+            if (data === "no")
+            {
                 return;
             }
-
             console.log(data);
-
             let points = JSON.parse(data).points;
-
             splinePoints = [];
-            for (let i in points) {
+            for (let i in points) 
+            {
                 let point = points[i];
-                splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
+                splinePoints.push(new Pose2d(
+                                    new Translation2d(point.x, point.y), 
+                                    Rotation2d.fromRadians(point.rotation)));
             }
-
             draw(2);
         }
     });
@@ -480,13 +546,15 @@ function update() {
 
 let flipped = false;
 
-function flipField() {
+function flipField() 
+{
     flipped = !flipped;
     ctx.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
     update();
 }
 
-function drawWaypoints() {
+function drawWaypoints() 
+{
     waypoints.forEach(function (waypoint) {
         waypoint.draw(true, waypointRadius);
         drawRobot(waypoint, waypoint.rotation.getRadians());
@@ -495,15 +563,18 @@ function drawWaypoints() {
 
 let animation;
 
-function animate() {
+function animate() 
+{
     drawSplines(false, true);
 }
 
-function drawSplines(fill, animate) {
+function drawSplines(fill, animate) 
+{
     animate = animate || false;
     let i = 0;
 
-    if (animate) {
+    if (animate) 
+    {
         clearInterval(animation);
 
         animation = setInterval(function () {
@@ -519,19 +590,22 @@ function drawSplines(fill, animate) {
             let hue = Math.round(180 * (i++ / splinePoints.length));
 
             let previous = ctx.globalCompositeOperation;
-            fillRobot(splinePoint, splinePoint.rotation.getRadians(), 'hsla(' + hue + ', 100%, 50%, 0.025)');
+            fillRobot(splinePoint, splinePoint.rotation.getRadians(), "hsla(" + hue + ", 100%, 50%, 0.025)");
             ctx.globalCompositeOperation = "source-over";
             drawRobot(splinePoint, splinePoint.rotation.getRadians());
             splinePoint.draw(false, splineWidth);
             ctx.globalCompositeOperation = previous;
         }, 25);
-    } else {
-        splinePoints.forEach(function (splinePoint) {
+    } 
+    else 
+    {
+        splinePoints.forEach(function (splinePoint) 
+        {
             splinePoint.draw(false, splineWidth);
 
             if (fill) {
                 let hue = Math.round(180 * (i++ / splinePoints.length));
-                fillRobot(splinePoint, splinePoint.rotation.getRadians(), 'hsla(' + hue + ', 100%, 50%, 0.025)');
+                fillRobot(splinePoint, splinePoint.rotation.getRadians(), "hsla(" + hue + ", 100%, 50%, 0.025)");
             } else {
                 drawRobot(splinePoint, splinePoint.rotation.getRadians());
             }
