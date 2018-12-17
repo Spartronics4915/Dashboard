@@ -239,12 +239,12 @@
                                 },
                                 "points": {
                                     "show": 1,
-                                    "radius": 0.05,
+                                    "radius": 0.5,
                                     "fill": 0
                                 },
                                 "color": "rgb(20, 120, 255)"
                             },
-                            "maxlength": 3000
+                            "maxlength": 300
                         }
                     }
                 },
@@ -252,18 +252,18 @@
                     "id": "lidarPtsRel",
                     "label": "LIDAR Rel Points",
                     "type": "pathplot",
-                    "size": [330, 330],
+                    "size": [230, 230],
                     "websubkeys": "lidarscan",
                     "params": {
                         "plot": {
                             "xaxis": {
-                                "min": -330,
-                                "max": 330,
+                                "min": -200,
+                                "max": 200,
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": -330,
-                                "max": 330,
+                                "min": -200,
+                                "max": 200,
                                 "show": 1
                             },
                             "series": {
@@ -273,12 +273,12 @@
                                 },
                                 "points": {
                                     "show": 1,
-                                    "radius": 0.05,
+                                    "radius": 0.5,
                                     "fill": 0
                                 },
                                 "color": "rgb(20, 120, 255)"
                             },
-                            "maxlength":  500
+                            "maxlength":  360
                         }
                     }
                 }
