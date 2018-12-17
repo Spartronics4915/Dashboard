@@ -169,6 +169,7 @@ class App
     onWebSubConnect(cnx)
     {
         this.notice("webapi subscriber connected");
+        this.webSubConnected = true;
     }
 
     onWebSubMsg(cls, data)

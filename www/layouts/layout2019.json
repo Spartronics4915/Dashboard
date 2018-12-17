@@ -145,7 +145,7 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Drive/odometry",
+                    "ntkeys": "/SmartDashboard/RobotState/pose",
                     "params": {
                         "plot": {
                             "xaxis": {
@@ -188,7 +188,6 @@
                     "type": "pathplot",
                     "size": [330, 170],
                     "ntkeys": "/SmartDashboard/Lidar/pose",
-                    "websubkeys": "lidarscan",
                     "params": {
                         "plot": {
                             "xaxis": {
@@ -245,7 +244,41 @@
                                 },
                                 "color": "rgb(20, 120, 255)"
                             },
-                            "maxlength":  1e4
+                            "maxlength": 3000
+                        }
+                    }
+                },
+                {
+                    "id": "lidarPtsRel",
+                    "label": "LIDAR Rel Points",
+                    "type": "pathplot",
+                    "size": [330, 330],
+                    "websubkeys": "lidarscan",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": -330,
+                                "max": 330,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -330,
+                                "max": 330,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.05,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            },
+                            "maxlength":  500
                         }
                     }
                 }

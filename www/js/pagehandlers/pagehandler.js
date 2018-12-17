@@ -262,7 +262,11 @@ class PageHandler
             {
                 let w = this.pageTemplate.widgets[i].widget;
                 if(w)
+                {
+                    if(w.config.websubkeys && app.webSubConnected)
+                        continue;
                     w.addRandomPt();
+                }
             }
             setTimeout(this.updateWhenNoRobot.bind(this), 20);  // 50 fps
         }

@@ -20,8 +20,8 @@ class PathPlot extends Widget
     {
         super(config, targetElem);
         this.plotConfig = config.params.plot;
-        this.width = this.plotConfig.xaxis.max - this.plotConfig.xaxis.min + 1;
-        this.height = this.plotConfig.yaxis.max - this.plotConfig.yaxis.min + 1;
+        this.xrange = this.plotConfig.xaxis.max - this.plotConfig.xaxis.min + 1;
+        this.yrange = this.plotConfig.yaxis.max - this.plotConfig.yaxis.min + 1;
         if(!this.plotConfig.maxlength)
         {
             this.plotConfig.maxlength = 300; // number of data points
@@ -35,10 +35,18 @@ class PathPlot extends Widget
         // established during this constructor. We can, importantly, update 
         // the data on the fly.
         this.plotConfig.id = `#${this.config.id}Plot`;
+        let cwidth = 326;
+        let cheight = 162;
+        if(this.config.size)
+        {
+            cwidth = this.config.size[0] - 20;
+            cheight = this.config.size[1] - 20;
+        }
+
         let html = "<div class='plotContainer'>";
         html +=  `<label>${this.config.label}</label>`;
         html +=  `<div id='${this.plotConfig.id.slice(1)}'`;
-        html +=      "style='width:326px;height:162px' ";
+        html +=      `style='width:${cwidth}px;height:${cheight}px' `;
         html +=      "class='pathPlot'>";
         html +=  "</div>";
         html += "</div>";
@@ -96,10 +104,11 @@ class PathPlot extends Widget
 
     addRandomPt() 
     {
-        if(this.config.websubkeys) return; // expecting data from websub
         if(this.data.length == 0) 
         {
-            this.addDataPt(this.width/2, this.height/2, 0);
+            this.addDataPt(this.plotConfig.xaxis.min + this.xrange/2, 
+                           this.plotConfig.yaxis.min + this.yrange/2, 
+                           0);
         }
         else
         {
@@ -132,16 +141,16 @@ class PathPlot extends Widget
 
     clamp(x, y, angle)
     {
-        if(x < 0)
-            x = 0;
+        if(x < this.plotConfig.xaxis.min)
+            x = this.plotConfig.xaxis.min;
         else
-        if(x > this.width)
-            x = this.width;
-        if(y < 0)
-            y = 0;
+        if(x > this.plotConfig.xaxis.max)
+            x = this.plotConfig.xaxis.max;
+        if(y < this.plotConfig.yaxis.min)
+            y = this.plotConfig.yaxis.min;
         else
-        if(y > this.height)
-            y = this.height;
+        if(y > this.plotConfig.yaxis.max)
+            y = this.plotConfig.yaxis.max;
         return [x, y]; // for now we drop angle
     }
 }
