@@ -311,6 +311,12 @@ class App
             $("#statusmsg").html(value);
             break;
         default:
+            {
+                let id = key.split("/").pop(); // /SmartDashboard/foo/bar -> bar
+                let el = document.getElementById(id);
+                if(el && el.className && -1 != el.className.indexOf("nettabtxt"))
+                    el.innerHTML = value;
+            }
             break;
         }
 
