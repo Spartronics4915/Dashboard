@@ -348,13 +348,6 @@
                     }
                 },
                 {
-                    "type": "checkbox",
-                    "label": "Enable testing buttons",
-                    "id": "testenabled",
-                    "size": [180, "row"],
-                    "ntkeys": ["/SmartDashboard/TestingGUI"]
-                },
-                {
                     "type": "systemstate",
                     "id": "widgets",
                     "label": "Example Widgets",
