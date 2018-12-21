@@ -1,4 +1,4 @@
-/* global NetworkTables RobotLog WebAPISubscriber $ */
+/* global NetworkTables RobotLog WebAPISubscriber $ Widget */
 
 class App
 {
@@ -20,6 +20,8 @@ class App
 
         this.robotLog = null;
         this.robotConnected = false;
+        this.robotBatteryW = null;
+        this.robotCurrentW = null;
 
         this.webapi = null;
 
@@ -71,6 +73,42 @@ class App
     {
         this.debug("deviceready");
 
+        let targetEl = $(document.getElementById("Robot/BatteryVoltage"));
+        this.robotBatteryW = Widget.BuildWidgetByName("pctbar", 
+                                {
+                                    size: [60, 32],
+                                    id: "Robot/BatteryVoltage",
+                                    params: 
+                                    {
+                                        barStyle: 
+                                        {
+                                            radius: 5,
+                                            range: [0, 12.4],
+                                            orient: "horizontal",
+                                            fillSelector: function(v)
+                                            {
+                                                if(v>10)
+                                                    return "rgb(0,128,0)";
+                                                if(v>9)
+                                                    return "rgb(64,64,0)";
+                                                return "rgb(64,0,0)";
+                                            }
+                                        },
+                                        labelStyle: 
+                                        {
+                                            fill: "#aaa",
+                                            font: "20px Fixed",
+                                            formatter: function(v)
+                                            {
+                                                return v.toFixed(1)+" V";
+                                            }
+                                        }
+                                    }    
+                                },
+                                targetEl,
+                                undefined /* pageHandler */
+                                )
+
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
@@ -86,6 +124,18 @@ class App
             layout: this.config.layout,
             onLoad: this.onLayoutLoaded.bind(this)
         });
+
+        this.onIdle();
+    }
+
+    onIdle()
+    {
+        if(!this.robotConnected && this.currentPage)
+        {
+            this.robotBatteryW.addRandomPt();
+            this.pageHandlers[this.currentPage].randomData();
+        }
+        setTimeout(this.onIdle.bind(this), 20);
     }
 
     onLayoutLoaded()
@@ -113,7 +163,7 @@ class App
         var page = this.urlToPage(fields[0]);
         if(this.currentPage !== page)
         {
-            this.info("navigate: " + page);
+            this.debug("navigate: " + page);
             this.currentPage = page;
             this.loadPage(page);
         }
@@ -256,7 +306,13 @@ class App
     {
         if(!nm || nm == "undefined")
         {
-            this.error("unnamed putValue with value " + value);
+            this.warning("unnamed putValue with value " + value);
+            return;
+        }
+        if(value === undefined|| value === null)
+        {
+            this.warning("invalid putValue for " + nm);
+            return;
         }
         else
         {
@@ -310,12 +366,23 @@ class App
         case "/SmartDashboard/Status":
             $("#statusmsg").html(value);
             break;
+        case "/SmartDashboard/Robot/BatteryVoltage":
+            this.robotBatteryW.valueChanged(key, value, isNew);
+            break;
+        case "/SmartDashboard/Robot/InputCurrent":
+            break;
         default:
             {
-                let id = key.split("/").pop(); // /SmartDashboard/foo/bar -> bar
+                // /SmartDashboard/Robot/Foo -> Robot/Foo
+                let fields  = key.split("/");
+                let i = fields.indexOf("SmartDashboard");
+                let id = fields.slice(i+1).join("/"); 
                 let el = document.getElementById(id);
-                if(el && el.className && -1 != el.className.indexOf("nettabtxt"))
-                    el.innerHTML = value;
+                if(el && el.className)
+                { 
+                    if(el.className.indexOf("nettabtxt"))
+                        el.innerHTML = value;
+                }
             }
             break;
         }

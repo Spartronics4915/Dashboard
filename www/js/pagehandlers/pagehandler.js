@@ -218,8 +218,6 @@ class PageHandler
                 app.putValue(ntkey, value);
             }
         });
-
-        this.updateWhenNoRobot();
     }
 
     onWebSubMsg(cls, data)
@@ -254,25 +252,19 @@ class PageHandler
         }
     }
 
-    updateWhenNoRobot()
+    randomData()
     {
-        if(!app.robotConnected && app.config.demoMode)
+        for(let i=0;i<this.pageTemplate.widgets.length;i++)
         {
-            for(let i=0;i<this.pageTemplate.widgets.length;i++)
+            let w = this.pageTemplate.widgets[i].widget;
+            if(w)
             {
-                let w = this.pageTemplate.widgets[i].widget;
-                if(w)
-                {
-                    if(w.config.websubkeys && app.webSubConnected)
-                        continue;
-                    w.addRandomPt();
-                }
+                if(w.config.websubkeys && app.webSubConnected)
+                    continue;
+                w.addRandomPt();
             }
-            setTimeout(this.updateWhenNoRobot.bind(this), 20);  // 50 fps
         }
     }
-
-    
 }
 
 window.PageHandler = PageHandler;
