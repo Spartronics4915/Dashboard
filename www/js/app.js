@@ -73,41 +73,62 @@ class App
     {
         this.debug("deviceready");
 
-        let targetEl = $(document.getElementById("Robot/BatteryVoltage"));
+        let targetEl = $(document.getElementById("batteryVoltage"));
         this.robotBatteryW = Widget.BuildWidgetByName("pctbar", 
-                                {
-                                    size: [60, 32],
-                                    id: "Robot/BatteryVoltage",
-                                    params: 
-                                    {
-                                        barStyle: 
-                                        {
-                                            radius: 5,
-                                            range: [0, 12.4],
-                                            orient: "horizontal",
-                                            fillSelector: function(v)
-                                            {
-                                                if(v>10)
-                                                    return "rgb(0,128,0)";
-                                                if(v>9)
-                                                    return "rgb(64,64,0)";
-                                                return "rgb(64,0,0)";
-                                            }
-                                        },
-                                        labelStyle: 
-                                        {
-                                            fill: "#aaa",
-                                            font: "20px Fixed",
-                                            formatter: function(v)
-                                            {
-                                                return v.toFixed(1)+" V";
-                                            }
-                                        }
-                                    }    
-                                },
-                                targetEl,
-                                undefined /* pageHandler */
-                                )
+                {
+                    size: [60, 32],
+                    id: "batteryVoltage",
+                    params: 
+                    {
+                        barStyle: 
+                        {
+                            radius: 5,
+                            range: [0, 12.4],
+                            orient: "horizontal",
+                            fillSelector: function(v)
+                            {
+                                if(v>10)
+                                    return "rgb(0,128,0)";
+                                if(v>9)
+                                    return "rgb(64,64,0)";
+                                return "rgb(64,0,0)";
+                            }
+                        },
+                        labelStyle: 
+                        {
+                            fill: "#aaa",
+                            font: "20px Fixed",
+                            formatter: function(v)
+                            {
+                                return v.toFixed(1)+" V";
+                            }
+                        }
+                    }    
+                },
+                targetEl, undefined /* pageHandler */);
+        targetEl = $(document.getElementById("inputCurrent"));
+        this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
+                {
+                    "id": "inputCurrentChart",
+                    "type": "stripchart",
+                    "size": [100, 48],
+                    "ntkeys": "/SmartDashboard/Robot/InputCurrent",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "show": false,
+                                "min": 0, 
+                                "max": 60
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)"],
+                            "channelcount": 1,
+                            "widths": [1],
+                            "maxlength": 100,
+                        },
+                    }
+                },
+                targetEl, undefined,);
 
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
@@ -133,6 +154,7 @@ class App
         if(!this.robotConnected && this.currentPage)
         {
             this.robotBatteryW.addRandomPt();
+            this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
         }
         setTimeout(this.onIdle.bind(this), 20);
@@ -370,17 +392,22 @@ class App
             this.robotBatteryW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/InputCurrent":
+            this.robotCurrentW.valueChanged(key, value, isNew);
             break;
         default:
             {
                 // /SmartDashboard/Robot/Foo -> Robot/Foo
+                let id;
                 let fields  = key.split("/");
                 let i = fields.indexOf("SmartDashboard");
-                let id = fields.slice(i+1).join("/"); 
+                if(i == -1)
+                    id = key;
+                else
+                    id = fields.slice(i+1).join("/"); 
                 let el = document.getElementById(id);
                 if(el && el.className)
                 { 
-                    if(el.className.indexOf("nettabtxt"))
+                    if(el.className.indexOf("nettabtxt") != -1)
                         el.innerHTML = value;
                 }
             }

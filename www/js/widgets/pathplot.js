@@ -39,8 +39,13 @@ class PathPlot extends Widget
         let cheight = 162;
         if(this.config.size)
         {
-            cwidth = this.config.size[0] - 20;
-            cheight = this.config.size[1] - 20;
+            cwidth = this.config.size[0];
+            cheight = this.config.size[1];
+            if(this.config.label)
+            {
+                cwidth -= 20;
+                cheight -= 20;
+            }
         }
 
         let html = "<div class='plotContainer'>";

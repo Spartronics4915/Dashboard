@@ -16,7 +16,7 @@ class Layout
 
     _initJSON(jsonObj)
     {
-        app.info("init layout with ", jsonObj.layoutName);
+        app.info("init layout with " + jsonObj.layoutName);
         this.layout = jsonObj;
         this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];
