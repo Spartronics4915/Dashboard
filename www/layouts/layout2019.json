@@ -124,6 +124,27 @@
                     }
                 },
                 {
+                    "id": "trajectoryStates",
+                    "label": "Trajectory State",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "_comment": "expect 'velocity acceleration curvature'",
+                    "ntkeys": "/SmartDashboard/DriveMotionPlanner/trajectorySetpoints",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -24, 
+                                "max":  24
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100, 0)"],
+                            "channelcount": 3,
+                            "widths": [1, 1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
                     "id": "driveIMU",
                     "label": "IMU Heading",
                     "type": "stripchart",

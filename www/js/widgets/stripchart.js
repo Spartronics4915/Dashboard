@@ -82,13 +82,20 @@ class StripChart extends Widget
 
     valueChanged(key,  vals, isnew)
     {
-        // currently we only support a single key, so no need to 
-        // check it.
-
+        // currently we only support a single key, so no need to check it.
         if(Array.isArray(vals))
             this.addDataPts(vals);
         else
-            this.addDataPt(vals);
+        {
+            if(this.plotConfig.channelcount > 1)
+            {
+                let nvals = vals.split(" ").map(parseFloat);
+                app.notice("stripchart: " + nvals);
+                this.addDataPt(nvals);
+            }
+            else
+                this.addDataPt(vals);
+        }
     }
 
     addDataPt(value, chan)
