@@ -154,8 +154,8 @@
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": 0,
-                                "max": 324,
+                                "min": -162,
+                                "max": 162,
                                 "show": 1
                             },
                             "series": {
@@ -196,8 +196,8 @@
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": 0,
-                                "max": 324,
+                                "min": -162,
+                                "max": 162,
                                 "show": 1
                             },
                             "series": {
@@ -257,13 +257,13 @@
                     "params": {
                         "plot": {
                             "xaxis": {
-                                "min": -200,
-                                "max": 200,
+                                "min": -100,
+                                "max": 100,
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": -200,
-                                "max": 200,
+                                "min": -100,
+                                "max": 100,
                                 "show": 1
                             },
                             "series": {
