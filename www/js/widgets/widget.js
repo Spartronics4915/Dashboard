@@ -82,6 +82,11 @@ class Widget
         app.notice(`${this.config.label} onWebSubMsg override me! (${cls})`);
     }
 
+    reset()
+    {
+        // only some widgets need a reset
+    }
+
 }
 
 Widget.AddWidgetClass("widget", Widget);

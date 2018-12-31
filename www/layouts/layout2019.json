@@ -29,7 +29,6 @@
                         "/FMSInfo/MatchNumber"
                     ],
                     "params": {
-
                     }
                 },
                 {
@@ -89,7 +88,7 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": 0, 
+                                "min": -80, 
                                 "max": 80
                             },
                             "fillvalue": 0,
@@ -112,7 +111,7 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": 0, 
+                                "min": -80, 
                                 "max": 80
                             },
                             "fillvalue": 0,
@@ -125,7 +124,7 @@
                 },
                 {
                     "id": "trajectoryStates",
-                    "label": "Trajectory State",
+                    "label": "Trajectory State (v,a,c)",
                     "type": "stripchart",
                     "size": [330, 170],
                     "_comment": "expect 'velocity acceleration curvature'",
@@ -133,16 +132,56 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -24, 
-                                "max":  24
+                                "min": -35,
+                                "max":  35
                             },
                             "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100, 0)"],
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100,0)"],
                             "channelcount": 3,
                             "widths": [1, 1, 1],
                             "maxlength": 400
                         }
                     }
+                },
+                {
+                    "id": "leftSpeedoverDemand",
+                    "label": "left Speed/Demand",
+                    "type": "pathplot",
+                    "size": [300, 300],
+                    "ntkeys": [
+                        "/SmartDashboard/Drive/leftSpeed"
+                    ],
+                    "ntkeyRefs": [
+                        "/SmartDashboard/Drive/leftDemand"
+                    ],
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 80,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 1,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.5,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+
                 },
                 {
                     "id": "driveIMU",

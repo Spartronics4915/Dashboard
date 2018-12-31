@@ -42,10 +42,10 @@ class StripChart extends Widget
         for(let i=0;i<this.plotConfig.channelcount;i++)
         {
             this.data[i] = new Array(this.plotConfig.maxlength);
-            if(this.plotConfig.fillvalue != undefined)
-                this.data[i].fill(this.plotConfig.fillvalue);
-            else
-                this.data[i].fill(this.plotConfig.yaxis.min + this.yrange/2);
+
+            if(this.plotConfig.fillvalue == undefined)
+                this.plotConfig.fillvalue = this.plotConfig.yaxis.min+this.yrange/2;
+            this.data[i].fill(this.plotConfig.fillvalue);
         }
         this.nextSlot = 0;
         let cwidth = 326;
@@ -80,6 +80,12 @@ class StripChart extends Widget
                             this.plotConfig);
     }
 
+    reset()
+    {
+        for(let i=0;i<this.plotConfig.channelcount;i++)
+            this.data[i].fill(this.plotConfig.fillvalue);
+    }
+
     valueChanged(key,  vals, isnew)
     {
         // currently we only support a single key, so no need to check it.
@@ -90,8 +96,7 @@ class StripChart extends Widget
             if(this.plotConfig.channelcount > 1)
             {
                 let nvals = vals.split(" ").map(parseFloat);
-                app.notice("stripchart: " + nvals);
-                this.addDataPt(nvals);
+                this.addDataPts(nvals);
             }
             else
                 this.addDataPt(vals);

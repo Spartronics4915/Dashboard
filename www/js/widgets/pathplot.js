@@ -75,8 +75,17 @@ class PathPlot extends Widget
     {                
         // We expect three numbers in string value: "x y angle"
         //  (parseFloat is builtin)
-        var result = value.split(" ").map(parseFloat);
+        var result;
+        if(Array.isArray(value))
+            result = value;
+        else
+            result = value.split(" ").map(parseFloat);
         this.addDataPt(result[0], result[1], result[2]);
+    }
+
+    reset()
+    {
+        this.data = [];
     }
 
     addDataPt(x, y, angle)

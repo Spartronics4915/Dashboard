@@ -394,24 +394,30 @@ class App
         case "/SmartDashboard/Robot/InputCurrent":
             this.robotCurrentW.valueChanged(key, value, isNew);
             break;
-        default:
+        case "/SmartDashboard/Robot/GamePhase":
+            if(value == "ROBOT INIT")
             {
-                // /SmartDashboard/Robot/Foo -> Robot/Foo
-                let id;
-                let fields  = key.split("/");
-                let i = fields.indexOf("SmartDashboard");
-                if(i == -1)
-                    id = key;
-                else
-                    id = fields.slice(i+1).join("/"); 
-                let el = document.getElementById(id);
-                if(el && el.className)
-                { 
-                    if(el.className.indexOf("nettabtxt") != -1)
-                        el.innerHTML = value;
-                }
+                app.logMsg("ROBOT INIT... clearing widgets");
+                if(this.currentPage && this.pageHandlers[this.currentPage]) 
+                    this.pageHandlers[this.currentPage].resetWidgets();
             }
             break;
+        }
+
+        // Handler for auto-widgets whose id is their nettabkey
+        // /SmartDashboard/Robot/Foo -> Robot/Foo
+        let id;
+        let fields  = key.split("/");
+        let i = fields.indexOf("SmartDashboard");
+        if(i == -1)
+            id = key;
+        else
+            id = fields.slice(i+1).join("/"); 
+        let el = document.getElementById(id);
+        if(el && el.className)
+        { 
+            if(el.className.indexOf("nettabtxt") != -1)
+                el.innerHTML = value;
         }
 
         if(!this.pageHandlers[this.currentPage]) 

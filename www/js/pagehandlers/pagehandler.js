@@ -153,8 +153,11 @@ class PageHandler
         {
             let key = keys[j];
             if(this.ntkeyMap[key])
-                app.warning("nettab collision for " + key);
-            this.ntkeyMap[key] = handler;
+            {
+                this.ntkeyMap[key].push(handler);
+            }
+            else
+                this.ntkeyMap[key] = [handler];
         }
     }
 
@@ -231,26 +234,46 @@ class PageHandler
 
     onNetTabChange(key, value, isNew)
     {
-        let hh = this.ntkeyMap[key];
-        if(!hh) return;
-        let w = hh.widget;
-        if(!w) return;
+        let hlist = this.ntkeyMap[key];
+        if(!hlist) return;
+        if(!Array.isArray(hlist))
+            hlist = [hlist];
 
-        if(!hh.ntkeyRefs)
-            w.valueChanged(key, value, isNew);
-        else
+        for(let i=0;i<hlist.length;i++)
         {
-            let vals =  [value];
-            if(Array.isArray(hh.ntkeyRefs))
-            {
-                for(let i=0;i<hh.ntkeyRefs.length;i++)
-                    vals.push(app.getValue(hh.ntkeyRefs[i]));
-            }
+            let hh = hlist[i];
+            let w = hh.widget;
+            if(!w) return;
+            if(!hh.ntkeyRefs)
+                w.valueChanged(key, value, isNew);
             else
-                vals.push(app.getValue(hh.ntkeyRefs));
-            w.valueChanged(key, vals, isNew);
+            {
+                let vals = [value];
+                if(Array.isArray(hh.ntkeyRefs))
+                {
+                    for(let i=0;i<hh.ntkeyRefs.length;i++)
+                        vals.push(app.getValue(hh.ntkeyRefs[i]));
+                }
+                else
+                    vals.push(app.getValue(hh.ntkeyRefs));
+                w.valueChanged(key, vals, isNew);
+            }
         }
     }
+
+    resetWidgets()
+    {
+        for(let i=0;i<this.pageTemplate.widgets.length;i++)
+        {
+            let w = this.pageTemplate.widgets[i].widget;
+            if(w)
+            {
+                if(w.config.websubkeys && app.webSubConnected)
+                    continue;
+                w.reset();
+            }
+        }
+   }
 
     randomData()
     {
