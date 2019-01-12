@@ -106,6 +106,20 @@ class PageHandler
         }
     }
 
+    cleanup()
+    {
+        for(let i=0;i<this.pageTemplate.widgets.length;i++)
+        {
+            let w = this.pageTemplate.widgets[i].widget;
+            if(w)
+            {
+                if(w.config.websubkeys && app.webSubConnected)
+                    continue;
+                w.cleanup();
+            }
+        }
+    }
+
     _widgetLoaded()
     {
         this.numWidgetsToLoad--;

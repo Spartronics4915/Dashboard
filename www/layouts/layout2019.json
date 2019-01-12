@@ -59,6 +59,18 @@
                             "ip": "10.49.15.10:5080",
                             "url": "/cam/mjpg",
                             "cls": "rotate0"
+                        },
+                        "PiCamUVMjpg":
+                        {
+                            "ip": "192.168.1.51:8080",
+                            "url": "/stream/video.mjpeg",
+                            "cls": "rotate0"
+                        },
+                        "PicCamUVStream":
+                        {
+                            "ip": "192.168.1.51:8080",
+                            "protocol": "ws",
+                            "cls": "rotate0"
                         }
                     }
                 }

@@ -186,7 +186,6 @@ class App
         if(this.currentPage !== page)
         {
             this.debug("navigate: " + page);
-            this.currentPage = page;
             this.loadPage(page);
         }
         if(params !== null)
@@ -212,8 +211,14 @@ class App
 
     loadPage(page)
     {
-        this.robotLog.setLogListener(null, false); // clear log listener
         this.debug("loadPage layout " + page);
+        if(this.currentPage && this.pageHandlers[this.currentPage])
+        {
+            this.pageHandlers[this.currentPage].cleanup();
+        }
+
+        this.robotLog.setLogListener(null, false); // clear log listener
+        this.currentPage = page;
         let ph = this.layout.buildContentPage(page);
         if(!this.pageHandlers[page])
             this.pageHandlers[page] = ph;
@@ -397,7 +402,7 @@ class App
         case "/SmartDashboard/Robot/GamePhase":
             if(value == "ROBOT INIT")
             {
-                app.logMsg("ROBOT INIT... clearing widgets");
+                this.logMsg("ROBOT INIT... clearing widgets");
                 if(this.currentPage && this.pageHandlers[this.currentPage]) 
                     this.pageHandlers[this.currentPage].resetWidgets();
             }

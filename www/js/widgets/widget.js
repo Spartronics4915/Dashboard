@@ -87,6 +87,11 @@ class Widget
         // only some widgets need a reset
     }
 
+    cleanup()
+    {
+        // only some widgets need a cleanup
+    }
+
 }
 
 Widget.AddWidgetClass("widget", Widget);
