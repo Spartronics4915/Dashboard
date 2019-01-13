@@ -68,8 +68,9 @@
                         },
                         "PicCamUVStream":
                         {
-                            "ip": "192.168.1.51:8080",
                             "protocol": "ws",
+                            "ip": "192.168.1.51:8080",
+                            "url": "/stream/webrtc",
                             "cls": "rotate0"
                         }
                     }

@@ -1,11 +1,14 @@
 /* global app */
 /* cribbed from uv4l webrtc demo -----------------------*/
+/* we don't antipicate requiring internet-based signaling services,
+ * but the uv4l/webrtc framework appears to require some of this setup. 
+ */
 
 const RTCPeerConnection = window.RTCPeerConnection;
 const RTCSessionDescription = window.RTCSessionDescription;
 const RTCIceCandidate = window.RTCIceCandidate;
 
-class StreamHandler
+class WebRTCSignaling
 {
     constructor(url, onOpen, onError, onClose, onMsg)
     {
@@ -44,15 +47,22 @@ class StreamHandler
 
     onOpen()
     {
-        /* First we create a peer connection */
-        var config = {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]};
+        /* First we create a peer connection 
+         *  - try to avoid internet cnx, 
+         *  - try to minimize startup time
+         */
+        // var config = {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]};
+        // var config = {"iceServers": {}}; -- this doesn't work
+        // var config = {"iceServers": [{"urls": ["stun:localhost:9999"]}]};
+        var config = {"iceServers": [{"urls": ["stun:192.168.1.51:3478"]}]};
         var options = {optional: []};
         this.pc = new RTCPeerConnection(config, options);
         this.iceCandidates = [];
         this.hasRemoteDesc = false;
-        this.pc.onicecandidate = this.onIceCandiate.bind(this);
+        this.pc.onicecandidate = this.onIceCandidate.bind(this);
         if ("ontrack" in this.pc) 
         {
+            app.debug("webRTCSignaling: ontrack");
             this.pc.ontrack = function (event)
             {
                 this.onOpenCB(event.streams[0]);
@@ -88,7 +98,7 @@ class StreamHandler
                 // (e.g. it's H264 on the Raspberry Pi)
                 // Make sure the browser supports the codec too.
                 force_hw_vcodec: true,
-                vformat: 60, /* 30=640x480, 30 fps */
+                vformat: 30, /* 30=640x480, 30 fps */
                 trickle_ice: true
             }
         };
@@ -147,9 +157,9 @@ class StreamHandler
             break;
 
         case "message":
-            if (this.onMessageCB)
+            if (this.onMsgCB)
             {
-                this.onMessageCB(msg.data);
+                this.onMsgCB(msg.data);
             }
             break;
 
@@ -234,10 +244,10 @@ class StreamHandler
                             app.error("addIceCandidate: " + error);
                         }
                     );
-                });
-                this.iceCandidates = [];
+            }.bind(this));
+            this.iceCandidates = [];
         }
     }
 }
 
-window.StreamHandler = StreamHandler;
+window.WebRTCSignaling = WebRTCSignaling;

@@ -1,4 +1,4 @@
-/* global SelectorWidget, Widget, $, app, StreamHandler */
+/* global SelectorWidget, Widget, $, app, WebRTCSignaling */
 
 // legacy cams here for reference, now expressed in per-season layout files.
 // var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
@@ -64,6 +64,13 @@ class CamerasWidget extends Widget
             // while keeping an eye on bandwidth consumption (via TaskManager etc).
             lastImg.src = null; 
         }
+        if(this.streamHandler)
+        {
+            this.sVid = null;
+            this.streamHandler.hangup();
+            this.streamHandler = null;
+            this.isStreaming = false;
+        }
     }
 
     valueChanged(key, value, isNew)
@@ -84,26 +91,23 @@ class CamerasWidget extends Widget
             if(!cam.protocol || cam.protocol === "http")
             {
                 camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
+                $(`#${this.divId}`).html(camhtml);
             }
             else
             {
-                if(this.streamHandler)
-                {
-                    this.streamHandler.hangup();
-                    this.isStreaming = false;
-                }
+                camhtml = `<video id="${this.vidId}" class="${cam.cls}"></video>`;
+                // camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
+                camhtml += "<div id='vidMsg'></div>";
+                $(`#${this.divId}`).html(camhtml);
                 let url = `ws:${cam.ip}${cam.url}`;
-                this.streamHandler = new StreamHandler(url, 
+                this.streamHandler = new WebRTCSignaling(url, 
                                         this.onStreamOpen.bind(this),
                                         this.onStreamError.bind(this),
                                         this.onStreamClose.bind(this),
                                         this.onStreamMsg.bind(this)
                                         );
-                camhtml = `<video id="${this.vidId}" class="${cam.cls}"></video>`;
-                camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
             }
         }
-        $(`#${this.divId}`).html(camhtml);
     }
 
     addRandomPt()
@@ -111,33 +115,98 @@ class CamerasWidget extends Widget
         // no-op
     }
 
+    _onCanPlay()
+    {
+        app.debug("cameras._onCanPlay");
+        this.isStreaming = true;
+        if(this.sCanv)
+        {
+            this.sCanv.setAttribute("width", this.sVid.videoWidth);
+            this.sCanv.setAttribute("height", this.sVid.videoHeight);
+            this.sVid.addEventListener("play", this._onPlay.bind(this));
+        }
+    }
+
+    _onPlay()
+    {
+        // Every 33 milliseconds... copy video to canvas. So we
+        // can operate on it locally.  If we only wish to view the video
+        // feed the canvas isn't needed.
+        if(!this.sCanv) 
+            return;
+        app.debug("cameras._onPlay");
+        setInterval(function() 
+        {
+            if(this.sVid.paused || this.sVid.ended)
+                return;
+            var w = this.sCanv.getAttribute("width");
+            var h = this.sCanv.getAttribute("height");
+            this.sCtx.fillRect(0, 0, w, h);
+            this.sCtx.drawImage(this.sVid, 0, 0, w, h);
+            // here's where we can operate on the image-in-canvas
+            // var input = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            // var img = cv.matFromArray(input, 24); // 24 for rgba
+            // var imgGray = new cv.Mat();
+            // var imgColor = new cv.Mat(); // Opencv likes RGB
+            // cv.cvtColor(img, imgGray, cv.ColorConversionCodes.COLOR_RGBA2GRAY.value, 0);
+            // cv.cvtColor(img, imgColor, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
+        }.bind(this), 33);
+    }
+
     onStreamOpen(stream)
     {
         app.notice("camera stream opened");
-        let v = document.getElementById(`${this.baseId}Vid`);
-        v.srcObject = stream;
-        v.play();
-    }
-
-    onStreamError(msg)
-    {
-        app.error("camera stream error: " + msg);
-        let v = document.getElementById(`${this.baseId}Vid`);
-        v.srcObject = null;
+        this.sVid = document.getElementById(`${this.vidId}`);
+        this.sVid.srcObject = stream;
+        this.sCanv = document.getElementById(`${this.canvId}`);
+        if(this.sCanv)
+            this.sCtx = this.sCanv.getContext("2d");
+        let playPromise = this.sVid.play();
+        if(playPromise != undefined)
+        {
+            playPromise.then(function()
+            {
+                // Automatic playback started!
+                // Show playing UI.
+                this._onCanPlay();
+            }.bind(this))
+            .catch(function(error)
+            {
+                app.warning("autoplay prevented: " + error);
+                // Auto-play was prevented
+                // Show paused UI.
+            });
+        }
+        else
+        {
+            this.sVid.addEventListener("canplay", this._onCanPlay.bind(this));
+        }
     }
 
     onStreamClose()
     {
         app.notice("camera stream closed");
-        let canv = document.getElementById(`${this.baseId}Canv`);
-        canv.getContext("2d").clearRect(0, 0, canv.width, canv.height);
+        if(this.sVid)
+            this.sVid.srcObject = null;
+        if(this.sCtx)
+            this.sCtx.clearRect(0, 0, this.sCanv.width, this.sCanv.height);
         this.isStreaming = false;
         this.streamHandler = null;
     }
 
+    onStreamError(msg)
+    {
+        app.error("camera stream error: " + msg);
+        let v = document.getElementById(`${this.vidId}`);
+        v.srcObject = null;
+    }
+
     onStreamMsg(msg)
     {
-        app.info("stream message:" + msg);
+        app.warning("stream message:" + msg);
+        let vmsg = document.getElementById("vidMsg");
+        if(vmsg)
+            vmsg.innerHTML = `<span class="WARNING">${msg}</span>`;
     }
 }
 
