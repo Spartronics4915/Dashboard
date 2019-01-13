@@ -95,7 +95,7 @@ class PctBarWidget extends CanvasWidget
 
     addRandomPt()
     {
-        let newval = this.value + (.05 * this.drange * (Math.random()-.5));
+        let newval = this.value + (.01 * this.drange * (Math.random()-.5));
         newval = this.clamp(newval, 
                             this.params.barStyle.range[0], 
                             this.params.barStyle.range[1]);

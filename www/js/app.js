@@ -13,7 +13,7 @@ class App
         this.pageHandlers = {};
         this.varRegExp = /{\s*(\w+)\s*}/g; /* w is alphnum, s is space*/
         this.config = {}; // XXX: load via .json file?
-        this.config.debug = true;
+        this.config.debug = false;
         this.config.netTabVersion = 1802;
         this.config.demoMode = true;
         this.config.layout = "/layouts/layout2019.json";

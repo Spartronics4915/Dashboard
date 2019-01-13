@@ -18,6 +18,15 @@ class WebRTCSignaling
             return;
         }
 
+        let fields = url.split(":");
+        if(fields.length != 3)
+        {
+            app.error("unexpected url: " + url);
+            this.ip = "localhost";
+        }
+        else
+            this.ip = fields[1];
+
         this.url = url;
         this.onOpenCB = onOpen;
         this.onErrorCB = onError;
@@ -51,10 +60,14 @@ class WebRTCSignaling
          *  - try to avoid internet cnx, 
          *  - try to minimize startup time
          */
-        // var config = {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]};
+        // var config = {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}; // works
         // var config = {"iceServers": {}}; -- this doesn't work
         // var config = {"iceServers": [{"urls": ["stun:localhost:9999"]}]};
-        var config = {"iceServers": [{"urls": ["stun:192.168.1.51:3478"]}]};
+        // var config = {"iceServers": [{"urls": ["stun:192.168.1.51:3478"]}]}; // worked in lan-only, not wlan(?)
+        var config = {"iceServers": [{"urls": [
+                "stun:stun.l.google.com:19302",
+                `stun:${this.ip}:3478`
+            ]}]}; // works
         var options = {optional: []};
         this.pc = new RTCPeerConnection(config, options);
         this.iceCandidates = [];

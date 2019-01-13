@@ -60,17 +60,17 @@
                             "url": "/cam/mjpg",
                             "cls": "rotate0"
                         },
-                        "PiCamUVMjpg":
-                        {
-                            "ip": "192.168.1.51:8080",
-                            "url": "/stream/video.mjpeg",
-                            "cls": "rotate0"
-                        },
-                        "PicCamUVStream":
+                        "PiCamH264":
                         {
                             "protocol": "ws",
-                            "ip": "192.168.1.51:8080",
+                            "ip": "192.168.1.51:5080",
                             "url": "/stream/webrtc",
+                            "cls": "rotate0"
+                        },
+                        "PiCamMJPG":
+                        {
+                            "ip": "192.168.1.51:5080",
+                            "url": "/stream/video.mjpeg",
                             "cls": "rotate0"
                         }
                     }
