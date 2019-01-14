@@ -111,7 +111,24 @@ class WebRTCSignaling
                 // (e.g. it's H264 on the Raspberry Pi)
                 // Make sure the browser supports the codec too.
                 force_hw_vcodec: true,
-                vformat: 30, /* 30=640x480, 30 fps */
+                vformat: 30,
+                // from janus section of 
+                //   https://www.linux-projects.org/documentation/uv4l-server/
+                // 10: 320×240-30fps, 
+                // 20: 352×288-30fps, 
+                // 30: 640×480-30fps, 
+                // 40: 960×720-30fps, 
+                // 50: 1024×768-30fps, 
+                // 60: 1280×720-30fps, 
+                // 63: 1280×720-60fps, 
+                // 65: 1280×768-15fps, 
+                // 70: 1280×768-30fps, 
+                // 80: 1280×960-30fps, 
+                // 90: 1600×768-30fps, 
+                // 95: 1640×1232-15fps, 
+                // 97: 1640×1232-30fps, 
+                // 100: 1920×1080-15fps, 
+                // 105: 1920×1080-30fps
                 trickle_ice: true
             }
         };
