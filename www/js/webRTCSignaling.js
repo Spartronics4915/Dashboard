@@ -114,13 +114,13 @@ class WebRTCSignaling
                 vformat: 30,
                 // from janus section of 
                 //   https://www.linux-projects.org/documentation/uv4l-server/
-                // 10: 320×240-30fps, 
+                // 10: 320×240-30fps, Bandwidth of .3 mbps latency of 95
                 // 20: 352×288-30fps, 
-                // 30: 640×480-30fps, 
+                // 30: 640×480-30fps, Bandwidth of .9 mbps latency of 110 ms
                 // 40: 960×720-30fps, 
                 // 50: 1024×768-30fps, 
-                // 60: 1280×720-30fps, 
-                // 63: 1280×720-60fps, 
+                // 60: 1280×720-30fps,  Bandwidth of 3, latenchy of 140ms 
+                // 63: 1280×720-60fps, Bandwidth of 6-7 mbps  latency of ~202 ms
                 // 65: 1280×768-15fps, 
                 // 70: 1280×768-30fps, 
                 // 80: 1280×960-30fps, 
