@@ -34,7 +34,7 @@ class WebRTCSignaling
         this.onMsgCB = onMsg;
         this.iceCandidates = [];
         this.hasRemoteDesc = false;
-        this.pc = null; // peer connection
+        this.peerCnx = null; // peer connection
 
         this.ws = new WebSocket(this.url);
         this.ws.onopen = this.onOpen.bind(this);
@@ -69,14 +69,14 @@ class WebRTCSignaling
                 `stun:${this.ip}:3478`
             ]}]}; // works
         var options = {optional: []};
-        this.pc = new RTCPeerConnection(config, options);
         this.iceCandidates = [];
         this.hasRemoteDesc = false;
-        this.pc.onicecandidate = this.onIceCandidate.bind(this);
-        if ("ontrack" in this.pc) 
+        this.peerCnx = new RTCPeerConnection(config, options);
+        this.peerCnx.onicecandidate = this.onIceCandidate.bind(this);
+        if ("ontrack" in this.peerCnx) 
         {
             app.debug("webRTCSignaling: ontrack");
-            this.pc.ontrack = function (event)
+            this.peerCnx.ontrack = function (event)
             {
                 this.onOpenCB(event.streams[0]);
             }.bind(this);
@@ -84,18 +84,18 @@ class WebRTCSignaling
         else 
         {  
             // onaddstream() deprecated
-            this.pc.onaddstream = function (event)
+            this.peerCnx.onaddstream = function (event)
             {
                 this.onOpenCB(event.stream);
             }.bind(this);
         }
 
-        this.pc.onremovestream = function (event)
+        this.peerCnx.onremovestream = function (event)
         {
             app.debug("the stream has been removed: do your stuff now");
         };
 
-        this.pc.ondatachannel = function (event)
+        this.peerCnx.ondatachannel = function (event)
         {
             app.debug("a data channel is available: do your stuff with it");
             // For an example, see https://www.linux-projects.org/uv4l/tutorials/webrtc-data-channels/
@@ -153,16 +153,16 @@ class WebRTCSignaling
                         OfferToReceiveVideo: true
                     }
                 };
-                this.pc.setRemoteDescription(
+                this.peerCnx.setRemoteDescription(
                     new RTCSessionDescription(JSON.parse(data)),
                     function onRemoteSdpSuccess() 
                     {
                         this.hasRemoteDesc = true;
                         this.addIceCandidates();
-                        this.pc.createAnswer(
+                        this.peerCnx.createAnswer(
                             function (sessionDescription) 
                             {
-                                this.pc.setLocalDescription(sessionDescription);
+                                this.peerCnx.setLocalDescription(sessionDescription);
                                 var request = {
                                     what: "answer",
                                     data: JSON.stringify(sessionDescription)
@@ -227,10 +227,10 @@ class WebRTCSignaling
     onClose(event) 
     {
         app.debug("socket closed with code: " + event.code);
-        if (this.pc) 
+        if (this.peerCnx) 
         {
-            this.pc.close();
-            this.pc = null;
+            this.peerCnx.close();
+            this.peerCnx = null;
             this.ws = null;
         }
         if (this.onCloseCB) 
@@ -266,7 +266,7 @@ class WebRTCSignaling
         {
             this.iceCandidates.forEach(function (candidate) 
             {
-                this.pc.addIceCandidate(candidate,
+                this.peerCnx.addIceCandidate(candidate,
                         function () {
                             app.debug("IceCandidate added: " + JSON.stringify(candidate));
                         },

@@ -56,13 +56,13 @@ class CamerasWidget extends Widget
     cleanup()
     {
         let lastImg = document.getElementById(this.imgId);
-        if(lastImg)
+        if(lastImg && lastImg.src)
         {
             // apparently successful attempt to plug memory leak for mjpgstreamer
             // biggest issue was bandwidth consumption increases with each
             // redraw...  Validation: switch between cameras and between tabs, 
             // while keeping an eye on bandwidth consumption (via TaskManager etc).
-            lastImg.src = null; 
+            lastImg.src = ""; 
         }
         if(this.streamHandler)
         {
