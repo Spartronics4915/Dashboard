@@ -40,7 +40,7 @@ class CamerasWidget extends Widget
             size: [0, 0], // means we're in control of layout
             params: {
                 ntkey: this.config.ntkeys[0],
-                width: "10em",
+                width: "14em",
                 options: Object.keys(this.config.params)
             }
         };
