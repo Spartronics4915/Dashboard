@@ -182,7 +182,7 @@ class PageHandler
         SelectorWidget.installSelectorSupport();
 
         // String support ----------------------------------------------
-        $("input[type=text]").on("input", function() {
+        $("input[type=text]:not(.js-range-slider)").on("input", function() {
             var id = $(this).attr("id");
             var ntkey = self.idToNTKeyMap[id];
             if(!ntkey)
@@ -217,10 +217,13 @@ class PageHandler
             else
             {
                 var value = $(this).val();
-                // app.logMsg("slider " + id + ": " + Number(value));
+                app.info("slider " + id + ": " + Number(value));
                 app.putValue(ntkey, Number(value));
             }
         });
+
+        // Range support -----------------------------------------------
+        // installed in widget
 
         // checkbox support --------------------------------------------
         $("input[type=checkbox]").on("input", function() {

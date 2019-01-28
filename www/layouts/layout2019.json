@@ -15,7 +15,7 @@
                     "type": "fieldconfig",
                     "label": "Field Config",
                     "id": "fieldconfig",
-                    "size": [450, 490],
+                    "size": ["fill", "row"],
                     "ntkeys": [
                         "/SmartDashboard/AutoStrategy",
                         "/SmartDashboard/AutoStrategyOptions",
@@ -35,7 +35,7 @@
                     "type": "cameras",
                     "label": "Camera View",
                     "id": "cameras",
-                    "size": [660, 700],
+                    "size": ["fill", 700],
                     "ntkeys": [
                         "/SmartDashboard/CameraView"
                     ],
@@ -51,24 +51,6 @@
                         {
                             "ip": "frcvision.local:5080",
                             "url": "/direct.mjpg",
-                            "cls": "rotate0"
-                        },
-                        "PiCam default vision":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/default.mjpg",
-                            "cls": "rotate0"
-                        },
-                        "PiCam hsv":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/hsv.mjpg",
-                            "cls": "rotate0"
-                        },
-                        "PiCam bypass mjpg":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/bypass.mjpg",
                             "cls": "rotate0"
                         }
                     }
@@ -381,6 +363,77 @@
                     "type": "systemstate",
                     "size": ["fill", "row"],
                     "ntkeys": "/SmartDashboard/Vision/State"
+                },
+                {
+                    "type": "cameras",
+                    "label": "Camera View",
+                    "id": "cameras",
+                    "size": [700, 700],
+                    "ntkeys": [
+                        "/SmartDashboard/Vision/Camera"
+                    ],
+                    "params": {
+                        "PiCam default vision":
+                        {
+                            "ip": "frcvision.local:5080",
+                            "url": "/default.mjpg",
+                            "cls": "rotate0 size640"
+                        },
+                        "PiCam hsv":
+                        {
+                            "ip": "frcvision.local:5080",
+                            "url": "/hsv.mjpg",
+                            "cls": "rotate0 size640"
+                        },
+                        "PiCam bypass mjpg":
+                        {
+                            "ip": "frcvision.local:5080",
+                            "url": "/bypass.mjpg",
+                            "cls": "rotate0 size640"
+                        }
+                    }
+                },
+                {
+                    "type": "rangeslider",
+                    "size": [200, "row"],
+                    "label": "Hue",
+                    "id": "hrange",
+                    "ntkeys": "/SmartDashboard/Vision/HueRange",
+                    "params":
+                    {
+                       "min": 0,
+                       "max": 255,
+                       "from": 0,
+                       "to": 255
+                    }
+                },
+                {
+                    "type": "rangeslider",
+                    "size": [200, "row"],
+                    "label": "Saturation",
+                    "id": "srange",
+                    "ntkeys": "/SmartDashboard/Vision/SaturationRange",
+                    "params":
+                    {
+                       "min": 0,
+                       "max": 255,
+                       "from": 0,
+                       "to": 255
+                    }
+                },
+                {
+                    "type": "rangeslider",
+                    "size": [200, "row"],
+                    "label": "Value",
+                    "id": "vrange",
+                    "ntkeys": "/SmartDashboard/Vision/ValueRange",
+                    "params":
+                    {
+                       "min": 0,
+                       "max": 255,
+                       "from": 0,
+                       "to": 255
+                    }
                 }
             ]
         },
