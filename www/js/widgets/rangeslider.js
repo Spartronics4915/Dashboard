@@ -41,19 +41,20 @@ class RangeSliderWidget extends Widget
 
     onChange(data)
     {
-        // onChange is invoked on each drag
+        // onChange is invoked on each drag if we invoke
+        //  app.putvalue here motion gets chunky
     }
 
     onUpdate(data)
     {
         // onUpdate is invoked after we call update 
-        app.info(this.config.label + " onUpdate");
+        // app.info(this.config.label + " onUpdate");
         app.putValue(this.config.ntkeys[0], `${data.from},${data.to}`);
     }
 
     onFinish(data)
     {
-        app.info(this.config.label + " onFinish");
+        // app.info(this.config.label + " onFinish");
         app.putValue(this.config.ntkeys[0], `${data.from},${data.to}`);
     }
 
