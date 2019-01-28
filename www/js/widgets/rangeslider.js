@@ -32,26 +32,29 @@ class RangeSliderWidget extends Widget
         targetElem.html(html);
 
         $(`#${this.controlId}`).ionRangeSlider(this.params);
+        this.rslider = $(`#${this.controlId}`).data("ionRangeSlider");
     }
 
     onStart(data)
     {
-        app.info(this.config.label + " onStart: " + JSON.stringify(data, null, " "));
     }
 
     onChange(data)
     {
-        app.info(this.config.label + " onChange ");
+        // onChange is invoked on each drag
     }
 
     onUpdate(data)
     {
-        app.info(this.config.label + " onUpdate: " + data);
+        // onUpdate is invoked after we call update 
+        app.info(this.config.label + " onUpdate");
+        app.putValue(this.config.ntkeys[0], `${data.from},${data.to}`);
     }
 
     onFinish(data)
     {
-        app.info("onFinish: " + data);
+        app.info(this.config.label + " onFinish");
+        app.putValue(this.config.ntkeys[0], `${data.from},${data.to}`);
     }
 
     getIdToNTKeyMap() // @override
@@ -63,6 +66,19 @@ class RangeSliderWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
+        // value is expected to be a comma-separated pair
+        if(!Array.isArray(value))
+            value = value.split(",");
+        if(value.length != 2)
+            app.warning("range slider expects a 'minVal,maxVal' pair, got:" + value); 
+        else
+        {
+            this.rslider.update({
+                from: value[0],
+                to: value[1]
+            });
+        }
+
         //$("#" + this.controlId).val(value);
         //$("#" + this.txtId).text(value);
     }
