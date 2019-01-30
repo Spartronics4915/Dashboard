@@ -71,7 +71,7 @@
                 },
                 {
                     "id": "driveSpeedLeft",
-                    "label": "Left Speed",
+                    "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
                     "ntkeys": "/SmartDashboard/Drive/leftSpeed",
@@ -94,7 +94,7 @@
                 },
                 {
                     "id": "driveSpeedRight",
-                    "label": "Right Speed",
+                    "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
                     "ntkeys": "/SmartDashboard/Drive/rightSpeed",
@@ -138,7 +138,7 @@
                 },
                 {
                     "id": "leftSpeedoverVoltage",
-                    "label": "Left Speed/PctVbus",
+                    "label": "Left Speed over %Vbus",
                     "type": "pathplot",
                     "size": [300, 300],
                     "ntkeys": [
