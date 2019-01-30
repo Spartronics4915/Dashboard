@@ -117,7 +117,7 @@
                 },
                 {
                     "id": "trajectoryStates",
-                    "label": "Trajectory State (v,a,c)",
+                    "label": "Trajectory State - <span class='blue'>v</span>,<span class='yellow'>a</a>,<span class='amber'>c</span>",
                     "type": "stripchart",
                     "size": [330, 170],
                     "_comment": "expect 'velocity acceleration curvature'",
@@ -137,26 +137,26 @@
                     }
                 },
                 {
-                    "id": "leftSpeedoverDemand",
-                    "label": "left Speed/Demand",
+                    "id": "leftSpeedoverVoltage",
+                    "label": "Left Speed/PctVbus",
                     "type": "pathplot",
                     "size": [300, 300],
                     "ntkeys": [
-                        "/SmartDashboard/Drive/leftSpeed"
+                        "/SmartDashboard/Drive/leftDemand"
                     ],
                     "ntkeyRefs": [
-                        "/SmartDashboard/Drive/leftDemand"
+                        "/SmartDashboard/Drive/leftSpeed"
                     ],
                     "params": {
                         "plot": {
                             "xaxis": {
                                 "min": 0,
-                                "max": 80,
+                                "max": 1,
                                 "show": 1
                             },
                             "yaxis": {
                                 "min": 0,
-                                "max": 1,
+                                "max": 80,
                                 "show": 1
                             },
                             "series": {

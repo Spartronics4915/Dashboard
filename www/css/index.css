@@ -47,6 +47,11 @@ label
     padding-right: 10px;
 }
 
+.yellow
+{
+  color: rgb(200,200,10);
+}
+
 .amber
 {
   color: rgb(200,130,0);
