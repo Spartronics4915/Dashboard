@@ -51,7 +51,7 @@
                         {
                             "ip": "frcvision.local:5080",
                             "url": "/direct.mjpg",
-                            "cls": "rotate0"
+                            "cls": "rotate0 size640"
                         }
                     }
                 }
