@@ -70,6 +70,55 @@
                               "/SmartDashboard/Drive/Status"]
                 },
                 {
+                    "id": "driveOdometry",
+                    "label": "Odometry",
+                    "type": "pathplot",
+                    "size": [400, 300],
+                    "ntkeys": "/SmartDashboard/RobotState/pose",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": -326,
+                                "max": 326,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -162,
+                                "max": 162,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "driveIMU",
+                    "label": "IMU Heading",
+                    "type": "stripchart",
+                    "size": [330, 300],
+                    "ntkeys": "/SmartDashboard/Drive/imuHeading",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -200, 
+                                "max": 200
+                            },
+                            "widths": [1],
+                            "colors":["rgb(20,120,255)"]
+                        }
+                    }
+                },
+                {
                     "id": "driveSpeedLeft",
                     "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
@@ -117,7 +166,7 @@
                 },
                 {
                     "id": "trajectoryStates",
-                    "label": "Trajectory State - <span class='blue'>v</span>,<span class='yellow'>a</a>,<span class='amber'>c</span>",
+                    "label": "Trajectory State - <span class='blue'>vel</span> <span class='yellow'>acc</a> <span class='amber'>curv</span>",
                     "type": "stripchart",
                     "size": [330, 170],
                     "_comment": "expect 'velocity acceleration curvature'",
@@ -138,7 +187,7 @@
                 },
                 {
                     "id": "leftSpeedoverVoltage",
-                    "label": "Left Speed over %Vbus",
+                    "label": "Left Speed vs %Vbus",
                     "type": "pathplot",
                     "size": [300, 300],
                     "ntkeys": [
@@ -175,55 +224,6 @@
                         }
                     }
 
-                },
-                {
-                    "id": "driveIMU",
-                    "label": "IMU Heading",
-                    "type": "stripchart",
-                    "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Drive/imuHeading",
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "min": -200, 
-                                "max": 200
-                            },
-                            "widths": [1],
-                            "colors":["rgb(20,120,255)"]
-                        }
-                    }
-                },
-                {
-                    "id": "driveOdometry",
-                    "label": "Odometry",
-                    "type": "pathplot",
-                    "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/RobotState/pose",
-                    "params": {
-                        "plot": {
-                            "xaxis": {
-                                "min": 0,
-                                "max": 652,
-                                "show": 1
-                            },
-                            "yaxis": {
-                                "min": -162,
-                                "max": 162,
-                                "show": 1
-                            },
-                            "series": {
-                                "shadowSize": 0,
-                                "lines": {
-                                    "show": 1,
-                                    "lineWidth": 1
-                                },
-                                "points": {
-                                    "show": 0
-                                },
-                                "color": "rgb(20, 120, 255)"
-                            }
-                        }
-                    }
                 },
                 {
                     "id": "Lidar",
