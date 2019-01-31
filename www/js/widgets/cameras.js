@@ -46,8 +46,8 @@ class CamerasWidget extends Widget
         };
         let el = $(`#${this.selWidgetId}`);
         this.selConfig.widget = new SelectorWidget(this.selConfig, el);
-    }    
-    
+    }
+
     getHiddenNTKeys()
     {
         return null;
@@ -60,9 +60,9 @@ class CamerasWidget extends Widget
         {
             // apparently successful attempt to plug memory leak for mjpgstreamer
             // biggest issue was bandwidth consumption increases with each
-            // redraw...  Validation: switch between cameras and between tabs, 
+            // redraw...  Validation: switch between cameras and between tabs,
             // while keeping an eye on bandwidth consumption (via TaskManager etc).
-            lastImg.src = ""; 
+            lastImg.src = "";
         }
         if(this.streamHandler)
         {
@@ -100,8 +100,8 @@ class CamerasWidget extends Widget
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
                 let url = `ws:${cam.ip}${cam.url}`;
-                this.streamHandler = new WebRTCSignaling(url, 
-                                        cam.vformat, 
+                this.streamHandler = new WebRTCSignaling(url,
+                                        cam.vformat,
                                         this.onStreamOpen.bind(this),
                                         this.onStreamError.bind(this),
                                         this.onStreamClose.bind(this),
@@ -133,10 +133,10 @@ class CamerasWidget extends Widget
         // Every 33 milliseconds... copy video to canvas. So we
         // can operate on it locally.  If we only wish to view the video
         // feed the canvas isn't needed.
-        if(!this.sCanv) 
+        if(!this.sCanv)
             return;
         app.debug("cameras._onPlay");
-        setInterval(function() 
+        setInterval(function()
         {
             if(this.sVid.paused || this.sVid.ended)
                 return;

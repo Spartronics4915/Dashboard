@@ -43,7 +43,7 @@
                         "PiCam H264 30":
                         {
                             "protocol": "ws",
-                            "ip": "frcvision.local:8080",
+                            "ip": "10.49.15.11:8080",
                             "url": "/stream/webrtc",
                             "cls": "rotate0",
                             "vformat": "30"
@@ -51,7 +51,7 @@
                         "PiCam H264 60":
                         {
                             "protocol": "ws",
-                            "ip": "frcvision.local:8080",
+                            "ip": "10.49.15.11:8080",
                             "url": "/stream/webrtc",
                             "cls": "rotate0",
                             "vformat": "60"
@@ -376,6 +376,24 @@
                         "/SmartDashboard/Vision/Camera"
                     ],
                     "params": {
+                        "PiCam default (.10)":
+                        {
+                            "ip": "10.49.15.10:5080",
+                            "url": "/default.mjpg",
+                            "cls": "rotate0 size640"
+                        },
+                        "PiCam hsv (.10)":
+                        {
+                            "ip": "10.49.15.10:5080",
+                            "url": "/hsv.mjpg",
+                            "cls": "rotate0 size640"
+                        },
+                        "PiCam bypass mjpg (.10)":
+                        {
+                            "ip": "10.49.15.10:5080",
+                            "url": "/bypass.mjpg",
+                            "cls": "rotate0 size640"
+                        },
                         "PiCam default vision":
                         {
                             "ip": "frcvision.local:5080",
