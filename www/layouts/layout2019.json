@@ -40,18 +40,21 @@
                         "/SmartDashboard/CameraView"
                     ],
                     "params": {
-                        "PiCam H264":
+                        "PiCam H264 30":
                         {
                             "protocol": "ws",
                             "ip": "frcvision.local:8080",
                             "url": "/stream/webrtc",
-                            "cls": "rotate0"
+                            "cls": "rotate0",
+                            "vformat": "30"
                         },
-                        "PiCam direct mjpg":
+                        "PiCam H264 60":
                         {
-                            "ip": "frcvision.local:5080",
-                            "url": "/direct.mjpg",
-                            "cls": "rotate0 size640"
+                            "protocol": "ws",
+                            "ip": "frcvision.local:8080",
+                            "url": "/stream/webrtc",
+                            "cls": "rotate0",
+                            "vformat": "60"
                         }
                     }
                 }

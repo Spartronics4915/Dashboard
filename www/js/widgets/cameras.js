@@ -101,6 +101,7 @@ class CamerasWidget extends Widget
                 $(`#${this.divId}`).html(camhtml);
                 let url = `ws:${cam.ip}${cam.url}`;
                 this.streamHandler = new WebRTCSignaling(url, 
+                                        cam.vformat, 
                                         this.onStreamOpen.bind(this),
                                         this.onStreamError.bind(this),
                                         this.onStreamClose.bind(this),

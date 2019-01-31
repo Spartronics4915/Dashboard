@@ -10,7 +10,7 @@ const RTCIceCandidate = window.RTCIceCandidate;
 
 class WebRTCSignaling
 {
-    constructor(url, onOpen, onError, onClose, onMsg)
+    constructor(url, vformat, onOpen, onError, onClose, onMsg)
     {
         if (!("WebSocket" in window))
         {
@@ -28,6 +28,7 @@ class WebRTCSignaling
             this.ip = fields[1];
 
         this.url = url;
+        this.vformat = vformat ? Number(vformat) : 30;
         this.onOpenCB = onOpen;
         this.onErrorCB = onError;
         this.onCloseCB = onClose;
@@ -111,7 +112,7 @@ class WebRTCSignaling
                 // (e.g. it's H264 on the Raspberry Pi)
                 // Make sure the browser supports the codec too.
                 force_hw_vcodec: true,
-                vformat: 30,
+                vformat: this.vformat,
                 // from janus section of 
                 //   https://www.linux-projects.org/documentation/uv4l-server/
                 // 10: 320×240-30fps, Bandwidth of .3 mbps latency of 95
