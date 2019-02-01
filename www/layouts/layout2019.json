@@ -113,7 +113,7 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -200, 
+                                "min": -200,
                                 "max": 200
                             },
                             "widths": [1],
@@ -133,7 +133,7 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -80, 
+                                "min": -80,
                                 "max": 80
                             },
                             "fillvalue": 0,
@@ -156,7 +156,7 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -80, 
+                                "min": -80,
                                 "max": 80
                             },
                             "fillvalue": 0,
@@ -400,10 +400,10 @@
                             "url": "/default.mjpg",
                             "cls": "rotate0 size640"
                         },
-                        "PiCam hsv":
+                        "PiCam mask":
                         {
                             "ip": "frcvision.local:5080",
-                            "url": "/hsv.mjpg",
+                            "url": "/mask.mjpg",
                             "cls": "rotate0 size640"
                         },
                         "PiCam bypass mjpg":
