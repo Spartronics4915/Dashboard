@@ -71,13 +71,19 @@ support resides.
 
 [pynetworktables](https://github.com/robotpy/pynetworktables) - is
 the core technology.  You can use standard 'pip' mechanism to install
-this module into your python interpreter:  'python -m pip install pynetworktables'
+this module into your python interpreter:  
+
+'python -m pip install pynetworktables'
 
 [pynetworktables2js](http://pynetworktables2js.readthedocs.io/en/stable/) -
-is a small python module that forwards NetworkTables key/values over a Websocket,
-so that you can easily write a Driver Station Dashboard for your robot in
-HTML5 + JavaScript.  Included in the package are JavaScript utilities to
-connect with the websocket.  Install via: 'python -m pip install pynetworktables2js'
+is a small python module that forwards NetworkTables key/values over a 
+Websocket, so that you can easily write a Driver Station Dashboard for your 
+robot in HTML5 + JavaScript.  Included in the package are JavaScript utilities
+to connect with the websocket.  Install via: 
+
+'python -m pip install pynetworktables2js'
+
+`tornado` - is a python package for webservice development.
 
 ### Acknowledgements
 
