@@ -413,48 +413,6 @@
                             "cls": "rotate0 size640"
                         }
                     }
-                },
-                {
-                    "type": "rangeslider",
-                    "size": [200, "row"],
-                    "label": "Hue",
-                    "id": "hrange",
-                    "ntkeys": "/SmartDashboard/Vision/HueRange",
-                    "params":
-                    {
-                       "min": 0,
-                       "max": 255,
-                       "from": 0,
-                       "to": 255
-                    }
-                },
-                {
-                    "type": "rangeslider",
-                    "size": [200, "row"],
-                    "label": "Saturation",
-                    "id": "srange",
-                    "ntkeys": "/SmartDashboard/Vision/SaturationRange",
-                    "params":
-                    {
-                       "min": 0,
-                       "max": 255,
-                       "from": 0,
-                       "to": 255
-                    }
-                },
-                {
-                    "type": "rangeslider",
-                    "size": [200, "row"],
-                    "label": "Value",
-                    "id": "vrange",
-                    "ntkeys": "/SmartDashboard/Vision/ValueRange",
-                    "params":
-                    {
-                       "min": 0,
-                       "max": 255,
-                       "from": 0,
-                       "to": 255
-                    }
                 }
             ]
         },
@@ -553,6 +511,20 @@
                              "blue pill",
                              "red pill"
                         ]
+                    }
+                },
+                {
+                    "type": "rangeslider",
+                    "size": [200, "row"],
+                    "label": "Range Slider",
+                    "id": "hrange",
+                    "ntkeys": "/SmartDashboard/Test/TestRange",
+                    "params":
+                    {
+                       "min": 0,
+                       "max": 255,
+                       "from": 0,
+                       "to": 255
                     }
                 }
             ]
