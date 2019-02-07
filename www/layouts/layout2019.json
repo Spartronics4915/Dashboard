@@ -35,7 +35,7 @@
                     "type": "cameras",
                     "label": "Camera View",
                     "id": "cameras",
-                    "size": ["fill", 700],
+                    "size": [1340, 800],
                     "ntkeys": [
                         "/SmartDashboard/CameraView"
                     ],
@@ -43,7 +43,7 @@
                         "PiCam H264 30":
                         {
                             "protocol": "ws",
-                            "ip": "10.49.15.11:8080",
+                            "ip": "drivecamfront.local:8080",
                             "url": "/stream/webrtc",
                             "cls": "rotate0",
                             "vformat": "30"
@@ -51,7 +51,7 @@
                         "PiCam H264 60":
                         {
                             "protocol": "ws",
-                            "ip": "10.49.15.11:8080",
+                            "ip": "drivecamfront.local:8080",
                             "url": "/stream/webrtc",
                             "cls": "rotate0",
                             "vformat": "60"
