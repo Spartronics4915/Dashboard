@@ -96,9 +96,11 @@ class CamerasWidget extends Widget
             else
             {
                 camhtml = `<video id="${this.vidId}" class="${cam.cls}"></video>`;
-                // camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
+                camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
+
+
                 let url = `ws:${cam.ip}${cam.url}`;
                 this.streamHandler = new WebRTCSignaling(url,
                                         cam.vformat,

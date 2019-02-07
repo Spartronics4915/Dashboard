@@ -27,15 +27,14 @@
                         "/FMSInfo/EventName",
                         "/FMSInfo/MatchType",
                         "/FMSInfo/MatchNumber"
-                    ],
-                    "params": {
-                    }
+                    ]
                 },
                 {
                     "type": "cameras",
                     "label": "Camera View",
                     "id": "cameras",
-                    "size": ["fill", 700],
+                    "_comment": "xsize of fill tickles google chrome bug",
+                    "size": [1340, 800],
                     "ntkeys": [
                         "/SmartDashboard/CameraView"
                     ],
