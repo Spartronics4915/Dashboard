@@ -8,11 +8,14 @@
 // var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg", cls:"rotate0"};
 // var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream", cls:"rotate0"};
 
+// the CamerasWidget can present a selector or not depending upon the
+//   boolean config.params.selector
 class CamerasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
     {
         super(config, targetElem, pageHandler);
+        if(!this.config.params) this.config.params = {};
         let html = "";
         this.baseId = this.config.id;
         this.selWidgetId = `${this.baseId}Sel`; // container for select widget
@@ -25,27 +28,38 @@ class CamerasWidget extends Widget
         this.isStreaming = false;
 
         html += "<div class='container'>";
-        html +=     "<div class='containerrow xtrapad'>";
-        html +=        `<span class='title'>${this.config.label}</span>`;
-        html +=        `<div id='${this.selWidgetId}'></div>`;
-        html +=     "</div>";
+
+        if(this.config.params.selector)
+        {
+            html +=     "<div class='containerrow xtrapad'>";
+            html +=        `<span class='title'>${this.config.label}</span>`;
+            html +=        `<div id='${this.selWidgetId}'></div>`;
+            html +=     "</div>";
+        }
+
         html +=     `<div id='${this.divId}' class='cameraViewImg'>`;
         html +=     "</div>";
         html += "</div>";
         targetElem.html(html);
-        this.selConfig = {
-            id: this.selSelectId,
-            label: "",
-            type: "selector",
-            size: [0, 0], // means we're in control of layout
-            params: {
-                ntkey: this.config.ntkeys[0],
-                width: "14em",
-                options: Object.keys(this.config.params)
-            }
-        };
-        let el = $(`#${this.selWidgetId}`);
-        this.selConfig.widget = new SelectorWidget(this.selConfig, el);
+
+        if(this.config.params.selector)
+        {
+            this.selConfig = {
+                id: this.selSelectId,
+                label: "",
+                type: "selector",
+                size: [0, 0], // means we're in control of layout
+                params: {
+                    ntkey: this.config.ntkeys[0],
+                    width: "14em",
+                    options: Object.keys(this.config.params)
+                }
+            };
+            let el = $(`#${this.selWidgetId}`);
+            this.selConfig.widget = new SelectorWidget(this.selConfig, el);
+        }
+        else
+            this.selConfig = null;
     }
 
     getHiddenNTKeys()
@@ -75,7 +89,7 @@ class CamerasWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
-        let cam = this.config.params[value];
+        let cam = this.config.params.selection[value];
         let camhtml;
         if(!cam)
         {
@@ -85,17 +99,23 @@ class CamerasWidget extends Widget
         else
         {
             // cam: {ip, url, cls}
-            this.selConfig.widget.valueChanged(key, value, isNew);
+            if(this.selConfig)
+                this.selConfig.widget.valueChanged(key, value, isNew);
             app.info("change camera: " + value);
             this.cleanup();
             if(!cam.protocol || cam.protocol === "http")
             {
-                camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
+                if(cam.url)
+                    camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
+                else
+                    camhtml = `<img id="${this.imgId}"></img>`;
                 $(`#${this.divId}`).html(camhtml);
             }
             else
             {
-                camhtml = `<video id="${this.vidId}" class="${cam.cls}"></video>`;
+                // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+                //  autoplay requires page interaction unless muted.
+                camhtml = `<video muted id="${this.vidId}" class="${cam.cls}"></video>`;
                 // camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
@@ -162,6 +182,7 @@ class CamerasWidget extends Widget
         this.sCanv = document.getElementById(`${this.canvId}`);
         if(this.sCanv)
             this.sCtx = this.sCanv.getContext("2d");
+        // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
         let playPromise = this.sVid.play();
         if(playPromise != undefined)
         {

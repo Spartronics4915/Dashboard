@@ -13,7 +13,7 @@ class PageHandler
 
     // buildPage: return html representation of tab contents.  For
     //  deferred html, returned html elements must contain div landing
-    //  sites.  
+    //  sites.
     // Assumptions on this.pageTemplate:
     //     .widgets[] is an array of page contents
     //          .size is the size of a title as [cols,rows]
@@ -24,85 +24,115 @@ class PageHandler
     //              html - a generic html template rep for a widget
     //              slider -
     //              plot -
-    //          .ntkey is the optional network table entrylist 
+    //          .ntkey is the optional network table entrylist
     //          .params are widget-type-specific parameters
     //              html: url
     //
+    newGridElemStyle(sz, xtra)
+    {
+        let gridsize = 12; // 10x10 with gap of 2
+        let style = "style='";
+        if(sz[0] == "fill") // xxx: better name?
+            style += "grid-column:1/-1;";
+        else
+        if(sz[0] == "remain")
+        {
+            // style += "grid-column-end:-1;";
+            style += "grid-column:auto/-1;";
+        }
+        else
+        {
+            let cols = Math.round(sz[0]/gridsize);
+            style += `grid-column:span ${cols};`;
+        }
+        if(sz[1] == "fill")
+            style += "grid-row:1/-1;";
+        else
+        {
+            let rows;
+            if(sz[1] == "row")
+                rows = 3;
+            else
+                rows = Math.round(sz[1]/gridsize);
+            style += `grid-row: span ${rows}; min-height:${rows*gridsize}px`;
+        }
+        if(xtra)
+            style += `; ${xtra}`;
+        style += "' ";
+        return style;
+    }
+
+    layoutWidgets(widgets, loadHtmlCB)
+    {
+        let htmllist = [];
+        this.widgetNesting += 1;
+        // first build up html (and load it)
+        for(let i=0;i<widgets.length;i++)
+        {
+            let w = widgets[i];
+            let div = `<div id='${w.id}' `;
+            let sz = w.size;
+            if(!sz) sz = [100, 100];
+            div += this.newGridElemStyle(sz);
+            div += "></div>";
+            htmllist.push(div);
+        }
+
+        // app.notice("pagegrid " + htmllist.join(""));
+        loadHtmlCB(htmllist.join(""), function()
+        {
+            // we'd like a single callback after all the dust associated
+            // with loading widgets settles.
+            this.numWidgetsToLoad += widgets.length;
+            for(let i=0;i<widgets.length;i++)
+            {
+                let w = widgets[i];
+                if(w.ntkeys)
+                    this.setNetTabHandler(w.ntkeys, w);
+                if(w.websubkeys)
+                    this.setWebSubHandler(w.websubkeys, w);
+                if(w.type == "html")
+                {
+                    let targetElem = $(`#${w.id}`);
+                    var fileref = w.params.url;
+                    app.sendGetRequest(fileref, function(html) {
+                        targetElem.html(html);
+                        this._widgetLoaded();
+                    }.bind(this));
+                }
+                else
+                {
+                    let targetElem = $(`#${w.id}`);
+                    w.widget = Widget.BuildWidgetByName(w.type,
+                                                    w, targetElem, this);
+                    if(!w.widget)
+                        app.warning("unimplemented widget type " + w.type);
+                    else
+                    {
+                        this.setNetTabHandler(w.widget.getHiddenNTKeys(), w);
+                        this.appendIdToNTKeyMap(w.widget.getIdToNTKeyMap());
+                        this._widgetLoaded();
+                    }
+                }
+            }
+            this.widgetNesting -= 1;
+        }.bind(this));
+    }
+
+    getWidgetNesting()
+    {
+        return this.widgetNesting;
+    }
+
     buildPage(loadHtmlCB)
     {
         this.ntkeyMap = {}; // reset on each page load
         this.idToNTKeyMap = {};
+        this.numWidgetsToLoad = 0;
+        this.widgetNesting = -1;
         if(this.pageTemplate.widgets)
         {
-            let htmllist = [];
-            // first build up html (and load it)
-            for(let i=0;i<this.pageTemplate.widgets.length;i++)
-            {
-                let w = this.pageTemplate.widgets[i];
-                let gridsize = 12; // 10x10 with gap of 2
-                let sz = w.size;
-                if(!sz) sz = [100, 100];
-                let style = `<div id='${w.id}' style='`;
-                if(sz[0] == "fill")
-                    style += "grid-column:1/-1;";
-                else
-                {
-                    let cols = Math.round(sz[0]/gridsize);
-                    style += `grid-column:span ${cols};`;
-                }
-
-                if(sz[1] == "fill")
-                    style += "grid-row:1/-1;";
-                else
-                {
-                    let rows;
-                    if(sz[1] == "row")
-                        rows = 3;
-                    else
-                        rows = Math.round(sz[1]/gridsize);
-                    style += `grid-row: span ${rows}; min-height:${rows*gridsize}px`; 
-                }
-                style += "'></div>";
-                htmllist.push(style);
-            }
-            app.debug("pagegrid " + htmllist.join(""));
-            loadHtmlCB(htmllist.join(""), function() 
-            {
-                // we'd like a single callback after all the dust associated
-                // with loading widgets settles.   
-                this.numWidgetsToLoad = this.pageTemplate.widgets.length;
-                for(let i=0;i<this.pageTemplate.widgets.length;i++)
-                {
-                    let w = this.pageTemplate.widgets[i];
-                    if(w.ntkeys)
-                        this.setNetTabHandler(w.ntkeys, w);
-                    if(w.websubkeys)
-                        this.setWebSubHandler(w.websubkeys, w);
-                    if(w.type == "html")
-                    {
-                        let targetElem = $(`#${w.id}`);
-                        var fileref = w.params.url;
-                        app.sendGetRequest(fileref, function(html) {
-                            targetElem.html(html);
-                            this._widgetLoaded();
-                        }.bind(this));
-                    }
-                    else
-                    {
-                        let targetElem = $(`#${w.id}`);
-                        w.widget = Widget.BuildWidgetByName(w.type, 
-                                                        w, targetElem, this);
-                        if(!w.widget)
-                            app.warning("unimplemented widget type " + w.type);
-                        else
-                        {
-                            this.setNetTabHandler(w.widget.getHiddenNTKeys(), w);
-                            this.appendIdToNTKeyMap(w.widget.getIdToNTKeyMap());
-                            this._widgetLoaded();
-                        }
-                    }
-                }
-            }.bind(this));
+            this.layoutWidgets(this.pageTemplate.widgets, loadHtmlCB);
         }
     }
 

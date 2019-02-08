@@ -12,7 +12,7 @@ html, body
     border-color: yellow;
 }
 
-hr 
+hr
 {
     color:#25b;
     border-color: #25b;
@@ -57,12 +57,12 @@ label
   color: rgb(200,130,0);
 }
 
-.red 
+.red
 {
     color: rgb(200, 30, 30);
 }
 
-.blue 
+.blue
 {
     color: rgb(30, 90, 255);
 }
@@ -82,12 +82,12 @@ label
     color: #666;
 }
 
-.blinkRed 
+.blinkRed
 {
   animation:blinkingRed 0.8s infinite;
 }
 
-.spinimg 
+.spinimg
 {
     width: 60%;
     animation: spin 4s linear infinite;
@@ -113,7 +113,7 @@ label
 }
 
 /* rotate0,90 are used by camera */
-.rotate90 
+.rotate90
 {
     transform: rotate(90deg) translate(12%, 0%);
     border: 1px solid gray;
@@ -129,6 +129,12 @@ label
 {
     width: 640px;
     height: 480px;
+}
+
+.size2x
+{
+    width: 1280px;
+    height: 960px;
 }
 
 .invalid
@@ -208,12 +214,13 @@ footer
     display: flex;
     position: fixed;
     bottom: 0;
-    width: 95%; /* Full width */
+    width: 100%; /* Full width */
     height: 30px;
     font-size: 14px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     background-color: #111;
+    padding-top: 5px;
 }
 
 #footerpad
@@ -227,18 +234,22 @@ footer
 
 #mainlayout
 {
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 .container
 {
-    display: grid;
-    grid-gap: 2px;
-    grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
-    grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     border-left-style: solid;
     border-left-color:#222; /* rgb(1, 25, 49);*/
     border-left-width: 5px;
+}
+
+.gridded
+{
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     /* grid-auto-flow: row/dense */
 }
 
@@ -268,7 +279,12 @@ footer
     background-color: #222;
     align-items: center;
     vertical-align: baseline;
-    padding: 5px;
+    padding: 0px; /* was 5, 0 is tighter */
+}
+
+.container > span
+{
+    vertical-align: center;
 }
 
 .container strong
@@ -279,7 +295,7 @@ footer
 .container .bigfont
 {
     font-size: 20px;
-    vertical-align: baseline;  
+    vertical-align: baseline;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-right: 10px;
@@ -287,10 +303,9 @@ footer
 
 .systemstate
 {
-    padding-top: 5px;
     color: #16c;
     background-image: linear-gradient(#111, #111);
-    vertical-align: baseline;  
+    /* vertical-align: baseline; */
 }
 
 /* widgets -------------------------------------------*/
@@ -322,18 +337,18 @@ input[type="number"]
 }
 
 input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button 
+input[type="number"]::-webkit-inner-spin-button
 {
     -webkit-appearance: none;
     margin: 0;
 }
 
-input[type="checkbox"] 
+input[type="checkbox"]
 {
     margin-top: 5px;
 }
 
-input[type="text"] 
+input[type="text"]
 {
     /* margin-top: 5px; */
 }
@@ -348,44 +363,44 @@ input[type="text"]
 
 
 /* robolog -------------------------------------------*/
-.logmsg 
+.logmsg
 {
     font-family: monospace;
     font-size: 12px;
 }
 
-.timestamp 
+.timestamp
 {
     color: #555;
 }
 
-.namespace 
+.namespace
 {
     color: #383;
 }
 
-.DEBUG 
+.DEBUG
 {
    color: #555;
 }
 
-.INFO 
+.INFO
 {
    color: #248;
 }
 
-.NOTICE 
+.NOTICE
 {
    color: #24F;
 }
 
-.WARNING 
+.WARNING
 {
     color: #842;
 }
 
 .ERROR,
-.EXCEPTION 
+.EXCEPTION
 {
     color: #822;
 }
