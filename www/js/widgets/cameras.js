@@ -116,7 +116,10 @@ class CamerasWidget extends Widget
                 // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
                 //  autoplay requires page interaction unless muted.
                 camhtml = `<video muted id="${this.vidId}" class="${cam.cls}"></video>`;
-                // camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
+                if(this.config.params.overlay)
+                {
+                    camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
+                }
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
                 let url = `ws:${cam.ip}${cam.url}`;
@@ -138,13 +141,16 @@ class CamerasWidget extends Widget
 
     _onCanPlay()
     {
-        app.debug("cameras._onCanPlay");
+        app.notice("cameras._onCanPlay");
         this.isStreaming = true;
-        if(this.sCanv)
+        if(this.config.params.overlay)
         {
+            this.sCanv = document.getElementById(`${this.canvId}`);
+            this.sCanv.style.left = this.sVid.offsetLeft + "px";
+            this.sCanv.style.top = this.sVid.offsetTop + "px";
             this.sCanv.setAttribute("width", this.sVid.videoWidth);
             this.sCanv.setAttribute("height", this.sVid.videoHeight);
-            this.sVid.addEventListener("play", this._onPlay.bind(this));
+            this.sCtx = this.sCanv.getContext("2d");
         }
     }
 
@@ -153,9 +159,9 @@ class CamerasWidget extends Widget
         // Every 33 milliseconds... copy video to canvas. So we
         // can operate on it locally.  If we only wish to view the video
         // feed the canvas isn't needed.
+        app.notice("cameras._onPlay");
         if(!this.sCanv)
             return;
-        app.debug("cameras._onPlay");
         setInterval(function()
         {
             if(this.sVid.paused || this.sVid.ended)
@@ -179,17 +185,13 @@ class CamerasWidget extends Widget
         app.notice("camera stream opened");
         this.sVid = document.getElementById(`${this.vidId}`);
         this.sVid.srcObject = stream;
-        this.sCanv = document.getElementById(`${this.canvId}`);
-        if(this.sCanv)
-            this.sCtx = this.sCanv.getContext("2d");
+
         // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
         let playPromise = this.sVid.play();
         if(playPromise != undefined)
         {
             playPromise.then(function()
             {
-                // Automatic playback started!
-                // Show playing UI.
                 this._onCanPlay();
             }.bind(this))
             .catch(function(error)

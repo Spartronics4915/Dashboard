@@ -264,6 +264,14 @@ footer
     padding-bottom:0px;
 }
 
+.videoOverlay
+{
+    position: absolute;
+    pointer-events: none;
+    /* border: 2px solid purple; */
+    border: 0px;
+}
+
 .xtrapad
 {
     padding-top:10px;
