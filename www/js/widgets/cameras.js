@@ -70,12 +70,23 @@ class CamerasWidget extends Widget
 
     getHiddenNTKeys()
     {
-        return null;
+        if(!this.overlay)
+            return null;
+        else
+        {
+            // we may be listening on the camera key and don't want
+            // double-updates above.
+            let hiddenKeys = Object.keys(this.overlay.items);
+            let i = hiddenKeys.indexOf(this.config.ntkeys[0]);
+            if(i != -1)
+                hiddenKeys.splice(i, 1);
+            return hiddenKeys;
+        }
     }
 
     valueChanged(key, value, isNew)
     {
-        if(!this.config.params.camerakey || key == this.config.params.camerakey)
+        if(this.config.ntkeys[0] == key) // expect a single key
             this._updateCamera(key, value, isNew);
         this._updateOverlay(key, value, isNew);
     }
@@ -282,6 +293,7 @@ class CamerasWidget extends Widget
                     this.canvCtx.shadowColor =  "rgba(0,0,0,.8)";
                     this.canvCtx.shadowOffsetX = 3;
                     this.canvCtx.shadowOffsetY = 3;
+                    this.canvCtx.shadowBlur = 3;
                     this.canvCtx.fillText(item.value ? item.value : "<no label>",
                                 item.origin[0], item.origin[1]);
                 }

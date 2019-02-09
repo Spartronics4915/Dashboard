@@ -25,9 +25,9 @@ class App
 
         this.webapi = null;
 
-        document.addEventListener("DOMContentLoaded", 
+        document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
-        
+
         // nb: initialization of js members occurs in 'onReady'
     }
 
@@ -37,7 +37,7 @@ class App
     }
 
     debug(msg)
-    { 
+    {
         if(this.config.debug)
             this.logMsg("DEBUG   " + msg);
     }
@@ -74,13 +74,13 @@ class App
         this.debug("deviceready");
 
         let targetEl = $(document.getElementById("batteryVoltage"));
-        this.robotBatteryW = Widget.BuildWidgetByName("pctbar", 
+        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
                 {
                     size: [60, 32],
                     id: "batteryVoltage",
-                    params: 
+                    params:
                     {
-                        barStyle: 
+                        barStyle:
                         {
                             radius: 5,
                             range: [0, 12.4],
@@ -94,7 +94,7 @@ class App
                                 return "rgb(64,0,0)";
                             }
                         },
-                        labelStyle: 
+                        labelStyle:
                         {
                             fill: "#aaa",
                             font: "20px Fixed",
@@ -103,7 +103,7 @@ class App
                                 return v.toFixed(1)+" V";
                             }
                         }
-                    }    
+                    }
                 },
                 targetEl, undefined /* pageHandler */);
         targetEl = $(document.getElementById("inputCurrent"));
@@ -117,7 +117,7 @@ class App
                         "plot": {
                             "yaxis": {
                                 "show": false,
-                                "min": 0, 
+                                "min": 0,
                                 "max": 60
                             },
                             "fillvalue": 0,
@@ -156,6 +156,7 @@ class App
             this.robotBatteryW.addRandomPt();
             this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
+            this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
         }
         setTimeout(this.onIdle.bind(this), 20);
     }
@@ -251,9 +252,9 @@ class App
 
     onWebSubMsg(cls, data)
     {
-        if(!this.pageHandlers[this.currentPage]) 
+        if(!this.pageHandlers[this.currentPage])
         {
-            this.debug("onWebSubMsg missing page handler for " + 
+            this.debug("onWebSubMsg missing page handler for " +
                         this.currentPage);
         }
         // Currently we only distribute changes to current page.
@@ -305,7 +306,7 @@ class App
         {
             $("#nettabState").html("<span class='green'>connected</span>");
             if(this.pageHandlers[this.currentPage] &&
-               this.pageHandlers[this.currentPage].onNetTabConnect) 
+               this.pageHandlers[this.currentPage].onNetTabConnect)
             {
                 this.pageHandlers[this.currentPage].onNetTabConnect();
             }
@@ -348,7 +349,7 @@ class App
             else
             if(this.config.netTabVersion <= 1801)
             {
-                // for 18.0.1 
+                // for 18.0.1
                 NetworkTables.putValue("SmartDashboard/"+nm, value);
             }
             else
@@ -380,9 +381,9 @@ class App
     onNetTabChange(key, value, isNew)
     {
         this.debug(`nettab entry changed: ${key}=${value}, new:${isNew}`);
-        
+
         //  app must handle its own special vals
-        switch(key) 
+        switch(key)
         {
         case "/SmartDashboard/CANBusStatus":
             this.updateCANStatus();
@@ -403,7 +404,7 @@ class App
             if(value == "ROBOT INIT")
             {
                 this.logMsg("ROBOT INIT... clearing widgets");
-                if(this.currentPage && this.pageHandlers[this.currentPage]) 
+                if(this.currentPage && this.pageHandlers[this.currentPage])
                     this.pageHandlers[this.currentPage].resetWidgets();
             }
             break;
@@ -417,15 +418,15 @@ class App
         if(i == -1)
             id = key;
         else
-            id = fields.slice(i+1).join("/"); 
+            id = fields.slice(i+1).join("/");
         let el = document.getElementById(id);
         if(el && el.className)
-        { 
+        {
             if(el.className.indexOf("nettabtxt") != -1)
                 el.innerHTML = value;
         }
 
-        if(!this.pageHandlers[this.currentPage]) 
+        if(!this.pageHandlers[this.currentPage])
         {
             this.debug("onNetTabChange: missing page handler for " + this.currentPage);
             return;
@@ -469,14 +470,14 @@ class App
     // from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
     storageAvailable(type)
     {
-        try 
+        try
         {
             var storage = window[type], x = "__storage_test__";
             storage.setItem(x, x);
             storage.removeItem(x);
             return true;
         }
-        catch(e) 
+        catch(e)
         {
             return e instanceof DOMException && (
                 // everything except Firefox
@@ -495,12 +496,12 @@ class App
 
     loadImage(url)
     {
-        return new Promise(resolve => { 
-            let i = new Image(); 
+        return new Promise(resolve => {
+            let i = new Image();
             i.onload = () => {
                 resolve(i);
-            }; 
-            i.src = url; 
+            };
+            i.src = url;
         });
     }
 
@@ -514,7 +515,7 @@ class App
         link.click();
         document.body.removeChild(link);
     }
-} // end of App class 
+} // end of App class
 
 window.app = new App();
 window.app.notice("Dashboard loaded");
