@@ -52,7 +52,7 @@ class CamerasWidget extends Widget
                 params: {
                     ntkey: this.config.ntkeys[0],
                     width: "14em",
-                    options: Object.keys(this.config.params)
+                    options: Object.keys(this.config.params.cameras)
                 }
             };
             let el = $(`#${this.selWidgetId}`);
@@ -89,7 +89,7 @@ class CamerasWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
-        let cam = this.config.params.selection[value];
+        let cam = this.config.params.cameras[value];
         let camhtml;
         if(!cam)
         {

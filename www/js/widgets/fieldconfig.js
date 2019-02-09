@@ -12,7 +12,7 @@ class FieldConfig extends Widget
         //      alliance(Red/Blue) station(0/1/2) (gamemsg) camerasel
         html += "<div class='container gridded'>";
         html += `<div ${gstyle([50, "row"], "padding-top:5px")}>`;
-        html +=     `<span class='title'>${this.config.label}</span>`;
+        html +=     `<span class='label'>${this.config.label} </span>`;
         html +=     "<span id='allianceColor' class='amber'>";
         html +=         "<span id='alliance'>unknown alliance</span>, ";
         html +=         "Station <span id='allianceStation'>?</span>, ";

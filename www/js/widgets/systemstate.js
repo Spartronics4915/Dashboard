@@ -1,4 +1,4 @@
-/* global Widget */
+/* global app Widget */
 
 class SystemState extends Widget
 {

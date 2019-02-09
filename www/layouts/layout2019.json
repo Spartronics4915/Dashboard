@@ -28,13 +28,13 @@
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber",
-                                "/SmartDashboard/CameraView"
+                                "/SmartDashboard/Driver/Camera"
                             ],
                             "params": {
                                 "cameraSelector":
                                 {
                                     "label": "Camera",
-                                    "ntkey": "/SmartDashboard/CameraView",
+                                    "ntkey": "/SmartDashboard/Driver/Camera",
                                     "options": [
                                         "No Camera",
                                         "Front Camera",
@@ -52,11 +52,11 @@
                     "id": "drivercams",
                     "size": [1340, 800],
                     "ntkeys": [
-                        "/SmartDashboard/CameraView"
+                        "/SmartDashboard/Driver/Camera"
                     ],
                     "params": {
                         "selector": false,
-                        "selection": {
+                        "cameras": {
                             "No Camera":
                             {
                             },
@@ -403,7 +403,7 @@
                     ],
                     "params": {
                         "selector": true,
-                        "selection":
+                        "cameras":
                         {
                             "PiCam default (.10)":
                             {
