@@ -60,6 +60,8 @@
                         "cameras": {
                             "No Camera":
                             {
+                                "protocol": "testpattern",
+                                "cls": "size720"
                             },
                             "Front Camera":
                             {
@@ -76,6 +78,13 @@
                                 "cls": "rotate0 size2x"
                             },
                             "Back Camera":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamback.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0"
+                            },
+                            "Back Camera 2x":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamback.local:8080",

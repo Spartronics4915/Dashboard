@@ -1,3 +1,4 @@
+/* global Widget */
 class NetTabWidget extends Widget
 {
     constructor(config, targetElem)

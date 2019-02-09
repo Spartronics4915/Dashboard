@@ -129,13 +129,26 @@ label
 .size640
 {
     width: 640px;
-    height: 480px;
+}
+
+.size720
+{
+    width: 720px;
+}
+
+.size1024
+{
+    width: 1024px;
 }
 
 .size2x
 {
-    width: 1280px;
-    height: 960px;
+    width: 200%;
+}
+
+.halfsize
+{
+    width: 50%;
 }
 
 .invalid

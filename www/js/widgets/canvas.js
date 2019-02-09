@@ -19,7 +19,7 @@ class CanvasWidget extends Widget
      * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
      * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
      */
-    roundRect(ctx, x, y, width, height, radius, fill, stroke)
+    static roundRect(ctx, x, y, width, height, radius, fill, stroke)
     {
         if (stroke == undefined)
             stroke = true;
@@ -42,3 +42,6 @@ class CanvasWidget extends Widget
             ctx.fill();
     }
 }
+
+Widget.AddWidgetClass("canvas", CanvasWidget);
+window.CanvasUtils = CanvasWidget;

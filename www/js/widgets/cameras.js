@@ -1,4 +1,4 @@
-/* global SelectorWidget, Widget, $, app, WebRTCSignaling */
+/* global SelectorWidget, Widget, $, app, WebRTCSignaling, CanvasUtils */
 
 // legacy cams here for reference, now expressed in per-season layout files.
 // var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
@@ -112,6 +112,30 @@ class CamerasWidget extends Widget
                 $(`#${this.divId}`).html(camhtml);
             }
             else
+            if(cam.protocol == "img")
+            {
+                camhtml = `<img id="${this.imgId}" src="${cam.url}" class="${cam.cls}"/>`;
+                $(`#${this.divId}`).html(camhtml);
+            }
+            else
+            if(cam.protocol == "testpattern")
+            {
+                const testimgs = [
+                        "/images/standby.jpg",
+                        "/images/pleasestandby.jpg",
+                        "/images/nosignal.jpg",
+                        "/images/offair.jpg",
+                        "/images/colortest.jpg",
+                        "/images/testbeeld1956.jpg",
+                        "/images/underattack.jpg"
+                            ];
+                let i = Math.floor(Math.random() * testimgs.length);
+                let img = testimgs[i];
+                camhtml = `<img id="${this.imgId}" src="${img}" class="${cam.cls}"/>`;
+                $(`#${this.divId}`).html(camhtml);
+            }
+            else
+            if(cam.protocol == "ws")
             {
                 // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
                 //  autoplay requires page interaction unless muted.
@@ -130,6 +154,10 @@ class CamerasWidget extends Widget
                                         this.onStreamClose.bind(this),
                                         this.onStreamMsg.bind(this)
                                         );
+            }
+            else
+            {
+                app.error("unknown camera protocol " + cam.protocol);
             }
         }
     }
@@ -151,6 +179,12 @@ class CamerasWidget extends Widget
             this.sCanv.setAttribute("width", this.sVid.videoWidth);
             this.sCanv.setAttribute("height", this.sVid.videoHeight);
             this.sCtx = this.sCanv.getContext("2d");
+            this.sCtx.strokeStyle = "#FF0000";
+            this.sCtx.lineWidth = 5;
+            this.sCtx.fillStyle = "#005050";
+            this.sCtx.font = "30px Arial";
+            this.sCtx.fillText("Hello World", 200, 200);
+            CanvasUtils.roundRect(this.sCtx, 10, 10, 100, 100, 20, false, true);
         }
     }
 

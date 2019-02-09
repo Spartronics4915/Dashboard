@@ -4,7 +4,7 @@ class PctBarWidget extends CanvasWidget
     constructor(config, targetElem, pageHandler)
     {
         super(config, targetElem, pageHandler);
-        this.params = 
+        this.params =
         {
             labelStyle:
             {
@@ -56,7 +56,7 @@ class PctBarWidget extends CanvasWidget
     {
         this.value = value;
         this.canvasCtx.fillStyle = "black";
-        this.roundRect(this.canvasCtx, 
+        CanvasWidget.roundRect(this.canvasCtx,
                     0, 0, this.config.size[0], this.config.size[1],
                     this.params.barStyle.radius, true, true);
         let org = [0, 0];
@@ -79,7 +79,7 @@ class PctBarWidget extends CanvasWidget
         {
             this.canvasCtx.fillStyle = this.params.barStyle.fillSelector(this.value);
         }
-        this.roundRect(this.canvasCtx, org[0], org[1], sz[0], sz[1], 
+        CanvasWidget.roundRect(this.canvasCtx, org[0], org[1], sz[0], sz[1],
                     this.params.barStyle.radius, true, true);
         if(this.params.labelStyle)
         {
@@ -96,8 +96,8 @@ class PctBarWidget extends CanvasWidget
     addRandomPt()
     {
         let newval = this.value + (.01 * this.drange * (Math.random()-.5));
-        newval = this.clamp(newval, 
-                            this.params.barStyle.range[0], 
+        newval = this.clamp(newval,
+                            this.params.barStyle.range[0],
                             this.params.barStyle.range[1]);
         this.valueChanged("",  newval, true);
     }
