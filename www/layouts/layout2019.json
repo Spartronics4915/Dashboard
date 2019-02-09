@@ -52,11 +52,35 @@
                     "id": "drivercams",
                     "size": [1340, 800],
                     "ntkeys": [
-                        "/SmartDashboard/Driver/Camera"
+                        "/SmartDashboard/Driver/Camera",
+                        "/SmartDashboard/Driver/CameraOverlay/Label"
                     ],
                     "params": {
                         "selector": false,
-                        "overlay": true,
+                        "camerakey": "/SmartDashboard/Driver/Camera",
+                        "overlay":
+                        {
+                            "enable": true,
+                            "items":
+                            {
+                                "/SmartDashboard/Driver/CameraOverlay/Label":
+                                {
+                                    "class": "text",
+                                    "origin": [300, 30],
+                                    "font": "30px Arial, serif",
+                                    "fillStyle": "rgba(220, 240, 10, .85)",
+                                    "value": "_"
+                                },
+                                "/SmartDashboard/Driver/Camera":
+                                {
+                                    "class": "text",
+                                    "origin": [10, 30],
+                                    "font": "30px Arial, serif",
+                                    "fillStyle": "rgba(220, 240, 10, .85)",
+                                    "value": "<nocamera>"
+                                }
+                            }
+                        },
                         "cameras": {
                             "No Camera":
                             {
