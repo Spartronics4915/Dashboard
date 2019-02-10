@@ -1,7 +1,7 @@
 /* global app */
 /* cribbed from uv4l webrtc demo -----------------------*/
 /* we don't antipicate requiring internet-based signaling services,
- * but the uv4l/webrtc framework appears to require some of this setup. 
+ * but the uv4l/webrtc framework appears to require some of this setup.
  */
 
 const RTCPeerConnection = window.RTCPeerConnection;
@@ -43,9 +43,9 @@ class WebRTCSignaling
         this.ws.onmessage = this.onMsg.bind(this);
     }
 
-    hangup() 
+    hangup()
     {
-        if (this.ws) 
+        if (this.ws)
         {
             var request = {
                 what: "hangup"
@@ -57,8 +57,8 @@ class WebRTCSignaling
 
     onOpen()
     {
-        /* First we create a peer connection 
-         *  - try to avoid internet cnx, 
+        /* First we create a peer connection
+         *  - try to avoid internet cnx,
          *  - try to minimize startup time
          */
         // var config = {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}; // works
@@ -66,27 +66,30 @@ class WebRTCSignaling
         // var config = {"iceServers": [{"urls": ["stun:localhost:9999"]}]};
         // var config = {"iceServers": [{"urls": ["stun:192.168.1.51:3478"]}]}; // worked in lan-only, not wlan(?)
         var config = {"iceServers": [{"urls": [
-                "stun:stun.l.google.com:19302",
-                `stun:${this.ip}:3478`
+                `stun:${this.ip}:3478`,
+                "stun:stun.l.google.com:19302"
             ]}]}; // works
         var options = {optional: []};
         this.iceCandidates = [];
         this.hasRemoteDesc = false;
         this.peerCnx = new RTCPeerConnection(config, options);
         this.peerCnx.onicecandidate = this.onIceCandidate.bind(this);
-        if ("ontrack" in this.peerCnx) 
+        if ("ontrack" in this.peerCnx)
         {
-            app.debug("webRTCSignaling: ontrack");
             this.peerCnx.ontrack = function (event)
             {
+                app.debug("webRTCSignaling ontrack: " +
+                                JSON.stringify(event.streams));
                 this.onOpenCB(event.streams[0]);
             }.bind(this);
-        } 
-        else 
-        {  
+        }
+        else
+        {
             // onaddstream() deprecated
             this.peerCnx.onaddstream = function (event)
             {
+                app.debug("webRTCSignaling onaddstream: " +
+                                JSON.stringify(event.stream));
                 this.onOpenCB(event.stream);
             }.bind(this);
         }
@@ -106,29 +109,29 @@ class WebRTCSignaling
         var request =
         {
             what: "call",
-            options: 
+            options:
             {
                 // If forced, the hardware codec depends on the arch.
                 // (e.g. it's H264 on the Raspberry Pi)
                 // Make sure the browser supports the codec too.
                 force_hw_vcodec: true,
-                vformat: this.vformat,
-                // from janus section of 
+                vformat: 30, // this.vformat, (60 is unreliable)
+                // from janus section of
                 //   https://www.linux-projects.org/documentation/uv4l-server/
                 // 10: 320×240-30fps, Bandwidth of .3 mbps latency of 95
-                // 20: 352×288-30fps, 
+                // 20: 352×288-30fps,
                 // 30: 640×480-30fps, Bandwidth of .9 mbps latency of 110 ms
-                // 40: 960×720-30fps, 
-                // 50: 1024×768-30fps, 
-                // 60: 1280×720-30fps,  Bandwidth of 3, latenchy of 140ms 
+                // 40: 960×720-30fps,
+                // 50: 1024×768-30fps,
+                // 60: 1280×720-30fps,  Bandwidth of 3, latency of 140ms
                 // 63: 1280×720-60fps, Bandwidth of 6-7 mbps  latency of ~202 ms
-                // 65: 1280×768-15fps, 
-                // 70: 1280×768-30fps, 
-                // 80: 1280×960-30fps, 
-                // 90: 1600×768-30fps, 
-                // 95: 1640×1232-15fps, 
-                // 97: 1640×1232-30fps, 
-                // 100: 1920×1080-15fps, 
+                // 65: 1280×768-15fps,
+                // 70: 1280×768-30fps,
+                // 80: 1280×960-30fps,
+                // 90: 1600×768-30fps,
+                // 95: 1640×1232-15fps,
+                // 97: 1640×1232-30fps,
+                // 100: 1920×1080-15fps,
                 // 105: 1920×1080-30fps
                 trickle_ice: true
             }
@@ -137,13 +140,13 @@ class WebRTCSignaling
         this.ws.send(JSON.stringify(request));
     }/* end onOpen */
 
-    onMsg(evt) 
+    onMsg(evt)
     {
         var msg = JSON.parse(evt.data);
         var what = msg.what;
         var data = msg.data;
         app.debug("received message " + JSON.stringify(msg));
-        switch (what) 
+        switch (what)
         {
         case "offer":
             {
@@ -156,12 +159,12 @@ class WebRTCSignaling
                 };
                 this.peerCnx.setRemoteDescription(
                     new RTCSessionDescription(JSON.parse(data)),
-                    function onRemoteSdpSuccess() 
+                    function onRemoteSdpSuccess()
                     {
                         this.hasRemoteDesc = true;
                         this.addIceCandidates();
                         this.peerCnx.createAnswer(
-                            function (sessionDescription) 
+                            function (sessionDescription)
                             {
                                 this.peerCnx.setLocalDescription(sessionDescription);
                                 var request = {
@@ -169,13 +172,13 @@ class WebRTCSignaling
                                     data: JSON.stringify(sessionDescription)
                                 };
                                 this.ws.send(JSON.stringify(request));
-                            }.bind(this), 
-                            function (error) 
+                            }.bind(this),
+                            function (error)
                             {
                                 this.onErrorCB("failed to create answer: " + error);
                             }.bind(this), mediaConstraints);
                     }.bind(this),
-                    function onRemoteSdpError(event) 
+                    function onRemoteSdpError(event)
                     {
                         this.onErrorCB("failed to set the remote description: " + event);
                         this.ws.close();
@@ -196,14 +199,14 @@ class WebRTCSignaling
 
         case "iceCandidate": // received when trickle ice is used (see the "call" request)
             {
-                if (!msg.data) 
+                if (!msg.data)
                 {
                     app.debug("Ice Gathering Complete");
                     break;
                 }
                 let elt = JSON.parse(msg.data);
                 let candidate = new RTCIceCandidate({
-                                    sdpMLineIndex: elt.sdpMLineIndex, 
+                                    sdpMLineIndex: elt.sdpMLineIndex,
                                     candidate: elt.candidate});
                 this.iceCandidates.push(candidate);
                 this.addIceCandidates(); // it internally checks if the remote description has been set
@@ -213,7 +216,7 @@ class WebRTCSignaling
         case "iceCandidates": // received when trickle ice is NOT used (see the "call" request)
             {
                 let candidates = JSON.parse(msg.data);
-                for (var i = 0; candidates && i < candidates.length; i++) 
+                for (var i = 0; candidates && i < candidates.length; i++)
                 {
                     var elt = candidates[i];
                     let candidate = new RTCIceCandidate({sdpMLineIndex: elt.sdpMLineIndex, candidate: elt.candidate});
@@ -225,37 +228,37 @@ class WebRTCSignaling
         }/* end switch*/
     }/* end onMsg */
 
-    onClose(event) 
+    onClose(event)
     {
         app.debug("socket closed with code: " + event.code);
-        if (this.peerCnx) 
+        if (this.peerCnx)
         {
             this.peerCnx.close();
             this.peerCnx = null;
             this.ws = null;
         }
-        if (this.onCloseCB) 
+        if (this.onCloseCB)
             this.onCloseCB();
     }
 
-    onIceCandidate(event) 
+    onIceCandidate(event)
     {
         if (event.candidate)
         {
-            var candidate = 
+            var candidate =
             {
                 sdpMLineIndex: event.candidate.sdpMLineIndex,
                 sdpMid: event.candidate.sdpMid,
                 candidate: event.candidate.candidate
             };
-            var request = 
+            var request =
             {
                 what: "addIceCandidate",
                 data: JSON.stringify(candidate)
             };
             this.ws.send(JSON.stringify(request));
-        } 
-        else 
+        }
+        else
         {
             app.debug("end of candidates.");
         }
@@ -263,9 +266,9 @@ class WebRTCSignaling
 
     addIceCandidates()
     {
-        if (this.hasRemoteDesc) 
+        if (this.hasRemoteDesc)
         {
-            this.iceCandidates.forEach(function (candidate) 
+            this.iceCandidates.forEach(function (candidate)
             {
                 this.peerCnx.addIceCandidate(candidate,
                         function () {

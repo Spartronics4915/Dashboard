@@ -167,6 +167,7 @@ class App
             this.robotBatteryW.addRandomPt();
             this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
+            this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
         }
         setTimeout(this.onIdle.bind(this), 20);
     }

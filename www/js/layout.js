@@ -9,7 +9,12 @@ class Layout
         this.config = config ? config : {};
         this.pageHandlers = {};
         if(this.config.layout)
-            $.getJSON(this.config.layout, this._initJSON.bind(this));
+            $.getJSON(this.config.layout)
+                .done(this._initJSON.bind(this))
+                .fail(function( jqxhr, textStatus, error ) {
+                    var err = textStatus + ", " + error;
+                    app.error("Layout Failed: " + err);
+                });
         else
             app.warning("Layout requires config.layout");
     }
@@ -28,7 +33,7 @@ class Layout
             {
                 htmlList.push("<div class='navtab'>" +
                        `<a href='#${page}'>` +
-                            `<span class='${icon}'></span>` + 
+                            `<span class='${icon}'></span>` +
                         "</a></div>");
             }
             else

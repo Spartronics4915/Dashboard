@@ -1,4 +1,4 @@
-/* global SelectorWidget, Widget, $, app, WebRTCSignaling */
+/* global SelectorWidget, Widget, $, app, WebRTCSignaling, CanvasUtils */
 
 // legacy cams here for reference, now expressed in per-season layout files.
 // var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
@@ -8,11 +8,14 @@
 // var axis2 = {ip:"10.49.15.12", url: "/mjpg/video.mjpg", cls:"rotate0"};
 // var usbCam = {ip:"10.49.15.2:1180", url: "/?action=stream", cls:"rotate0"};
 
+// the CamerasWidget can present a selector or not depending upon the
+//   boolean config.params.selector
 class CamerasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
     {
         super(config, targetElem, pageHandler);
+        if(!this.config.params) this.config.params = {};
         let html = "";
         this.baseId = this.config.id;
         this.selWidgetId = `${this.baseId}Sel`; // container for select widget
@@ -21,86 +24,201 @@ class CamerasWidget extends Widget
         this.imgId = `${this.baseId}Img`;
         this.vidId = `${this.baseId}Vid`;
         this.canvId = `${this.baseId}Canv`;
+        this.dooverlay = false;
         this.streamHandler = null;
         this.isStreaming = false;
 
         html += "<div class='container'>";
-        html +=     "<div class='containerrow xtrapad'>";
-        html +=        `<span class='title'>${this.config.label}</span>`;
-        html +=        `<div id='${this.selWidgetId}'></div>`;
-        html +=     "</div>";
+
+        if(this.config.params.selector)
+        {
+            html +=     "<div class='containerrow xtrapad'>";
+            html +=        `<span class='title'>${this.config.label}</span>`;
+            html +=        `<div id='${this.selWidgetId}'></div>`;
+            html +=     "</div>";
+        }
+
         html +=     `<div id='${this.divId}' class='cameraViewImg'>`;
         html +=     "</div>";
         html += "</div>";
         targetElem.html(html);
-        this.selConfig = {
-            id: this.selSelectId,
-            label: "",
-            type: "selector",
-            size: [0, 0], // means we're in control of layout
-            params: {
-                ntkey: this.config.ntkeys[0],
-                width: "14em",
-                options: Object.keys(this.config.params)
-            }
-        };
-        let el = $(`#${this.selWidgetId}`);
-        this.selConfig.widget = new SelectorWidget(this.selConfig, el);
+
+        if(this.config.params.selector)
+        {
+            this.selConfig = {
+                id: this.selSelectId,
+                label: "",
+                type: "selector",
+                size: [0, 0], // means we're in control of layout
+                params: {
+                    ntkey: this.config.ntkeys[0],
+                    width: "14em",
+                    options: Object.keys(this.config.params.cameras)
+                }
+            };
+            let el = $(`#${this.selWidgetId}`);
+            this.selConfig.widget = new SelectorWidget(this.selConfig, el);
+        }
+        else
+            this.selConfig = null;
+
+        if(this.config.params.overlay && this.config.params.overlay.enable)
+            this.overlay = this.config.params.overlay;
+        else
+            this.overlay = null;
     }
 
     getHiddenNTKeys()
     {
-        return null;
-    }
-
-    cleanup()
-    {
-        let lastImg = document.getElementById(this.imgId);
-        if(lastImg && lastImg.src)
+        if(!this.overlay)
+            return null;
+        else
         {
-            // apparently successful attempt to plug memory leak for mjpgstreamer
-            // biggest issue was bandwidth consumption increases with each
-            // redraw...  Validation: switch between cameras and between tabs,
-            // while keeping an eye on bandwidth consumption (via TaskManager etc).
-            lastImg.src = "";
-        }
-        if(this.streamHandler)
-        {
-            this.sVid = null;
-            this.streamHandler.hangup();
-            this.streamHandler = null;
-            this.isStreaming = false;
+            // we may be listening on the camera key and don't want
+            // double-updates above.
+            let hiddenKeys = Object.keys(this.overlay.items);
+            let i = hiddenKeys.indexOf(this.config.ntkeys[0]);
+            if(i != -1)
+                hiddenKeys.splice(i, 1);
+            return hiddenKeys;
         }
     }
 
     valueChanged(key, value, isNew)
     {
-        let cam = this.config.params[value];
-        let camhtml;
+        if(this.config.ntkeys[0] == key) // expect a single key
+            this._updateCamera(key, value, isNew);
+        this._updateOverlay(key, value, isNew);
+    }
+
+    // _onDOMChange is called after we change the page html... Note
+    //  that the size of the image or video isn't known until it is received.
+    _onDOMChange()
+    {
+        // make sure our overlay canvas is the correct size and location
+        app.debug("cameras._onDOMChange");
+        if(this.imgEl)
+        {
+            // apparently successful attempt to plug memory leak for mjpgstreamer
+            // biggest issue was bandwidth consumption increases with each
+            // redraw...  Validation: switch between cameras and between tabs,
+            // while keeping an eye on bandwidth consumption (via TaskManager etc).
+            this.imgEl.src = "";
+            this.imgEl = null;
+        }
+        if(this.streamHandler)
+        {
+            this.vidEl = null;
+            this.streamHandler.hangup();
+            this.streamHandler = null;
+            this.isStreaming = false;
+        }
+        this.canvCtx = null; // only valid after we know video/img size
+
+        this.canvEl = document.getElementById(`${this.canvId}`);
+        this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
+        this.imgEl = document.getElementById(`${this.imgId}`); // may not exist
+        if(!this.canvEl)
+        {
+            if(this.config.params.overlay)
+                app.warning("cameras is missing canvEl");
+        }
+        else
+        {
+            if(this.imgEl)
+            {
+                // need to learn size after its loaded
+                this.imgEl.addEventListener("load", function()
+                {
+                    app.debug("cameras img loaded width:" + this.imgEl.width);
+                    this.canvEl.style.left = this.imgEl.offsetLeft + "px";
+                    this.canvEl.style.top = this.imgEl.offsetTop + "px";
+                    this.canvEl.setAttribute("width", this.imgEl.width);
+                    this.canvEl.setAttribute("height", this.imgEl.height);
+                    this.canvCtx = this.canvEl.getContext("2d");
+                    this._updateOverlay();
+                }.bind(this));
+            }
+            else
+            if(!this.vidEl)
+                app.error("cameras is missing video/img el");
+            // nb: we update size of video after the stream is opened.
+        }
+    }
+
+    _updateCamera(key, value, isnew)
+    {
+        let cam = this.config.params.cameras[value];
         if(!cam)
         {
             app.warning("invalid camera view " + value);
-            camhtml = "<div class='cameraViewImg invalid'><i class='amber'>invalid camera</i></div>";
+            let camhtml = "<div class='cameraViewImg invalid'><i class='amber'>invalid camera</i></div>";
+            $(`#${this.divId}`).html(camhtml);
+            this._onDOMChange();
         }
         else
         {
             // cam: {ip, url, cls}
-            this.selConfig.widget.valueChanged(key, value, isNew);
+            if(this.selConfig)
+                this.selConfig.widget.valueChanged(key, value, isnew);
             app.info("change camera: " + value);
-            this.cleanup();
+            let camhtml;
             if(!cam.protocol || cam.protocol === "http")
             {
-                camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
+                // mjpegstreaming
+                if(cam.url)
+                    camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
+                else
+                    camhtml = `<img id="${this.imgId}"></img>`;
+                if(this.config.params.overlay)
+                    camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
                 $(`#${this.divId}`).html(camhtml);
+                this._onDOMChange();
             }
             else
+            if(cam.protocol == "img")
             {
-                camhtml = `<video id="${this.vidId}" class="${cam.cls}"></video>`;
-                camhtml += `<canvas id="${this.canvId}" class="${cam.cls}"></canvas>`;
+                // static image
+                let camhtml = `<img id="${this.imgId}" src="${cam.url}" class="${cam.cls}"/>`;
+                if(this.config.params.overlay)
+                    camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
+                $(`#${this.divId}`).html(camhtml);
+                this._onDOMChange();
+            }
+            else
+            if(cam.protocol == "testpattern")
+            {
+                // static image from our collection
+                const testimgs = [
+                        "/images/standby.jpg",
+                        "/images/pleasestandby.jpg",
+                        "/images/nosignal.jpg",
+                        "/images/offair.jpg",
+                        "/images/colortest.jpg",
+                        "/images/testbeeld1956.jpg",
+                        "/images/underattack.jpg"
+                            ];
+                let i = Math.floor(Math.random() * testimgs.length);
+                let img = testimgs[i];
+                let camhtml = `<img id="${this.imgId}" src="${img}" class="${cam.cls}"/>`;
+                if(this.config.params.overlay)
+                    camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
+                $(`#${this.divId}`).html(camhtml);
+                this._onDOMChange();
+            }
+            else
+            if(cam.protocol == "ws")
+            {
+                // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+                //  autoplay requires page interaction unless muted.
+                let camhtml = `<video muted id="${this.vidId}" class="${cam.cls}"></video>`;
+                if(this.config.params.overlay)
+                {
+                    camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
+                }
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
-
-
+                this._onDOMChange(); // want this before stream callbacks
                 let url = `ws:${cam.ip}${cam.url}`;
                 this.streamHandler = new WebRTCSignaling(url,
                                         cam.vformat,
@@ -110,6 +228,10 @@ class CamerasWidget extends Widget
                                         this.onStreamMsg.bind(this)
                                         );
             }
+            else
+            {
+                app.error("unknown camera protocol " + cam.protocol);
+            }
         }
     }
 
@@ -118,34 +240,87 @@ class CamerasWidget extends Widget
         // no-op
     }
 
+    // _onCanPlay only called when we're in video-feed mode
     _onCanPlay()
     {
         app.debug("cameras._onCanPlay");
         this.isStreaming = true;
-        if(this.sCanv)
+        if(this.config.params.overlay)
         {
-            this.sCanv.setAttribute("width", this.sVid.videoWidth);
-            this.sCanv.setAttribute("height", this.sVid.videoHeight);
-            this.sVid.addEventListener("play", this._onPlay.bind(this));
+            this.canvEl.style.left = this.vidEl.offsetLeft + "px";
+            this.canvEl.style.top = this.vidEl.offsetTop + "px";
+            this.canvEl.setAttribute("width", this.vidEl.videoWidth);
+            this.canvEl.setAttribute("height", this.vidEl.videoHeight);
+            this.canvCtx = this.canvEl.getContext("2d");
+            this._updateOverlay();
+        }
+    }
+
+    _updateOverlay(key, value, isNew)
+    {
+        if(!this.overlay) return;
+
+        // always update overlay values to avoid missing nettab event
+        app.debug("updateOverlay");
+        if(key)
+        {
+            for(const ntkey in this.overlay.items)
+            {
+                let item =  this.overlay.items[ntkey];
+                if(key == ntkey)
+                    item.value = value;
+            }
+        }
+
+        // only draw into canvas after we're fully synced with img/video source
+        if(!this.canvEl) return;
+        if(!this.canvCtx) return;
+
+        // good to go
+        app.debug("drawOverlay");
+        var w = this.canvEl.getAttribute("width");
+        var h = this.canvEl.getAttribute("height");
+        this.canvCtx.clearRect(0, 0, w, h);
+        for(const ntkey in this.overlay.items)
+        {
+            let item =  this.overlay.items[ntkey];
+            switch(item.class)
+            {
+            case "text":
+                {
+                    this.canvCtx.fillStyle = item.fillStyle;
+                    this.canvCtx.font = item.font;
+                    this.canvCtx.shadowColor =  "rgba(0,0,0,.8)";
+                    this.canvCtx.shadowOffsetX = 3;
+                    this.canvCtx.shadowOffsetY = 3;
+                    this.canvCtx.shadowBlur = 3;
+                    this.canvCtx.fillText(item.value ? item.value : "<no label>",
+                                item.origin[0], item.origin[1]);
+                }
+                break;
+            }
         }
     }
 
     _onPlay()
     {
+        // this is inactive, but here for reference in the case where
+        // we wish to process the incoming video.
+        app.debug("cameras._onPlay");
+        if(!this.canvEl || true)
+            return;
+
         // Every 33 milliseconds... copy video to canvas. So we
         // can operate on it locally.  If we only wish to view the video
         // feed the canvas isn't needed.
-        if(!this.sCanv)
-            return;
-        app.debug("cameras._onPlay");
         setInterval(function()
         {
-            if(this.sVid.paused || this.sVid.ended)
+            if(this.vidEl.paused || this.vidEl.ended)
                 return;
-            var w = this.sCanv.getAttribute("width");
-            var h = this.sCanv.getAttribute("height");
-            this.sCtx.fillRect(0, 0, w, h);
-            this.sCtx.drawImage(this.sVid, 0, 0, w, h);
+            var w = this.canvEl.getAttribute("width");
+            var h = this.canvEl.getAttribute("height");
+            this.canvCtx.fillRect(0, 0, w, h);
+            this.canvCtx.drawImage(this.vidEl, 0, 0, w, h);
             // here's where we can operate on the image-in-canvas
             // var input = ctx.getImageData(0, 0, canvas.width, canvas.height);
             // var img = cv.matFromArray(input, 24); // 24 for rgba
@@ -159,18 +334,14 @@ class CamerasWidget extends Widget
     onStreamOpen(stream)
     {
         app.notice("camera stream opened");
-        this.sVid = document.getElementById(`${this.vidId}`);
-        this.sVid.srcObject = stream;
-        this.sCanv = document.getElementById(`${this.canvId}`);
-        if(this.sCanv)
-            this.sCtx = this.sCanv.getContext("2d");
-        let playPromise = this.sVid.play();
+        this.vidEl.srcObject = stream;
+
+        // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+        let playPromise = this.vidEl.play();
         if(playPromise != undefined)
         {
             playPromise.then(function()
             {
-                // Automatic playback started!
-                // Show playing UI.
                 this._onCanPlay();
             }.bind(this))
             .catch(function(error)
@@ -182,17 +353,17 @@ class CamerasWidget extends Widget
         }
         else
         {
-            this.sVid.addEventListener("canplay", this._onCanPlay.bind(this));
+            this.vidEl.addEventListener("canplay", this._onCanPlay.bind(this));
         }
     }
 
     onStreamClose()
     {
         app.notice("camera stream closed");
-        if(this.sVid)
-            this.sVid.srcObject = null;
-        if(this.sCtx)
-            this.sCtx.clearRect(0, 0, this.sCanv.width, this.sCanv.height);
+        if(this.vidEl)
+            this.vidEl.srcObject = null;
+        if(this.canvCtx)
+            this.canvCtx.clearRect(0, 0, this.canvEl.width, this.canvEl.height);
         this.isStreaming = false;
         this.streamHandler = null;
     }

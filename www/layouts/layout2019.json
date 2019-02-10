@@ -9,51 +9,110 @@
                     "type": "systemstate",
                     "id": "compete",
                     "label": "Driver Interface",
-                    "size": ["fill", "row"]
-                },
-                {
-                    "type": "fieldconfig",
-                    "label": "Field Config",
-                    "id": "fieldconfig",
                     "size": ["fill", "row"],
-                    "ntkeys": [
-                        "/SmartDashboard/AutoStrategy",
-                        "/SmartDashboard/AutoStrategyOptions",
-                        "/FMSInfo/IsRedAlliance",
-                        "/FMSInfo/StationNumber",
-                        "/FMSInfo/GameSpecificMessage",
-                        "/FMSInfo/ReplayNumber",
-                        "/FMSInfo/FMSControlData",
-                        "/FMSInfo/EventName",
-                        "/FMSInfo/MatchType",
-                        "/FMSInfo/MatchNumber"
+                    "wsize": [800, "row"],
+                    "widgets": [
+                        {
+                            "type": "fieldconfig",
+                            "label": "Field Config",
+                            "id": "fieldconfig",
+                            "size": [800, "row"],
+                            "ntkeys": [
+                                "/SmartDashboard/AutoStrategy",
+                                "/SmartDashboard/AutoStrategyOptions",
+                                "/FMSInfo/IsRedAlliance",
+                                "/FMSInfo/StationNumber",
+                                "/FMSInfo/GameSpecificMessage",
+                                "/FMSInfo/ReplayNumber",
+                                "/FMSInfo/FMSControlData",
+                                "/FMSInfo/EventName",
+                                "/FMSInfo/MatchType",
+                                "/FMSInfo/MatchNumber",
+                                "/SmartDashboard/Driver/Camera"
+                            ],
+                            "params": {
+                                "cameraSelector":
+                                {
+                                    "label": "Camera",
+                                    "ntkey": "/SmartDashboard/Driver/Camera",
+                                    "options": [
+                                        "No Camera",
+                                        "Front Camera",
+                                        "Front Camera 2x",
+                                        "Back Camera",
+                                        "Back Camera 2x"
+                                    ]
+                                }
+                            }
+                        }
                     ]
                 },
                 {
                     "type": "cameras",
-                    "label": "Camera View",
-                    "id": "cameras",
-                    "_comment": "xsize of fill tickles google chrome bug",
+                    "id": "drivercams",
                     "size": [1340, 800],
                     "ntkeys": [
-                        "/SmartDashboard/CameraView"
+                        "/SmartDashboard/Driver/Camera"
                     ],
                     "params": {
-                        "PiCam H264 30":
+                        "selector": false,
+                        "overlay":
                         {
-                            "protocol": "ws",
-                            "ip": "10.49.15.11:8080",
-                            "url": "/stream/webrtc",
-                            "cls": "rotate0",
-                            "vformat": "30"
+                            "enable": true,
+                            "items":
+                            {
+                                "/SmartDashboard/Time/Locale":
+                                {
+                                    "class": "text",
+                                    "origin": [300, 30],
+                                    "font": "30px Arial, serif",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": "_"
+                                },
+                                "/SmartDashboard/Driver/Camera":
+                                {
+                                    "class": "text",
+                                    "origin": [10, 30],
+                                    "font": "30px Arial, serif",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": "<nocamera>"
+                                }
+                            }
                         },
-                        "PiCam H264 60":
-                        {
-                            "protocol": "ws",
-                            "ip": "10.49.15.11:8080",
-                            "url": "/stream/webrtc",
-                            "cls": "rotate0",
-                            "vformat": "60"
+                        "cameras": {
+                            "No Camera":
+                            {
+                                "protocol": "testpattern",
+                                "cls": "size720"
+                            },
+                            "Front Camera":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamfront.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0"
+                            },
+                            "Front Camera 2x":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamfront.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 size2x"
+                            },
+                            "Back Camera":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamback.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0"
+                            },
+                            "Back Camera 2x":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamback.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 size2x"
+                            }
                         }
                     }
                 }
@@ -375,41 +434,45 @@
                         "/SmartDashboard/Vision/Camera"
                     ],
                     "params": {
-                        "PiCam default (.10)":
+                        "selector": true,
+                        "cameras":
                         {
-                            "ip": "10.49.15.10:5080",
-                            "url": "/default.mjpg",
-                            "cls": "rotate0 size640"
-                        },
-                        "PiCam hsv (.10)":
-                        {
-                            "ip": "10.49.15.10:5080",
-                            "url": "/hsv.mjpg",
-                            "cls": "rotate0 size640"
-                        },
-                        "PiCam bypass mjpg (.10)":
-                        {
-                            "ip": "10.49.15.10:5080",
-                            "url": "/bypass.mjpg",
-                            "cls": "rotate0 size640"
-                        },
-                        "PiCam default vision":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/default.mjpg",
-                            "cls": "rotate0 size640"
-                        },
-                        "PiCam mask":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/mask.mjpg",
-                            "cls": "rotate0 size640"
-                        },
-                        "PiCam bypass mjpg":
-                        {
-                            "ip": "frcvision.local:5080",
-                            "url": "/bypass.mjpg",
-                            "cls": "rotate0 size640"
+                            "PiCam default (.10)":
+                            {
+                                "ip": "10.49.15.10:5080",
+                                "url": "/default.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam hsv (.10)":
+                            {
+                                "ip": "10.49.15.10:5080",
+                                "url": "/hsv.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam bypass mjpg (.10)":
+                            {
+                                "ip": "10.49.15.10:5080",
+                                "url": "/bypass.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam default vision":
+                            {
+                                "ip": "frcvision.local:5080",
+                                "url": "/default.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam mask":
+                            {
+                                "ip": "frcvision.local:5080",
+                                "url": "/mask.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam bypass mjpg":
+                            {
+                                "ip": "frcvision.local:5080",
+                                "url": "/bypass.mjpg",
+                                "cls": "rotate0 size640"
+                            }
                         }
                     }
                 }

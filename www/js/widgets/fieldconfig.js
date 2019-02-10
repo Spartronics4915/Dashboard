@@ -4,31 +4,42 @@ class FieldConfig extends Widget
     constructor(config, targetElem, pageHandler)
     {
         super(config, targetElem, pageHandler);
+        if(!config.params) config.params = {};
 
+        let gstyle = pageHandler.newGridElemStyle.bind(pageHandler);
         let html="";
-        // Field Configuration  alliance (Red/Blue)  station (0/1/2) gamemsg
-        html += "<div class='container'>";
-        html +=     "<div class='containerrow xtrapad'>";
-        html +=         `<span class='title'>${this.config.label}</span>`;
-        html +=         "<span id='allianceColor' class='amber'>";
-        html +=             "<span id='alliance'>unknown alliance</span>";
-        html +=             ", Station <span id='allianceStation'>?</span>";
-        html +=             ", (<span id='fmsGameMSG'>¯\\_(ツ)_/¯</span>)";
-        html +=         "</span>";
-        html +=     "</div>";
-        // Auto Strategy (filled with our custom selector widget below)
-        html +=     "<div class='containerrow'>";
-        html +=         "<span class='title'>AutoStrategy</span>";
-        html +=         "<div id='strategyWidget'></div>";
-        html +=     "</div>";
+        //  fieldconfig:
+        //      alliance(Red/Blue) station(0/1/2) (gamemsg) camerasel
+        html += "<div class='container gridded'>";
+        html += `<div ${gstyle([50, "row"], "padding-top:5px")}>`;
+        html +=     `<span class='label'>${this.config.label} </span>`;
+        html +=     "<span id='allianceColor' class='amber'>";
+        html +=         "<span id='alliance'>unknown alliance</span>, ";
+        html +=         "Station <span id='allianceStation'>?</span>, ";
+        html +=         "(<span id='fmsGameMSG'>¯\\_(ツ)_/¯</span>) ";
+        html +=     "</span>";
         html += "</div>";
+        // Auto Strategy (filled with our custom selector widget below)
+        // html +=     "<span class='title'> Auto Strategy</span> ";
+        html += `<div id='strategyWidget' ${gstyle([40, "row"])}></div> `;
+        if (this.config.params.cameraSelector)
+        {
+            let label = this.config.params.cameraSelector.label;
+            if(label == undefined) label = "Camera";
+            // html +=     `<span class='title'>${label}</span> `;
+            html += `<div id='cameraSelector' ${gstyle([40, "row"])}></div>`;
+        }
+
+        html += "</div>";
+
         targetElem.html(html);
 
+        // no need to externally expose ntkey for strategy, we distribute it below
         this.strategyConfig = {
             id: "strategyWidget",
-            label: "",
+            label: "Auto Strategy",
             type: "selector",
-            size: [0, 0], // ignored since we're in charge of layout (above)
+            size: [0, 0], // ignored since we bypass pagehandler
             ntkeys: [
                 "/SmartDashboard/AutoStrategy",
                 "/SmartDashboard/AutoStrategyOptions"
@@ -44,7 +55,25 @@ class FieldConfig extends Widget
         };
         let el = $("#strategyWidget");
         this.strategyConfig.widget = new SelectorWidget(this.strategyConfig, el);
-        // no need to expose ntkey for selector, we distribute it below
+
+        if(this.config.params.cameraSelector)
+        {
+            this.cameraSelConfig = {
+                id: "cameraSelector",
+                label: "Camera",
+                type: "selector",
+                size: [0, 0], // size ignore since we bypass pagehandler.js
+                params: {
+                    ntkey: this.config.params.cameraSelector.ntkey,
+                    width: "14em",
+                    options: this.config.params.cameraSelector.options
+                }
+            };
+            el = $("#cameraSelector");
+            this.cameraSelConfig.widget = new SelectorWidget(this.cameraSelConfig, el);
+        }
+        else
+            this.cameraSelConfig = null;
     }
 
     valueChanged(key, value, isNew)
@@ -78,10 +107,10 @@ class FieldConfig extends Widget
                 $("#alliance").text("No Alliance");
             }
             break;
-        case "/FMSInfo/StationNumber": 
+        case "/FMSInfo/StationNumber":
             $("#allianceStation").text(value);
             break;
-        case "/FMSInfo/GameSpecificMessage": 
+        case "/FMSInfo/GameSpecificMessage":
             $("#fmsGameMSG").text(value);
             // 2018: 3 chars "LRL", means:
             //    our switch on Left
@@ -101,6 +130,9 @@ class FieldConfig extends Widget
         case "/FMSInfo/.type":
             break;
         default:
+            if(this.cameraSelConfig && key == this.cameraSelConfig.params.ntkey)
+                this.cameraSelConfig.widget.valueChanged(key, value, isNew);
+            else
             if(key.indexOf("/FMS") == 0)
                 app.info(`unknown FMS key ${key}, value: ${value}`);
             break;

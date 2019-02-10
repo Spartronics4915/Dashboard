@@ -1,4 +1,4 @@
-
+/* global Widget, app */
 class CanvasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -7,19 +7,19 @@ class CanvasWidget extends Widget
     }
 
     /**
-     * Draws a rounded rectangle using the current state of the canvas. 
-     * If you omit the last three params, it will draw a rectangle 
-     * outline with a 5 pixel border radius 
+     * Draws a rounded rectangle using the current state of the canvas.
+     * If you omit the last three params, it will draw a rectangle
+     * outline with a 5 pixel border radius
      * @param {CanvasRenderingContext2D} ctx
      * @param {Number} x The top left x coordinate
-     * @param {Number} y The top left y coordinate 
-     * @param {Number} width The width of the rectangle 
+     * @param {Number} y The top left y coordinate
+     * @param {Number} width The width of the rectangle
      * @param {Number} height The height of the rectangle
      * @param {Number} radius The corner radius. Defaults to 5;
      * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
      * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
      */
-    roundRect(ctx, x, y, width, height, radius, fill, stroke)
+    static roundRect(ctx, x, y, width, height, radius, fill, stroke)
     {
         if (stroke == undefined)
             stroke = true;
@@ -36,9 +36,12 @@ class CanvasWidget extends Widget
         ctx.lineTo(x, y + radius);
         ctx.quadraticCurveTo(x, y, x + radius, y);
         ctx.closePath();
-        if (stroke) 
+        if (stroke)
             ctx.stroke();
         if (fill)
             ctx.fill();
     }
 }
+
+Widget.AddWidgetClass("canvas", CanvasWidget);
+window.CanvasUtils = CanvasWidget;
