@@ -235,9 +235,51 @@ class CamerasWidget extends Widget
         }
     }
 
+    _clamp(v, min, max)
+    {
+        if(v < min) return min;
+        else if(v> max) return max;
+        else return v;
+    }
+
     addRandomPt()
     {
-        // no-op
+        if(!this.demoRadius)
+        {
+            this.demoRadius = 20;
+            this.deltaRadius = 2;
+        }
+        this.demoRadius += this.deltaRadius;
+        if(this.demoRadius > 250 || this.demoRadius < 10)
+            this.deltaRadius *= -1;
+        app.putValue("/SmartDashboard/Driver/CameraOverlay/Circle",
+                    `100,100,${this.demoRadius},4`);
+
+        if(!this.demoRect)
+        {
+            this.demoRect = [300, 250, 30, 50, 10, 2]; // x,y,w,h,r,linewidth
+            this.deltaRect = [5, 8, 2, .2];
+        }
+        // play with w, h
+        this.demoRect[2] += this.deltaRect[0];
+        if(this.demoRect[2] > 250 || this.demoRect[2] < 15)
+            this.deltaRect[0] *= -1;
+        this.demoRect[3] += this.deltaRect[1];
+        if(this.demoRect[3] > 250 || this.demoRect[3] < 30)
+            this.deltaRect[1] *= -1;
+
+        // play with radius
+        this.demoRect[4] += this.deltaRect[2];
+        if(this.demoRect[4] > 12 || this.demoRect[4] < 1)
+            this.deltaRect[2] *= -1;
+        
+        // play with linewidth
+        this.demoRect[5] += this.deltaRect[3];
+        if(this.demoRect[5] > 12 || this.demoRect[5] < 1)
+            this.deltaRect[3] *= -1;
+            
+        app.putValue("/SmartDashboard/Driver/CameraOverlay/Rect",
+                        this.demoRect.join(","));
     }
 
     // _onCanPlay only called when we're in video-feed mode
@@ -281,13 +323,16 @@ class CamerasWidget extends Widget
         var w = this.canvEl.getAttribute("width");
         var h = this.canvEl.getAttribute("height");
         this.canvCtx.clearRect(0, 0, w, h);
+        // see also: https://www.google.com/search?q=spaceship+docking+hud
         for(const ntkey in this.overlay.items)
         {
             let item =  this.overlay.items[ntkey];
             switch(item.class)
             {
             case "text":
+                // if(0)
                 {
+                    this.canvCtx.save();
                     this.canvCtx.fillStyle = item.fillStyle;
                     this.canvCtx.font = item.font;
                     this.canvCtx.shadowColor =  "rgba(0,0,0,.8)";
@@ -296,6 +341,63 @@ class CamerasWidget extends Widget
                     this.canvCtx.shadowBlur = 3;
                     this.canvCtx.fillText(item.value ? item.value : "<no label>",
                                 item.origin[0], item.origin[1]);
+                    this.canvCtx.restore();
+                }
+                break;
+            case "circle":
+                // expect value string "x, y, r [, strokewidth]"
+                // if(0)
+                {
+                    let vals = item.value.split(",");
+                    if(vals.length >= 3)
+                    {
+                        let stroke = false;
+                        let fill = false;
+                        this.canvCtx.save();
+                        if(item.fillStyle)
+                        {
+                            this.canvCtx.fillStyle = item.fillStyle;
+                            fill = true;
+                        }
+                        if(item.strokeStyle)
+                        {
+                            this.canvCtx.strokeStyle = item.strokeStyle;
+                            stroke = true;
+                        }
+                        this.canvCtx.lineWidth = (vals.length == 4) ?  vals[3] : 2;
+                        CanvasUtils.circle(this.canvCtx, vals[0], vals[1], vals[2],
+                                        stroke, fill);
+                        this.canvCtx.restore();
+                    }
+                }
+                break;
+            case "rect":
+                // expect value string "x0, y0, width, height, [cornerradius [, strokewidth]]"
+                // if(0)
+                {
+                    let vals = item.value.split(",");
+                    if(vals.length >= 4)
+                    {
+                        let stroke = false;
+                        let fill = false;
+                        this.canvCtx.save();
+                        if(item.fillStyle)
+                        {
+                            this.canvCtx.fillStyle = item.fillStyle;
+                            fill = true;
+                        }
+                        if(item.strokeStyle)
+                        {
+                            this.canvCtx.strokeStyle = item.strokeStyle;
+                            stroke = true;
+                        }
+                        this.canvCtx.lineWidth = (vals.length >= 6) ? vals[5]:3;
+                        CanvasUtils.roundRect(this.canvCtx,
+                                            vals[0], vals[1], vals[2], vals[3],
+                                            (vals.length >= 5) ? vals[4] : 0, // radius
+                                            stroke, fill);
+                        this.canvCtx.restore();
+                    }
                 }
                 break;
             }

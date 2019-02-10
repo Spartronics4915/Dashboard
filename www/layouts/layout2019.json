@@ -76,6 +76,18 @@
                                     "font": "30px Arial, serif",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": "<nocamera>"
+                                },
+                                "/SmartDashboard/Driver/CameraOverlay/Circle":
+                                {
+                                    "class": "circle",
+                                    "strokeStyle": "rgba(255, 0, 10, .85)",
+                                    "value": "200,200,35,3"
+                                },
+                                "/SmartDashboard/Driver/CameraOverlay/Rect":
+                                {
+                                    "class": "rect",
+                                    "strokeStyle": "rgba(100, 0, 100, .85)",
+                                    "value": "300,300,30,30,3,5"
                                 }
                             }
                         },
