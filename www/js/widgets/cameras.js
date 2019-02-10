@@ -24,12 +24,12 @@ class CamerasWidget extends Widget
         this.imgId = `${this.baseId}Img`;
         this.vidId = `${this.baseId}Vid`;
         this.canvId = `${this.baseId}Canv`;
-        this.canvEl = null;
-        this.canvCtx = null;
         this.vidEl = null;
         this.imgEl = null;
-        this.cvcanvEl = null; // for opencv
-        this.cvcanvCtx = null; // for opencv
+        this.overlayEl = null;
+        this.overlayCtx = null;
+        this.opencvEl = null;
+        this.opencvCtx = null;
         this.dooverlay = false;
         this.streamHandler = null;
         this.isStreaming = false;
@@ -38,14 +38,14 @@ class CamerasWidget extends Widget
 
         if(this.config.params.selector)
         {
-            html +=     "<div class='containerrow xtrapad'>";
-            html +=        `<span class='title'>${this.config.label}</span>`;
-            html +=        `<div id='${this.selWidgetId}'></div>`;
-            html +=     "</div>";
+            html += "<div class='containerrow xtrapad'>";
+            html +=    `<span class='title'>${this.config.label}</span>`;
+            html +=    `<div id='${this.selWidgetId}'></div>`;
+            html += "</div>";
         }
 
-        html +=     `<div id='${this.divId}' class='cameraViewImg'>`;
-        html +=     "</div>";
+        html +=  `<div id='${this.divId}' class='cameraViewImg'>`;
+        html +=   "</div>";
         html += "</div>";
         targetElem.html(html);
 
@@ -124,14 +124,14 @@ class CamerasWidget extends Widget
             this.streamHandler = null;
             this.isStreaming = false;
         }
-        this.canvCtx = null; // only valid after we know video/img size
+        this.overlayCtx = null; // only valid after we know video/img size
 
-        if(this.cvcanvEl)
+        if(this.opencvEl)
         {
             // since we're not a child of targetElem
-            document.body.removeChild(this.cvcanvEl);
-            this.cvcanvEl = null;
-            this.cvcanvCtx = null; // only valid after we know video/img size
+            document.body.removeChild(this.opencvEl);
+            this.opencvEl = null;
+            this.opencvCtx = null; // only valid after we know video/img size
             // clear out item's imdata (owned by cvcanvEl)
             for(const ntkey in this.overlay.items)
             {
@@ -139,13 +139,12 @@ class CamerasWidget extends Widget
                 if(item.class == "opencv")
                     item.imdata = null;
             }
-
         }
 
-        this.canvEl = document.getElementById(`${this.canvId}`);
+        this.overlayEl = document.getElementById(`${this.canvId}`);
         this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
         this.imgEl = document.getElementById(`${this.imgId}`); // may not exist
-        if(!this.canvEl)
+        if(!this.overlayEl)
         {
             if(this.config.params.overlay)
                 app.warning("cameras is missing canvEl");
@@ -158,11 +157,11 @@ class CamerasWidget extends Widget
                 this.imgEl.addEventListener("load", function()
                 {
                     app.debug("cameras img loaded width:" + this.imgEl.width);
-                    this.canvEl.style.left = this.imgEl.offsetLeft + "px";
-                    this.canvEl.style.top = this.imgEl.offsetTop + "px";
-                    this.canvEl.setAttribute("width", this.imgEl.offsetWidth);
-                    this.canvEl.setAttribute("height", this.imgEl.offsetHeight);
-                    this.canvCtx = this.canvEl.getContext("2d");
+                    this.overlayEl.style.left = this.imgEl.offsetLeft + "px";
+                    this.overlayEl.style.top = this.imgEl.offsetTop + "px";
+                    this.overlayEl.setAttribute("width", this.imgEl.offsetWidth);
+                    this.overlayEl.setAttribute("height", this.imgEl.offsetHeight);
+                    this.overlayCtx = this.overlayEl.getContext("2d");
                     this._updateOverlay();
                 }.bind(this));
             }
@@ -316,15 +315,15 @@ class CamerasWidget extends Widget
         this.isStreaming = true;
         if(this.config.params.overlay)
         {
-            this.canvEl.style.left = this.vidEl.offsetLeft + "px";
-            this.canvEl.style.top = this.vidEl.offsetTop + "px";
+            this.overlayEl.style.left = this.vidEl.offsetLeft + "px";
+            this.overlayEl.style.top = this.vidEl.offsetTop + "px";
             // Need to check for scale2 class - not as simple as this:
-            //  this.canvEl.setAttribute("width", this.vidEl.videoWidth);
-            //  this.canvEl.setAttribute("height", this.vidEl.videoHeight);
+            //  this.overlayEl.setAttribute("width", this.vidEl.videoWidth);
+            //  this.overlayEl.setAttribute("height", this.vidEl.videoHeight);
             // Nor does el.width work.
-            this.canvEl.setAttribute("width", this.vidEl.offsetWidth);
-            this.canvEl.setAttribute("height", this.vidEl.offsetHeight);
-            this.canvCtx = this.canvEl.getContext("2d");
+            this.overlayEl.setAttribute("width", this.vidEl.offsetWidth);
+            this.overlayEl.setAttribute("height", this.vidEl.offsetHeight);
+            this.overlayCtx = this.overlayEl.getContext("2d");
             this._updateOverlay();
         }
     }
@@ -351,39 +350,39 @@ class CamerasWidget extends Widget
         }
 
         // only draw into canvas after we're fully synced with img/video source
-        if(!this.canvEl) return;
-        if(!this.canvCtx) return;
+        if(!this.overlayEl) return;
+        if(!this.overlayCtx) return;
 
-        var w = this.canvEl.getAttribute("width");
-        var h = this.canvEl.getAttribute("height");
+        var w = this.overlayEl.getAttribute("width");
+        var h = this.overlayEl.getAttribute("height");
 
         if(updateItem && updateItem.enabled)
         {
             if(updateItem.class == "opencv")
             {
-                if(!this.cvcanvEl)
+                if(!this.opencvEl)
                 {
                     // In order to apply opencv, we must allocate a canvas
                     // and populate it with pixels from the video.  This canvas
                     // is invisible to users.
-                    this.cvcanvEl = document.createElement("canvas");
-                    this.cvcanvEl.width = w; // w, h are size of overlay
-                    this.cvcanvEl.height = h;
-                    this.cvcanvEl.position = "absolute";
-                    this.cvcanvEl.display = "none";
-                    document.body.appendChild(this.cvcanvEl);
-                    this.cvcanvCtx = this.cvcanvEl.getContext("2d");
+                    this.opencvEl = document.createElement("canvas");
+                    this.opencvEl.width = w; // w, h are size of overlay
+                    this.opencvEl.height = h;
+                    this.opencvEl.position = "absolute";
+                    this.opencvEl.display = "none";
+                    document.body.appendChild(this.opencvEl);
+                    this.opencvCtx = this.opencvEl.getContext("2d");
                 }
                 if(this.vidEl)
                 {
                     // this.vidEl.visibility = "hidden";
-                    this.cvcanvCtx.drawImage(this.vidEl, 0, 0, w, h);
+                    this.opencvCtx.drawImage(this.vidEl, 0, 0, w, h);
                 }
                 else
                 if(this.imgEl)
                 {
                     // this.imgEl.visibility = "hidden";
-                    this.cvcanvCtx.drawImage(this.imgEl, 0, 0, w, h);
+                    this.opencvCtx.drawImage(this.imgEl, 0, 0, w, h);
                 }
                 else
                 {
@@ -391,7 +390,7 @@ class CamerasWidget extends Widget
                 }
                 // process the image
                 // http://ucisysarch.github.io/opencvjs/examples/img_proc.html
-                var input = this.cvcanvCtx.getImageData(0, 0, w, h);
+                var input = this.opencvCtx.getImageData(0, 0, w, h);
                 var src = cv.matFromArray(input, cv.CV_8UC4); // canvas holds rgba
                 cv.cvtColor(src, src, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
                 switch(updateItem.pipeline)
@@ -400,7 +399,7 @@ class CamerasWidget extends Widget
                     {
                         let output = new cv.Mat();
                         cv.blur(src, output, [5, 5], [-1, -1], 4);
-                        updateItem.imdata = this._getImgData(this.cvcanvCtx, output, 16);
+                        updateItem.imdata = this._getImgData(output, 16);
                         output.delete();
                     }
                     break;
@@ -411,7 +410,7 @@ class CamerasWidget extends Widget
                         let cthresh = 50; // higher means fewer edges
                         cv.blur(src, blurred, [5, 5], [-1, -1], 4);
                         cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
-                        updateItem.imdata = this._getImgData(this.cvcanvCtx, output, 255);
+                        updateItem.imdata = this._getImgData(output, 255);
                         blurred.delete();
                         output.delete();
                     }
@@ -426,7 +425,7 @@ class CamerasWidget extends Widget
 
         // good to go
         app.debug("drawOverlay");
-        this.canvCtx.clearRect(0, 0, w, h);
+        this.overlayCtx.clearRect(0, 0, w, h);
         // see also: https://www.google.com/search?q=spaceship+docking+hud
         for(const ntkey in this.overlay.items)
         {
@@ -437,16 +436,16 @@ class CamerasWidget extends Widget
             case "text":
                 // if(0)
                 {
-                    this.canvCtx.save();
-                    this.canvCtx.fillStyle = item.fillStyle;
-                    this.canvCtx.font = item.font;
-                    this.canvCtx.shadowColor =  "rgba(0,0,0,.8)";
-                    this.canvCtx.shadowOffsetX = 3;
-                    this.canvCtx.shadowOffsetY = 3;
-                    this.canvCtx.shadowBlur = 3;
-                    this.canvCtx.fillText(item.value ? item.value : "<no label>",
+                    this.overlayCtx.save();
+                    this.overlayCtx.fillStyle = item.fillStyle;
+                    this.overlayCtx.font = item.font;
+                    this.overlayCtx.shadowColor =  "rgba(0,0,0,.8)";
+                    this.overlayCtx.shadowOffsetX = 3;
+                    this.overlayCtx.shadowOffsetY = 3;
+                    this.overlayCtx.shadowBlur = 3;
+                    this.overlayCtx.fillText(item.value ? item.value : "<no label>",
                                 item.origin[0], item.origin[1]);
-                    this.canvCtx.restore();
+                    this.overlayCtx.restore();
                 }
                 break;
             case "circle":
@@ -458,21 +457,21 @@ class CamerasWidget extends Widget
                     {
                         let stroke = false;
                         let fill = false;
-                        this.canvCtx.save();
+                        this.overlayCtx.save();
                         if(item.fillStyle)
                         {
-                            this.canvCtx.fillStyle = item.fillStyle;
+                            this.overlayCtx.fillStyle = item.fillStyle;
                             fill = true;
                         }
                         if(item.strokeStyle)
                         {
-                            this.canvCtx.strokeStyle = item.strokeStyle;
+                            this.overlayCtx.strokeStyle = item.strokeStyle;
                             stroke = true;
                         }
-                        this.canvCtx.lineWidth = (vals.length == 4) ?  vals[3] : 2;
-                        CanvasUtils.circle(this.canvCtx, vals[0], vals[1], vals[2],
+                        this.overlayCtx.lineWidth = (vals.length == 4) ?  vals[3] : 2;
+                        CanvasUtils.circle(this.overlayCtx, vals[0], vals[1], vals[2],
                                         stroke, fill);
-                        this.canvCtx.restore();
+                        this.overlayCtx.restore();
                     }
                 }
                 break;
@@ -485,30 +484,30 @@ class CamerasWidget extends Widget
                     {
                         let stroke = false;
                         let fill = false;
-                        this.canvCtx.save();
+                        this.overlayCtx.save();
                         if(item.fillStyle)
                         {
-                            this.canvCtx.fillStyle = item.fillStyle;
+                            this.overlayCtx.fillStyle = item.fillStyle;
                             fill = true;
                         }
                         if(item.strokeStyle)
                         {
-                            this.canvCtx.strokeStyle = item.strokeStyle;
+                            this.overlayCtx.strokeStyle = item.strokeStyle;
                             stroke = true;
                         }
-                        this.canvCtx.lineWidth = (vals.length >= 6) ? vals[5]:3;
-                        CanvasUtils.roundRect(this.canvCtx,
+                        this.overlayCtx.lineWidth = (vals.length >= 6) ? vals[5]:3;
+                        CanvasUtils.roundRect(this.overlayCtx,
                                             vals[0], vals[1], vals[2], vals[3],
                                             (vals.length >= 5) ? vals[4] : 0, // radius
                                             stroke, fill);
-                        this.canvCtx.restore();
+                        this.overlayCtx.restore();
                     }
                 }
                 break;
             case "opencv":
                 {
                     if(item.imdata)
-                        this.canvCtx.putImageData(item.imdata, 0, 0);
+                        this.overlayCtx.putImageData(item.imdata, 0, 0);
                 }
                 break;
             }
@@ -516,11 +515,11 @@ class CamerasWidget extends Widget
     }
 
     // convert from opencv to canvas img data
-    _getImgData(cvcanvCtx, cvMat, maxOpac)
+    _getImgData(cvMat, maxOpac)
     {
         var cvdata = cvMat.data();
         var nchan = cvMat.channels();
-        var imgdata = cvcanvCtx.createImageData(cvMat.cols, cvMat.rows);
+        var imgdata = this.opencvCtx.createImageData(cvMat.cols, cvMat.rows);
         var idata = imgdata.data;
         var opacity;
         for(var i=0,j=0;i<idata.length;i+=nchan,j+=4)
@@ -534,33 +533,14 @@ class CamerasWidget extends Widget
         return imgdata;
     }
 
-    _onPlay()
+    _filterFrame()
     {
         // this is inactive, but here for reference in the case where
         // we wish to process the incoming video.
-        app.debug("cameras._onPlay");
-        if(!this.canvEl || true)
+        app.debug("cameras._filterFrame");
+        if(!this.overlayEl || true)
             return;
-
-        // Every 33 milliseconds... copy video to canvas. So we
-        // can operate on it locally.  If we only wish to view the video
-        // feed the canvas isn't needed.
-        setInterval(function()
-        {
-            if(this.vidEl.paused || this.vidEl.ended)
-                return;
-            var w = this.canvEl.getAttribute("width");
-            var h = this.canvEl.getAttribute("height");
-            this.canvCtx.fillRect(0, 0, w, h);
-            this.canvCtx.drawImage(this.vidEl, 0, 0, w, h);
-            // here's where we can operate on the image-in-canvas
-            // var input = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            // var img = cv.matFromArray(input, 24); // 24 for rgba
-            // var imgGray = new cv.Mat();
-            // var imgColor = new cv.Mat(); // Opencv likes RGB
-            // cv.cvtColor(img, imgGray, cv.ColorConversionCodes.COLOR_RGBA2GRAY.value, 0);
-            // cv.cvtColor(img, imgColor, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
-        }.bind(this), 33);
+        // install callback
     }
 
     onStreamOpen(stream)
@@ -594,8 +574,8 @@ class CamerasWidget extends Widget
         app.notice("camera stream closed");
         if(this.vidEl)
             this.vidEl.srcObject = null;
-        if(this.canvCtx)
-            this.canvCtx.clearRect(0, 0, this.canvEl.width, this.canvEl.height);
+        if(this.overlayCtx)
+            this.overlayCtx.clearRect(0, 0, this.overlayEl.width, this.overlayEl.height);
         this.isStreaming = false;
         this.streamHandler = null;
     }

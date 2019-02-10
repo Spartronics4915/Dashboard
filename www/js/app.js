@@ -44,10 +44,6 @@ class App
         // nb: initialization of js members occurs in 'onReady'
     }
 
-    locateFile(file)
-    {
-    }
-
     logMsg(msg)
     {
         console.log(msg);
@@ -175,7 +171,8 @@ class App
             this.pageHandlers[this.currentPage].randomData();
             this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
         }
-        setTimeout(this.onIdle.bind(this), 20);
+        const fps = 30;
+        setTimeout(this.onIdle.bind(this), 1000/fps);
     }
 
     onLayoutLoaded()
