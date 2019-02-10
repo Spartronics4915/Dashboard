@@ -25,7 +25,18 @@ class App
 
         this.webapi = null;
 
-        window.Module = this; // for cv.js services
+        // for cv.js services:
+        //  * we need cv in global namespace
+        //  * cv.js also needs to resolve cv.data
+        window.locateFile = function(file)
+        {
+            if(file == "cv.data")
+                return "/js/webrtc/cv.data";
+            else
+                app.info("locatefile:" + file);
+            return file;
+        };
+        window.Module = window;
 
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
@@ -35,11 +46,6 @@ class App
 
     locateFile(file)
     {
-        if(file == "cv.data")
-            return "/js/webrtc/cv.data";
-        else
-            app.info("locatefile:" + file);
-        return file;
     }
 
     logMsg(msg)

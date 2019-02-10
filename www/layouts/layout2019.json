@@ -51,10 +51,12 @@
                     "type": "cameras",
                     "id": "drivercams",
                     "size": [1340, 800],
-                    "ntkeys": [
+                    "ntkeys":
+                    [
                         "/SmartDashboard/Driver/Camera"
                     ],
-                    "params": {
+                    "params":
+                    {
                         "selector": false,
                         "overlay":
                         {
@@ -64,6 +66,7 @@
                                 "/SmartDashboard/Time/Locale":
                                 {
                                     "class": "text",
+                                    "enabled": false,
                                     "origin": [300, 30],
                                     "font": "30px Arial, serif",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
@@ -72,6 +75,7 @@
                                 "/SmartDashboard/Driver/Camera":
                                 {
                                     "class": "text",
+                                    "enabled": false,
                                     "origin": [10, 30],
                                     "font": "30px Arial, serif",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
@@ -80,18 +84,29 @@
                                 "/SmartDashboard/Driver/CameraOverlay/Circle":
                                 {
                                     "class": "circle",
+                                    "enabled": false,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
                                     "value": "200,200,35,3"
                                 },
                                 "/SmartDashboard/Driver/CameraOverlay/Rect":
                                 {
                                     "class": "rect",
-                                    "strokeStyle": "rgba(100, 0, 100, .85)",
+                                    "enabled": false,
+                                    "strokeStyle": "rgba(100, 0, 150, .85)",
+                                    "value": "300,300,30,30,3,5"
+                                },
+                                "/SmartDashboard/Driver/CameraOverlay/Canny":
+                                {
+                                    "class": "opencv",
+                                    "enabled": false,
+                                    "pipeline": "blur",
+                                    "strokeStyle": "rgba(150, 100, 0, .85)",
                                     "value": "300,300,30,30,3,5"
                                 }
                             }
                         },
-                        "cameras": {
+                        "cameras":
+                        {
                             "No Camera":
                             {
                                 "protocol": "testpattern",

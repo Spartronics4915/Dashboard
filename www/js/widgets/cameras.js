@@ -1,4 +1,4 @@
-/* global SelectorWidget, Widget, $, app, WebRTCSignaling, CanvasUtils */
+/* global SelectorWidget, Widget, $, app, WebRTCSignaling, CanvasUtils, cv */
 
 // legacy cams here for reference, now expressed in per-season layout files.
 // var piCam = {ip:"10.49.15.10:5080", url: "/cam.mjpg", cls:"rotate0"};
@@ -24,6 +24,12 @@ class CamerasWidget extends Widget
         this.imgId = `${this.baseId}Img`;
         this.vidId = `${this.baseId}Vid`;
         this.canvId = `${this.baseId}Canv`;
+        this.canvEl = null;
+        this.canvCtx = null;
+        this.vidEl = null;
+        this.imgEl = null;
+        this.cvcanvEl = null; // for opencv
+        this.cvcanvCtx = null; // for opencv
         this.dooverlay = false;
         this.streamHandler = null;
         this.isStreaming = false;
@@ -74,12 +80,17 @@ class CamerasWidget extends Widget
             return null;
         else
         {
-            // we may be listening on the camera key and don't want
-            // double-updates above.
-            let hiddenKeys = Object.keys(this.overlay.items);
-            let i = hiddenKeys.indexOf(this.config.ntkeys[0]);
-            if(i != -1)
-                hiddenKeys.splice(i, 1);
+            // overlay may be listening on the camera key and don't want
+            // double-updates.
+            let hiddenKeys = [];
+            let camkey = this.config.ntkeys[0];
+            for(const ntkey in this.overlay.items)
+            {
+                if(ntkey == camkey) continue;
+                let item = this.overlay.items[ntkey];
+                if(item.enabled === undefined || item.enabled)
+                    hiddenKeys.push(ntkey);
+            }
             return hiddenKeys;
         }
     }
@@ -114,6 +125,22 @@ class CamerasWidget extends Widget
             this.isStreaming = false;
         }
         this.canvCtx = null; // only valid after we know video/img size
+
+        if(this.cvcanvEl)
+        {
+            // since we're not a child of targetElem
+            document.body.removeChild(this.cvcanvEl);
+            this.cvcanvEl = null;
+            this.cvcanvCtx = null; // only valid after we know video/img size
+            // clear out item's imdata (owned by cvcanvEl)
+            for(const ntkey in this.overlay.items)
+            {
+                let item =  this.overlay.items[ntkey];
+                if(item.class == "opencv")
+                    item.imdata = null;
+            }
+
+        }
 
         this.canvEl = document.getElementById(`${this.canvId}`);
         this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
@@ -307,14 +334,19 @@ class CamerasWidget extends Widget
         if(!this.overlay) return;
 
         // always update overlay values to avoid missing nettab event
-        app.debug("updateOverlay");
+        let updateItem = null;
+        app.info("updateOverlay " + (key ? key : "<domchange>"));
         if(key)
         {
             for(const ntkey in this.overlay.items)
             {
                 let item =  this.overlay.items[ntkey];
                 if(key == ntkey)
+                {
                     item.value = value;
+                    updateItem = item;
+                    break;
+                }
             }
         }
 
@@ -322,15 +354,84 @@ class CamerasWidget extends Widget
         if(!this.canvEl) return;
         if(!this.canvCtx) return;
 
-        // good to go
-        app.debug("drawOverlay");
         var w = this.canvEl.getAttribute("width");
         var h = this.canvEl.getAttribute("height");
+
+        if(updateItem && updateItem.enabled)
+        {
+            if(updateItem.class == "opencv")
+            {
+                if(!this.cvcanvEl)
+                {
+                    // In order to apply opencv, we must allocate a canvas
+                    // and populate it with pixels from the video.  This canvas
+                    // is invisible to users.
+                    this.cvcanvEl = document.createElement("canvas");
+                    this.cvcanvEl.width = w; // w, h are size of overlay
+                    this.cvcanvEl.height = h;
+                    this.cvcanvEl.position = "absolute";
+                    this.cvcanvEl.display = "none";
+                    document.body.appendChild(this.cvcanvEl);
+                    this.cvcanvCtx = this.cvcanvEl.getContext("2d");
+                }
+                if(this.vidEl)
+                {
+                    // this.vidEl.visibility = "hidden";
+                    this.cvcanvCtx.drawImage(this.vidEl, 0, 0, w, h);
+                }
+                else
+                if(this.imgEl)
+                {
+                    // this.imgEl.visibility = "hidden";
+                    this.cvcanvCtx.drawImage(this.imgEl, 0, 0, w, h);
+                }
+                else
+                {
+                    app.warning("opencv has nothing to do");
+                }
+                // process the image
+                // http://ucisysarch.github.io/opencvjs/examples/img_proc.html
+                var input = this.cvcanvCtx.getImageData(0, 0, w, h);
+                var src = cv.matFromArray(input, cv.CV_8UC4); // canvas holds rgba
+                cv.cvtColor(src, src, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
+                switch(updateItem.pipeline)
+                {
+                case "blur":
+                    {
+                        let output = new cv.Mat();
+                        cv.blur(src, output, [5, 5], [-1, -1], 4);
+                        updateItem.imdata = this._getImgData(this.cvcanvCtx, output, 16);
+                        output.delete();
+                    }
+                    break;
+                case "canny":
+                    {
+                        let output = new cv.Mat();
+                        let blurred = new cv.Mat();
+                        let cthresh = 50; // higher means fewer edges
+                        cv.blur(src, blurred, [5, 5], [-1, -1], 4);
+                        cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
+                        updateItem.imdata = this._getImgData(this.cvcanvCtx, output, 255);
+                        blurred.delete();
+                        output.delete();
+                    }
+                    break;
+                default:
+                    app.warning("unimplemented opencv pipeline " + updateItem.pipeline);
+                    break;
+                }
+                src.delete();
+            }
+        }
+
+        // good to go
+        app.debug("drawOverlay");
         this.canvCtx.clearRect(0, 0, w, h);
         // see also: https://www.google.com/search?q=spaceship+docking+hud
         for(const ntkey in this.overlay.items)
         {
             let item =  this.overlay.items[ntkey];
+            if(!item.enabled) continue;
             switch(item.class)
             {
             case "text":
@@ -404,8 +505,33 @@ class CamerasWidget extends Widget
                     }
                 }
                 break;
+            case "opencv":
+                {
+                    if(item.imdata)
+                        this.canvCtx.putImageData(item.imdata, 0, 0);
+                }
+                break;
             }
         }
+    }
+
+    // convert from opencv to canvas img data
+    _getImgData(cvcanvCtx, cvMat, maxOpac)
+    {
+        var cvdata = cvMat.data();
+        var nchan = cvMat.channels();
+        var imgdata = cvcanvCtx.createImageData(cvMat.cols, cvMat.rows);
+        var idata = imgdata.data;
+        var opacity;
+        for(var i=0,j=0;i<idata.length;i+=nchan,j+=4)
+        {
+            idata[j] = cvdata[i]; // j % 255;
+            idata[j+1] = cvdata[i+1%nchan];
+            idata[j+2] = cvdata[i+2%nchan];
+            opacity = (idata[j] + idata[j+1] + idata[j+2]) / 3;
+            imgdata.data[j+3] = opacity > maxOpac ? maxOpac : opacity;
+        }
+        return imgdata;
     }
 
     _onPlay()
