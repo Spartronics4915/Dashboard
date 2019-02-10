@@ -133,8 +133,8 @@ class CamerasWidget extends Widget
                     app.debug("cameras img loaded width:" + this.imgEl.width);
                     this.canvEl.style.left = this.imgEl.offsetLeft + "px";
                     this.canvEl.style.top = this.imgEl.offsetTop + "px";
-                    this.canvEl.setAttribute("width", this.imgEl.width);
-                    this.canvEl.setAttribute("height", this.imgEl.height);
+                    this.canvEl.setAttribute("width", this.imgEl.offsetWidth);
+                    this.canvEl.setAttribute("height", this.imgEl.offsetHeight);
                     this.canvCtx = this.canvEl.getContext("2d");
                     this._updateOverlay();
                 }.bind(this));
@@ -291,8 +291,12 @@ class CamerasWidget extends Widget
         {
             this.canvEl.style.left = this.vidEl.offsetLeft + "px";
             this.canvEl.style.top = this.vidEl.offsetTop + "px";
-            this.canvEl.setAttribute("width", this.vidEl.videoWidth);
-            this.canvEl.setAttribute("height", this.vidEl.videoHeight);
+            // Need to check for scale2 class - not as simple as this:
+            //  this.canvEl.setAttribute("width", this.vidEl.videoWidth);
+            //  this.canvEl.setAttribute("height", this.vidEl.videoHeight);
+            // Nor does el.width work.
+            this.canvEl.setAttribute("width", this.vidEl.offsetWidth);
+            this.canvEl.setAttribute("height", this.vidEl.offsetHeight);
             this.canvCtx = this.canvEl.getContext("2d");
             this._updateOverlay();
         }
