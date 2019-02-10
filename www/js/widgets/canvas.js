@@ -19,22 +19,45 @@ class CanvasWidget extends Widget
      * @param {Boolean} fill Whether to fill the rectangle. Defaults to false.
      * @param {Boolean} stroke Whether to stroke the rectangle. Defaults to true.
      */
-    static roundRect(ctx, x, y, width, height, radius, fill, stroke)
+    static roundRect(ctx, x, y, width, height, radius, stroke, fill)
     {
         if (stroke == undefined)
             stroke = true;
         if (radius === undefined)
             radius = 5;
+        if(radius == 0)
+        {
+            ctx.rect(x, y, width, height);
+        }
+        else
+        {
+            x = Number(x);
+            y = Number(y);
+            width = Number(width);
+            height = Number(height);
+            radius = Number(radius);
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+        if (stroke)
+            ctx.stroke();
+        if (fill)
+            ctx.fill();
+    }
+
+    static circle(ctx, x, y, radius, stroke, fill)
+    {
         ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.arc(x, y, radius, 0, 2*Math.PI); // ends path
         ctx.closePath();
         if (stroke)
             ctx.stroke();
