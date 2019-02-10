@@ -253,7 +253,7 @@ class CamerasWidget extends Widget
         if(this.demoRadius > 250 || this.demoRadius < 10)
             this.deltaRadius *= -1;
         app.putValue("/SmartDashboard/Driver/CameraOverlay/Circle",
-                    `100,100,${this.demoRadius},4`);
+                     `100,100,${this.demoRadius},4`);
 
         if(!this.demoRect)
         {
@@ -272,12 +272,12 @@ class CamerasWidget extends Widget
         this.demoRect[4] += this.deltaRect[2];
         if(this.demoRect[4] > 12 || this.demoRect[4] < 1)
             this.deltaRect[2] *= -1;
-        
+
         // play with linewidth
         this.demoRect[5] += this.deltaRect[3];
         if(this.demoRect[5] > 12 || this.demoRect[5] < 1)
             this.deltaRect[3] *= -1;
-            
+
         app.putValue("/SmartDashboard/Driver/CameraOverlay/Rect",
                         this.demoRect.join(","));
     }
