@@ -413,12 +413,19 @@ class CamerasWidget extends Widget
                 case "canny":
                     {
                         let output = new cv.Mat();
-                        let blurred = new cv.Mat();
+                        let blurred = null; // new cv.Mat();
                         let cthresh = 50; // higher means fewer edges
-                        cv.blur(src, blurred, [5, 5], [-1, -1], 4);
-                        cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
-                        updateItem.imdata = this._getImgData(output, 0);
-                        blurred.delete();
+                        let cc = [100, 0, 200];
+                        if(blurred)
+                        {
+                            cv.blur(src, blurred, [5, 5], [-1, -1], 4);
+                            cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
+                        }
+                        else
+                            cv.Canny(src, output, cthresh, cthresh*2, 3, 0);
+                        updateItem.imdata = this._getImgData(output, 0, cc);
+                        if(blurred)
+                            blurred.delete();
                         output.delete();
                     }
                     break;
@@ -527,7 +534,7 @@ class CamerasWidget extends Widget
     }
 
     // convert from opencv to canvas img data
-    _getImgData(cvMat, maxOpac)
+    _getImgData(cvMat, maxOpac, colorize)
     {
         var cvdata = cvMat.data();
         var nchan = cvMat.channels();
@@ -535,23 +542,37 @@ class CamerasWidget extends Widget
         var idata = imgdata.data;
         if(nchan == 1)
         {
-            for(var i=0,j=0;i<idata.length;i+=nchan)
+            if(!colorize)
             {
-                let d = cvdata[i];
-                idata[j++] = d;
-                idata[j++] = d;
-                idata[j++] = d;
-                imgdata.data[j++] = maxOpac > 0 ? maxOpac : (d ? 255 : 0);
+                for(let i=0,j=0;i<idata.length;i+=nchan)
+                {
+                    let d = cvdata[i];
+                    idata[j++] = d;
+                    idata[j++] = d;
+                    idata[j++] = d;
+                    imgdata.data[j++] = maxOpac > 0 ? maxOpac : (d ? 255 : 0);
+                }
+            }
+            else
+            {
+                for(let i=0,j=0;i<idata.length;i+=nchan)
+                {
+                    let d = cvdata[i];
+                    idata[j++] = Math.floor(colorize[0]*d / 255);
+                    idata[j++] = Math.floor(colorize[1]*d / 255);
+                    idata[j++] = Math.floor(colorize[2]*d / 255);
+                    imgdata.data[j++] = maxOpac > 0 ? maxOpac : (d ? 255 : 0);
+                }
             }
         }
         else
         if(nchan == 3 || nchan == 4)
         {
-            for(var i=0,j=0;i<idata.length;i+=nchan)
+            for(let i=0,j=0;i<idata.length;i+=nchan)
             {
                 idata[j++] = cvdata[i]; // j % 255;
-                idata[j++] = cvdata[i+1%nchan];
-                idata[j++] = cvdata[i+2%nchan];
+                idata[j++] = cvdata[i+1];
+                idata[j++] = cvdata[i+2];
                 imgdata.data[j++] = maxOpac;
             }
         }
