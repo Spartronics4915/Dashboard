@@ -62,18 +62,17 @@
                         "overlay":
                         {
                             "enable": true,
+                            "updateinterval": 500,
                             "_comment_": "items drawn in order (bottom-to-top)",
                             "items":
                             [
                                 {
-                                    "key": "/SmartDashboard/Time/Locale",
                                     "class": "opencv",
                                     "enabled": true,
                                     "pipeline": "canny"
                                 },
                                 {
-                                    "key": "/SmartDashboard/Time/Locale",
-                                    "class": "text",
+                                    "class": "time",
                                     "enabled": true,
                                     "origin": [300, 30],
                                     "font": "30px Arial, serif",

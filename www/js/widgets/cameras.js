@@ -69,6 +69,21 @@ class CamerasWidget extends Widget
         }
         else
             this.selConfig = null;
+
+        if(this.config.params.overlay &&
+            this.config.params.overlay.enable &&
+            this.config.params.overlay.updateinterval)
+        {
+            app.registerPageIdler(this.onIdle.bind(this),
+                    this.config.params.overlay.updateinterval,
+                    "cameras");
+        }
+    }
+
+    onIdle()
+    {
+        if(this.overlay)
+            this._updateOverlay();
     }
 
     getHiddenNTKeys()
@@ -337,20 +352,18 @@ class CamerasWidget extends Widget
     {
         // always update overlay values to avoid missing nettab event
         let updateItem = null;
-        if(key)
+        for(let item of this.config.params.overlay.items)
         {
-            for(let item of this.config.params.overlay.items)
+            if(item.enabled == undefined || item.enabled)
             {
-                if(item.enabled == undefined || item.enabled)
+                // key may be undefined
+                if(key == item.key)
                 {
-                    if(key == item.key)
+                    item.value = value;
+                    if(!updateItem && item.class == "opencv")
                     {
-                        item.value = value;
-                        if(!updateItem && item.class == "opencv")
-                        {
-                            // only one opencv item per iteration (per key)
-                            updateItem = item;
-                        }
+                        // only one opencv item per iteration (per key)
+                        updateItem = item;
                     }
                 }
             }
@@ -361,13 +374,13 @@ class CamerasWidget extends Widget
         if(!this.overlayEl) return;
         if(!this.overlayCtx) return;
 
-        app.info("updateOverlay " + (key ? key : "<domchange>"));
+        app.debug("updateOverlay " + (key ? key : "<domchange>"));
         var w = this.overlayEl.getAttribute("width");
         var h = this.overlayEl.getAttribute("height");
 
         if(updateItem && updateItem.enabled)
         {
-            if(!window.cv)
+            if(!window.cv || !window.cv.matFromArray)
                 app.warning("cv not loaded yet");
             else
             {
@@ -451,6 +464,9 @@ class CamerasWidget extends Widget
             if(!item.enabled) continue;
             switch(item.class)
             {
+            case "time":
+                item.value = new Date().toLocaleTimeString();
+                // fall through
             case "text":
                 // if(0)
                 {

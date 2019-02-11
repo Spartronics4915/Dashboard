@@ -162,14 +162,58 @@ class App
         this.onIdle();
     }
 
+    registerPageIdler(h, interval, clientdata)
+    {
+        if(!this.idleHandlerId)
+        {
+            this.idleHandlerId = 1;
+            this.idleHandlers = {};
+        }
+        let id = "idleId"+this.idleHandlerId++;
+        this.idleHandlers[id] = {
+            handler: h,
+            interval: interval,
+            lastfired: 0,
+            clientdata: clientdata
+        };
+
+        return id;
+    }
+
+    clearPageIdlers()
+    {
+        this.idleHandlers = {};
+        this.idleHandlerId = 1;
+    }
+
     onIdle()
     {
+        let now = Date.now();
         if(!this.robotConnected && this.currentPage)
         {
             this.robotBatteryW.addRandomPt();
             this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
-            this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
+            // this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
+        }
+        if(this.idleHandlers)
+        {
+            for(let key in this.idleHandlers)
+            {
+                let h = this.idleHandlers[key];
+                if((now - h.interval) > h.lastfired)
+                {
+                    try
+                    {
+                        h.handler(h.clientdata);
+                    }
+                    catch(e)
+                    {
+                        app.error("idleHandler error:" + e);
+                    }
+                    h.lastfired = Date.now();
+                }
+            }
         }
         const fps = 30;
         setTimeout(this.onIdle.bind(this), 1000/fps);
@@ -231,8 +275,8 @@ class App
         {
             this.pageHandlers[this.currentPage].cleanup();
         }
-
         this.robotLog.setLogListener(null, false); // clear log listener
+        this.clearPageIdlers();
         this.currentPage = page;
         let ph = this.layout.buildContentPage(page);
         if(!this.pageHandlers[page])
