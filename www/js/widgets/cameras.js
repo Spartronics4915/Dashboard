@@ -33,6 +33,7 @@ class CamerasWidget extends Widget
         this.dooverlay = false;
         this.streamHandler = null;
         this.isStreaming = false;
+        this.targetElem = targetElem;
 
         html += "<div class='container'>";
 
@@ -47,7 +48,7 @@ class CamerasWidget extends Widget
         html +=  `<div id='${this.divId}' class='cameraViewImg'>`;
         html +=   "</div>";
         html += "</div>";
-        targetElem.html(html);
+        this.targetElem.html(html);
 
         if(this.config.params.selector)
         {
@@ -84,12 +85,11 @@ class CamerasWidget extends Widget
             // double-updates.
             let hiddenKeys = [];
             let camkey = this.config.ntkeys[0];
-            for(const ntkey in this.overlay.items)
+            for(let item of this.overlay.items)
             {
-                if(ntkey == camkey) continue;
-                let item = this.overlay.items[ntkey];
+                if(item.key == camkey) continue;
                 if(item.enabled === undefined || item.enabled)
-                    hiddenKeys.push(ntkey);
+                    hiddenKeys.push(item.key);
             }
             return hiddenKeys;
         }
@@ -129,13 +129,12 @@ class CamerasWidget extends Widget
         if(this.opencvEl)
         {
             // since we're not a child of targetElem
-            document.body.removeChild(this.opencvEl);
+            this.targetElem[0].removeChild(this.opencvEl); // jquery
             this.opencvEl = null;
             this.opencvCtx = null; // only valid after we know video/img size
             // clear out item's imdata (owned by cvcanvEl)
-            for(const ntkey in this.overlay.items)
+            for(let item of this.overlay.items)
             {
-                let item =  this.overlay.items[ntkey];
                 if(item.class == "opencv")
                     item.imdata = null;
             }
@@ -337,14 +336,19 @@ class CamerasWidget extends Widget
         app.info("updateOverlay " + (key ? key : "<domchange>"));
         if(key)
         {
-            for(const ntkey in this.overlay.items)
+            for(let item of this.overlay.items)
             {
-                let item =  this.overlay.items[ntkey];
-                if(key == ntkey)
+                if(item.enabled == undefined || item.enabled)
                 {
-                    item.value = value;
-                    updateItem = item;
-                    break;
+                    if(key == item.key)
+                    {
+                        item.value = value;
+                        if(!updateItem && item.class == "opencv")
+                        {
+                            // only one opencv item per iteration (per key)
+                            updateItem = item;
+                        }
+                    }
                 }
             }
         }
@@ -358,7 +362,9 @@ class CamerasWidget extends Widget
 
         if(updateItem && updateItem.enabled)
         {
-            if(updateItem.class == "opencv")
+            if(!window.cv)
+                app.warning("cv not loaded yet");
+            else
             {
                 if(!this.opencvEl)
                 {
@@ -368,9 +374,9 @@ class CamerasWidget extends Widget
                     this.opencvEl = document.createElement("canvas");
                     this.opencvEl.width = w; // w, h are size of overlay
                     this.opencvEl.height = h;
-                    this.opencvEl.position = "absolute";
-                    this.opencvEl.display = "none";
-                    document.body.appendChild(this.opencvEl);
+                    // this.opencvEl.style.position = "absolute";
+                    this.opencvEl.style.display = "none";
+                    this.targetElem[0].appendChild(this.opencvEl);
                     this.opencvCtx = this.opencvEl.getContext("2d");
                 }
                 if(this.vidEl)
@@ -398,8 +404,9 @@ class CamerasWidget extends Widget
                 case "blur":
                     {
                         let output = new cv.Mat();
-                        cv.blur(src, output, [5, 5], [-1, -1], 4);
-                        updateItem.imdata = this._getImgData(output, 16);
+                        cv.blur(src, output, [10, 10], [-1, -1], 4);
+                        cv.flip(output, output, -1);
+                        updateItem.imdata = this._getImgData(output, 128);
                         output.delete();
                     }
                     break;
@@ -410,7 +417,7 @@ class CamerasWidget extends Widget
                         let cthresh = 50; // higher means fewer edges
                         cv.blur(src, blurred, [5, 5], [-1, -1], 4);
                         cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
-                        updateItem.imdata = this._getImgData(output, 255);
+                        updateItem.imdata = this._getImgData(output, 0);
                         blurred.delete();
                         output.delete();
                     }
@@ -427,9 +434,8 @@ class CamerasWidget extends Widget
         app.debug("drawOverlay");
         this.overlayCtx.clearRect(0, 0, w, h);
         // see also: https://www.google.com/search?q=spaceship+docking+hud
-        for(const ntkey in this.overlay.items)
+        for(let item of this.overlay.items)
         {
-            let item =  this.overlay.items[ntkey];
             if(!item.enabled) continue;
             switch(item.class)
             {
@@ -507,7 +513,13 @@ class CamerasWidget extends Widget
             case "opencv":
                 {
                     if(item.imdata)
+                    {
+                        this.overlayCtx.save();
+                        this.overlayCtx.globalCompositeOperation = "destination-over";
                         this.overlayCtx.putImageData(item.imdata, 0, 0);
+                        // this.overlayCtx.drawImage(item.imdata, 0, 0);
+                        this.overlayCtx.restore();
+                    }
                 }
                 break;
             }
@@ -521,15 +533,30 @@ class CamerasWidget extends Widget
         var nchan = cvMat.channels();
         var imgdata = this.opencvCtx.createImageData(cvMat.cols, cvMat.rows);
         var idata = imgdata.data;
-        var opacity;
-        for(var i=0,j=0;i<idata.length;i+=nchan,j+=4)
+        if(nchan == 1)
         {
-            idata[j] = cvdata[i]; // j % 255;
-            idata[j+1] = cvdata[i+1%nchan];
-            idata[j+2] = cvdata[i+2%nchan];
-            opacity = (idata[j] + idata[j+1] + idata[j+2]) / 3;
-            imgdata.data[j+3] = opacity > maxOpac ? maxOpac : opacity;
+            for(var i=0,j=0;i<idata.length;i+=nchan)
+            {
+                let d = cvdata[i];
+                idata[j++] = d;
+                idata[j++] = d;
+                idata[j++] = d;
+                imgdata.data[j++] = maxOpac > 0 ? maxOpac : (d ? 255 : 0);
+            }
         }
+        else
+        if(nchan == 3 || nchan == 4)
+        {
+            for(var i=0,j=0;i<idata.length;i+=nchan)
+            {
+                idata[j++] = cvdata[i]; // j % 255;
+                idata[j++] = cvdata[i+1%nchan];
+                idata[j++] = cvdata[i+2%nchan];
+                imgdata.data[j++] = maxOpac;
+            }
+        }
+        else
+            app.error("unexpected opencv mat.nchan " + nchan);
         return imgdata;
     }
 

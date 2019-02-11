@@ -61,10 +61,17 @@
                         "overlay":
                         {
                             "enable": true,
+                            "_comment_": "items drawn in order (bottom-to-top)",
                             "items":
-                            {
-                                "/SmartDashboard/Time/Locale":
+                            [
                                 {
+                                    "key": "/SmartDashboard/Time/Locale",
+                                    "class": "opencv",
+                                    "enabled": true,
+                                    "pipeline": "canny"
+                                },
+                                {
+                                    "key": "/SmartDashboard/Time/Locale",
                                     "class": "text",
                                     "enabled": true,
                                     "origin": [300, 30],
@@ -72,8 +79,8 @@
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": "_"
                                 },
-                                "/SmartDashboard/Driver/Camera":
                                 {
+                                    "key": "/SmartDashboard/Driver/Camera",
                                     "class": "text",
                                     "enabled": true,
                                     "origin": [10, 30],
@@ -81,29 +88,21 @@
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": "<nocamera>"
                                 },
-                                "/SmartDashboard/Driver/CameraOverlay/Circle":
                                 {
+                                    "key": "/SmartDashboard/Driver/CameraOverlay/Circle",
                                     "class": "circle",
                                     "enabled": false,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
                                     "value": "200,200,35,3"
                                 },
-                                "/SmartDashboard/Driver/CameraOverlay/Rect":
                                 {
+                                    "key": "/SmartDashboard/Driver/CameraOverlay/Rect",
                                     "class": "rect",
                                     "enabled": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
                                     "value": "300,300,30,30,3,5"
-                                },
-                                "/SmartDashboard/Driver/CameraOverlay/Canny":
-                                {
-                                    "class": "opencv",
-                                    "enabled": false,
-                                    "pipeline": "blur",
-                                    "strokeStyle": "rgba(150, 100, 0, .85)",
-                                    "value": "300,300,30,30,3,5"
                                 }
-                            }
+                            ]
                         },
                         "cameras":
                         {
