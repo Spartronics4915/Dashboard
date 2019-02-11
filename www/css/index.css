@@ -304,11 +304,6 @@ footer
     padding: 0px; /* was 5, 0 is tighter */
 }
 
-.container > span
-{
-    vertical-align: center;
-}
-
 .container strong
 {
     color: #aaa;

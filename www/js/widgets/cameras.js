@@ -26,6 +26,7 @@ class CamerasWidget extends Widget
         this.canvId = `${this.baseId}Canv`;
         this.vidEl = null;
         this.imgEl = null;
+        this.overlay = false;
         this.overlayEl = null;
         this.overlayCtx = null;
         this.opencvEl = null;
@@ -68,31 +69,26 @@ class CamerasWidget extends Widget
         }
         else
             this.selConfig = null;
-
-        if(this.config.params.overlay && this.config.params.overlay.enable)
-            this.overlay = this.config.params.overlay;
-        else
-            this.overlay = null;
     }
 
     getHiddenNTKeys()
     {
-        if(!this.overlay)
-            return null;
-        else
+        // Always expose our enabled hidden nt keys since this is only
+        // called during page-load and a camera-switch may occur that
+        // changes the overlay enabled state.
+        // Overlay items may listen on the same key and we don't
+        // redundant updates.
+        if(!this.config.params.overlay) return;
+
+        let hkeyMap = {};
+        let camkey = this.config.ntkeys[0];
+        for(let item of this.config.params.overlay.items)
         {
-            // overlay may be listening on the camera key and don't want
-            // double-updates.
-            let hiddenKeys = [];
-            let camkey = this.config.ntkeys[0];
-            for(let item of this.overlay.items)
-            {
-                if(item.key == camkey) continue;
-                if(item.enabled === undefined || item.enabled)
-                    hiddenKeys.push(item.key);
-            }
-            return hiddenKeys;
+            if(item.key == camkey) continue;
+            if(item.enabled === undefined || item.enabled)
+                hkeyMap[item.key] = true;
         }
+        return Object.keys(hkeyMap);
     }
 
     valueChanged(key, value, isNew)
@@ -102,78 +98,20 @@ class CamerasWidget extends Widget
         this._updateOverlay(key, value, isNew);
     }
 
-    // _onDOMChange is called after we change the page html... Note
-    //  that the size of the image or video isn't known until it is received.
-    _onDOMChange()
-    {
-        // make sure our overlay canvas is the correct size and location
-        app.debug("cameras._onDOMChange");
-        if(this.imgEl)
-        {
-            // apparently successful attempt to plug memory leak for mjpgstreamer
-            // biggest issue was bandwidth consumption increases with each
-            // redraw...  Validation: switch between cameras and between tabs,
-            // while keeping an eye on bandwidth consumption (via TaskManager etc).
-            this.imgEl.src = "";
-            this.imgEl = null;
-        }
-        if(this.streamHandler)
-        {
-            this.vidEl = null;
-            this.streamHandler.hangup();
-            this.streamHandler = null;
-            this.isStreaming = false;
-        }
-        this.overlayCtx = null; // only valid after we know video/img size
-
-        if(this.opencvEl)
-        {
-            // since we're not a child of targetElem
-            this.targetElem[0].removeChild(this.opencvEl); // jquery
-            this.opencvEl = null;
-            this.opencvCtx = null; // only valid after we know video/img size
-            // clear out item's imdata (owned by cvcanvEl)
-            for(let item of this.overlay.items)
-            {
-                if(item.class == "opencv")
-                    item.imdata = null;
-            }
-        }
-
-        this.overlayEl = document.getElementById(`${this.canvId}`);
-        this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
-        this.imgEl = document.getElementById(`${this.imgId}`); // may not exist
-        if(!this.overlayEl)
-        {
-            if(this.config.params.overlay)
-                app.warning("cameras is missing canvEl");
-        }
-        else
-        {
-            if(this.imgEl)
-            {
-                // need to learn size after its loaded
-                this.imgEl.addEventListener("load", function()
-                {
-                    app.debug("cameras img loaded width:" + this.imgEl.width);
-                    this.overlayEl.style.left = this.imgEl.offsetLeft + "px";
-                    this.overlayEl.style.top = this.imgEl.offsetTop + "px";
-                    this.overlayEl.setAttribute("width", this.imgEl.offsetWidth);
-                    this.overlayEl.setAttribute("height", this.imgEl.offsetHeight);
-                    this.overlayCtx = this.overlayEl.getContext("2d");
-                    this._updateOverlay();
-                }.bind(this));
-            }
-            else
-            if(!this.vidEl)
-                app.error("cameras is missing video/img el");
-            // nb: we update size of video after the stream is opened.
-        }
-    }
-
     _updateCamera(key, value, isnew)
     {
         let cam = this.config.params.cameras[value];
+        // allow for per-cam enabling of overlay
+        this.overlay = false; // no overlays until proven otherwise
+        if(cam && (cam.overlay || cam.overlay == undefined))
+        {
+            if(this.config.params.overlay && this.config.params.overlay.enable)
+            {
+                // signal we have overlays and they are enabled
+                this.overlay = this.config.params.overlay;
+            }
+        }
+
         if(!cam)
         {
             app.warning("invalid camera view " + value);
@@ -195,7 +133,7 @@ class CamerasWidget extends Widget
                     camhtml = `<img id="${this.imgId}" src="http://${cam.ip}${cam.url}" class="${cam.cls}"></img>`;
                 else
                     camhtml = `<img id="${this.imgId}"></img>`;
-                if(this.config.params.overlay)
+                if(this.overlay)
                     camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
                 $(`#${this.divId}`).html(camhtml);
                 this._onDOMChange();
@@ -205,7 +143,7 @@ class CamerasWidget extends Widget
             {
                 // static image
                 let camhtml = `<img id="${this.imgId}" src="${cam.url}" class="${cam.cls}"/>`;
-                if(this.config.params.overlay)
+                if(this.overlay)
                     camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
                 $(`#${this.divId}`).html(camhtml);
                 this._onDOMChange();
@@ -226,7 +164,7 @@ class CamerasWidget extends Widget
                 let i = Math.floor(Math.random() * testimgs.length);
                 let img = testimgs[i];
                 let camhtml = `<img id="${this.imgId}" src="${img}" class="${cam.cls}"/>`;
-                if(this.config.params.overlay)
+                if(this.overlay)
                     camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
                 $(`#${this.divId}`).html(camhtml);
                 this._onDOMChange();
@@ -237,10 +175,8 @@ class CamerasWidget extends Widget
                 // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
                 //  autoplay requires page interaction unless muted.
                 let camhtml = `<video muted id="${this.vidId}" class="${cam.cls}"></video>`;
-                if(this.config.params.overlay)
-                {
+                if(this.overlay)
                     camhtml += `<canvas id="${this.canvId}" class="videoOverlay"></canvas>`;
-                }
                 camhtml += "<div id='vidMsg'></div>";
                 $(`#${this.divId}`).html(camhtml);
                 this._onDOMChange(); // want this before stream callbacks
@@ -260,6 +196,74 @@ class CamerasWidget extends Widget
         }
     }
 
+    //
+    // _onDOMChange is called after we change cameras and thus the page html...
+    //   Note that the size of the image or video isn't known until it is
+    //   received.
+    _onDOMChange()
+    {
+        // make sure our overlay canvas is the correct size and location
+        app.debug("cameras._onDOMChange");
+        if(this.imgEl)
+        {
+            // apparently successful attempt to plug memory leak for mjpgstreamer
+            // biggest issue was bandwidth consumption increases with each
+            // redraw...  Validation: switch between cameras and between tabs,
+            // while keeping an eye on bandwidth consumption (via TaskManager etc).
+            this.imgEl.src = "";
+            this.imgEl = null;
+        }
+        if(this.streamHandler)
+        {
+            this.vidEl = null;
+            this.streamHandler.hangup();
+            this.streamHandler = null;
+            this.isStreaming = false;
+        }
+        // overlay and opencv canvases are cleaned up with DOM since they
+        // are children of targetElem
+        this.overlayCtx = null; // only valid after we know video/img size
+        this.opencvEl = null;
+        for(let item of this.config.params.overlay.items)
+        {
+            // cleanup items ref to imdata
+            if(item.class == "opencv")
+                item.imdata = null;
+        }
+        this.overlayEl = document.getElementById(`${this.canvId}`);
+        this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
+        this.imgEl = document.getElementById(`${this.imgId}`); // may not exist
+        if(this.overlay && !this.overlayEl)
+        {
+            if(this.config.params.overlay)
+                app.warning("cameras is missing canvEl");
+        }
+        else
+        {
+            if(this.imgEl)
+            {
+                // need to learn size after its loaded
+                this.imgEl.addEventListener("load", function()
+                {
+                    app.debug("cameras img loaded width:" + this.imgEl.width);
+                    if(this.overlay)
+                    {
+                        this.overlayEl.style.left = this.imgEl.offsetLeft + "px";
+                        this.overlayEl.style.top = this.imgEl.offsetTop + "px";
+                        this.overlayEl.setAttribute("width", this.imgEl.offsetWidth);
+                        this.overlayEl.setAttribute("height", this.imgEl.offsetHeight);
+                        this.overlayCtx = this.overlayEl.getContext("2d");
+                        this._updateOverlay();
+                    }
+                }.bind(this));
+            }
+            else
+            if(!this.vidEl)
+                app.error("cameras is missing video/img el");
+            // nb: we update size of video after the stream is opened.
+        }
+    }
+
     _clamp(v, min, max)
     {
         if(v < min) return min;
@@ -269,9 +273,11 @@ class CamerasWidget extends Widget
 
     addRandomPt()
     {
+        if(!this.overlay) return;
+
         if(!this.demoRadius)
         {
-            this.demoRadius = 20;
+            this.demoRadis = 20;
             this.deltaRadius = 2;
         }
         this.demoRadius += this.deltaRadius;
@@ -312,14 +318,10 @@ class CamerasWidget extends Widget
     {
         app.debug("cameras._onCanPlay");
         this.isStreaming = true;
-        if(this.config.params.overlay)
+        if(this.overlay)
         {
             this.overlayEl.style.left = this.vidEl.offsetLeft + "px";
             this.overlayEl.style.top = this.vidEl.offsetTop + "px";
-            // Need to check for scale2 class - not as simple as this:
-            //  this.overlayEl.setAttribute("width", this.vidEl.videoWidth);
-            //  this.overlayEl.setAttribute("height", this.vidEl.videoHeight);
-            // Nor does el.width work.
             this.overlayEl.setAttribute("width", this.vidEl.offsetWidth);
             this.overlayEl.setAttribute("height", this.vidEl.offsetHeight);
             this.overlayCtx = this.overlayEl.getContext("2d");
@@ -327,16 +329,17 @@ class CamerasWidget extends Widget
         }
     }
 
+    // _updateOverlay should be called on any nettab change whether
+    //  overlays are enabled or not. This allows us to keep the
+    //  correct values in place should a camera-switch occur that
+    //  requests overlays.
     _updateOverlay(key, value, isNew)
     {
-        if(!this.overlay) return;
-
         // always update overlay values to avoid missing nettab event
         let updateItem = null;
-        app.info("updateOverlay " + (key ? key : "<domchange>"));
         if(key)
         {
-            for(let item of this.overlay.items)
+            for(let item of this.config.params.overlay.items)
             {
                 if(item.enabled == undefined || item.enabled)
                 {
@@ -354,9 +357,11 @@ class CamerasWidget extends Widget
         }
 
         // only draw into canvas after we're fully synced with img/video source
+        if(!this.overlay) return;
         if(!this.overlayEl) return;
         if(!this.overlayCtx) return;
 
+        app.info("updateOverlay " + (key ? key : "<domchange>"));
         var w = this.overlayEl.getAttribute("width");
         var h = this.overlayEl.getAttribute("height");
 

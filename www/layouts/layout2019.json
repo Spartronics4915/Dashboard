@@ -36,11 +36,12 @@
                                     "label": "Camera",
                                     "ntkey": "/SmartDashboard/Driver/Camera",
                                     "options": [
-                                        "No Camera",
-                                        "Front Camera",
-                                        "Front Camera 2x",
-                                        "Back Camera",
-                                        "Back Camera 2x"
+                                        "Test",
+                                        "Front",
+                                        "Front 2x",
+                                        "Front 2x (no overlay)",
+                                        "Back",
+                                        "Back 2x"
                                     ]
                                 }
                             }
@@ -106,33 +107,41 @@
                         },
                         "cameras":
                         {
-                            "No Camera":
+                            "Test":
                             {
                                 "protocol": "testpattern",
                                 "cls": "size720"
                             },
-                            "Front Camera":
+                            "Front":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Front Camera 2x":
+                            "Front 2x":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x"
                             },
-                            "Back Camera":
+                            "Front 2x (no overlay)":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamfront.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 size2x",
+                                "overlay": false
+                            },
+                            "Back":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamback.local:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Back Camera 2x":
+                            "Back 2x":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamback.local:8080",
