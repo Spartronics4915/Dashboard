@@ -239,11 +239,14 @@ class CamerasWidget extends Widget
         // are children of targetElem
         this.overlayCtx = null; // only valid after we know video/img size
         this.opencvEl = null;
-        for(let item of this.config.params.overlay.items)
+        if(this.config.params.overlay)
         {
-            // cleanup items ref to imdata
-            if(item.class == "opencv")
-                item.imdata = null;
+            for(let item of this.config.params.overlay.items)
+            {
+                // cleanup items ref to imdata
+                if(item.class == "opencv")
+                    item.imdata = null;
+            }
         }
         this.overlayEl = document.getElementById(`${this.canvId}`);
         this.vidEl = document.getElementById(`${this.vidId}`); // may not exist
@@ -351,6 +354,9 @@ class CamerasWidget extends Widget
     _updateOverlay(key, value, isNew)
     {
         // always update overlay values to avoid missing nettab event
+        if(!this.config.params.overlay || !this.config.params.overlay.enable)
+            return;
+
         let updateItem = null;
         for(let item of this.config.params.overlay.items)
         {
