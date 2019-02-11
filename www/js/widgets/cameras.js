@@ -295,7 +295,7 @@ class CamerasWidget extends Widget
 
         if(!this.demoRadius)
         {
-            this.demoRadis = 20;
+            this.demoRadius = 20;
             this.deltaRadius = 2;
         }
         this.demoRadius += this.deltaRadius;
