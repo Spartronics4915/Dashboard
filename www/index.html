@@ -89,7 +89,29 @@
     <script src="/js/widgets/textinput.js"></script>
 
     <script src="/_test/nettabSample.js"></script>
-    <script async src="/js/webrtc/cv.js"></script>
+
+    <script type="text/javascript">
+        function onOpenCvReady()
+        {
+            app.info("opencv.js is almost ready.");
+            // if we access cv.getBuildInformation at this point, it's
+            // in a kindof bogus state. Experimentation showed that
+            // cv to be in a reasonable state.
+            setTimeout(function() {
+                app.opencv.loaded = true;
+                app.opencv.cv = cv; // grab a reference just for add'l security
+            }, 2000);
+        }
+
+        function onOpenCvError()
+        {
+            let element = document.getElementById('statusmsg');
+            element.setAttribute('class', 'ERROR');
+            element.innerHTML = 'Failed to load opencv.js';
+        }
+    </script>
+    <script async src="/nih/opencv/opencv3.4.js" type="text/javascript"
+            onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
 
   </body>
 </html>

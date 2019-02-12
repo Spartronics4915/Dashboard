@@ -1,4 +1,4 @@
-/* global app, SelectorWidget */
+/* global app, SelectorWidget, Widget */
 
 class RobotLogWidget extends Widget
 {

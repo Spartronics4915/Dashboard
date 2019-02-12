@@ -24,19 +24,8 @@ class App
         this.robotCurrentW = null;
 
         this.webapi = null;
-
-        // for cv.js services:
-        //  * we need cv in global namespace
-        //  * cv.js also needs to resolve cv.data
-        window.locateFile = function(file)
-        {
-            if(file == "cv.data")
-                return "/js/webrtc/cv.data";
-            else
-                app.info("locatefile:" + file);
-            return file;
-        };
-        window.Module = window;
+        this.opencv = {};
+        this.opencv.loaded = false; // accessed directly by opencv factory
 
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
@@ -72,7 +61,7 @@ class App
 
     error(msg)
     {
-        // todo add alert?
+       // todo add alert?
         this.logMsg("ERROR " + msg);
     }
 
@@ -84,65 +73,7 @@ class App
     // onReady is invoked after all scripts have finished loading.
     onReady()
     {
-        this.debug("deviceready");
-
-        let targetEl = $(document.getElementById("batteryVoltage"));
-        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
-                {
-                    size: [60, 32],
-                    id: "batteryVoltage",
-                    params:
-                    {
-                        barStyle:
-                        {
-                            radius: 5,
-                            range: [0, 12.4],
-                            orient: "horizontal",
-                            fillSelector: function(v)
-                            {
-                                if(v>10)
-                                    return "rgb(0,128,0)";
-                                if(v>9)
-                                    return "rgb(64,64,0)";
-                                return "rgb(64,0,0)";
-                            }
-                        },
-                        labelStyle:
-                        {
-                            fill: "#aaa",
-                            font: "20px Fixed",
-                            formatter: function(v)
-                            {
-                                return v.toFixed(1)+" V";
-                            }
-                        }
-                    }
-                },
-                targetEl, undefined /* pageHandler */);
-        targetEl = $(document.getElementById("inputCurrent"));
-        this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
-                {
-                    "id": "inputCurrentChart",
-                    "type": "stripchart",
-                    "size": [100, 48],
-                    "ntkeys": "/SmartDashboard/Robot/InputCurrent",
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "show": false,
-                                "min": 0,
-                                "max": 60
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)"],
-                            "channelcount": 1,
-                            "widths": [1],
-                            "maxlength": 100,
-                        },
-                    }
-                },
-                targetEl, undefined,);
-
+        this.firstLoad = false;
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
@@ -153,13 +84,13 @@ class App
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
+        if(null == this.getValue("/SmartDashboard/Driver/Camera", null))
+            this.putValue("/SmartDashboard/Driver/Camera", "Test");
 
         this.layout = new window.Layout({
             layout: this.config.layout,
             onLoad: this.onLayoutLoaded.bind(this)
         });
-
-        this.onIdle();
     }
 
     registerPageIdler(h, interval, clientdata)
@@ -194,7 +125,6 @@ class App
             this.robotBatteryW.addRandomPt();
             this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
-            // this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
         }
         if(this.idleHandlers)
         {
@@ -221,6 +151,64 @@ class App
 
     onLayoutLoaded()
     {
+        // install globally visible widgets
+        let targetEl = $(document.getElementById("batteryVoltage"));
+        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
+            {
+                size: [60, 32],
+                id: "batteryVoltage",
+                params:
+                {
+                    barStyle:
+                    {
+                        radius: 5,
+                        range: [0, 12.4],
+                        orient: "horizontal",
+                        fillSelector: function(v)
+                        {
+                            if(v>10)
+                                return "rgb(0,128,0)";
+                            if(v>9)
+                                return "rgb(64,64,0)";
+                            return "rgb(64,0,0)";
+                        }
+                    },
+                    labelStyle:
+                    {
+                        fill: "#aaa",
+                        font: "20px Fixed",
+                        formatter: function(v)
+                        {
+                            return v.toFixed(1)+" V";
+                        }
+                    }
+                }
+            },
+            targetEl, undefined /* pageHandler */);
+        targetEl = $(document.getElementById("inputCurrent"));
+        this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
+            {
+                "id": "inputCurrentChart",
+                "type": "stripchart",
+                "size": [100, 48],
+                "ntkeys": "/SmartDashboard/Robot/InputCurrent",
+                "params": {
+                    "plot": {
+                        "yaxis": {
+                            "show": false,
+                            "min": 0,
+                            "max": 60
+                        },
+                        "fillvalue": 0,
+                        "colors":["rgb(20,120,255)"],
+                        "channelcount": 1,
+                        "widths": [1],
+                        "maxlength": 100,
+                    },
+                }
+            },
+            targetEl, undefined/*nopagehandler*/);
+
         var initURL = this.homeHref;
         if(window.location.hash)
         {
@@ -234,6 +222,8 @@ class App
         window.onhashchange = function(arg) {
             this.navigate(window.location.hash);
         }.bind(this);
+
+        this.onIdle();
     }
 
     // navigate: is the primary entrypoint for switch views
@@ -329,7 +319,7 @@ class App
     // robotlog callbacks ------------------------------------------------
     onLogConnect(cnx)
     {
-        this.notice("RobotLog connected");
+        this.info("robotLog connected:" + cnx);
     }
 
     // network table callbacks ------------------------------------------------
@@ -576,4 +566,4 @@ class App
 } // end of App class
 
 window.app = new App();
-window.app.notice("Dashboard loaded");
+window.app.notice("Dashboard app loaded");

@@ -146,6 +146,11 @@ label
     width: 200%;
 }
 
+.scaled /* manually determined pct to "fill" a screen with h264 */
+{
+    width: 180%;
+}
+
 .halfsize
 {
     width: 50%;
