@@ -99,7 +99,7 @@ class RobotDevicesWidget extends Widget
                     "Bootloader", "Hardware", "DynID", "ID", "Status"];
         for(let nm of cols)
         {
-            $("<td></td>").html(`<span class='blue'>${nm}</span>`).appendTo(tr);
+            $("<td></td>").html(`<span class='lessblue'>${nm}</span>`).appendTo(tr);
         }
         if(!devArray)
         {
