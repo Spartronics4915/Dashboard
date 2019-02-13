@@ -75,26 +75,31 @@ class RobotDevicesWidget extends Widget
     _buildDeviceList()
     {
         let devArray = app.getRobotDeviceArray();
-        if(!devArray && false)
+        if(!devArray && true)
             devArray = this.testData;
         $("#devicetable tbody > tr").remove();
 
-        // fields in Tuner:
+        // order of fields in Tuner:
         //  Devices, Software Status, Hardware, ID, Firmware Version,
         //  Manufacturer Date, Bootloader Rev, Hardware Version, Vendor
-        // fields in DeviceArray:
-        //    BootloaderRev: "2.6",
-        //    CurrentVers: "4.1",
-        //    DynID:  number (canid)  33880073 (0x204f809)
-        //    HardwareRev: "1.4"
-        //    ID: 33881088 (0x204fc00)
-        //    ManDate: "Nov 3, 2014"
-        //    Model: "Talon SRX"
-        //    Name: "Talon 0 - Right"
-        //    SoftStatus: "Running Application"
-        //    UniqID: 4
-        //    Vendor: "Cross The Road Electronics"
+        // Data available: (via CTRE.Phoenix.Diagnostics/JSON/Serializers.cs)
+        /*
+           {
+                public string BootloaderRev;
+                public string CurrentVers;
+                public int? DynID;
+                public string HardwareRev;
+                public string Vendor;
+                public long? ID;
+                public string ManDate;
+                public string Model;
+                public string Name;
+                public string SoftStatus;
+                public int? UniqID;
+            }
+        */
         let tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
+
         let cols = ["ID:Device Name", "Firmware", "Manufacture Date",
                     "Bootloader", "Hardware", "DynID", "ID", "Status"];
         for(let nm of cols)
@@ -104,10 +109,19 @@ class RobotDevicesWidget extends Widget
         if(!devArray)
         {
             tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
-            $("<td colspan='5'></td>").html("<i>unavailable</i>").appendTo(tr);
+            $("<td colspan='5'></td>").html(
+                "<span class='amber'>no devices available...</span>").appendTo(tr);
         }
         else
         {
+            // we can also change things via http
+            // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
+            //
+            // http://<address>:<port>/?device=<model>&id=<id>&action=<action>&<furtherArgs>
+            //  model: [srx,spx,canif,pigeon,ribbonPigeon,pcm,pdp]
+            //  action: [getversion,getdevices,blink,setid,selftest,fieldupgrade,progress,getconfig,setconfig]
+            //      setid (newid=)
+            //      setname (newname=)
             for(let dev of devArray)
             {
                 // DeviceName/ID
