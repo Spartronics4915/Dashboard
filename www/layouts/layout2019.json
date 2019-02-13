@@ -38,10 +38,11 @@
                                     "options": [
                                         "Test",
                                         "Front",
-                                        "FrontScaled",
-                                        "FrontScaled (no overlay)",
+                                        "Front2X",
+                                        "FrontFit",
+                                        "FrontFit (no overlay)",
                                         "Back",
-                                        "BackScaled"
+                                        "BackFit"
                                     ]
                                 }
                             }
@@ -118,19 +119,26 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "FrontScaled":
+                            "Front2X":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamfront.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 size2x"
+                            },
+                            "FrontFit":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
                             },
-                            "FrontScaled (no overlay)":
+                            "Front2X (no overlay)":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
                                 "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled",
+                                "cls": "rotate0 size2x",
                                 "overlay": false
                             },
                             "Back":
@@ -140,7 +148,7 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "BackScaled":
+                            "BackFit":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamback.local:8080",
@@ -643,6 +651,13 @@
             "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
             "widgets": [
+                {
+                    "type": "robotdevices",
+                    "label": "devices",
+                    "id": "robotdevs",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["/SmartDashboard/Robot/Connection"]
+                },
                 {
                     "type": "robotlog",
                     "label": "robologs",

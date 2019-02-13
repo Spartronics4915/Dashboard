@@ -326,10 +326,38 @@ class App
     onRobotConnect(cnx)
     {
         this.robotConnected = cnx;
+        let addr = "<n/a>";
+        if(cnx)
+        {
+            addr = NetworkTables.getRobotAddress();
+            // use phoenix restful api to obtain device list
+            this.sendGetRequest(`http://${addr}:1250/?action=getdevices`,
+                this._recvRobotDevices.bind(this), true /*isJSON*/);
+        }
+
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='blinkRed'>off-line</span>");
-        $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
+        $("#robotAddress").html(addr);
         this.updateCANStatus();
+    }
+
+    _recvRobotDevices(obj)
+    {
+        // https://media.readthedocs.org/pdf/phoenix-documentation/latest/phoenix-documentation.pdf
+        // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
+        if(obj.DeviceArray == undefined)
+            app.error("missing ctre device enumeration, received:" + JSON.stringify(obj));
+        else
+        {
+            this.robotDeviceArray = obj.DeviceArray;
+            this.putValue("/SmartDashboard/Robot/Devices", true);
+            // trigger any listeners (robotlog)
+        }
+    }
+
+    getRobotDeviceArray()
+    {
+        return this.robotDeviceArray; // may be undefined
     }
 
     updateCANStatus()
@@ -490,11 +518,12 @@ class App
     }
 
     // ajax utils -------------------------------------------------------
-    sendGetRequest(url, responseHandler)
+    sendGetRequest(url, responseHandler, isJSON)
     {
         var req = new XMLHttpRequest();
+        if(isJSON == undefined) isJSON = false;
         req.onreadystatechange = function() {
-            this.handleResponse(req, responseHandler, false);
+            this.handleResponse(req, responseHandler, isJSON);
         }.bind(this);
         req.open("GET", url, true);
         req.send(null);
@@ -506,7 +535,15 @@ class App
         {
             if(isJSON)
             {
-                responseHandler(JSON.parse(request.responseText));
+                try
+                {
+                    let val = JSON.parse(request.responseText);
+                    responseHandler(val);
+                }
+                catch(e)
+                {
+                   this.error("http response json error: " + e);
+                }
             }
             else
             {
