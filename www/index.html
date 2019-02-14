@@ -5,6 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport"
        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--
+    Failed attempt to support a javascript-fetch to ctre http api.
+    Failure is apparently due to server's lack of appropriate CORS
+    security headers and the result is the browser blocks the response.
+    (Access-Control-Allow-Origin, ...)
+    Since we don't control the ctre server, we need to adopt the more
+    radical solution of a special Tornado handler/uri.
+    <meta http-equiv="Content-Security-Policy"
+       content="default-src 'self' * data: 'unsafe-inline' 'unsafe-eval';">
+    -->
+
     <link rel="icon" href="/favicon.ico">
     <title>Spartronics4915 Dashboard </title>
 

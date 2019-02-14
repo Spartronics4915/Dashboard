@@ -331,8 +331,10 @@ class App
         {
             addr = NetworkTables.getRobotAddress();
             // use phoenix restful api to obtain device list
-            this.sendGetRequest(`http://${addr}:1250/?action=getdevices`,
-                this._recvRobotDevices.bind(this), true /*isJSON*/);
+            // let url = "http://192.168.1.136:5080/index.html";
+            let url = "/api/getdevices";
+            this.sendGetRequest(url,
+                   this._recvRobotDevices.bind(this), false /*isJSON*/);
         }
 
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
@@ -471,10 +473,12 @@ class App
             $("#statusmsg").html(value);
             break;
         case "/SmartDashboard/Robot/BatteryVoltage":
-            this.robotBatteryW.valueChanged(key, value, isNew);
+            if(this.robotBatteryW)
+                this.robotBatteryW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/InputCurrent":
-            this.robotCurrentW.valueChanged(key, value, isNew);
+            if(this.robotCurrentW)
+                this.robotCurrentW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/GamePhase":
             if(value == "ROBOT INIT")
@@ -522,6 +526,7 @@ class App
     {
         var req = new XMLHttpRequest();
         if(isJSON == undefined) isJSON = false;
+        // XXX: use 'onload'
         req.onreadystatechange = function() {
             this.handleResponse(req, responseHandler, isJSON);
         }.bind(this);
