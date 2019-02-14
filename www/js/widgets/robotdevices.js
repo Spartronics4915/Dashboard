@@ -75,7 +75,7 @@ class RobotDevicesWidget extends Widget
     _buildDeviceList()
     {
         let devArray = app.getRobotDeviceArray();
-        if(!devArray && true)
+        if(!devArray && false)
             devArray = this.testData;
         $("#devicetable tbody > tr").remove();
 
