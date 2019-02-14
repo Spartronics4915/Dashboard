@@ -330,9 +330,11 @@ class App
         if(cnx)
         {
             addr = NetworkTables.getRobotAddress();
-            // use phoenix restful api to obtain device list
-            // let url = "http://192.168.1.136:5080/index.html";
-            let url = "/api/getdevices";
+            if(addr == null)
+                addr = "10.49.15.2";
+            // request from our server information from the robot server
+            // we do this to work around CORS issues.
+            let url = `/api/getdevices?addr=${addr}&port=1250`; 
             this.sendGetRequest(url,
                    this._recvRobotDevices.bind(this), false /*isJSON*/);
         }
