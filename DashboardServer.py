@@ -18,6 +18,7 @@ from optparse import OptionParser
 
 import tornado.web
 from tornado.ioloop import IOLoop
+from tornado.web import RequestHandler
 
 import networktables
 from networktables import NetworkTables
@@ -89,6 +90,12 @@ if __name__ == '__main__':
 
     if not exists(index_html):
         logger.warn("%s not found" % index_html)
+    
+    class My404Handler(RequestHandler):
+        # Override prepare() instead of get() to cover all possible HTTP methods.
+        def prepare(self):
+            self.set_status(404)
+            self.render("404.html")
 
     app = tornado.web.Application(
         pynetworktables2js.get_handlers() +
@@ -100,7 +107,8 @@ if __name__ == '__main__':
                 {"path": index_html}),
             (r"/(.*)", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": www_dir})
-        ]
+        ],
+        default_handler_class=My404Handler
     )
 
     # Start the app

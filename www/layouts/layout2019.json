@@ -656,7 +656,7 @@
                     "label": "devices",
                     "id": "robotdevs",
                     "size": ["fill", "row"],
-                    "ntkeys": ["/SmartDashboard/Robot/Connection"]
+                    "ntkeys": ["/SmartDashboard/Robot/Connections"]
                 },
                 {
                     "type": "robotlog",

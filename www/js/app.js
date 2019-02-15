@@ -329,6 +329,10 @@ class App
         let addr = "<n/a>";
         if(cnx)
         {
+            if(!this.robotConnections)
+                this.robotConnections = 1;
+            else
+                this.robotConnections++;
             addr = NetworkTables.getRobotAddress();
             if(addr == null)
                 addr = "10.49.15.2";
@@ -336,7 +340,8 @@ class App
             // we do this to work around CORS issues.
             let url = `/api/getdevices?addr=${addr}&port=1250`; 
             this.sendGetRequest(url,
-                   this._recvRobotDevices.bind(this), false /*isJSON*/);
+                   this._recvRobotDevices.bind(this), 
+                   true /*isJSON*/);
         }
 
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
@@ -354,7 +359,8 @@ class App
         else
         {
             this.robotDeviceArray = obj.DeviceArray;
-            this.putValue("/SmartDashboard/Robot/Devices", true);
+            this.putValue("/SmartDashboard/Robot/Connections", 
+                            this.robotConnections);
             // trigger any listeners (robotlog)
         }
     }

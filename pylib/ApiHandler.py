@@ -52,7 +52,8 @@ class ApiHandler(RequestHandler):
             url = "http://" + addr + ":" + port + "/?action=getdevices"
         else:
             self.set_status(404)
-            self.write("Invalid api request\n" + str(self.request.url))
+            self.write("Invalid api request\n" + str(self.request.uri))
+            return
 
         def handleResponse(response):
             if (response.error and not
