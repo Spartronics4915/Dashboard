@@ -69,7 +69,7 @@
                             [
                                 {
                                     "class": "opencv",
-                                    "enable": true,
+                                    "enable": false,
                                     "pipeline": "canny"
                                 },
                                 {
