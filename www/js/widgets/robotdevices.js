@@ -28,7 +28,7 @@ class RobotDevicesWidget extends Widget
                 "Name": "Victor 0 - Left",
                 "SoftStatus": "Running Application",
                 "UniqID": 5,
-                "Vendor": "VEX Robotics"
+                "Vendor": "Vexing Robotics"
             },
             {
                 "BootloaderRev": "2.6",
@@ -41,7 +41,7 @@ class RobotDevicesWidget extends Widget
                 "Name": "Victor 0 - Right",
                 "SoftStatus": "Running Application",
                 "UniqID": 4,
-                "Vendor": "Cross The Road Electronics"
+                "Vendor": "Over the Hill Electronics"
             },
             {
                 "BootloaderRev": "2.6",
@@ -54,16 +54,16 @@ class RobotDevicesWidget extends Widget
                 "Name": "Talon 1 - Left",
                 "SoftStatus": "Running Application",
                 "UniqID": 6,
-                "Vendor": "Cross The Road Electronics"
+                "Vendor": "Over the Hill Electronics"
             }
         ];
+        this.ctlsEnabled = false; // api doesn't appear to work
 
         this._buildDeviceList();
     }
 
     valueChanged(key, value, isNew)
     {
-        // no-op, managed explicitly by our pagehandler
         this._buildDeviceList();
     }
 
@@ -74,9 +74,9 @@ class RobotDevicesWidget extends Widget
 
     _buildDeviceList()
     {
-        let devArray = app.getRobotDeviceArray();
-        if(!devArray && false)
-            devArray = this.testData;
+        this.devArray = app.getRobotDeviceArray();
+        if(!this.devArray && false)
+            this.devArray = this.testData;
         $("#devicetable tbody > tr").remove();
 
         // order of fields in Tuner:
@@ -100,13 +100,17 @@ class RobotDevicesWidget extends Widget
         */
         let tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
 
-        let cols = ["ID:Device Name", "Firmware", "Manufacture Date",
-                    "Bootloader", "Hardware", "DynID", "ID", "Status"];
+        let cols = ["Model", "Device Name", "Firmware", 
+                    "UniqID", "DynID", "ID", "Status", 
+                    //"LED", "Self Test", (!this.ctlsEnabled)
+                    "Manufacture Date",
+                    "Bootloader", "Hardware", 
+                ];
         for(let nm of cols)
         {
             $("<td></td>").html(`<span class='lessblue'>${nm}</span>`).appendTo(tr);
         }
-        if(!devArray)
+        if(!this.devArray)
         {
             tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
             $("<td colspan='5'></td>").html(
@@ -114,22 +118,44 @@ class RobotDevicesWidget extends Widget
         }
         else
         {
-            // we can also change things via http
-            // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
-            //
-            // http://<address>:<port>/?device=<model>&id=<id>&action=<action>&<furtherArgs>
-            //  model: [srx,spx,canif,pigeon,ribbonPigeon,pcm,pdp]
-            //  action: [getversion,getdevices,blink,setid,selftest,fieldupgrade,progress,getconfig,setconfig]
-            //      setid (newid=)
-            //      setname (newname=)
-            for(let dev of devArray)
+            let devId = 0;
+            for(let dev of this.devArray)
             {
-                // DeviceName/ID
                 tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
-                $("<td></td>").text(dev.UniqID+":"+dev.Name).appendTo(tr);
+
+                // Model
+                $("<td></td>").text(dev.Model).appendTo(tr);
+
+                // DeviceName
+                $("<td></td>").text(dev.Name).appendTo(tr);
 
                 // Firmware Vers
                 $("<td></td>").text(dev.CurrentVers).appendTo(tr);
+
+                // UniqID
+                $("<td></td>").text(dev.UniqID).appendTo(tr);
+
+                // ID
+                $("<td></td>").text("0x" + Number(dev.ID).toString(16)).appendTo(tr);
+
+                // DynID
+                $("<td></td>").text("0x" + Number(dev.DynID).toString(16)).appendTo(tr);
+
+                // Status
+                $("<td></td>").text(dev.SoftStatus).appendTo(tr);
+
+                if(this.ctlsEnabled)
+                {
+                    // LED
+                    $("<td></td>").html(
+                        `<button type='button' id='blink_${devId}'` +
+                        ` class='devbut'>blink</button>`).appendTo(tr);
+
+                    // Self Test
+                    $("<td></td>").html(
+                        `<button type='button' id='selftest_${devId}'` +
+                        ` class='devbut'>self-test</button>`).appendTo(tr);
+                }
 
                 // Manufacture Date
                 $("<td></td>").text(dev.ManDate).appendTo(tr);
@@ -140,16 +166,55 @@ class RobotDevicesWidget extends Widget
                 // Hardware Vers
                 $("<td></td>").text(dev.HardwareRev).appendTo(tr);
 
-                // DynID
-                $("<td></td>").text("0x" + Number(dev.DynID).toString(16)).appendTo(tr);
-
-                // ID
-                $("<td></td>").text("0x" + Number(dev.ID).toString(16)).appendTo(tr);
-
-                // Status
-                $("<td></td>").text(dev.SoftStatus).appendTo(tr);
+                devId++;
             }
+
+            $(".devbut").click( this._onClick.bind(this));
         }
+    }
+
+    _onClick(evt)
+    {
+        // we can also change things via http
+        // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
+        //
+        // http://<address>:<port>/?device=<model>&id=<id>&action=<action>&<furtherArgs>
+        //  model: [srx,spx,canif,pigeon,ribbonPigeon,pcm,pdp]
+        //  action: [getversion,getdevices,blink,setid,selftest,fieldupgrade,progress,getconfig,setconfig]
+        //      setid (newid=)
+        //      setname (newname=)
+        let fields = evt.target.id.split("_"); // expect length 2, [action, index]
+        let action = fields[0];
+        let devIndex = fields[1];
+        let dev = this.devArray[devIndex];
+        let model = {
+                    "Talon SRX": "srx",
+                    "PCM": "pcm",
+                    "PDP": "pdp",
+                    "Pigeon Over Ribbon": "ribbonPigeon",
+                    "Pigeon": "pigeon",
+                    "Talon SPX": "spx",
+                    "Victor SPX": "spx",
+                    "unknown": "canif"
+                    }[dev.Model];
+        if(model != undefined)
+        {
+            // let id = dev.UniqID;
+            let id = dev.ID;
+            let url = `/api/?device=${model}&id=${id}&action=${action}`;
+            app.sendGetRequest(url, this._onClickResult.bind(this), true /*isJSON*/);
+        }
+        else
+        {
+            app.warning(`can't send message to ${dev.Name} ` +
+                        `(unimplemented model ${dev.Model})`);
+        }
+        evt.target.blur();
+    }
+
+    _onClickResult(obj)
+    {
+        app.notice("result obtained: " + JSON.stringify(obj));
     }
 }
 

@@ -358,10 +358,10 @@ class App
             app.error("missing ctre device enumeration, received:" + JSON.stringify(obj));
         else
         {
+            app.info("received robot device status")
             this.robotDeviceArray = obj.DeviceArray;
             this.putValue("/SmartDashboard/Robot/Connections", 
-                            this.robotConnections);
-            // trigger any listeners (robotlog)
+                            this.robotConnections, true); // trigger robotlog listener
         }
     }
 
