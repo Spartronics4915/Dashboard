@@ -92,7 +92,7 @@
                                 {
                                     "key": "/SmartDashboard/Driver/CameraOverlay/Circle",
                                     "class": "circle",
-                                    "enable": false,
+                                    "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
                                     "value": "200,200,35,3"
                                 },
