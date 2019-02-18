@@ -493,6 +493,7 @@ class CamerasWidget extends Widget
                 break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
+                // for multiple circles, we currently require multiples-of-4
                 // if(0)
                 {
                     let vals = item.value.split(",");
@@ -511,9 +512,15 @@ class CamerasWidget extends Widget
                             this.overlayCtx.strokeStyle = item.strokeStyle;
                             stroke = true;
                         }
-                        this.overlayCtx.lineWidth = (vals.length == 4) ?  vals[3] : 2;
-                        CanvasUtils.circle(this.overlayCtx, vals[0], vals[1], vals[2],
-                                        stroke, fill);
+                        this.overlayCtx.lineWidth = 2;
+                        for(let i=0;i<vals.length;i+=4)
+                        {
+                            if(i+3<vals.length)
+                                this.overlayCtx.lineWidth = vals[i+3];
+                            CanvasUtils.circle(this.overlayCtx, 
+                                                vals[i], vals[i+1], vals[i+2],
+                                                stroke, fill);
+                        }
                         this.overlayCtx.restore();
                     }
                 }
