@@ -28,6 +28,11 @@ class PageHandler
     //          .params are widget-type-specific parameters
     //              html: url
     //
+    newGridRowStyle(xtra)
+    {
+        return this.newGridElemStyle(["fill", "row"], xtra);
+    }
+
     newGridElemStyle(sz, xtra)
     {
         let gridsize = 12; // 10x10 with gap of 2
@@ -46,7 +51,10 @@ class PageHandler
             style += `grid-column:span ${cols};`;
         }
         if(sz[1] == "fill")
-            style += "grid-row:1/-1;";
+        {
+            // experiment: no row spec
+            // style += "grid-row:1/-1;";
+        }
         else
         {
             let rows;

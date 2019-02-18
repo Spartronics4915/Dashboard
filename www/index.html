@@ -5,6 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport"
        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--
+    Failed attempt to support a javascript-fetch to ctre http api.
+    Failure is apparently due to server's lack of appropriate CORS
+    security headers and the result is the browser blocks the response.
+    (Access-Control-Allow-Origin, ...)
+    Since we don't control the ctre server, we need to adopt the more
+    radical solution of a special Tornado handler/uri.
+    <meta http-equiv="Content-Security-Policy"
+       content="default-src 'self' * data: 'unsafe-inline' 'unsafe-eval';">
+    -->
+
     <link rel="icon" href="/favicon.ico">
     <title>Spartronics4915 Dashboard </title>
 
@@ -33,16 +45,18 @@
 
     <footer>
         <div id="cnxstatus">
-            Build
-            <span id='buildid'>
-                <span class='amber'>unknown</span>
-            </span>
-            &nbsp; &nbsp; &nbsp;
-            <span id="nettab-status">
-            NetworkTables <span id="nettabState">Unknown state</span>,
+            &nbsp;&nbsp;
             Robot <span id="robotState">unknown state</span>
                     <span id="robotAddress"></span>
                     <span id="robotCANStatus"></span>
+            </span>
+            &nbsp; &nbsp; &nbsp;
+            <span id="nettab-status">
+            NetworkTables <span id="nettabState">Unknown state</span>
+            &nbsp;
+            Build
+            <span id='buildid'>
+                <span class='amber'>unknown</span>
             </span>
             &nbsp; &nbsp; &nbsp;
             <span id="statusmsg">
@@ -82,6 +96,7 @@
     <script src="/js/widgets/pctbar.js"></script>
     <script src="/js/widgets/rangeslider.js"></script>
     <script src="/js/widgets/robotlog.js"></script>
+    <script src="/js/widgets/robotdevices.js"></script>
     <script src="/js/widgets/selector.js"></script>
     <script src="/js/widgets/slider.js"></script>
     <script src="/js/widgets/stripchart.js"></script>
@@ -89,7 +104,29 @@
     <script src="/js/widgets/textinput.js"></script>
 
     <script src="/_test/nettabSample.js"></script>
-    <script async src="/js/webrtc/cv.js"></script>
+
+    <script type="text/javascript">
+        function onOpenCvReady()
+        {
+            app.info("opencv.js is almost ready.");
+            // if we access cv.getBuildInformation at this point, it's
+            // in a kindof bogus state. Experimentation showed that
+            // cv to be in a reasonable state.
+            setTimeout(function() {
+                app.opencv.loaded = true;
+                app.opencv.cv = cv; // grab a reference just for add'l security
+            }, 2000);
+        }
+
+        function onOpenCvError()
+        {
+            let element = document.getElementById('statusmsg');
+            element.setAttribute('class', 'ERROR');
+            element.innerHTML = 'Failed to load opencv.js';
+        }
+    </script>
+    <script async src="/nih/opencv/opencv3.4.js" type="text/javascript"
+            onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
 
   </body>
 </html>

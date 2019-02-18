@@ -78,11 +78,12 @@ class CamerasWidget extends Widget
                     this.config.params.overlay.updateinterval,
                     "cameras");
         }
+        app.debug("cameras.js constructed");
     }
 
     onIdle()
     {
-        if(this.overlay)
+        if(this.overlay || false)
             this._updateOverlay();
     }
 
@@ -100,7 +101,7 @@ class CamerasWidget extends Widget
         for(let item of this.config.params.overlay.items)
         {
             if(item.key == camkey) continue;
-            if(item.enabled === undefined || item.enabled)
+            if(item.enable === undefined || item.enable)
                 hkeyMap[item.key] = true;
         }
         return Object.keys(hkeyMap);
@@ -115,6 +116,7 @@ class CamerasWidget extends Widget
 
     _updateCamera(key, value, isnew)
     {
+        app.debug("_updateCamera");
         let cam = this.config.params.cameras[value];
         // allow for per-cam enabling of overlay
         this.overlay = false; // no overlays until proven otherwise
@@ -360,7 +362,7 @@ class CamerasWidget extends Widget
         let updateItem = null;
         for(let item of this.config.params.overlay.items)
         {
-            if(item.enabled == undefined || item.enabled)
+            if(item.enable == undefined || item.enable)
             {
                 // key may be undefined
                 if(key == item.key)
@@ -384,10 +386,10 @@ class CamerasWidget extends Widget
         var w = this.overlayEl.getAttribute("width");
         var h = this.overlayEl.getAttribute("height");
 
-        if(updateItem && updateItem.enabled)
+        if(updateItem && updateItem.enable)
         {
-            if(!window.cv || !window.cv.matFromArray)
-                app.warning("cv not loaded yet");
+            if(!app.opencv || !app.opencv.loaded)
+                app.debug("cv not loaded yet");
             else
             {
                 if(!this.opencvEl)
@@ -421,8 +423,9 @@ class CamerasWidget extends Widget
                 // process the image
                 // http://ucisysarch.github.io/opencvjs/examples/img_proc.html
                 var input = this.opencvCtx.getImageData(0, 0, w, h);
-                var src = cv.matFromArray(input, cv.CV_8UC4); // canvas holds rgba
-                cv.cvtColor(src, src, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
+                var src = cv.matFromArray(input.height, input.width, cv.CV_8UC4,
+                                        input.data); // canvas holds rgba
+                cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
                 switch(updateItem.pipeline)
                 {
                 case "blur":
@@ -467,7 +470,7 @@ class CamerasWidget extends Widget
         // see also: https://www.google.com/search?q=spaceship+docking+hud
         for(let item of this.overlay.items)
         {
-            if(!item.enabled) continue;
+            if(!item.enable) continue;
             switch(item.class)
             {
             case "time":
@@ -490,6 +493,7 @@ class CamerasWidget extends Widget
                 break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
+                // for multiple circles, we currently require multiples-of-4
                 // if(0)
                 {
                     let vals = item.value.split(",");
@@ -508,9 +512,15 @@ class CamerasWidget extends Widget
                             this.overlayCtx.strokeStyle = item.strokeStyle;
                             stroke = true;
                         }
-                        this.overlayCtx.lineWidth = (vals.length == 4) ?  vals[3] : 2;
-                        CanvasUtils.circle(this.overlayCtx, vals[0], vals[1], vals[2],
-                                        stroke, fill);
+                        this.overlayCtx.lineWidth = 2;
+                        for(let i=0;i<vals.length;i+=4)
+                        {
+                            if(i+3<vals.length)
+                                this.overlayCtx.lineWidth = vals[i+3];
+                            CanvasUtils.circle(this.overlayCtx, 
+                                                vals[i], vals[i+1], vals[i+2],
+                                                stroke, fill);
+                        }
                         this.overlayCtx.restore();
                     }
                 }
@@ -561,12 +571,25 @@ class CamerasWidget extends Widget
     }
 
     // convert from opencv to canvas img data
+    // see: https://docs.opencv.org/3.4/de/d06/tutorial_js_basic_ops.html
     _getImgData(cvMat, maxOpac, colorize)
     {
-        var cvdata = cvMat.data();
+        var type = cvMat.type();
+        if(type != cv.CV_8U)
+        {
+            app.error("invalid opencv type:" + type);
+            return null;
+        }
+        var cont = cvMat.isContinuous();
+        if(!cont)
+        {
+            app.error("opencv mat expected to be continous");
+            return null;
+        }
         var nchan = cvMat.channels();
         var imgdata = this.opencvCtx.createImageData(cvMat.cols, cvMat.rows);
         var idata = imgdata.data;
+        var cvdata = cvMat.data;
         if(nchan == 1)
         {
             if(!colorize)

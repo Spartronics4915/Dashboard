@@ -18,6 +18,7 @@ from optparse import OptionParser
 
 import tornado.web
 from tornado.ioloop import IOLoop
+from tornado.web import RequestHandler
 
 import networktables
 from networktables import NetworkTables
@@ -25,6 +26,7 @@ import pynetworktables2js
 
 import pylib.Robotlog as Robotlog
 import pylib.WebAPI as WebAPI
+import pylib.ApiHandler as ApiHandler
 
 import functools
 import logging
@@ -41,7 +43,7 @@ def initNetworktables(options):
         logger.info("Connecting to networktables at %s", options.robot)
         NetworkTables.initialize(options.robot)
 
-    logger.info("Networktables Initialized %s, %s" % 
+    logger.info("Networktables Initialized %s, %s" %
         (networktables.__version__ , pynetworktables2js.__version__))
 
 if __name__ == '__main__':
@@ -88,17 +90,25 @@ if __name__ == '__main__':
 
     if not exists(index_html):
         logger.warn("%s not found" % index_html)
+    
+    class My404Handler(RequestHandler):
+        # Override prepare() instead of get() to cover all possible HTTP methods.
+        def prepare(self):
+            self.set_status(404)
+            self.render("404.html")
 
     app = tornado.web.Application(
         pynetworktables2js.get_handlers() +
-        robotlog.getHandlers() + 
-        WebAPI.getHandlers() + 
+        robotlog.getHandlers() +
+        ApiHandler.getHandlers() +
+        WebAPI.getHandlers() +
         [
             (r"/()", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": index_html}),
             (r"/(.*)", pynetworktables2js.NonCachingStaticFileHandler,
                 {"path": www_dir})
-        ]
+        ],
+        default_handler_class=My404Handler
     )
 
     # Start the app

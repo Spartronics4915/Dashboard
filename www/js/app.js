@@ -24,19 +24,8 @@ class App
         this.robotCurrentW = null;
 
         this.webapi = null;
-
-        // for cv.js services:
-        //  * we need cv in global namespace
-        //  * cv.js also needs to resolve cv.data
-        window.locateFile = function(file)
-        {
-            if(file == "cv.data")
-                return "/js/webrtc/cv.data";
-            else
-                app.info("locatefile:" + file);
-            return file;
-        };
-        window.Module = window;
+        this.opencv = {};
+        this.opencv.loaded = false; // accessed directly by opencv factory
 
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
@@ -72,7 +61,7 @@ class App
 
     error(msg)
     {
-        // todo add alert?
+       // todo add alert?
         this.logMsg("ERROR " + msg);
     }
 
@@ -84,65 +73,7 @@ class App
     // onReady is invoked after all scripts have finished loading.
     onReady()
     {
-        this.debug("deviceready");
-
-        let targetEl = $(document.getElementById("batteryVoltage"));
-        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
-                {
-                    size: [60, 32],
-                    id: "batteryVoltage",
-                    params:
-                    {
-                        barStyle:
-                        {
-                            radius: 5,
-                            range: [0, 12.4],
-                            orient: "horizontal",
-                            fillSelector: function(v)
-                            {
-                                if(v>10)
-                                    return "rgb(0,128,0)";
-                                if(v>9)
-                                    return "rgb(64,64,0)";
-                                return "rgb(64,0,0)";
-                            }
-                        },
-                        labelStyle:
-                        {
-                            fill: "#aaa",
-                            font: "20px Fixed",
-                            formatter: function(v)
-                            {
-                                return v.toFixed(1)+" V";
-                            }
-                        }
-                    }
-                },
-                targetEl, undefined /* pageHandler */);
-        targetEl = $(document.getElementById("inputCurrent"));
-        this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
-                {
-                    "id": "inputCurrentChart",
-                    "type": "stripchart",
-                    "size": [100, 48],
-                    "ntkeys": "/SmartDashboard/Robot/InputCurrent",
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "show": false,
-                                "min": 0,
-                                "max": 60
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)"],
-                            "channelcount": 1,
-                            "widths": [1],
-                            "maxlength": 100,
-                        },
-                    }
-                },
-                targetEl, undefined,);
-
+        this.firstLoad = false;
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
 
@@ -153,13 +84,13 @@ class App
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
+        if(null == this.getValue("/SmartDashboard/Driver/Camera", null))
+            this.putValue("/SmartDashboard/Driver/Camera", "Test");
 
         this.layout = new window.Layout({
             layout: this.config.layout,
             onLoad: this.onLayoutLoaded.bind(this)
         });
-
-        this.onIdle();
     }
 
     registerPageIdler(h, interval, clientdata)
@@ -194,7 +125,6 @@ class App
             this.robotBatteryW.addRandomPt();
             this.robotCurrentW.addRandomPt();
             this.pageHandlers[this.currentPage].randomData();
-            // this.putValue("/SmartDashboard/Time/Locale", new Date().toLocaleTimeString());
         }
         if(this.idleHandlers)
         {
@@ -221,6 +151,64 @@ class App
 
     onLayoutLoaded()
     {
+        // install globally visible widgets
+        let targetEl = $(document.getElementById("batteryVoltage"));
+        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
+            {
+                size: [60, 32],
+                id: "batteryVoltage",
+                params:
+                {
+                    barStyle:
+                    {
+                        radius: 5,
+                        range: [0, 12.4],
+                        orient: "horizontal",
+                        fillSelector: function(v)
+                        {
+                            if(v>10)
+                                return "rgb(0,128,0)";
+                            if(v>9)
+                                return "rgb(64,64,0)";
+                            return "rgb(64,0,0)";
+                        }
+                    },
+                    labelStyle:
+                    {
+                        fill: "#aaa",
+                        font: "20px Fixed",
+                        formatter: function(v)
+                        {
+                            return v.toFixed(1)+" V";
+                        }
+                    }
+                }
+            },
+            targetEl, undefined /* pageHandler */);
+        targetEl = $(document.getElementById("inputCurrent"));
+        this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
+            {
+                "id": "inputCurrentChart",
+                "type": "stripchart",
+                "size": [100, 48],
+                "ntkeys": "/SmartDashboard/Robot/InputCurrent",
+                "params": {
+                    "plot": {
+                        "yaxis": {
+                            "show": false,
+                            "min": 0,
+                            "max": 60
+                        },
+                        "fillvalue": 0,
+                        "colors":["rgb(20,120,255)"],
+                        "channelcount": 1,
+                        "widths": [1],
+                        "maxlength": 100,
+                    },
+                }
+            },
+            targetEl, undefined/*nopagehandler*/);
+
         var initURL = this.homeHref;
         if(window.location.hash)
         {
@@ -234,6 +222,8 @@ class App
         window.onhashchange = function(arg) {
             this.navigate(window.location.hash);
         }.bind(this);
+
+        this.onIdle();
     }
 
     // navigate: is the primary entrypoint for switch views
@@ -329,17 +319,55 @@ class App
     // robotlog callbacks ------------------------------------------------
     onLogConnect(cnx)
     {
-        this.notice("RobotLog connected");
+        this.info("robotLog connected:" + cnx);
     }
 
     // network table callbacks ------------------------------------------------
     onRobotConnect(cnx)
     {
         this.robotConnected = cnx;
+        let addr = "<n/a>";
+        if(cnx)
+        {
+            if(!this.robotConnections)
+                this.robotConnections = 1;
+            else
+                this.robotConnections++;
+            addr = NetworkTables.getRobotAddress();
+            if(addr == null)
+                addr = "10.49.15.2";
+            // request from our server information from the robot server
+            // we do this to work around CORS issues.
+            let url = `/api/getdevices?addr=${addr}&port=1250`; 
+            this.sendGetRequest(url,
+                   this._recvRobotDevices.bind(this), 
+                   true /*isJSON*/);
+        }
+
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='blinkRed'>off-line</span>");
-        $("#robotAddress").html(cnx ? NetworkTables.getRobotAddress() : "<na>");
+        $("#robotAddress").html(addr);
         this.updateCANStatus();
+    }
+
+    _recvRobotDevices(obj)
+    {
+        // https://media.readthedocs.org/pdf/phoenix-documentation/latest/phoenix-documentation.pdf
+        // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
+        if(obj.DeviceArray == undefined)
+            app.error("missing ctre device enumeration, received:" + JSON.stringify(obj));
+        else
+        {
+            app.info("received robot device status")
+            this.robotDeviceArray = obj.DeviceArray;
+            this.putValue("/SmartDashboard/Robot/Connections", 
+                            this.robotConnections, true); // trigger robotlog listener
+        }
+    }
+
+    getRobotDeviceArray()
+    {
+        return this.robotDeviceArray; // may be undefined
     }
 
     updateCANStatus()
@@ -453,10 +481,12 @@ class App
             $("#statusmsg").html(value);
             break;
         case "/SmartDashboard/Robot/BatteryVoltage":
-            this.robotBatteryW.valueChanged(key, value, isNew);
+            if(this.robotBatteryW)
+                this.robotBatteryW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/InputCurrent":
-            this.robotCurrentW.valueChanged(key, value, isNew);
+            if(this.robotCurrentW)
+                this.robotCurrentW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/GamePhase":
             if(value == "ROBOT INIT")
@@ -500,11 +530,13 @@ class App
     }
 
     // ajax utils -------------------------------------------------------
-    sendGetRequest(url, responseHandler)
+    sendGetRequest(url, responseHandler, isJSON)
     {
         var req = new XMLHttpRequest();
+        if(isJSON == undefined) isJSON = false;
+        // XXX: use 'onload'
         req.onreadystatechange = function() {
-            this.handleResponse(req, responseHandler, false);
+            this.handleResponse(req, responseHandler, isJSON);
         }.bind(this);
         req.open("GET", url, true);
         req.send(null);
@@ -516,7 +548,15 @@ class App
         {
             if(isJSON)
             {
-                responseHandler(JSON.parse(request.responseText));
+                try
+                {
+                    let val = JSON.parse(request.responseText);
+                    responseHandler(val);
+                }
+                catch(e)
+                {
+                   this.error("http response json error: " + e);
+                }
             }
             else
             {
@@ -576,4 +616,4 @@ class App
 } // end of App class
 
 window.app = new App();
-window.app.notice("Dashboard loaded");
+window.app.notice("Dashboard app loaded");

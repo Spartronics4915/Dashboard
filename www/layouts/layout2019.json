@@ -38,10 +38,11 @@
                                     "options": [
                                         "Test",
                                         "Front",
-                                        "Front 2x",
-                                        "Front 2x (no overlay)",
+                                        "Front2X",
+                                        "FrontFit",
+                                        "FrontFit (no overlay)",
                                         "Back",
-                                        "Back 2x"
+                                        "BackFit"
                                     ]
                                 }
                             }
@@ -74,12 +75,12 @@
                             [
                                 {
                                     "class": "opencv",
-                                    "enabled": true,
+                                    "enable": false,
                                     "pipeline": "canny"
                                 },
                                 {
                                     "class": "time",
-                                    "enabled": true,
+                                    "enable": true,
                                     "origin": [300, 30],
                                     "font": "30px Arial, serif",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
@@ -88,7 +89,7 @@
                                 {
                                     "key": "/SmartDashboard/Driver/Camera",
                                     "class": "text",
-                                    "enabled": true,
+                                    "enable": true,
                                     "origin": [10, 30],
                                     "font": "30px Arial, serif",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
@@ -97,14 +98,14 @@
                                 {
                                     "key": "/SmartDashboard/Driver/CameraOverlay/Circle",
                                     "class": "circle",
-                                    "enabled": false,
+                                    "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
                                     "value": "200,200,35,3"
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/CameraOverlay/Rect",
                                     "class": "rect",
-                                    "enabled": false,
+                                    "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
                                     "value": "300,300,30,30,3,5"
                                 }
@@ -124,14 +125,21 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Front 2x":
+                            "Front2X":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x"
                             },
-                            "Front 2x (no overlay)":
+                            "FrontFit":
+                            {
+                                "protocol": "ws",
+                                "ip": "drivecamfront.local:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 scaled"
+                            },
+                            "Front2X (no overlay)":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamfront.local:8080",
@@ -146,12 +154,12 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Back 2x":
+                            "BackFit":
                             {
                                 "protocol": "ws",
                                 "ip": "drivecamback.local:8080",
                                 "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x"
+                                "cls": "rotate0 scaled"
                             }
                         }
                     }
@@ -669,6 +677,13 @@
             "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
             "widgets": [
+                {
+                    "type": "robotdevices",
+                    "label": "devices",
+                    "id": "robotdevs",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["/SmartDashboard/Robot/Connections"]
+                },
                 {
                     "type": "robotlog",
                     "label": "robologs",
