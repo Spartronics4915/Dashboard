@@ -47,7 +47,13 @@
                             }
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "icon": "fas fa-camera",
+            "navtext": "Cameras",
+            "widgets": [
                 {
                     "type": "cameras",
                     "id": "drivercams",
@@ -575,6 +581,26 @@
                         "min": 0,
                         "max": 1,
                         "step": 0.01
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "id": "beta",
+                    "label": "Ramsete kBeta",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/DriveMotionPlanner/kBeta"],
+                    "params": {
+                        "width": "10em"
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "id": "zeta",
+                    "label": "Ramsete kZeta",
+                    "size": [200, "row"],
+                    "ntkeys": ["/SmartDashboard/DriveMotionPlanner/kZeta"],
+                    "params": {
+                        "width": "10em"
                     }
                 },
                 {
