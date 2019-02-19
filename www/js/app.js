@@ -154,10 +154,39 @@ class App
     {
         // install globally visible widgets
         let targetEl = $(document.getElementById("batteryVoltage"));
-        this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
+        if(targetEl)
+            this._buildVoltageWidget(targetEl);
+
+        targetEl = $(document.getElementById("inputCurrent"));
+        if(targetEl)
+            this._buildCurrentWidget(targetEl);
+
+        var initURL = this.homeHref;
+        if(window.location.hash)
+        {
+            // app.logMsg("using window.location.hash: " + window.location.hash);
+            initURL = window.location.hash;
+            this.navigate(window.location.hash);
+        }
+        this.navigate(initURL);
+
+        // do this after first navigate
+        window.onhashchange = function(arg) {
+            this.navigate(window.location.hash);
+        }.bind(this);
+
+        this.onIdle();
+    }
+
+    _buildVoltageWidget(targetEl, style="stripchart")
+    {
+        if(style == "pctbar")
+        {
+            this.robotBatteryW = Widget.BuildWidgetByName("pctbar",
             {
                 size: [60, 32],
                 id: "batteryVoltage",
+                ntkeys: "/SmartDashboard/Robot/BatteryVoltage",
                 params:
                 {
                     barStyle:
@@ -186,7 +215,35 @@ class App
                 }
             },
             targetEl, undefined /* pageHandler */);
-        targetEl = $(document.getElementById("inputCurrent"));
+        }
+        else
+        {
+            this.robotBatteryW = Widget.BuildWidgetByName("stripchart",
+            {
+                "id": "batteryVoltage",
+                "type": "stripchart",
+                "size": [100, 48],
+                "ntkeys": "/SmartDashboard/Robot/BatteryVoltage",
+                "params": {
+                    "plot": {
+                        "yaxis": {
+                            "show": false,
+                            "min": 0,
+                            "max": 13
+                        },
+                        "fillvalue": 10,
+                        "colors":["rgb(255, 255, 0)"],
+                        "channelcount": 1,
+                        "widths": [2],
+                        "maxlength": 100,
+                    },
+                }
+            }, targetEl, undefined/*nopagehandler*/);
+        }
+    }
+
+    _buildCurrentWidget(targetEl)
+    {
         this.robotCurrentW = Widget.BuildWidgetByName("stripchart",
             {
                 "id": "inputCurrentChart",
@@ -196,35 +253,19 @@ class App
                 "params": {
                     "plot": {
                         "yaxis": {
-                            "show": false,
                             "min": 0,
-                            "max": 60
+                            "max": 60,
+                            "show": false,
                         },
                         "fillvalue": 0,
-                        "colors":["rgb(20,120,255)"],
+                        "colors":["rgb(255, 80, 0)"],
                         "channelcount": 1,
-                        "widths": [1],
+                        "widths": [2],
                         "maxlength": 100,
-                    },
+                   },
                 }
             },
             targetEl, undefined/*nopagehandler*/);
-
-        var initURL = this.homeHref;
-        if(window.location.hash)
-        {
-            // app.logMsg("using window.location.hash: " + window.location.hash);
-            initURL = window.location.hash;
-            this.navigate(window.location.hash);
-        }
-        this.navigate(initURL);
-
-        // do this after first navigate
-        window.onhashchange = function(arg) {
-            this.navigate(window.location.hash);
-        }.bind(this);
-
-        this.onIdle();
     }
 
     // navigate: is the primary entrypoint for switch views

@@ -191,6 +191,12 @@ nav > div
     border-radius: 5px;
 }
 
+.nopadX
+{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
 nav .fas
 {
     font-size: 32px;

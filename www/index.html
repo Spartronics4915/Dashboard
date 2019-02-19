@@ -36,8 +36,10 @@
             <div id="navtitle"> Dashboard </div>
             <div id="navlayout"></div>
             <div class="navtab"><span class="nettabtxt" id="Robot/GamePhase">phase</span></div>
-            <div class="navtab" id="batteryVoltage"></div>
-            <div class="navtab" id="inputCurrent"></div>Amps
+            <div class="nopadX blue">Volts</div>
+            <div class="navtab" style="padding-left:2px; padding-right:2px;" id="batteryVoltage"></div>
+            <div class="nopadX blue">Amps</div>
+            <div class="navtab" style="padding-left:2px;" id="inputCurrent"></div>
         </nav>
     </header>
     <div id="mainlayout" class="container gridded"> </div>
@@ -125,8 +127,11 @@
             element.innerHTML = 'Failed to load opencv.js';
         }
     </script>
+
+    <!--
     <script async src="/nih/opencv/opencv3.4.js" type="text/javascript"
             onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
+    -->
 
   </body>
 </html>
