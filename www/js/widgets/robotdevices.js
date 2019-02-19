@@ -8,6 +8,8 @@ class RobotDevicesWidget extends Widget
         let w = this.config;
         let html = "<div class='containerrow'>";
         html +=     `<span class='title'>${this.config.label}</span>`;
+        html +=     "<button id='devtabRefresh'>Refresh</button> &nbsp;&nbsp;";
+        html +=        "<span id='devstatus' class='amber'>no devices</span>";
         html +=   "</div>";
         html +=        "<table id='devicetable' border='0'>";
         html +=          "<tbody>";
@@ -15,6 +17,7 @@ class RobotDevicesWidget extends Widget
         html +=       "</table>";
         html += "<hr/>";
         targetElem.html(html);
+        $("#devtabRefresh").click(this._onRefresh.bind(this));
         this.pageHandler = pageHandler;
         this.testData = [
             {
@@ -58,13 +61,15 @@ class RobotDevicesWidget extends Widget
             }
         ];
         this.ctlsEnabled = false; // api doesn't appear to work
+        this.devArray = null;
 
         this._buildDeviceList();
     }
 
     valueChanged(key, value, isNew)
     {
-        this._buildDeviceList();
+        // no-op since we only want manual refresh
+        //  this._buildDeviceList();
     }
 
     addRandomPt()
@@ -72,9 +77,46 @@ class RobotDevicesWidget extends Widget
         // no-op, managed explicitly by our pagehandler
     }
 
+    _onRefresh(evt)
+    {
+        $("#devstatus").html("");
+        this._requestRobotDevices();
+        evt.target.blur();
+    }
+
+    _requestRobotDevices()
+    {
+        // Request from _our_ server information from the _robot_ server.
+        // We do this indirectly in order to work around CORS issues associated
+        // with the CTRE status server.
+        let addr = app.getRobotAddr();
+        if(addr != null)
+        {
+            let url = `/api/getdevices?addr=${addr}&port=1250`; 
+            app.sendGetRequest(url,
+                    this._recvRobotDevices.bind(this),
+                    true /*isJSON*/);
+        }
+        else
+            $("#devstatus").html("no robot connection");
+    }
+
+    _recvRobotDevices(obj)
+    {
+        // https://media.readthedocs.org/pdf/phoenix-documentation/latest/phoenix-documentation.pdf
+        // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
+        if(obj.DeviceArray == undefined)
+            app.error("missing ctre device enumeration, received:" + JSON.stringify(obj));
+        else
+        {
+            app.info("received robot device status")
+            this.devArray = obj.DeviceArray;
+            this._buildDeviceList();
+        }
+    }
+
     _buildDeviceList()
     {
-        this.devArray = app.getRobotDeviceArray();
         if(!this.devArray && false)
             this.devArray = this.testData;
         $("#devicetable tbody > tr").remove();
@@ -113,8 +155,6 @@ class RobotDevicesWidget extends Widget
         if(!this.devArray)
         {
             tr = $("<tr></tr>").appendTo($("#devicetable > tbody:last"));
-            $("<td colspan='5'></td>").html(
-                "<span class='amber'>no devices available...</span>").appendTo(tr);
         }
         else
         {

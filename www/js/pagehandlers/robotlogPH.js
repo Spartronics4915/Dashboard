@@ -28,7 +28,6 @@ class RobotlogPH extends PageHandler
             self.filter = $(this).val();
             self.onFilterChange();
         });
-
         app.robotLog.setLogListener(this.onRobotMsg.bind(this), true);
     }
 

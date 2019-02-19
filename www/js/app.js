@@ -18,6 +18,7 @@ class App
         this.config.demoMode = true;
         this.config.layout = "/layouts/layout2019.json";
 
+        this.robotAddr = null;
         this.robotLog = null;
         this.robotConnected = false;
         this.robotBatteryW = null;
@@ -323,51 +324,30 @@ class App
     }
 
     // network table callbacks ------------------------------------------------
+    getRobotAddr()
+    {
+        return this.robotAddr;
+    }
+
     onRobotConnect(cnx)
     {
         this.robotConnected = cnx;
-        let addr = "<n/a>";
         if(cnx)
         {
             if(!this.robotConnections)
                 this.robotConnections = 1;
             else
                 this.robotConnections++;
-            addr = NetworkTables.getRobotAddress();
-            if(addr == null)
-                addr = "10.49.15.2";
-            // request from our server information from the robot server
-            // we do this to work around CORS issues.
-            let url = `/api/getdevices?addr=${addr}&port=1250`; 
-            this.sendGetRequest(url,
-                   this._recvRobotDevices.bind(this), 
-                   true /*isJSON*/);
+            this.robotAddr = NetworkTables.getRobotAddress();
+            if(this.robotAddr == null)
+                this.robotAddr = "10.49.15.2";
         }
-
+        else
+            this.robotAddr = null;
         $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='blinkRed'>off-line</span>");
-        $("#robotAddress").html(addr);
+        $("#robotAddress").html(this.robotAddr ? this.robotAddr : "<n/a>");
         this.updateCANStatus();
-    }
-
-    _recvRobotDevices(obj)
-    {
-        // https://media.readthedocs.org/pdf/phoenix-documentation/latest/phoenix-documentation.pdf
-        // https://github.com/CrossTheRoadElec/Phoenix-diagnostics-client
-        if(obj.DeviceArray == undefined)
-            app.error("missing ctre device enumeration, received:" + JSON.stringify(obj));
-        else
-        {
-            app.info("received robot device status")
-            this.robotDeviceArray = obj.DeviceArray;
-            this.putValue("/SmartDashboard/Robot/Connections", 
-                            this.robotConnections, true); // trigger robotlog listener
-        }
-    }
-
-    getRobotDeviceArray()
-    {
-        return this.robotDeviceArray; // may be undefined
     }
 
     updateCANStatus()
