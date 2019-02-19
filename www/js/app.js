@@ -269,20 +269,41 @@ class App
     }
 
     // navigate: is the primary entrypoint for switch views
-    navigate(url)
+    navigate(hash)
     {
-        var fields = url.split("?");
-        var params = (fields.length == 2) ? fields[1] : null;
-        var page = this.urlToPage(fields[0]);
+        let page = hash.slice(1); // works for empty
         if(this.currentPage !== page)
         {
             this.debug("navigate: " + page);
             this.loadPage(page);
         }
-        if(params !== null)
+        if(window.location.search.length > 0)
         {
-            this.warning("url params not currently supported");
-            // this.updateParams(params);
+            let url = new URL(window.location);
+            for(let pair of url.searchParams.entries())
+            {
+                switch(pair[0])
+                {
+                case "shownav":
+                    if(pair[1] == 0)
+                    {
+                        //$("header").addClass("hidden");
+                        $("header").css("display", "none");
+                        $("#mainlayout").css("margin-top", "0px")
+                    }
+                    else
+                    {
+                        $("header").css("display", "inline");
+                        $("#mainlayout").css("margin-top", "40px")
+                    }
+                    break;
+                case "layout":
+                    break;
+                default:
+                    app.notice("unexpected url parameter:" + pair[0]);
+                    break;
+                }
+            }
         }
     }
 
@@ -292,12 +313,6 @@ class App
         // find the parent of the <a> whose href endswith the current page.
         $("nav a[href$='" + this.currentPage + "']").parent()
                                                     .addClass("active");
-    }
-
-    urlToPage(href)
-    {
-        var i = href.lastIndexOf("/");
-        return href.slice(i+2); // eliminate hash
     }
 
     loadPage(page)

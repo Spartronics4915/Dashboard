@@ -31,10 +31,13 @@ class Layout
             let icon = this.pageTemplates[i].icon;
             if(icon)
             {
-                htmlList.push("<div class='navtab'>" +
+                if(icon != "_none_")
+                {
+                    htmlList.push("<div class='navtab'>" +
                        `<a href='#${page}'>` +
                             `<span class='${icon}'></span>` +
                         "</a></div>");
+                }
             }
             else
             {
