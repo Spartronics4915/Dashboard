@@ -276,6 +276,8 @@ class App
     // navigate: is the primary entrypoint for switch views
     navigate(hash)
     {
+        if(hash == "")
+            hash = this.homeHref;
         let page = hash.slice(1); // works for empty
         if(this.currentPage !== page)
         {
