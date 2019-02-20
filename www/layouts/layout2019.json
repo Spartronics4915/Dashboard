@@ -1,5 +1,18 @@
 {
     "layoutName": "Test2019.json",
+    "environments": {
+        "_comment_": "NB: this is not a general variable subst mechanism.",
+        "default": {
+            "visionbackcam": "10.49.15.10",
+            "driverbackcam": "10.49.15.11",
+            "driverfrontcam": "10.49.15.12"
+        },
+        "dana": {
+            "visionbackcam": "192.168.0.9",
+            "driverbackcam": "192.168.0.7",
+            "driverfrontcam": "192.168.0.8"
+        }
+    },
     "pageTemplates": [
         {
             "icon": "fas fa-gamepad primary",
@@ -35,14 +48,13 @@
                                 {
                                     "label": "Camera",
                                     "ntkey": "/SmartDashboard/Driver/Camera",
+                                    "_comment_": "we only control one camera",
                                     "options": [
                                         "Test",
                                         "Front",
                                         "Front2X",
                                         "FrontFit",
-                                        "FrontFit (no overlay)",
-                                        "Back",
-                                        "BackFit"
+                                        "FrontFit (no overlay)"
                                     ]
                                 }
                             }
@@ -59,6 +71,7 @@
                     ],
                     "params":
                     {
+                        "_comment_": "selector:false -> no menu in this widget",
                         "selector": false,
                         "overlay":
                         {
@@ -70,6 +83,7 @@
                                 {
                                     "class": "opencv",
                                     "enable": false,
+                                    "_comment_": "NB: opencv must be loaded",
                                     "pipeline": "canny"
                                 },
                                 {
@@ -115,46 +129,33 @@
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
                             "Front2X":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x"
                             },
                             "FrontFit":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
                             },
                             "Front2X (no overlay)":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x",
                                 "overlay": false
                             },
-                            "Back":
-                            {
-                                "protocol": "ws",
-                                "ip": "10.49.15.12:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0"
-                            },
-                            "BackFit":
-                            {
-                                "protocol": "ws",
-                                "ip": "10.49.15.12:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
-                            }
+                            "_comment_": "back is in other panel"
                         }
                     }
                 }
@@ -481,19 +482,19 @@
                         {
                             "PiCam default (.10)":
                             {
-                                "ip": "10.49.15.10:5080",
+                                "ip": "${visionbackcam}:5080",
                                 "url": "/default.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam hsv (.10)":
                             {
-                                "ip": "10.49.15.10:5080",
+                                "ip": "${visionbackcam}:5080",
                                 "url": "/hsv.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam bypass mjpg (.10)":
                             {
-                                "ip": "10.49.15.10:5080",
+                                "ip": "${visionbackcam}:5080",
                                 "url": "/bypass.mjpg",
                                 "cls": "rotate0 size640"
                             },
@@ -706,7 +707,7 @@
             ]
         },
         {
-            "_comment": "this bab has no icon ----------",
+            "_comment": "this page has no icon ----------",
             "icon": "_none_",
             "navtext": "cam-only",
             "widgets": [
@@ -721,6 +722,7 @@
                     "params":
                     {
                         "selector": false,
+                        "_comment": "selector false -> no selector menu",
                         "overlay":
                         {
                             "enable": true,
@@ -755,61 +757,36 @@
                         },
                         "cameras":
                         {
-                            "Test":
-                            {
-                                "protocol": "testpattern",
-                                "cls": "size720"
-                            },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
                             "Back2X":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x"
                             },
                             "BackFit":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
                             },
                             "Back2X (no overlay)":
                             {
                                 "protocol": "ws",
-                                "ip": "10.49.15.11:8080",
+                                "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x",
                                 "overlay": false
                             },
-                            "Front":
-                            {
-                                "protocol": "ws",
-                                "ip": "10.49.15.12:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0"
-                            },
-                            "Front2X":
-                            {
-                                "protocol": "ws",
-                                "ip": "10.49.15.12:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x"
-                            },
-                            "FrontFit":
-                            {
-                                "protocol": "ws",
-                                "ip": "10.49.15.12::8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
-                            }
+                            "_comment_": "front is in other panel"
                         }
                     }
                 }

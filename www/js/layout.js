@@ -7,22 +7,43 @@ class Layout
     constructor(config)
     {
         this.config = config ? config : {};
+        if(this.config.envname == undefined)
+            this.config.envname = "default";
         this.pageHandlers = {};
         if(this.config.layout)
+        {
             $.getJSON(this.config.layout)
                 .done(this._initJSON.bind(this))
-                .fail(function( jqxhr, textStatus, error ) {
+                .fail(function(jqxhr, textStatus, error) 
+                {
                     var err = textStatus + ", " + error;
                     app.error("Layout Failed: " + err);
                 });
+        }
         else
             app.warning("Layout requires config.layout");
     }
 
-    _initJSON(jsonObj)
+    _initJSON(jsonObj, textStatus, jqXHR)
     {
         app.info("init layout with " + jsonObj.layoutName);
         this.layout = jsonObj;
+        this.environments = this.layout.environments;
+        if(this.environments != undefined)
+        {
+            this.env = this.environments[this.config.envname];
+            if(this.env != undefined)
+            {
+                this.layoutBefore = this.layout;
+                this.layout = this._doSubst(jqXHR.responseText, this.env);
+            }
+            else
+            {
+                app.warning("layout.environments is missing " +
+                                this.config.envname);
+            }
+        }
+        let newText
         this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];
         for(let i=0;i<this.pageTemplates.length;i++)
@@ -88,6 +109,25 @@ class Layout
             }
         }
         return new window[ph](config, pageTemplate);
+    }
+
+
+    _doSubst(input, map)
+    {
+        let newstr = input.replace(/\$\{\w+\}/g,
+            function(match)
+            {
+                let key = match.slice(2, -1);
+                let result = map[key];
+                if (result === undefined)
+                {
+                    app.error("missing env reference: " + key);
+                    return match;
+                }
+                else
+                    return result;
+            });
+        return JSON.parse(newstr);
     }
 }
 

@@ -14,9 +14,11 @@ class App
         this.varRegExp = /{\s*(\w+)\s*}/g; /* w is alphnum, s is space*/
         this.config = {}; // XXX: load via .json file?
         this.config.debug = false;
+        this.config.shownav = true;
         this.config.netTabVersion = 1802;
         this.config.demoMode = true;
         this.config.layout = "/layouts/layout2019.json";
+        this.config.layoutEnv = "default";
 
         this.robotAddr = null;
         this.robotLog = null;
@@ -76,20 +78,26 @@ class App
     {
         this.firstLoad = false;
         this.robotLog = new RobotLog();
-        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), true);
-
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), 
+                                                true);
         this.webapi = new WebAPISubscriber();
         this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
         this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
 
-        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), true);
-        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this), true);
+        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), 
+                                                true);
+        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
+                                                true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
         if(null == this.getValue("/SmartDashboard/Driver/Camera", null))
             this.putValue("/SmartDashboard/Driver/Camera", "Test");
+        if(null == this.getValue("/SmartDashboard/Driver/Camera2", null))
+            this.putValue("/SmartDashboard/Driver/Camera2", "Test");
 
+        this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
             layout: this.config.layout,
+            envname: this.config.layoutEnv,
             onLoad: this.onLayoutLoaded.bind(this)
         });
     }
@@ -169,7 +177,7 @@ class App
         var initURL = this.homeHref;
         if(window.location.hash)
         {
-            // app.logMsg("using window.location.hash: " + window.location.hash);
+            // app.logMsg("using window.location.hash: "+window.location.hash);
             initURL = window.location.hash;
             this.navigate(window.location.hash);
         }
@@ -284,32 +292,43 @@ class App
             this.debug("navigate: " + page);
             this.loadPage(page);
         }
-        if(window.location.search.length > 0)
+        this._parseURLSearch();
+    }
+
+    _parseURLSearch()
+    {
+        if(window.location.search.length <= 0)
+            return;
+
+        let url = new URL(window.location);
+        for(let pair of url.searchParams.entries())
         {
-            let url = new URL(window.location);
-            for(let pair of url.searchParams.entries())
+            switch(pair[0])
             {
-                switch(pair[0])
+            case "shownav":
+                if(pair[1] == 0)
                 {
-                case "shownav":
-                    if(pair[1] == 0)
-                    {
-                        //$("header").addClass("hidden");
-                        $("header").css("display", "none");
-                        $("#mainlayout").css("margin-top", "0px")
-                    }
-                    else
-                    {
-                        $("header").css("display", "inline");
-                        $("#mainlayout").css("margin-top", "40px")
-                    }
-                    break;
-                case "layout":
-                    break;
-                default:
-                    app.notice("unexpected url parameter:" + pair[0]);
-                    break;
+                    //$("header").addClass("hidden");
+                    $("header").css("display", "none");
+                    $("#mainlayout").css("margin-top", "0px")
+                    this.config.shownav = false;
                 }
+                else
+                {
+                    $("header").css("display", "inline");
+                    $("#mainlayout").css("margin-top", "40px")
+                    this.config.shownav = true;
+                }
+                break;
+            case "layout":
+                this.config.layout = "/layouts/" + pair[1];
+                break;
+            case "env":
+                this.config.layoutEnv = pair[1];
+                break;
+            default:
+                app.notice("unexpected url parameter:" + pair[0]);
+                break;
             }
         }
     }
@@ -419,9 +438,11 @@ class App
         {
             var value = this.getValue("CANBusStatus");
             if(value === "OK")
-                $("#robotCANStatus").html("CAN Status:<span class='green'>OK</span>");
+                $("#robotCANStatus").html(
+                    "CAN Status:<span class='green'>OK</span>");
             else
-                $("#robotCANStatus").html(`CAN Status:<span class='blinkRed'>${value}</span>`);
+                $("#robotCANStatus").html(
+                    `CAN Status:<span class='blinkRed'>${value}</span>`);
         }
         else
         {
@@ -559,7 +580,8 @@ class App
 
         if(!this.pageHandlers[this.currentPage])
         {
-            this.debug("onNetTabChange: missing page handler for " + this.currentPage);
+            this.debug("onNetTabChange: missing page handler for " + 
+                        this.currentPage);
             return;
         }
         // Currently we only distribute changes to current page.
@@ -568,7 +590,7 @@ class App
         // that the user may not care about.
         if(this.pageHandlers[this.currentPage].onNetTabChange)
         {
-            this.pageHandlers[this.currentPage].onNetTabChange(key, value, isNew);
+            this.pageHandlers[this.currentPage].onNetTabChange(key,value,isNew);
         }
     }
 
@@ -594,7 +616,10 @@ class App
                 try
                 {
                     let val = JSON.parse(request.responseText);
+                    // Looking for variable substitions during layout loads? 
+                    //  see: layout.js.
                     responseHandler(val);
+
                 }
                 catch(e)
                 {
@@ -605,33 +630,6 @@ class App
             {
                 responseHandler(request.responseText);
             }
-        }
-    }
-
-    // from https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-    storageAvailable(type)
-    {
-        try
-        {
-            var storage = window[type], x = "__storage_test__";
-            storage.setItem(x, x);
-            storage.removeItem(x);
-            return true;
-        }
-        catch(e)
-        {
-            return e instanceof DOMException && (
-                // everything except Firefox
-                e.code === 22 ||
-                // Firefox
-                e.code === 1014 ||
-                // test name field too, because code might not be present
-                // everything except Firefox
-                e.name === "QuotaExceededError" ||
-                // Firefox
-                e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-                // acknowledge QuotaExceededError only if there's something already stored
-                storage.length !== 0;
         }
     }
 
