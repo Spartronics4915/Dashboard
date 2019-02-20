@@ -123,8 +123,13 @@ class App
         let now = Date.now();
         if(!this.robotConnected && this.currentPage)
         {
-            this.robotBatteryW.addRandomPt();
-            this.robotCurrentW.addRandomPt();
+            if (false)
+            {
+                // this confuses matters when going in and out
+                // of robotConnection state
+                this.robotBatteryW.addRandomPt();
+                this.robotCurrentW.addRandomPt();
+            }
             this.pageHandlers[this.currentPage].randomData();
         }
         if(this.idleHandlers)
@@ -249,12 +254,12 @@ class App
                 "id": "inputCurrentChart",
                 "type": "stripchart",
                 "size": [100, 48],
-                "ntkeys": "/SmartDashboard/Robot/InputCurrent",
+                "ntkeys": "/SmartDashboard/Robot/BatteryCurrent",
                 "params": {
                     "plot": {
                         "yaxis": {
                             "min": 0,
-                            "max": 60,
+                            "max": 2,
                             "show": false,
                         },
                         "fillvalue": 0,
@@ -520,7 +525,7 @@ class App
             if(this.robotBatteryW)
                 this.robotBatteryW.valueChanged(key, value, isNew);
             break;
-        case "/SmartDashboard/Robot/InputCurrent":
+        case "/SmartDashboard/Robot/BatteryCurrent":
             if(this.robotCurrentW)
                 this.robotCurrentW.valueChanged(key, value, isNew);
             break;

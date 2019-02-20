@@ -760,28 +760,28 @@
                                 "protocol": "testpattern",
                                 "cls": "size720"
                             },
-                            "Front":
+                            "Back":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.11:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Front2X":
+                            "Back2X":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.11:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 size2x"
                             },
-                            "FrontFit":
+                            "BackFit":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.11:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
                             },
-                            "Front2X (no overlay)":
+                            "Back2X (no overlay)":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.11:8080",
@@ -789,14 +789,21 @@
                                 "cls": "rotate0 size2x",
                                 "overlay": false
                             },
-                            "Back":
+                            "Front":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.12:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "BackFit":
+                            "Front2X":
+                            {
+                                "protocol": "ws",
+                                "ip": "10.49.15.12:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 size2x"
+                            },
+                            "FrontFit":
                             {
                                 "protocol": "ws",
                                 "ip": "10.49.15.12::8080",
