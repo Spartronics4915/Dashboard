@@ -715,6 +715,53 @@
                     "params": {
                         "url": "/pages/about.html"
                     }
+                },
+                {
+                    "type": "html",
+                    "id": "helpcam",
+                    "size": [200, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Camera Links</h2>",
+                            "<ul>",
+                            "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
+                            "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
+                            "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
+                            "  <li><a href='http://${driverfrontcam}:8080' target='_blank'>Front UV4L Status</a>",
+                            "  <li><a href='http://${driverbackcam}:8080' target='_blank'>Back UV4L Status</a>",
+                            "</ul",
+                            "</div>"
+                        ]
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "helpdash",
+                    "size": [590, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Useful links</h2>",
+                            "<ul>",
+                            "<li><a href='http://localhost:5080/?demo=1'>Demo</a>",
+                            "<li><a href='http://localhost:5080'>Standard Launch</a>",
+                            "<li><a href='http://localhost:5080/?shownav=0&#tab8'>Camera Only</a>",
+                            "</ul>",
+                            "Dashboard URL syntax:",
+                            "<br /><br />",
+                            "<code>http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0</code>",
+                            "<br />",
+                            "<ul>",
+                            "<li> shownav controls display of navbar",
+                            "<li> demo controls whether random data is generated",
+                            "<li> env selects different layout variants according to provided key",
+                            "<li> layout selects an alternate layout file which must be located below www/layouts",
+                            "<li> url hash selects the current nav page and follows the optional configuration",
+                            "</ul>",
+                            "</div>"
+                        ]
+                    }
                 }
             ]
         },

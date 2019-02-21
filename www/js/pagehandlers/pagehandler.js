@@ -102,11 +102,30 @@ class PageHandler
                 if(w.type == "html")
                 {
                     let targetElem = $(`#${w.id}`);
-                    var fileref = w.params.url;
-                    app.sendGetRequest(fileref, function(html) {
-                        targetElem.html(html);
+                    if(w.params.url != undefined)
+                    {
+                        var fileref = w.params.url;
+                        app.sendGetRequest(fileref, function(html) {
+                            if(w.params.html != undefined)
+                            {
+                                if(Array.isArray(w.params.html))
+                                    html += w.params.html.join("\n");
+                                else
+                                    html += w.params.html;
+                            }
+                            targetElem.html(html);
+                            this._widgetLoaded();
+                        }.bind(this));
+                    }
+                    else
+                    if(w.params.html != undefined)
+                    {
+                        if(Array.isArray(w.params.html))
+                            targetElem.html(w.params.html.join("\n"));
+                        else
+                            targetElem.html(w.params.html);
                         this._widgetLoaded();
-                    }.bind(this));
+                    }
                 }
                 else
                 {

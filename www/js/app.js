@@ -1,5 +1,18 @@
 /* global app NetworkTables RobotLog WebAPISubscriber $ Widget */
 
+/* special url config syntax:
+ *
+ *   http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0
+ *
+ *  url hash selects the current nav page:
+ *      #tab0, follows the optional configuration
+ *
+ *  shownav controls display of navbar
+ *  demo controls whether random data is generated
+ *  env selects different layout variants according to provided key
+ *  layout must be located below www/layouts dir
+ *
+ */
 class App
 {
     constructor()
@@ -132,7 +145,7 @@ class App
         let now = Date.now();
         if(!this.robotConnected && this.currentPage)
         {
-            if (this.config.demoMode)
+            if (this.config.demoMode && this.config.demoMode == 1)
             {
                 // this confuses matters when going in and out
                 // of robotConnection state
@@ -314,13 +327,13 @@ class App
                 {
                     //$("header").addClass("hidden");
                     $("header").css("display", "none");
-                    $("#mainlayout").css("margin-top", "0px")
+                    $("#mainlayout").css("margin-top", "0px");
                     this.config.shownav = false;
                 }
                 else
                 {
                     $("header").css("display", "inline");
-                    $("#mainlayout").css("margin-top", "40px")
+                    $("#mainlayout").css("margin-top", "40px");
                     this.config.shownav = true;
                 }
                 break;
