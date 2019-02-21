@@ -83,7 +83,7 @@ class CamerasWidget extends Widget
 
     onIdle()
     {
-        if(this.overlay || false)
+        if(this.overlay)
             this._updateOverlay();
     }
 
@@ -137,6 +137,7 @@ class CamerasWidget extends Widget
         if(this.config.ntkeys[0] == key) // expect a single key
         {
             this.cleanup();
+            // we need to wait a bit for cleanup to "take".
             setTimeout(function() {
                 this._updateCamera(key, value, isNew);
                 this._updateOverlay(key, value, isNew);
@@ -364,7 +365,9 @@ class CamerasWidget extends Widget
     // _updateOverlay should be called on any nettab change whether
     //  overlays are enabled or not. This allows us to keep the
     //  correct values in place should a camera-switch occur that
-    //  requests overlays.
+    //  requests overlays.  For time updates that don't involve
+    //  network table traffic, our onIdle method is invoked via
+    //  the "page idler" mechanism of app.
     _updateOverlay(key, value, isNew)
     {
         // always update overlay values to avoid missing nettab event
@@ -486,7 +489,10 @@ class CamerasWidget extends Widget
             switch(item.class)
             {
             case "time":
-                item.value = new Date().toLocaleTimeString();
+                if(item.value == undefined || item.value == "" || !app.robotConnected)
+                    item.value = new Date().toLocaleTimeString();
+                // else we're presumably listening on a nettab value
+                // and will receive an update.
                 // fall through
             case "text":
                 // if(0)

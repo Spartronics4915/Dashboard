@@ -2,11 +2,13 @@
     "layoutName": "Test2019.json",
     "environments": {
         "default": {
+            "envparam": "env=default",
             "visionbackcam": "10.49.15.10",
             "driverbackcam": "10.49.15.11",
             "driverfrontcam": "10.49.15.12"
         },
         "dana": {
+            "envparam": "env=dana",
             "visionbackcam": "192.168.0.9",
             "driverbackcam": "192.168.0.7",
             "driverfrontcam": "192.168.0.8"
@@ -99,12 +101,13 @@
                                     "pipeline": "canny"
                                 },
                                 {
+                                    "key": "/SmartDashboard/DriverStation/MatchTime",
                                     "class": "time",
                                     "enable": true,
                                     "origin": [300, 30],
                                     "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
-                                    "value": "_"
+                                    "value": ""
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/Camera",
@@ -744,9 +747,9 @@
                             "<div class='references'>",
                             "<h2>Useful links</h2>",
                             "<ul>",
-                            "<li><a href='http://localhost:5080/?demo=1'>Demo</a>",
-                            "<li><a href='http://localhost:5080'>Standard Launch</a>",
-                            "<li><a href='http://localhost:5080/?shownav=0&#tab8'>Camera Only</a>",
+                            "<li><a href='/?${envparam}&'>Standard Launch</a>",
+                            "<li><a href='/?${envparam}&demo=1'>Demo</a>",
+                            "<li><a href='/?${envparam}&shownav=0&#tab8' target='_blank'>Camera Only</a>",
                             "</ul>",
                             "Dashboard URL syntax:",
                             "<br /><br />",
@@ -800,11 +803,12 @@
                                 },
                                 {
                                     "class": "time",
+                                    "key": "/SmartDashboard/DriverStation/MatchTime",
                                     "enable": true,
                                     "origin": [300, 30],
                                     "font": "30px Impact",
                                     "fillStyle": "rgba(255, 100, 0, .95)",
-                                    "value": "_"
+                                    "value": ""
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/Camera2Overlay/Circle",
