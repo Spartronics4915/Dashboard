@@ -22,12 +22,19 @@ class FieldConfig extends Widget
         // Auto Strategy (filled with our custom selector widget below)
         // html +=     "<span class='title'> Auto Strategy</span> ";
         html += `<div id='strategyWidget' ${gstyle([40, "row"])}></div> `;
-        if (this.config.params.cameraSelector)
+        if (this.config.params.camera1Selector)
         {
-            let label = this.config.params.cameraSelector.label;
+            let label = this.config.params.camera1Selector.label;
             if(label == undefined) label = "Camera";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector' ${gstyle([40, "row"])}></div>`;
+            html += `<div id='cameraSelector1' ${gstyle([40, "row"])}></div>`;
+        }
+        if (this.config.params.camera2Selector)
+        {
+            let label = this.config.params.camera2Selector.label;
+            if(label == undefined) label = "Camera";
+            // html +=     `<span class='title'>${label}</span> `;
+            html += `<div id='cameraSelector2' ${gstyle([40, "row"])}></div>`;
         }
 
         html += "</div>";
@@ -56,24 +63,32 @@ class FieldConfig extends Widget
         let el = $("#strategyWidget");
         this.strategyConfig.widget = new SelectorWidget(this.strategyConfig, el);
 
-        if(this.config.params.cameraSelector)
+        this.camSelConfigs = [];
+        this._buildCamSelector(this.config.params.camera1Selector);
+        this._buildCamSelector(this.config.params.camera2Selector);
+    }
+
+    _buildCamSelector(sel)
+    {
+        if(sel)
         {
-            this.cameraSelConfig = {
-                id: "cameraSelector",
-                label: "Camera",
+            let id = this.camSelConfigs.length+1;
+            let camSelConfig =
+            {
+                id: "cameraSelector" + id,
+                label: "Camera" + id,
                 type: "selector",
                 size: [0, 0], // size ignore since we bypass pagehandler.js
                 params: {
-                    ntkey: this.config.params.cameraSelector.ntkey,
+                    ntkey: sel.ntkey,
                     width: "14em",
-                    options: this.config.params.cameraSelector.options
+                    options: sel.options
                 }
             };
-            el = $("#cameraSelector");
-            this.cameraSelConfig.widget = new SelectorWidget(this.cameraSelConfig, el);
+            let el = $("#cameraSelector"+id);
+            camSelConfig.widget = new SelectorWidget(camSelConfig, el);
+            this.camSelConfigs.push(camSelConfig);
         }
-        else
-            this.cameraSelConfig = null;
     }
 
     valueChanged(key, value, isNew)
@@ -130,11 +145,16 @@ class FieldConfig extends Widget
         case "/FMSInfo/.type":
             break;
         default:
-            if(this.cameraSelConfig && key == this.cameraSelConfig.params.ntkey)
-                this.cameraSelConfig.widget.valueChanged(key, value, isNew);
-            else
             if(key.indexOf("/FMS") == 0)
                 app.info(`unknown FMS key ${key}, value: ${value}`);
+            else
+            {
+                for(let camsel of this.camSelConfigs)
+                {
+                    if(key == camsel.params.ntkey)
+                        camsel.widget.valueChanged(key, value, isNew);
+                }
+            }
             break;
         }
     }

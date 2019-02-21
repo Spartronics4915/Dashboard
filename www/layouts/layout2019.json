@@ -43,17 +43,30 @@
                                 "/SmartDashboard/Driver/Camera"
                             ],
                             "params": {
-                                "cameraSelector":
+                                "camera1Selector":
                                 {
-                                    "label": "Camera",
+                                    "label": "Camera1",
                                     "ntkey": "/SmartDashboard/Driver/Camera",
-                                    "_comment_": "we only control one camera",
+                                    "_comment_": "make sure these options are supported by the camera",
                                     "options": [
                                         "Test",
                                         "Front",
                                         "Front2X",
                                         "FrontFit",
                                         "FrontFit (no overlay)"
+                                    ]
+                                },
+                                "camera2Selector":
+                                {
+                                    "label": "Camera2",
+                                    "ntkey": "/SmartDashboard/Driver/Camera2",
+                                    "_comment_": "make sure these options are supported by the camera",
+                                    "options": [
+                                        "Test",
+                                        "Back",
+                                        "Back2X",
+                                        "BackFit",
+                                        "BackFit (no overlay)"
                                     ]
                                 }
                             }
@@ -89,7 +102,7 @@
                                     "class": "time",
                                     "enable": true,
                                     "origin": [300, 30],
-                                    "font": "30px Arial, serif",
+                                    "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": "_"
                                 },
@@ -98,7 +111,7 @@
                                     "class": "text",
                                     "enable": true,
                                     "origin": [10, 30],
-                                    "font": "30px Arial, serif",
+                                    "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": "<nocamera>"
                                 },
@@ -734,9 +747,17 @@
                                     "class": "text",
                                     "enable": true,
                                     "origin": [10, 30],
-                                    "font": "30px Arial, serif",
-                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 100, 0, .95)",
                                     "value": "<nocamera>"
+                                },
+                                {
+                                    "class": "time",
+                                    "enable": true,
+                                    "origin": [300, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 100, 0, .95)",
+                                    "value": "_"
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/Camera2Overlay/Circle",
