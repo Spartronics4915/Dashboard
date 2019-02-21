@@ -1,7 +1,6 @@
 {
     "layoutName": "Test2019.json",
     "environments": {
-        "_comment_": "NB: this is not a general variable subst mechanism.",
         "default": {
             "visionbackcam": "10.49.15.10",
             "driverbackcam": "10.49.15.11",
@@ -740,14 +739,14 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "key": "/SmartDashboard/Driver/CameraOverlay2/Circle",
+                                    "key": "/SmartDashboard/Driver/Camera2Overlay/Circle",
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
                                     "value": "200,200,35,3"
                                 },
                                 {
-                                    "key": "/SmartDashboard/Driver/CameraOverlay2/Rect",
+                                    "key": "/SmartDashboard/Driver/Camera2Overlay/Rect",
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
@@ -757,6 +756,11 @@
                         },
                         "cameras":
                         {
+                            "Test":
+                            {
+                                "protocol": "testpattern",
+                                "cls": "size720"
+                            },
                             "Back":
                             {
                                 "protocol": "ws",

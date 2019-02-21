@@ -16,9 +16,10 @@ class App
         this.config.debug = false;
         this.config.shownav = true;
         this.config.netTabVersion = 1802;
-        this.config.demoMode = true;
+        this.config.demoMode = false;
         this.config.layout = "/layouts/layout2019.json";
         this.config.layoutEnv = "default";
+        this.config.demomode = false;
 
         this.robotAddr = null;
         this.robotLog = null;
@@ -78,13 +79,13 @@ class App
     {
         this.firstLoad = false;
         this.robotLog = new RobotLog();
-        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this), 
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
                                                 true);
         this.webapi = new WebAPISubscriber();
         this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
         this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
 
-        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this), 
+        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this),
                                                 true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
                                                 true);
@@ -131,14 +132,14 @@ class App
         let now = Date.now();
         if(!this.robotConnected && this.currentPage)
         {
-            if (false)
+            if (this.config.demoMode)
             {
                 // this confuses matters when going in and out
                 // of robotConnection state
                 this.robotBatteryW.addRandomPt();
                 this.robotCurrentW.addRandomPt();
+                this.pageHandlers[this.currentPage].randomData();
             }
-            this.pageHandlers[this.currentPage].randomData();
         }
         if(this.idleHandlers)
         {
@@ -305,6 +306,9 @@ class App
         {
             switch(pair[0])
             {
+            case "demo":
+                this.config.demoMode = pair[1];
+                break;
             case "shownav":
                 if(pair[1] == 0)
                 {
@@ -580,7 +584,7 @@ class App
 
         if(!this.pageHandlers[this.currentPage])
         {
-            this.debug("onNetTabChange: missing page handler for " + 
+            this.debug("onNetTabChange: missing page handler for " +
                         this.currentPage);
             return;
         }
@@ -616,7 +620,7 @@ class App
                 try
                 {
                     let val = JSON.parse(request.responseText);
-                    // Looking for variable substitions during layout loads? 
+                    // Looking for variable substitions during layout loads?
                     //  see: layout.js.
                     responseHandler(val);
 

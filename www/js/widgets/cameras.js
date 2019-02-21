@@ -87,6 +87,31 @@ class CamerasWidget extends Widget
             this._updateOverlay();
     }
 
+    cleanup()
+    {
+        app.info("cleanup cameras");
+        if(this.imgEl)
+        {
+            // apparently successful attempt to plug memory leak for mjpgstreamer
+            // biggest issue was bandwidth consumption increases with each
+            // redraw...  Validation: switch between cameras and between tabs,
+            // while keeping an eye on bandwidth consumption (via TaskManager etc).
+            this.imgEl.src = "";
+            this.imgEl = null;
+        }
+        if(this.streamHandler)
+        {
+            this.vidEl = null;
+            this.streamHandler.hangup(); // hangup takes a little while
+            this.streamHandler = null;
+            this.isStreaming = false;
+        }
+        // overlay and opencv canvases are cleaned up with DOM since they
+        // are children of targetElem
+        this.overlayCtx = null; // only valid after we know video/img size
+        this.opencvEl = null;
+    }
+
     getHiddenNTKeys()
     {
         // Always expose our enabled hidden nt keys since this is only
@@ -110,8 +135,15 @@ class CamerasWidget extends Widget
     valueChanged(key, value, isNew)
     {
         if(this.config.ntkeys[0] == key) // expect a single key
-            this._updateCamera(key, value, isNew);
-        this._updateOverlay(key, value, isNew);
+        {
+            this.cleanup();
+            setTimeout(function() {
+                this._updateCamera(key, value, isNew);
+                this._updateOverlay(key, value, isNew);
+            }.bind(this), 1000);
+        }
+        else
+            this._updateOverlay(key, value, isNew);
     }
 
     _updateCamera(key, value, isnew)
@@ -221,26 +253,6 @@ class CamerasWidget extends Widget
     {
         // make sure our overlay canvas is the correct size and location
         app.debug("cameras._onDOMChange");
-        if(this.imgEl)
-        {
-            // apparently successful attempt to plug memory leak for mjpgstreamer
-            // biggest issue was bandwidth consumption increases with each
-            // redraw...  Validation: switch between cameras and between tabs,
-            // while keeping an eye on bandwidth consumption (via TaskManager etc).
-            this.imgEl.src = "";
-            this.imgEl = null;
-        }
-        if(this.streamHandler)
-        {
-            this.vidEl = null;
-            this.streamHandler.hangup();
-            this.streamHandler = null;
-            this.isStreaming = false;
-        }
-        // overlay and opencv canvases are cleaned up with DOM since they
-        // are children of targetElem
-        this.overlayCtx = null; // only valid after we know video/img size
-        this.opencvEl = null;
         if(this.config.params.overlay)
         {
             for(let item of this.config.params.overlay.items)
@@ -517,7 +529,7 @@ class CamerasWidget extends Widget
                         {
                             if(i+3<vals.length)
                                 this.overlayCtx.lineWidth = vals[i+3];
-                            CanvasUtils.circle(this.overlayCtx, 
+                            CanvasUtils.circle(this.overlayCtx,
                                                 vals[i], vals[i+1], vals[i+2],
                                                 stroke, fill);
                         }
