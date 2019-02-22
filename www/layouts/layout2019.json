@@ -745,7 +745,7 @@
                     "params": {
                         "html": [
                             "<div class='references'>",
-                            "<h2>Useful links</h2>",
+                            "<h2>Dashboard Links</h2>",
                             "<ul>",
                             "<li><a href='/?${envparam}&'>Standard Launch</a>",
                             "<li><a href='/?${envparam}&demo=1'>Demo</a>",
@@ -755,13 +755,18 @@
                             "<br /><br />",
                             "<code>http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0</code>",
                             "<br />",
-                            "<ul>",
-                            "<li> shownav controls display of navbar",
-                            "<li> demo controls whether random data is generated",
-                            "<li> env selects different layout variants according to provided key",
-                            "<li> layout selects an alternate layout file which must be located below www/layouts",
-                            "<li> url hash selects the current nav page and follows the optional configuration",
-                            "</ul>",
+                            "<br />",
+                            "<code><b>shownav</b></code>",
+                              " - controls display of navbar <br>",
+                            "<code><b>demo</b></code>",
+                              " - generates random data <br>",
+                            "<code><b>env</b></code> ",
+                              " - selects different layout variants <br>",
+                            "<code><b>layout</b></code>",
+                              " - selects n layout from www/layouts <br>",
+                            "<code><b>url hash</b></code> ",
+                              " - selects page, follows all optional configs",
+                            "<br />",
                             "</div>"
                         ]
                     }
