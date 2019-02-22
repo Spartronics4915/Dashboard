@@ -54,8 +54,7 @@
                                         "Test",
                                         "Front",
                                         "Front2X",
-                                        "FrontFit",
-                                        "FrontFit (no overlay)"
+                                        "FrontFit"
                                     ]
                                 },
                                 "camera2Selector":
@@ -67,8 +66,7 @@
                                         "Test",
                                         "Back",
                                         "Back2X",
-                                        "BackFit",
-                                        "BackFit (no overlay)"
+                                        "BackFit"
                                     ]
                                 }
                             }
@@ -123,14 +121,16 @@
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "value": "200,200,35,3"
+                                    "_comment": "200,200,35,3",
+                                    "value": ""
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/CameraOverlay/Rect",
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
-                                    "value": "300,300,30,30,3,5"
+                                    "_comment_": "300,300,30,30,3,5",
+                                    "value": ""
                                 }
                             ]
                         },
@@ -161,14 +161,6 @@
                                 "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
-                            },
-                            "Front2X (no overlay)":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverfrontcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x",
-                                "overlay": false
                             },
                             "_comment_": "back is in other panel"
                         }
@@ -820,14 +812,16 @@
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "value": "200,200,35,3"
+                                    "_comment_": "200,200,35,3",
+                                    "value": ""
                                 },
                                 {
                                     "key": "/SmartDashboard/Driver/Camera2Overlay/Rect",
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
-                                    "value": "300,300,30,30,3,5"
+                                    "_comment_": "300,300,30,30,3,5",
+                                    "value": ""
                                 }
                             ]
                         },
@@ -858,14 +852,6 @@
                                 "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0 scaled"
-                            },
-                            "Back2X (no overlay)":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x",
-                                "overlay": false
                             },
                             "_comment_": "front is in other panel"
                         }

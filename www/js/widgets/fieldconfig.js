@@ -81,7 +81,7 @@ class FieldConfig extends Widget
                 size: [0, 0], // size ignore since we bypass pagehandler.js
                 params: {
                     ntkey: sel.ntkey,
-                    width: "14em",
+                    width: "8em",
                     options: sel.options
                 }
             };
