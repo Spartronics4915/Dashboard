@@ -11,6 +11,14 @@ class Widget
         this.config = config;
         if(this.config.ntkeys && !Array.isArray(this.config.ntkeys))
             this.config.ntkeys = [this.config.ntkeys];
+        if(this.config.ntkeys)
+        {
+            for(let i=0;i<this.config.ntkeys.length;i++)
+            {
+                let k = this.config.ntkeys[i];
+                this.config.ntkeys[i] = app.ntkeyNormalize(k);
+            }
+        }
         this.targetElem = targetElem;
         this.pageHandler = pageHandler;
     }
@@ -32,7 +40,7 @@ class Widget
     }
 
     // shared mechanism to equate domid with nettab key, also
-    // useful to create a label. HTML5 allows any character 
+    // useful to create a label. HTML5 allows any character
     // except any type of space character.
     ntkeyToDOMId(key)
     {
@@ -62,7 +70,7 @@ class Widget
     getIdToNTKeyMap()
     {
         // some underlying controls (eg select) assume that the id
-        // is the ntkey, others provide a map from control id to 
+        // is the ntkey, others provide a map from control id to
         // ntkey.
         return null;
     }

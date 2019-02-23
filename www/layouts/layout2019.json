@@ -15,7 +15,7 @@
         }
     },
     "pageTemplates": [
-        {
+        { "_comment_page": "--------- driver page -------------------------- ",
             "icon": "fas fa-gamepad primary",
             "navtext": "Compete",
             "widgets": [
@@ -32,8 +32,8 @@
                             "id": "fieldconfig",
                             "size": [800, "row"],
                             "ntkeys": [
-                                "/SmartDashboard/AutoStrategy",
-                                "/SmartDashboard/AutoStrategyOptions",
+                                "AutoStrategy",
+                                "AutoStrategyOptions",
                                 "/FMSInfo/IsRedAlliance",
                                 "/FMSInfo/StationNumber",
                                 "/FMSInfo/GameSpecificMessage",
@@ -42,31 +42,39 @@
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber",
-                                "/SmartDashboard/Driver/Camera"
+                                "Driver/Camera1",
+                                "Driver/Camera2"
                             ],
                             "params": {
                                 "camera1Selector":
                                 {
                                     "label": "Camera1",
-                                    "ntkey": "/SmartDashboard/Driver/Camera",
+                                    "ntkey": "Driver/Camera1",
                                     "_comment_": "make sure these options are supported by the camera",
                                     "options": [
                                         "Test",
                                         "Front",
-                                        "Front2X",
-                                        "FrontFit"
+                                        "Back"
                                     ]
                                 },
                                 "camera2Selector":
                                 {
                                     "label": "Camera2",
-                                    "ntkey": "/SmartDashboard/Driver/Camera2",
+                                    "ntkey": "Driver/Camera2",
                                     "_comment_": "make sure these options are supported by the camera",
                                     "options": [
                                         "Test",
-                                        "Back",
-                                        "Back2X",
-                                        "BackFit"
+                                        "Back"
+                                    ]
+                                },
+                                "videoStream":
+                                {
+                                    "label": "VideoStream",
+                                    "ntkey": "Driver/VideoChannel",
+                                    "_comment_": "make sure these options are substrings of videochannel's streams array",
+                                    "options": [
+                                        "Camera1",
+                                        "Camera2"
                                     ]
                                 }
                             }
@@ -79,61 +87,13 @@
                     "size": [1340, 800],
                     "ntkeys":
                     [
-                        "/SmartDashboard/Driver/Camera"
+                        "Driver/Camera1"
                     ],
                     "params":
                     {
                         "_comment_": "selector:false -> no menu in this widget",
                         "selector": false,
-                        "overlay":
-                        {
-                            "enable": true,
-                            "updateinterval": 500,
-                            "_comment_": "items drawn in order (bottom-to-top)",
-                            "items":
-                            [
-                                {
-                                    "class": "opencv",
-                                    "enable": false,
-                                    "_comment_": "NB: opencv must be loaded",
-                                    "pipeline": "canny"
-                                },
-                                {
-                                    "key": "/SmartDashboard/DriverStation/MatchTime",
-                                    "class": "time",
-                                    "enable": true,
-                                    "origin": [300, 30],
-                                    "font": "30px Impact",
-                                    "fillStyle": "rgba(255, 255, 10, .85)",
-                                    "value": ""
-                                },
-                                {
-                                    "key": "/SmartDashboard/Driver/Camera",
-                                    "class": "text",
-                                    "enable": true,
-                                    "origin": [10, 30],
-                                    "font": "30px Impact",
-                                    "fillStyle": "rgba(255, 255, 10, .85)",
-                                    "value": "<nocamera>"
-                                },
-                                {
-                                    "key": "/SmartDashboard/Driver/CameraOverlay/Circle",
-                                    "class": "circle",
-                                    "enable": true,
-                                    "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "_comment": "200,200,35,3",
-                                    "value": ""
-                                },
-                                {
-                                    "key": "/SmartDashboard/Driver/CameraOverlay/Rect",
-                                    "class": "rect",
-                                    "enable": false,
-                                    "strokeStyle": "rgba(100, 0, 150, .85)",
-                                    "_comment_": "300,300,30,30,3,5",
-                                    "value": ""
-                                }
-                            ]
-                        },
+                        "overlayId": "drivercamOverlayCanv",
                         "cameras":
                         {
                             "Test":
@@ -148,27 +108,77 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "Front2X":
+                            "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}:8080",
+                                "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x"
-                            },
-                            "FrontFit":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverfrontcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
+                                "cls": "rotate0"
                             },
                             "_comment_": "back is in other panel"
+                        }
+                    }
+                },
+                {
+                    "type": "canvas",
+                    "id": "drivercamOverlay",
+                    "size": [0, 0],
+                    "params": {
+                        "overlay":
+                        {
+                            "enable": false,
+                            "updateinterval": 500,
+                            "_comment_": "items drawn in order (bottom-to-top)",
+                            "items":
+                            [
+                                {
+                                    "class": "opencv",
+                                    "enable": false,
+                                    "_comment_": "NB: opencv must be loaded",
+                                    "pipeline": "canny"
+                                },
+                                {
+                                    "key": "DriverStation/MatchTime",
+                                    "class": "text",
+                                    "subclass": "time",
+                                    "enable": true,
+                                    "origin": [300, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": ""
+                                },
+                                {
+                                    "key": "Driver/Camera1",
+                                    "class": "text",
+                                    "enable": true,
+                                    "origin": [10, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": "<nocamera>"
+                                },
+                                {
+                                    "key": "Driver/CameraOverlay/Circle",
+                                    "class": "circle",
+                                    "enable": true,
+                                    "strokeStyle": "rgba(255, 0, 10, .85)",
+                                    "_comment": "200,200,35,3",
+                                    "value": ""
+                                },
+                                {
+                                    "key": "Driver/CameraOverlay/Rect",
+                                    "class": "rect",
+                                    "enable": false,
+                                    "strokeStyle": "rgba(100, 0, 150, .85)",
+                                    "_comment_": "300,300,30,30,3,5",
+                                    "value": ""
+                                }
+                            ]
                         }
                     }
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- drivetrain page -------------------------- ",
             "navtext": "Drive",
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
@@ -177,15 +187,15 @@
                     "label": "Drive Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": ["/SmartDashboard/Drive/State",
-                              "/SmartDashboard/Drive/Status"]
+                    "ntkeys": ["Drive/State",
+                              "Drive/Status"]
                 },
                 {
                     "id": "driveOdometry",
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
-                    "ntkeys": "/SmartDashboard/RobotState/pose",
+                    "ntkeys": "RobotState/pose",
                     "params": {
                         "plot": {
                             "xaxis": {
@@ -217,7 +227,7 @@
                     "label": "IMU Heading",
                     "type": "stripchart",
                     "size": [330, 300],
-                    "ntkeys": "/SmartDashboard/Drive/imuHeading",
+                    "ntkeys": "Drive/imuHeading",
                     "params": {
                         "plot": {
                             "yaxis": {
@@ -234,9 +244,9 @@
                     "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Drive/leftSpeed",
+                    "ntkeys": "Drive/leftSpeed",
                     "ntkeyRefs":[
-                        "/SmartDashboard/Drive/leftSpeedTarget"
+                        "Drive/leftSpeedTarget"
                     ],
                     "params": {
                         "plot": {
@@ -257,9 +267,9 @@
                     "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Drive/rightSpeed",
+                    "ntkeys": "Drive/rightSpeed",
                     "ntkeyRefs":[
-                        "/SmartDashboard/Drive/rightSpeedTarget"
+                        "Drive/rightSpeedTarget"
                     ],
                     "params": {
                         "plot": {
@@ -281,7 +291,7 @@
                     "type": "stripchart",
                     "size": [330, 170],
                     "_comment": "expect 'velocity acceleration curvature'",
-                    "ntkeys": "/SmartDashboard/DriveMotionPlanner/trajectorySetpoints",
+                    "ntkeys": "DriveMotionPlanner/trajectorySetpoints",
                     "params": {
                         "plot": {
                             "yaxis": {
@@ -302,10 +312,10 @@
                     "type": "pathplot",
                     "size": [300, 300],
                     "ntkeys": [
-                        "/SmartDashboard/Drive/leftDemand"
+                        "Drive/leftDemand"
                     ],
                     "ntkeyRefs": [
-                        "/SmartDashboard/Drive/leftSpeed"
+                        "Drive/leftSpeed"
                     ],
                     "params": {
                         "plot": {
@@ -341,9 +351,9 @@
                     "label": "Lidar",
                     "type": "systemstate",
                     "size": ["fill", 40],
-                    "ntkeys": ["/SmartDashboard/Lidar/status",
-                               "/SmartDashboard/Lidar/angle",
-                               "/SmartDashboard/Turret/state"
+                    "ntkeys": ["Lidar/status",
+                               "Lidar/angle",
+                               "Turret/state"
                             ]
                 },
                 {
@@ -351,7 +361,7 @@
                     "label": "LIDAR Odometry",
                     "type": "pathplot",
                     "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Lidar/pose",
+                    "ntkeys": "Lidar/pose",
                     "params": {
                         "plot": {
                             "xaxis": {
@@ -383,7 +393,7 @@
                     "label": "LIDAR Points",
                     "type": "pathplot",
                     "size": [330, 170],
-                    "ntkeys": "/SmartDashboard/Lidar/points",
+                    "ntkeys": "Lidar/points",
                     "params": {
                         "plot": {
                             "xaxis": {
@@ -448,23 +458,21 @@
                 }
             ]
         },
-        {
-            "navtext": "Climb",
-            "icon":  "fas fa-rocket",
+        { "_comment_page": "--------- paths page -------------------------- ",
+            "navtext": "Paths",
+            "icon":  "fas fa-road",
             "widgets": [
                 {
-                    "id": "Climb",
-                    "label": "Climb Subsystem",
+                    "id": "pathplanning",
+                    "label": "Path Planning",
                     "type": "systemstate",
                     "size": ["fill", "row"],
                     "ntkeys": [
-                        "/SmartDashboard/Climb/State",
-                        "/SmartDashboard/Climb/Status"
                     ]
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- vision page -------------------------- ",
             "navtext": "Vision",
             "icon":  "fas fa-eye",
             "widgets": [
@@ -473,7 +481,7 @@
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": "/SmartDashboard/Vision/State"
+                    "ntkeys": "Vision/State"
                 },
                 {
                     "type": "cameras",
@@ -481,7 +489,7 @@
                     "id": "cameras",
                     "size": [700, 700],
                     "ntkeys": [
-                        "/SmartDashboard/Vision/Camera"
+                        "Vision/Camera"
                     ],
                     "params": {
                         "selector": true,
@@ -528,7 +536,7 @@
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- test page -------------------------- ",
             "navtext": "Test",
             "icon": "fas fa-vial",
             "widgets": [
@@ -544,12 +552,12 @@
                     "label": "Test Mode",
                     "id": "testmode",
                     "size": [220, "row"],
-                    "ntkeys": ["/SmartDashboard/TestMode",
-                               "/SmartDashboard/TestModeOptions"],
+                    "ntkeys": ["TestMode",
+                               "TestModeOptions"],
                     "params": {
                         "width": "9em",
-                        "ntkey": "/SmartDashboard/TestMode",
-                        "optionsntkey": "/SmartDashboard/TestModeOptions"
+                        "ntkey": "TestMode",
+                        "optionsntkey": "TestModeOptions"
                     }
                 },
                 {
@@ -557,7 +565,7 @@
                     "label": "Variant",
                     "id": "testvariant",
                     "size": [220, "row"],
-                    "ntkeys": ["/SmartDashboard/TestVariant"],
+                    "ntkeys": ["TestVariant"],
                     "params": {
                         "width": "10em"
                     }
@@ -574,7 +582,7 @@
                     "id": "s1",
                     "label": "A Slider",
                     "size": [200, "row"],
-                    "ntkeys": ["/SmartDashboard/Test/Slider1"],
+                    "ntkeys": ["Test/Slider1"],
                     "params": {
                         "min": 0,
                         "max": 100,
@@ -586,7 +594,7 @@
                     "id": "s2",
                     "label": "A Number",
                     "size": [200, "row"],
-                    "ntkeys": ["/SmartDashboard/Test/Number1"],
+                    "ntkeys": ["Test/Number1"],
                     "params": {
                         "min": 0,
                         "max": 1,
@@ -598,7 +606,7 @@
                     "id": "s3",
                     "label": "Some Text",
                     "size": [220, "row"],
-                    "ntkeys": ["/SmartDashboard/Test/Text1"],
+                    "ntkeys": ["Test/Text1"],
                     "params": {
                         "width": "8em"
                     }
@@ -608,17 +616,17 @@
                     "label": "A Checkbox",
                     "id": "s4",
                     "size": [120, "row"],
-                    "ntkeys": ["/SmartDashboard/Test/Check1"]
+                    "ntkeys": ["Test/Check1"]
                 },
                 {
                     "type": "selector",
                     "label": "A Selector",
                     "id": "s5",
                     "size": [200, "row"],
-                    "ntkeys": ["/SmartDashboard/Test/Sel1"],
+                    "ntkeys": ["Test/Sel1"],
                     "params": {
                         "width": "8em",
-                        "ntkey": "/SmartDashboard/Test/Sel1",
+                        "ntkey": "Test/Sel1",
                         "options": [
                              "blue pill",
                              "red pill"
@@ -630,7 +638,7 @@
                     "size": [200, "row"],
                     "label": "Range Slider",
                     "id": "hrange",
-                    "ntkeys": "/SmartDashboard/Test/TestRange",
+                    "ntkeys": "Test/TestRange",
                     "params":
                     {
                        "min": 0,
@@ -641,7 +649,7 @@
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- network tables page -------------------------- ",
             "navtext": "Network Tables",
             "icon": "fas fa-network-wired",
             "pagehandler": "NetTabPH",
@@ -654,7 +662,7 @@
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- robotlog page -------------------------------- ",
             "navtext": "Robot Log",
             "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
@@ -664,18 +672,18 @@
                     "label": "devices",
                     "id": "robotdevs",
                     "size": ["fill", "row"],
-                    "ntkeys": ["/SmartDashboard/Robot/Connections"]
+                    "ntkeys": ["Robot/Connections"]
                 },
                 {
                     "type": "robotlog",
                     "label": "robologs",
                     "id": "robotlog",
                     "size": ["fill", "fill"],
-                    "ntkeys": ["/SmartDashboard/Robot/Verbosity"]
+                    "ntkeys": ["Robot/Verbosity"]
                 }
             ]
         },
-        {
+        { "_comment_page": "--------- about page --------------------------------- ",
             "navtext": "About",
             "icon": "fas fa-cogs",
             "widgets": [
@@ -765,23 +773,39 @@
                 }
             ]
         },
-        {
-            "_comment": "this page has no icon ----------",
-            "icon": "_none_",
+        { "_comment_page": "--------- video page -------------------------------------- ",
+            "icon": "fas fa-video",
             "navtext": "cam-only",
             "widgets": [
                 {
-                    "type": "cameras",
-                    "id": "drivercams",
+                    "type": "videostream",
+                    "id": "driverstream",
                     "size": [1340, 800],
-                    "ntkeys":
-                    [
-                        "/SmartDashboard/Driver/Camera2"
-                    ],
+                    "ntkeys": "Driver/VideoChannel",
                     "params":
                     {
-                        "selector": false,
-                        "_comment": "selector false -> no selector menu",
+                        "streams":
+                        {
+                            "Test":
+                            {
+                                "protocol": "testpattern",
+                                "cls": "size720"
+                            },
+                            "Front":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverfrontcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 scaled"
+                            },
+                            "Back":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverbackcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "rotate0 scaled"
+                            }
+                        },
                         "overlay":
                         {
                             "enable": true,
@@ -790,8 +814,8 @@
                             "items":
                             [
                                 {
-                                    "key": "/SmartDashboard/Driver/Camera2",
                                     "class": "text",
+                                    "subclass": "cameraname",
                                     "enable": true,
                                     "origin": [10, 30],
                                     "font": "30px Impact",
@@ -799,8 +823,9 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "class": "time",
-                                    "key": "/SmartDashboard/DriverStation/MatchTime",
+                                    "class": "text",
+                                    "subclass": "time",
+                                    "key": "DriverStation/MatchTime",
                                     "enable": true,
                                     "origin": [300, 30],
                                     "font": "30px Impact",
@@ -808,7 +833,7 @@
                                     "value": ""
                                 },
                                 {
-                                    "key": "/SmartDashboard/Driver/Camera2Overlay/Circle",
+                                    "key": "Driver/VideoOverlay/Circle",
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
@@ -816,7 +841,7 @@
                                     "value": ""
                                 },
                                 {
-                                    "key": "/SmartDashboard/Driver/Camera2Overlay/Rect",
+                                    "key": "Driver/VideoOverlay/Rect",
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
@@ -824,36 +849,6 @@
                                     "value": ""
                                 }
                             ]
-                        },
-                        "cameras":
-                        {
-                            "Test":
-                            {
-                                "protocol": "testpattern",
-                                "cls": "size720"
-                            },
-                            "Back":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0"
-                            },
-                            "Back2X":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 size2x"
-                            },
-                            "BackFit":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
-                            },
-                            "_comment_": "front is in other panel"
                         }
                     }
                 }

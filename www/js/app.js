@@ -103,10 +103,10 @@ class App
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
                                                 true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
-        if(null == this.getValue("/SmartDashboard/Driver/Camera", null))
-            this.putValue("/SmartDashboard/Driver/Camera", "Test");
-        if(null == this.getValue("/SmartDashboard/Driver/Camera2", null))
-            this.putValue("/SmartDashboard/Driver/Camera2", "Test");
+        if(null == this.getValue("Driver/Camera1", null))
+            this.putValue("Driver/Camera1", "Test");
+        if(null == this.getValue("Driver/Camera2", null))
+            this.putValue("Driver/Camera2", "Test");
 
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
@@ -497,6 +497,24 @@ class App
         }
     }
 
+    ntkeyNormalize(k)
+    {
+        if(!k)
+            return k;
+        if(k[0] != "/")
+            k = "/SmartDashboard/" + k;
+        return k;
+    }
+
+    ntkeyCompare(a, b)
+    {
+        if(a == b) return true;
+
+        a = this.ntkeyNormalize(a);
+        b = this.ntkeyNormalize(b);
+        return a == b;
+    }
+
     putValue(nm, value)
     {
         if(!nm || nm == "undefined")
@@ -511,28 +529,24 @@ class App
         }
         else
         {
-            if(nm[0] == "/")
-                NetworkTables.putValue(nm, value);
-            else
+            let k = this.ntkeyNormalize(nm);
             if(this.config.netTabVersion <= 1801)
             {
                 // for 18.0.1
-                NetworkTables.putValue("SmartDashboard/"+nm, value);
+                NetworkTables.putValue(k.slice(1), value);
             }
             else
             {
                 // for 18.0.2
-                NetworkTables.putValue("/SmartDashboard/"+nm, value);
+                NetworkTables.putValue(k, value);
             }
         }
     }
 
     getValue(nm, def="")
     {
-        if(nm[0] == "/")
-            return NetworkTables.getValue(nm, def);
-        else
-            return NetworkTables.getValue("/SmartDashboard/"+nm, def);
+        let k = this.ntkeyNormalize(nm);
+        return NetworkTables.getValue(k, def);
     }
 
     replayNetTab()

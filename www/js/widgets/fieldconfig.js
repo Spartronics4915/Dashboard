@@ -36,6 +36,13 @@ class FieldConfig extends Widget
             // html +=     `<span class='title'>${label}</span> `;
             html += `<div id='cameraSelector2' ${gstyle([40, "row"])}></div>`;
         }
+        if (this.config.params.videoStream)
+        {
+            let label = this.config.params.videoStream.label;
+            if(label == undefined) label = "Channel";
+            // html +=     `<span class='title'>${label}</span> `;
+            html += `<div id='cameraSelector3' ${gstyle([40, "row"])}></div>`;
+        }
 
         html += "</div>";
 
@@ -66,9 +73,12 @@ class FieldConfig extends Widget
         this.camSelConfigs = [];
         this._buildCamSelector(this.config.params.camera1Selector);
         this._buildCamSelector(this.config.params.camera2Selector);
+        this._buildCamSelector(this.config.params.videoStream, {
+                                label: "Video Stream",
+                            });
     }
 
-    _buildCamSelector(sel)
+    _buildCamSelector(sel, cfg={})
     {
         if(sel)
         {
@@ -76,7 +86,7 @@ class FieldConfig extends Widget
             let camSelConfig =
             {
                 id: "cameraSelector" + id,
-                label: "Camera" + id,
+                label: cfg.label ? cfg.label : "Camera" + id,
                 type: "selector",
                 size: [0, 0], // size ignore since we bypass pagehandler.js
                 params: {
@@ -151,7 +161,7 @@ class FieldConfig extends Widget
             {
                 for(let camsel of this.camSelConfigs)
                 {
-                    if(key == camsel.params.ntkey)
+                    if(app.ntkeyCompare(key, camsel.params.ntkey))
                         camsel.widget.valueChanged(key, value, isNew);
                 }
             }

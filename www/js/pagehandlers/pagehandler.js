@@ -195,6 +195,8 @@ class PageHandler
         if(keys.length == 0) return;
         for(let k of keys)
         {
+            if(k[0] != "/")
+                k = "/SmartDashboard/" + k;
             if(this.idToNTKeyMap[k])
                 app.warning("idToNTKeyMap collision for " + k);
             this.idToNTKeyMap[k] = m[k];
@@ -222,11 +224,9 @@ class PageHandler
             keys = [keys];
         for(let j=0;j<keys.length;j++)
         {
-            let key = keys[j];
+            let key = app.ntkeyNormalize(keys[j]);
             if(this.ntkeyMap[key])
-            {
                 this.ntkeyMap[key].push(handler);
-            }
             else
                 this.ntkeyMap[key] = [handler];
         }
