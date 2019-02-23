@@ -170,10 +170,10 @@ class CamerasWidget extends Widget
                 let url = `ws:${cam.ip}${cam.url}`;
                 this.streamHandler = new WebRTCSignaling(url,
                                         cam.vformat,
-                                        this.onStreamOpen.bind(this),
-                                        this.onStreamError.bind(this),
-                                        this.onStreamClose.bind(this),
-                                        this.onStreamMsg.bind(this)
+                                        this._onStreamOpen.bind(this),
+                                        this._onStreamError.bind(this),
+                                        this._onStreamClose.bind(this),
+                                        this._onStreamMsg.bind(this)
                                         );
             }
             else
@@ -210,7 +210,7 @@ class CamerasWidget extends Widget
         this._updateOverlaySize(this.vidEl);
     }
 
-    onStreamOpen(stream)
+    _onStreamOpen(stream)
     {
         app.notice("video stream opened");
         this.vidEl.srcObject = stream;
@@ -236,7 +236,7 @@ class CamerasWidget extends Widget
         }
     }
 
-    onStreamClose()
+    _onStreamClose()
     {
         app.notice("video stream closed");
         if(this.vidEl)
@@ -247,14 +247,14 @@ class CamerasWidget extends Widget
         this.streamHandler = null;
     }
 
-    onStreamError(msg)
+    _onStreamError(msg)
     {
         app.error("video stream error: " + msg);
         let v = document.getElementById(`${this.vidId}`);
         v.srcObject = null;
     }
 
-    onStreamMsg(msg)
+    _onStreamMsg(msg)
     {
         app.warning("video stream message:" + msg);
         let vmsg = document.getElementById("vidMsg");

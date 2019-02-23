@@ -120,6 +120,7 @@ class RobotDevicesWidget extends Widget
         if(!this.devArray && false)
             this.devArray = this.testData;
         $("#devicetable tbody > tr").remove();
+        if(!this.devArray || this.devArray.length == 0) return;
 
         // order of fields in Tuner:
         //  Devices, Software Status, Hardware, ID, Firmware Version,

@@ -126,7 +126,7 @@
                     "params": {
                         "overlay":
                         {
-                            "enable": false,
+                            "enable": true,
                             "updateinterval": 500,
                             "_comment_": "items drawn in order (bottom-to-top)",
                             "items":
