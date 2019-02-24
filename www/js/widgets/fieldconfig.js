@@ -169,6 +169,16 @@ class FieldConfig extends Widget
         }
     }
 
+    getHiddenNTKeys()
+    {
+        let hiddenKeys = [];
+        for(let camsel of this.camSelConfigs)
+        {
+           hiddenKeys.push(camsel.params.ntkey);
+        }
+        return hiddenKeys;
+    }
+
     addRandomPt()
     {
         // no-op

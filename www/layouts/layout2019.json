@@ -41,9 +41,7 @@
                                 "/FMSInfo/FMSControlData",
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
-                                "/FMSInfo/MatchNumber",
-                                "Driver/Camera1",
-                                "Driver/Camera2"
+                                "/FMSInfo/MatchNumber"
                             ],
                             "params": {
                                 "camera1Selector":
@@ -70,11 +68,12 @@
                                 "videoStream":
                                 {
                                     "label": "VideoStream",
-                                    "ntkey": "Driver/VideoChannel",
+                                    "ntkey": "Driver/VideoStream",
                                     "_comment_": "make sure these options are substrings of videochannel's streams array",
                                     "options": [
-                                        "Camera1",
-                                        "Camera2"
+                                        "Test",
+                                        "Front",
+                                        "Back"
                                     ]
                                 }
                             }
@@ -734,6 +733,7 @@
                             "  <li><a href='http://${driverfrontcam}:8080' target='_blank'>Front UV4L Status</a>",
                             "  <li><a href='http://${driverbackcam}:8080' target='_blank'>Back UV4L Status</a>",
                             "</ul",
+                            "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
                             "</div>"
                         ]
                     }
@@ -781,7 +781,7 @@
                     "type": "videostream",
                     "id": "driverstream",
                     "size": [1340, 800],
-                    "ntkeys": "Driver/VideoChannel",
+                    "ntkeys": "Driver/VideoStream",
                     "params":
                     {
                         "overlayId": "videoOverlayCanv",
@@ -838,7 +838,7 @@
                                     "value": ""
                                 },
                                 {
-                                    "key": "Driver/VideoChannel",
+                                    "key": "Driver/VideoStream",
                                     "class": "text",
                                     "enable": true,
                                     "origin": [10, 30],

@@ -107,6 +107,8 @@ class App
             this.putValue("Driver/Camera1", "Test");
         if(null == this.getValue("Driver/Camera2", null))
             this.putValue("Driver/Camera2", "Test");
+        if(null == this.getValue("Driver/VideoChannel", null))
+            this.putValue("Driver/VideoChannel", "Test");
 
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
