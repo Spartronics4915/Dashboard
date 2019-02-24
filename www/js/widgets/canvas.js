@@ -347,12 +347,18 @@ class CanvasWidget extends Widget
         // assume: one stroke style
         if(item.strokeStyle)
             ctx.strokeStyle = item.strokeStyle;
+
+        this.canvasCtx.lineWidth = 2;
+        this.canvasCtx.lineCap = "round";
+        ctx.shadowColor =  "rgba(0,0,0,.8)";
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.shadowBlur = 3;
         for(let key of app.getRobotState().getPoseListKeys())
         {
             // assume: one fill style per game-phase
             if(item.fillStyle[key])
                 ctx.fillStyle = item.fillStyle[key];
-            this.canvasCtx.lineWidth = 2;
             let poselist = poselists[key];
             for(let i=0;i<poselist.length;i++)
             {
