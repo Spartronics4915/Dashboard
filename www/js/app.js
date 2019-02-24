@@ -1,4 +1,4 @@
-/* global app NetworkTables RobotLog WebAPISubscriber $ Widget */
+/* global app NetworkTables RobotLog WebAPISubscriber $ Widget RobotState*/
 
 /* special url config syntax:
  *
@@ -34,12 +34,13 @@ class App
         this.config.layoutEnv = "default";
         this.config.demomode = false;
 
+        // nb: initialization of js members occurs in 'onReady'
         this.robotAddr = null;
         this.robotLog = null;
         this.robotConnected = false;
         this.robotBatteryW = null;
         this.robotCurrentW = null;
-
+        this.robotState = null; 
         this.webapi = null;
         this.opencv = {};
         this.opencv.loaded = false; // accessed directly by opencv factory
@@ -47,7 +48,6 @@ class App
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
 
-        // nb: initialization of js members occurs in 'onReady'
     }
 
     logMsg(msg)
@@ -91,6 +91,7 @@ class App
     onReady()
     {
         this.firstLoad = false;
+        this.robotState = new RobotState();
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
                                                 true);
@@ -103,12 +104,15 @@ class App
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
                                                 true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
+
+        // on boot, make sure that we don't attempt to open channels
+        // to unconnected robot.
         if(null == this.getValue("Driver/Camera1", null))
             this.putValue("Driver/Camera1", "Test");
         if(null == this.getValue("Driver/Camera2", null))
             this.putValue("Driver/Camera2", "Test");
-        if(null == this.getValue("Driver/VideoChannel", null))
-            this.putValue("Driver/VideoChannel", "Test");
+        if(null == this.getValue("Driver/VideoStream", null))
+            this.putValue("Driver/VideoStream", "Test");
 
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
@@ -153,6 +157,7 @@ class App
                 // of robotConnection state
                 this.robotBatteryW.addRandomPt();
                 this.robotCurrentW.addRandomPt();
+                this.robotState.addRandomPose();
                 this.pageHandlers[this.currentPage].randomData();
             }
         }
@@ -430,6 +435,11 @@ class App
         return this.robotAddr;
     }
 
+    getRobotState()
+    {
+        return this.robotState;
+    }
+
     onRobotConnect(cnx)
     {
         this.robotConnected = cnx;
@@ -445,7 +455,7 @@ class App
         }
         else
             this.robotAddr = null;
-        $("#robotState").html(cnx ? "<span class='green'>connected</span>" :
+        $("#robotStatus").html(cnx ? "<span class='green'>connected</span>" :
                                     "<span class='blinkRed'>off-line</span>");
         $("#robotAddress").html(this.robotAddr ? this.robotAddr : "<n/a>");
         this.updateCANStatus();
@@ -586,12 +596,30 @@ class App
                 this.robotCurrentW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/GamePhase":
-            if(value == "ROBOT INIT")
+            this.robotState.changeGamePhase(value);
+            switch(value)
             {
-                this.logMsg("ROBOT INIT... clearing widgets");
+            case "ROBOT INIT":
+                this.info("ROBOT INIT... clearing widgets");
                 if(this.currentPage && this.pageHandlers[this.currentPage])
                     this.pageHandlers[this.currentPage].resetWidgets();
+                break;
+            case "DISABLED":
+                break;
+            case "AUTONOMOUS":
+                break;
+            case "TELEOP":
+                break;
+            case "TEST":
+                break;
+            case "OFFLINE":
+                break;
+            default:
+                app.warning("app encountered unexpected game phase: " + value);
+                break;
             }
+            break;
+        case "/SmartDashboard/Robot/pose":
             break;
         }
 

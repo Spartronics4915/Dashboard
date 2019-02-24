@@ -21,27 +21,27 @@ class FieldConfig extends Widget
         html += "</div>";
         // Auto Strategy (filled with our custom selector widget below)
         // html +=     "<span class='title'> Auto Strategy</span> ";
-        html += `<div id='strategyWidget' ${gstyle([40, "row"])}></div> `;
+        html += `<div id='strategyWidget' ${gstyle([30, "row"])}></div> `;
         if (this.config.params.camera1Selector)
         {
             let label = this.config.params.camera1Selector.label;
             if(label == undefined) label = "Camera";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector1' ${gstyle([40, "row"])}></div>`;
+            html += `<div id='cameraSelector1' ${gstyle([20, "row"])}></div>`;
         }
         if (this.config.params.camera2Selector)
         {
             let label = this.config.params.camera2Selector.label;
             if(label == undefined) label = "Camera";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector2' ${gstyle([40, "row"])}></div>`;
+            html += `<div id='cameraSelector2' ${gstyle([20, "row"])}></div>`;
         }
         if (this.config.params.videoStream)
         {
             let label = this.config.params.videoStream.label;
             if(label == undefined) label = "Channel";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector3' ${gstyle([40, "row"])}></div>`;
+            html += `<div id='cameraSelector3' ${gstyle([20, "row"])}></div>`;
         }
 
         html += "</div>";

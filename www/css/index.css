@@ -318,12 +318,9 @@ footer
     padding-bottom:0px;
 }
 
-.videoOverlay
+.nopointer
 {
-    position: absolute;
     pointer-events: none;
-    /* border: 2px solid purple; */
-    border: 0px;
 }
 
 .xtrapad

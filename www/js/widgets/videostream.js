@@ -288,7 +288,8 @@ class streamState
             "/images/offair.jpg",
             "/images/colortest.jpg",
             "/images/testbeeld1956.jpg",
-            "/images/underattack.jpg"
+            "/images/underattack.jpg",
+            "/images/404.jpg"
         ];
         let i = Math.floor(Math.random() * testimgs.length);
         return testimgs[i];

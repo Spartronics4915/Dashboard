@@ -99,6 +99,7 @@ class CamerasWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
+        this._updateOverlaySize(document.getElementById(this.divId));
         this.cleanup();
         // we need to wait a bit for cleanup to "take".
         setTimeout(function() {
@@ -157,7 +158,8 @@ class CamerasWidget extends Widget
                         "/images/offair.jpg",
                         "/images/colortest.jpg",
                         "/images/testbeeld1956.jpg",
-                        "/images/underattack.jpg"
+                        "/images/underattack.jpg",
+                        "/images/404.jpg",
                             ];
                 let i = Math.floor(Math.random() * testimgs.length);
                 let img = testimgs[i];

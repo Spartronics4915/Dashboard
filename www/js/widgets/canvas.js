@@ -18,13 +18,17 @@ class CanvasWidget extends Widget
         this.canvasEl = document.getElementById(this.canvId);
         this.canvasCtx = this.canvasEl.getContext("2d");
 
-        if(this.config.params.overlay &&
-           this.config.params.overlay.enable &&
-           this.config.params.overlay.updateinterval)
+        if(this.config.params.overlay && this.config.params.overlay.enable)
         {
-            app.registerPageIdler(this.onIdle.bind(this),
-                    this.config.params.overlay.updateinterval,
-                    "canvas");
+            this.overlay = this.config.params.overlay;
+            // we rely on our sibling/underlay to cause us to be
+            // overlayed (may not know size 'til eg image loads)
+            if(this.overlay.updateinterval)
+            {
+                app.registerPageIdler(this.onIdle.bind(this),
+                        this.overlay.updateinterval,
+                        "canvas");
+            }
         }
 
         // TODO: for opencv of other img or video src, we need its element id
@@ -87,7 +91,14 @@ class CanvasWidget extends Widget
         if(!this.config.params.overlay || !this.config.params.overlay.enable)
             return;
 
-        let updateItem = null; // support for opencv - one update per invocation
+        var w = this.canvasEl.getAttribute("width");
+        var h = this.canvasEl.getAttribute("height");
+
+        // first we update the value of any/all items, that care
+        // about key. If one or more opencv items changes, we nominate 
+        // one for the (expensive) computation. (Generally two opencv
+        // items don't listen on the same key).
+        let opencvItem = null; 
         for(let item of this.config.params.overlay.items)
         {
             if(item.enable == undefined || item.enable)
@@ -96,94 +107,16 @@ class CanvasWidget extends Widget
                 if(app.ntkeyCompare(key,item.key))
                 {
                     item.value = value;
-                    if(!updateItem && item.class == "opencv")
+                    if(!opencvItem && item.class == "opencv")
                     {
                         // only one opencv item per iteration (per key)
-                        updateItem = item;
+                        opencvItem = item;
                     }
                 }
             }
         }
-
-        var w = this.canvasEl.getAttribute("width");
-        var h = this.canvasEl.getAttribute("height");
-        if(updateItem && updateItem.enable)
-        {
-            if(!app.opencv || !app.opencv.loaded)
-                app.debug("cv not loaded yet");
-            else
-            {
-                if(!this.opencvEl)
-                {
-                    // In order to apply opencv, we must allocate a canvas
-                    // and populate it with pixels from the video.  This canvas
-                    // is invisible to users.
-                    this.opencvEl = document.createElement("canvas");
-                    this.opencvEl.width = w; // w, h are size of overlay
-                    this.opencvEl.height = h;
-                    // this.opencvEl.style.position = "absolute";
-                    this.opencvEl.style.display = "none";
-                    this.targetElem[0].appendChild(this.opencvEl);
-                    this.opencvCtx = this.opencvEl.getContext("2d");
-                }
-                if(this.vidEl)
-                {
-                    // this.vidEl.visibility = "hidden";
-                    this.opencvCtx.drawImage(this.vidEl, 0, 0, w, h);
-                }
-                else
-                if(this.imgEl)
-                {
-                    // this.imgEl.visibility = "hidden";
-                    this.opencvCtx.drawImage(this.imgEl, 0, 0, w, h);
-                }
-                else
-                {
-                    app.warning("opencv has nothing to do");
-                }
-                // process the image
-                // http://ucisysarch.github.io/opencvjs/examples/img_proc.html
-                var input = this.opencvCtx.getImageData(0, 0, w, h);
-                var src = cv.matFromArray(input.height, input.width, cv.CV_8UC4,
-                                        input.data); // canvas holds rgba
-                cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
-                switch(updateItem.pipeline)
-                {
-                case "blur":
-                    {
-                        let output = new cv.Mat();
-                        cv.blur(src, output, [10, 10], [-1, -1], 4);
-                        cv.flip(output, output, -1);
-                        updateItem.imdata = this._getImgData(output, 128);
-                        output.delete();
-                    }
-                    break;
-                case "canny":
-                    {
-                        let output = new cv.Mat();
-                        let blurred = null; // new cv.Mat();
-                        let cthresh = 50; // higher means fewer edges
-                        let cc = [100, 0, 200];
-                        if(blurred)
-                        {
-                            cv.blur(src, blurred, [5, 5], [-1, -1], 4);
-                            cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
-                        }
-                        else
-                            cv.Canny(src, output, cthresh, cthresh*2, 3, 0);
-                        updateItem.imdata = this._getImgData(output, 0, cc);
-                        if(blurred)
-                            blurred.delete();
-                        output.delete();
-                    }
-                    break;
-                default:
-                    app.warning("unimplemented opencv pipeline " + updateItem.pipeline);
-                    break;
-                }
-                src.delete();
-            }
-        }
+        if(opencvItem && opencvItem.enable)
+            this._updateOpenCV(opencvItem, w, h);
 
         // good to go
         app.debug("drawOverlay");
@@ -209,6 +142,9 @@ class CanvasWidget extends Widget
             }
             switch(item.class)
             {
+            case "poselist":
+                this._drawPoselist(item);
+                break;
             case "time":
                 if(item.value == undefined || item.value == "" || !app.robotConnected)
                     item.value = new Date().toLocaleTimeString();
@@ -307,6 +243,138 @@ class CanvasWidget extends Widget
                 break;
             }
         }
+    }
+
+    _updateOpenCV(updateItem, w, h)
+    {
+        if(!app.opencv || !app.opencv.loaded)
+            app.debug("cv not loaded yet");
+        else
+        {
+            if(!this.opencvEl)
+            {
+                // In order to apply opencv, we must allocate a canvas
+                // and populate it with pixels from the video.  This canvas
+                // is invisible to users.
+                this.opencvEl = document.createElement("canvas");
+                this.opencvEl.width = w; // w, h are size of overlay
+                this.opencvEl.height = h;
+                // this.opencvEl.style.position = "absolute";
+                this.opencvEl.style.display = "none";
+                this.targetElem[0].appendChild(this.opencvEl);
+                this.opencvCtx = this.opencvEl.getContext("2d");
+            }
+            if(this.vidEl)
+            {
+                // this.vidEl.visibility = "hidden";
+                this.opencvCtx.drawImage(this.vidEl, 0, 0, w, h);
+            }
+            else
+            if(this.imgEl)
+            {
+                // this.imgEl.visibility = "hidden";
+                this.opencvCtx.drawImage(this.imgEl, 0, 0, w, h);
+            }
+            else
+            {
+                app.warning("opencv has nothing to do");
+            }
+            // process the image
+            // http://ucisysarch.github.io/opencvjs/examples/img_proc.html
+            var input = this.opencvCtx.getImageData(0, 0, w, h);
+            var src = cv.matFromArray(input.height, input.width, cv.CV_8UC4,
+                                    input.data); // canvas holds rgba
+            cv.cvtColor(src, src, cv.COLOR_RGBA2RGB, 0);
+            switch(updateItem.pipeline)
+            {
+            case "blur":
+                {
+                    let output = new cv.Mat();
+                    cv.blur(src, output, [10, 10], [-1, -1], 4);
+                    cv.flip(output, output, -1);
+                    updateItem.imdata = this._getImgData(output, 128);
+                    output.delete();
+                }
+                break;
+            case "canny":
+                {
+                    let output = new cv.Mat();
+                    let blurred = null; // new cv.Mat();
+                    let cthresh = 50; // higher means fewer edges
+                    let cc = [100, 0, 200];
+                    if(blurred)
+                    {
+                        cv.blur(src, blurred, [5, 5], [-1, -1], 4);
+                        cv.Canny(blurred, output, cthresh, cthresh*2, 3, 0);
+                    }
+                    else
+                        cv.Canny(src, output, cthresh, cthresh*2, 3, 0);
+                    updateItem.imdata = this._getImgData(output, 0, cc);
+                    if(blurred)
+                        blurred.delete();
+                    output.delete();
+                }
+                break;
+            default:
+                app.warning("unimplemented opencv pipeline " + updateItem.pipeline);
+                break;
+            }
+            src.delete();
+        }
+    }
+
+    _drawPoselist(item)
+    {
+        // A poselist is assumed to accumulate over the course of
+        // a competition.  We rely on the app to store our list
+        // and assume it's categorized according to game phase.
+        // We draw the newest pose in our bright color, older
+        // poses are darker. We rely on app to manage the memory
+        // of the poselists, perhaps filtering them according to
+        // a minimum distance and/or time difference.
+        // FRC field is 684 x 342, we assume we have the
+        // correct aspect ratio. We assume field poses have
+        // an origin at the midpoint and y is up.
+        let ctx = this.canvasCtx;
+        let width = this.canvasEl.width;
+        let height = this.canvasEl.height;
+        let sx = width/684;
+        let sy = -height/342; // flip y
+        ctx.save();
+        ctx.translate(width*.5, height*.5);
+        ctx.scale(sx, sy);
+        let poselists = app.getRobotState().getPoseLists();
+        // assume: one stroke style
+        if(item.strokeStyle)
+            ctx.strokeStyle = item.strokeStyle;
+        for(let key of app.getRobotState().getPoseListKeys())
+        {
+            // assume: one fill style per game-phase
+            if(item.fillStyle[key])
+                ctx.fillStyle = item.fillStyle[key];
+            this.canvasCtx.lineWidth = 2;
+            let poselist = poselists[key];
+            for(let i=0;i<poselist.length;i++)
+            {
+                const pose = poselist[i];
+                // pose is x, y (inches), cosangle, sinangle
+                const x = pose[0];
+                const y = pose[1];
+                // const rads = pose[2];
+                const cos = pose[3];
+                const sin = pose[4];
+                ctx.beginPath();
+                ctx.arc(x, y, 3/*radius inches*/, 0, 2*Math.PI); // ends path
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(x,y);
+                ctx.lineTo(x + cos*8, y + sin*8);
+                ctx.stroke();
+            }
+        }
+        ctx.restore();
     }
 
     addRandomPt()

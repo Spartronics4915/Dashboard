@@ -468,6 +468,45 @@
                     "size": ["fill", "row"],
                     "ntkeys": [
                     ]
+                },
+                {
+                    "type": "img",
+                    "id": "fieldmap",
+                    "size": ["fill", "fill"],
+                    "params": 
+                    {
+                        "overlayId": "fieldmapOverlayCanv",
+                        "url": "/images/field2019.png",
+                        "cls": "nopointer"
+                    }
+                },
+                {
+                    "type": "canvas",
+                    "id": "fieldmapOverlay",
+                    "size": [0, 0],
+                    "params": {
+                        "overlay":
+                        {
+                            "enable": true,
+                            "updateinterval": 500,
+                            "_comment_": "items drawn in order (bottom-to-top)",
+                            "items":
+                            [
+                                {
+                                    "key": "RobotState/pose",
+                                    "class": "poselist",
+                                    "enable": true,
+                                    "fillStyle": {
+                                        "AUTONOMOUS": "rgb(200,150,0)",
+                                        "TELEOP": "rgb(0,100,250)",
+                                        "DISABLED":"rgb(10,10,140)",
+                                        "OFFLINE":"rgb(10,10,100)"
+                                    },
+                                    "strokeStyle": "rgb(255,0,0)"
+                                }
+                            ]
+                        }
+                    }
                 }
             ]
         },
