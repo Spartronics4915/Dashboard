@@ -166,6 +166,11 @@ a:active /* selected link */
     width: 1024px;
 }
 
+.size1280
+{
+    width: 1280px;
+}
+
 .size2x
 {
     width: 200%;

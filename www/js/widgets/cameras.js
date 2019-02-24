@@ -66,6 +66,8 @@ class CamerasWidget extends Widget
         app.debug("cameras.js constructed");
     }
 
+    // cleanup is called when changing pages as well as when a the
+    //   camera source changes.
     cleanup()
     {
         try
@@ -102,6 +104,11 @@ class CamerasWidget extends Widget
         setTimeout(function() {
             this._updateCamera(key, value, isNew);
         }.bind(this), 1000);
+    } 
+
+    addRandomPt()
+    {
+        // intentionally left blank
     }
 
     _updateCamera(key, value, isnew)

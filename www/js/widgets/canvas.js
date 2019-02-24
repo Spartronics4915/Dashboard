@@ -256,7 +256,7 @@ class CanvasWidget extends Widget
                         {
                             if(i+3<vals.length)
                                 this.canvasCtx.lineWidth = vals[i+3];
-                            this.circle(this.canvasCtx,
+                            CanvasWidget.circle(this.canvasCtx,
                                                 vals[i], vals[i+1], vals[i+2],
                                                 stroke, fill);
                         }
@@ -285,7 +285,7 @@ class CanvasWidget extends Widget
                             stroke = true;
                         }
                         this.overlayCtx.lineWidth = (vals.length >= 6) ? vals[5]:3;
-                        this.roundRect(this.canvasCtx,
+                        CanvasWidget.roundRect(this.canvasCtx,
                                             vals[0], vals[1], vals[2], vals[3],
                                             (vals.length >= 5) ? vals[4] : 0, // radius
                                             stroke, fill);
@@ -311,7 +311,8 @@ class CanvasWidget extends Widget
 
     addRandomPt()
     {
-        if(!this.params.overlay || !this.params.overlay.enable) return;
+        if(!this.config.params.overlay || !this.config.params.overlay.enable)
+            return;
 
         if(!this.demoRadius)
         {

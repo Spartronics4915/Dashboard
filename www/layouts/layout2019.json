@@ -775,7 +775,7 @@
         },
         { "_comment_page": "--------- video page -------------------------------------- ",
             "icon": "fas fa-video",
-            "navtext": "cam-only",
+            "navtext": "videostream",
             "widgets": [
                 {
                     "type": "videostream",
@@ -784,28 +784,36 @@
                     "ntkeys": "Driver/VideoChannel",
                     "params":
                     {
+                        "overlayId": "videoOverlayCanv",
                         "streams":
                         {
                             "Test":
                             {
                                 "protocol": "testpattern",
-                                "cls": "size720"
+                                "cls": "size1280"
                             },
                             "Front":
                             {
                                 "protocol": "ws",
                                 "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
+                                "cls": "size1280"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
                                 "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
-                                "cls": "rotate0 scaled"
+                                "cls": "size1280"
                             }
-                        },
+                        }
+                    }
+                },
+                {
+                    "type": "canvas",
+                    "id": "videoOverlay",
+                    "size": [0, 0],
+                    "params": {
                         "overlay":
                         {
                             "enable": true,
@@ -814,34 +822,40 @@
                             "items":
                             [
                                 {
-                                    "class": "text",
-                                    "subclass": "cameraname",
-                                    "enable": true,
-                                    "origin": [10, 30],
-                                    "font": "30px Impact",
-                                    "fillStyle": "rgba(255, 100, 0, .95)",
-                                    "value": "<nocamera>"
+                                    "class": "opencv",
+                                    "enable": false,
+                                    "_comment_": "NB: opencv must be loaded",
+                                    "pipeline": "canny"
                                 },
                                 {
+                                    "key": "DriverStation/MatchTime",
                                     "class": "text",
                                     "subclass": "time",
-                                    "key": "DriverStation/MatchTime",
                                     "enable": true,
                                     "origin": [300, 30],
                                     "font": "30px Impact",
-                                    "fillStyle": "rgba(255, 100, 0, .95)",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": ""
                                 },
                                 {
-                                    "key": "Driver/VideoOverlay/Circle",
+                                    "key": "Driver/VideoChannel",
+                                    "class": "text",
+                                    "enable": true,
+                                    "origin": [10, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": "<nocamera>"
+                                },
+                                {
+                                    "key": "Driver/CameraOverlay/Circle",
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "_comment_": "200,200,35,3",
+                                    "_comment": "200,200,35,3",
                                     "value": ""
                                 },
                                 {
-                                    "key": "Driver/VideoOverlay/Rect",
+                                    "key": "Driver/CameraOverlay/Rect",
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
