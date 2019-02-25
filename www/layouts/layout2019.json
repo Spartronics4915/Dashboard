@@ -15,7 +15,7 @@
         }
     },
     "pageTemplates": [
-        { "_comment_page": "--------- driver page -------------------------- ",
+        { "//": "--------- driver page -------------------------- ",
             "icon": "fas fa-gamepad primary",
             "navtext": "Compete",
             "widgets": [
@@ -48,7 +48,7 @@
                                 {
                                     "label": "Camera1",
                                     "ntkey": "Driver/Camera1",
-                                    "_comment_": "make sure these options are supported by the camera",
+                                    "//": "make sure these options are supported by the camera",
                                     "options": [
                                         "Test",
                                         "Front",
@@ -59,7 +59,7 @@
                                 {
                                     "label": "Camera2",
                                     "ntkey": "Driver/Camera2",
-                                    "_comment_": "make sure these options are supported by the camera",
+                                    "//": "make sure these options are supported by the camera",
                                     "options": [
                                         "Test",
                                         "Back"
@@ -69,7 +69,7 @@
                                 {
                                     "label": "VideoStream",
                                     "ntkey": "Driver/VideoStream",
-                                    "_comment_": "make sure these options are substrings of videochannel's streams array",
+                                    "//": "make sure these options are substrings of videochannel's streams array",
                                     "options": [
                                         "Test",
                                         "Front",
@@ -90,7 +90,7 @@
                     ],
                     "params":
                     {
-                        "_comment_": "selector:false -> no menu in this widget",
+                        "//": "selector:false -> no menu in this widget",
                         "selector": false,
                         "overlayId": "drivercamOverlayCanv",
                         "cameras":
@@ -114,7 +114,7 @@
                                 "url": "/stream/webrtc",
                                 "cls": "rotate0"
                             },
-                            "_comment_": "back is in other panel"
+                            "//": "back is in other panel"
                         }
                     }
                 },
@@ -127,13 +127,13 @@
                         {
                             "enable": true,
                             "updateinterval": 500,
-                            "_comment_": "items drawn in order (bottom-to-top)",
+                            "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
                                 {
                                     "class": "opencv",
                                     "enable": false,
-                                    "_comment_": "NB: opencv must be loaded",
+                                    "//": "NB: opencv must be loaded",
                                     "pipeline": "canny"
                                 },
                                 {
@@ -160,7 +160,7 @@
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "_comment": "200,200,35,3",
+                                    "//": "200,200,35,3",
                                     "value": ""
                                 },
                                 {
@@ -168,7 +168,7 @@
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
-                                    "_comment_": "300,300,30,30,3,5",
+                                    "//": "300,300,30,30,3,5",
                                     "value": ""
                                 }
                             ]
@@ -177,7 +177,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- drivetrain page -------------------------- ",
+        { "//": "--------- drivetrain page -------------------------- ",
             "navtext": "Drive",
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
@@ -290,7 +290,7 @@
                     "label": "Trajectory State - <span class='blue'>vel</span> <span class='yellow'>acc</a> <span class='amber'>curv</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "_comment": "expect 'velocity acceleration curvature'",
+                    "//": "expect 'velocity acceleration curvature'",
                     "ntkeys": "DriveMotionPlanner/trajectorySetpoints",
                     "params": {
                         "plot": {
@@ -462,9 +462,9 @@
                 }
             ]
         },
-        { "_comment_page": "--------- paths page -------------------------- ",
+        { "//": "--------- paths page -------------------------- ",
             "navtext": "Paths",
-            "icon":  "t-highway-divided ticon", "_comment_icon": "was fas fa-road",
+            "icon":  "t-highway-divided ticon", "///": "was fas fa-road",
             "widgets": [
                 {
                     "id": "pathplanning",
@@ -494,7 +494,7 @@
                         {
                             "enable": true,
                             "updateinterval": 500,
-                            "_comment_": "items drawn in order (bottom-to-top)",
+                            "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
                                 {
@@ -515,7 +515,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- vision page -------------------------- ",
+        { "//": "--------- vision page -------------------------- ",
             "navtext": "Vision",
             "icon":  "fas fa-eye",
             "widgets": [
@@ -579,7 +579,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- test page -------------------------- ",
+        { "//": "--------- test page -------------------------- ",
             "navtext": "Test",
             "icon": "fas fa-vial",
             "widgets": [
@@ -692,7 +692,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- network tables page -------------------------- ",
+        { "//": "--------- network tables page -------------------------- ",
             "navtext": "Network Tables",
             "icon": "fas fa-network-wired",
             "pagehandler": "NetTabPH",
@@ -705,7 +705,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- robotlog page -------------------------------- ",
+        { "//": "--------- robotlog page -------------------------------- ",
             "navtext": "Robot Log",
             "icon":  "fas fa-robot",
             "pagehandler": "RobotlogPH",
@@ -726,7 +726,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- about page --------------------------------- ",
+        { "//": "--------- about page --------------------------------- ",
             "navtext": "About",
             "icon": "fas fa-cogs",
             "widgets": [
@@ -817,7 +817,7 @@
                 }
             ]
         },
-        { "_comment_page": "--------- video page -------------------------------------- ",
+        { "//": "--------- video page -------------------------------------- ",
             "icon": "fas fa-video",
             "navtext": "videostream",
             "widgets": [
@@ -862,13 +862,13 @@
                         {
                             "enable": true,
                             "updateinterval": 500,
-                            "_comment_": "items drawn in order (bottom-to-top)",
+                            "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
                                 {
                                     "class": "opencv",
                                     "enable": false,
-                                    "_comment_": "NB: opencv must be loaded",
+                                    "//": "NB: opencv must be loaded",
                                     "pipeline": "canny"
                                 },
                                 {
@@ -895,7 +895,7 @@
                                     "class": "circle",
                                     "enable": true,
                                     "strokeStyle": "rgba(255, 0, 10, .85)",
-                                    "_comment": "200,200,35,3",
+                                    "//": "200,200,35,3",
                                     "value": ""
                                 },
                                 {
@@ -903,7 +903,7 @@
                                     "class": "rect",
                                     "enable": false,
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
-                                    "_comment_": "300,300,30,30,3,5",
+                                    "//": "300,300,30,30,3,5",
                                     "value": ""
                                 }
                             ]
