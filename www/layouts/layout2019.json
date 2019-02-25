@@ -194,6 +194,7 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
+                    "enable": false,
                     "ntkeys": "RobotState/pose",
                     "params": {
                         "plot": {
@@ -346,6 +347,7 @@
 
                 },
                 {
+                    "enable": false,
                     "id": "Lidar",
                     "label": "Lidar",
                     "type": "systemstate",
@@ -356,6 +358,7 @@
                             ]
                 },
                 {
+                    "enable": false,
                     "id": "lidarOdometry",
                     "label": "LIDAR Odometry",
                     "type": "pathplot",
@@ -388,6 +391,7 @@
                     }
                 },
                 {
+                    "enable": false,
                     "id": "lidarPoints",
                     "label": "LIDAR Points",
                     "type": "pathplot",
@@ -422,6 +426,7 @@
                     }
                 },
                 {
+                    "enable": false,
                     "id": "lidarPtsRel",
                     "label": "LIDAR Rel Points",
                     "type": "pathplot",
@@ -459,7 +464,7 @@
         },
         { "_comment_page": "--------- paths page -------------------------- ",
             "navtext": "Paths",
-            "icon":  "fas fa-road",
+            "icon":  "t-highway-divided ticon", "_comment_icon": "was fas fa-road",
             "widgets": [
                 {
                     "id": "pathplanning",

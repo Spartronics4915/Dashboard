@@ -78,6 +78,8 @@ class PageHandler
         for(let i=0;i<widgets.length;i++)
         {
             let w = widgets[i];
+            if(w.enable != undefined && !w.enable)
+                continue;
             let div = `<div id='${w.id}' `;
             let sz = w.size;
             if(!sz) sz = [100, 100];
@@ -95,6 +97,8 @@ class PageHandler
             for(let i=0;i<widgets.length;i++)
             {
                 let w = widgets[i];
+                if(w.enable != undefined && !w.enable)
+                    continue;
                 if(w.ntkeys)
                     this.setNetTabHandler(w.ntkeys, w);
                 if(w.websubkeys)
