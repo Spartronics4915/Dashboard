@@ -30,7 +30,7 @@ class RobotState
     {
         this.phase = phase;
         this.activeList = this.poseLists[phase];
-        if(this.activeList != undefined)
+        if(this.activeList != undefined && this.activeList.length > 0)
         {
             app.info(`clearing ${this.activeList.length} poses for ${phase}`);
             this.activeList.length = 0; // clears the array

@@ -159,7 +159,6 @@ class CamerasWidget extends Widget
                         "/images/colortest.jpg",
                         "/images/testbeeld1956.jpg",
                         "/images/underattack.jpg",
-                        "/images/404.jpg",
                             ];
                 let i = Math.floor(Math.random() * testimgs.length);
                 let img = testimgs[i];

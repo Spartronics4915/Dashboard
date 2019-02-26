@@ -99,20 +99,13 @@ class App
         this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
         this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
 
+        // we establish default values for nettab entries onConnect
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this),
                                                 true);
         NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
                                                 true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
 
-        // on boot, make sure that we don't attempt to open channels
-        // to unconnected robot.
-        if(null == this.getValue("Driver/Camera1", null))
-            this.putValue("Driver/Camera1", "Test");
-        if(null == this.getValue("Driver/Camera2", null))
-            this.putValue("Driver/Camera2", "Test");
-        if(null == this.getValue("Driver/VideoStream", null))
-            this.putValue("Driver/VideoStream", "Test");
 
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
@@ -495,18 +488,23 @@ class App
             $("#nettabState").html("<span class='blinkRed'>off-line</span>");
         }
 
-        // We shouldn't putValue here, since it may overwrite
-        // robotInit state.
-        if(false)
-        {
-            if(this.getValue("CameraView", "") == "")
-                this.putValue("CameraView", "CubeCam");
-            var defAuto = "All: Cross Baseline";
-            if(this.getValue("AutoStrategyOptions", "") == "")
-                this.putValue("AutoStrategyOptions", defAuto);
-            if(this.getValue("AutoStrategy", "") == "")
-                this.putValue("AutoStrategy", defAuto);
-        }
+        // On boot, make sure that we don't attempt to open channels
+        // to unconnected robot. NB: nettab connection is "guaranteed"
+        // as long as our python environment is present. This is different
+        // from a robot connection.
+        this.putValueIfUndefined("Robot/GamePhase", "OFFLINE");
+        this.putValueIfUndefined("Driver/Camera1", "Test");
+        this.putValueIfUndefined("Driver/Camera2", "Test");
+        this.putValueIfUndefined("Driver/VideoStream", "Test");
+
+        // subtlety: should we re-establish values for AutoStrategy
+        //  on the grounds that the user's choice should always take
+        //  precedence over the default from the robot.
+        //
+        // issue: at the start of a match there may be a flurry of
+        //    connect/disconnect events with the robot. But on robot
+        //    connect we also receive the set of valid options.  
+        //  cf: fieldconfig.js and selector.js
     }
 
     ntkeyNormalize(k)
@@ -525,6 +523,12 @@ class App
         a = this.ntkeyNormalize(a);
         b = this.ntkeyNormalize(b);
         return a == b;
+    }
+
+    putValueIfUndefined(nm, value)
+    {
+        if(null == this.getValue(name, null))
+            this.putValue(nm, value);
     }
 
     putValue(nm, value)
