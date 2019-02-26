@@ -22,6 +22,11 @@ class Spline2Sampler
 
     static sampleSpline(spline2, accum, t0, t1, maxDx, maxDy, maxDTheta, skipFirst)
     {
+        if(t0 == undefined) t0 = 0.0;
+        if(t1 == undefined) t1 = 1.0;
+        if(maxDx == undefined) maxDx = kMaxDX;
+        if(maxDy == undefined) maxDy = kMaxDY;
+        if(maxDTheta == undefined) maxDTheta = kMaxDTheta;
         const dt = (t1 - t0) / kMinSampleSize;
         if(skipFirst == undefined || !skipFirst)
             accum.push(spline2.getPose2dWithCurvature(0.0));

@@ -154,7 +154,7 @@ class Spline2
         }
         const c = this.evalCache;
         const dx2dy2 = (c.dx*c.dx + c.dy*c.dy);
-        const num = (c.dx*c.dddy - c.dddx*c.dy)*c.dx2dy2 -
+        const num = (c.dx*c.dddy - c.dddx*c.dy)*dx2dy2 -
             3 * (c.dx*c.ddy - c.ddx*c.dy) * (c.dx*c.ddx + c.dy*c.ddy);
         return num / (dx2dy2 * dx2dy2 * Math.sqrt(dx2dy2));
     }

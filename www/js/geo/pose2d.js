@@ -138,7 +138,7 @@ class Rotation2d
     {
         this.cos = x;
         this.sin = y;
-        if (this.donormalize)
+        if (donormalize)
             this.normalize();
     }
     
@@ -332,7 +332,7 @@ class Pose2d
     static fromIdentity()
     {
         return new Pose2d(Translation2d.fromIdentity(), 
-                          Rotation2d.fromIdentityXX());
+                          Rotation2d.fromIdentity());
     }
 
     static fromDelta(p0, p1)
