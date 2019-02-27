@@ -8,6 +8,13 @@ let assertEquals = function(a, b, msg, epsilon=.0001)
     }
 }
 
+let assertTrue = function(b, msg)
+{
+    if(!b)
+        console.error(msg);
+}
+
+
 
 class Test
 {
@@ -115,7 +122,54 @@ class Test
         assertEquals(lastPose.getTranslation().y, 10.0, "y0");
         assertEquals(lastPose.getRotation().getDegrees(), -78.69006752597981, "r0");
         assertEquals(arclength, 23.17291953186379, "arclength");
-     }
+    }
+
+    static testSplineOptimizer()
+    {
+        let a = new geo.Pose2d(new geo.Translation2d(0, 100), 
+                                geo.Rotation2d.fromDegrees(270));
+        let b = new geo.Pose2d(new geo.Translation2d(50, 0), 
+                                geo.Rotation2d.fromDegrees(0));
+        let c = new geo.Pose2d(new geo.Translation2d(100, 100), 
+                                geo.Rotation2d.fromDegrees(90));
+        let splines0 = geo.Spline2Array.fromPose2Array([a, b, c]);
+
+        let startTime = Date.now();
+        assertTrue(splines0.optimizeCurvature() < .014, "sumCurvature0");
+        console.log("Optimization time (ms): " + (Date.now() - startTime));
+
+        let d = new geo.Pose2d(new geo.Translation2d(0, 0), 
+                               geo.Rotation2d.fromDegrees(90));
+        let e = new geo.Pose2d(new geo.Translation2d(0, 50), 
+                               geo.Rotation2d.fromDegrees(0));
+        let f = new geo.Pose2d(new geo.Translation2d(100, 0), 
+                               geo.Rotation2d.fromDegrees(90));
+        let g = new geo.Pose2d(new geo.Translation2d(100, 100), 
+                               geo.Rotation2d.fromDegrees(0));
+
+        let splines1 = geo.Spline2Array.fromPose2Array([d, e, f, g]);
+        startTime = Date.now();
+        assertTrue(splines1.optimizeCurvature() < 0.16, "sumCurvature1");
+        console.log("Optimization time (ms): " + (Date.now() - startTime));
+
+        let h = new geo.Pose2d(new geo.Translation2d(0, 0), 
+                                geo.Rotation2d.fromDegrees(0));
+        let i = new geo.Pose2d(new geo.Translation2d(50, 0), 
+                                geo.Rotation2d.fromDegrees(0));
+        let j = new geo.Pose2d(new geo.Translation2d(100, 50), 
+                                geo.Rotation2d.fromDegrees(45));
+        let k = new geo.Pose2d(new geo.Translation2d(150, 0), 
+                                geo.Rotation2d.fromDegrees(270));
+        let l = new geo.Pose2d(new geo.Translation2d(150, -50), 
+                                geo.Rotation2d.fromDegrees(270));
+
+        let splines2 = geo.Spline2Array.fromPose2Array([h,i,j,k,l]);
+        startTime = Date.now();
+        assertTrue(splines2.optimizeCurvature() < 0.05, "sumCurvature2");
+        assertEquals(splines2.get(0).getCurvature(1.0), 0.0, "curvature0");
+        assertEquals(splines2.get(2).getCurvature(1.0), 0.0, "curvature2");
+        console.log("Optimization time (ms): " + (Date.now() - startTime));
+    }
 
     static test1()
     {

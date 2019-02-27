@@ -1,4 +1,4 @@
-/* Quintic Hermite Spline for 1 dimensions */
+/* Quintic 1D Hermite Spline */
 
 class Spline1
 {

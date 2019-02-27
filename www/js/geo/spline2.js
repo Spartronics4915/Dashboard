@@ -25,7 +25,8 @@ class Spline2
         const p0Rotate = p0.getRotation();
         const p1Xlate = p1.getTranslation();
         const p1Rotate = p1.getRotation();
-        const scale = 1.2 * p0Xlate.distance(p1Xlate);
+        // produce a tangent vector proportional to the distance between poses
+        const scale = 1.2 * p0Xlate.distance(p1Xlate); 
         return Spline2.fromControlPoints(
                     p0Xlate.x, p0Xlate.y,
                     p0Rotate.cos*scale, p0Rotate.sin*scale, // p0 tangent
@@ -129,8 +130,8 @@ class Spline2
             this.evalCache.ddy = this.y.getCurvature(t);
         }
         const c = this.evalCache;
-        return (c.dx*c.ddy - c.ddx*c.dy) /
-                ((c.dx*c.dx + c.dy*c.dy)*Math.sqrt((c.dx*c.dx + c.dy*c.dy)));
+        const lensq = c.dx*c.dx + c.dy*c.dy;
+        return (c.dx*c.ddy - c.ddx*c.dy) / (lensq*Math.sqrt(lensq));
     }
 
     getDCurvature(t)

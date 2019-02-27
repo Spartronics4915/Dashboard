@@ -425,8 +425,15 @@ class Pose2d
         //  the vector between our two positions.
         if(!this.rotation.isParallel(otherPose.rotation))
             return false;
-        const twist = Pose2d.log(this.inverse().transformBy(otherPose));
-        return (Math.abs(twist.dy) < kEps) && (Math.abs(twist.dtheta)< kEps);
+        let dp = Translation2d.subtract(otherPose.translation, this.translation);
+        let dir = dp.direction();
+        if(!this.rotation.isParallel(dir))
+            return false;
+        else
+            return true;
+        // was:
+        // const twist = Pose2d.log(this.inverse().transformBy(otherPose));
+        // return (Math.abs(twist.dy) < kEps) && (Math.abs(twist.dtheta)< kEps);
     }
 
     intersection(otherPose)

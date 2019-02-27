@@ -19,7 +19,6 @@ class Spline2Array
         {
             sa.push(geo.Spline2.fromPoses(pose2Array[i-1], pose2Array[i]));
         }
-        sa._minimizeCurvature();
         return sa;
     }
 
@@ -43,7 +42,7 @@ class Spline2Array
         this.splines.pop();
     }
 
-    _minimizeCurvature()
+    optimizeCurvature()
     {
         // find the optimal curvature for a set of splines to reduce
         // the sum of the change in curvature over the path.
@@ -72,21 +71,34 @@ class Spline2Array
         {
             let temp0 = this.splines[i];
             let temp1 = this.splines[i+1];
+
+            // skip segments with colinear endpoints
+            if (temp0.getStartPose().isColinear(temp1.getStartPose()) ||
+                temp0.getEndPose().isColinear(temp1.getEndPose()))
+            {
+                controlPoints.push(null); // keep indexing consisten
+                continue;
+            }
+
             let cp = []; // ddx, ddy
 
             // partialX derivative of integratedCurvature
             this.splines[i] = geo.Spline2.fromSpline2VaryDDX(temp0, 0, kEpsilon);
             this.splines[i+1] = geo.Spline2.fromSpline2VaryDDX(temp1, kEpsilon, 0);
-            cp.push(this._sumDCurveSq() - lastCurvature)/ kEpsilon;
+            let curveDX = this._sumDCurveSq(); 
+            cp.push((curveDX-lastCurvature)/kEpsilon);
 
             // partialY derivative of integratedCurvature
             this.splines[i] = geo.Spline2.fromSpline2VaryDDY(temp0, 0, kEpsilon);
-            this.splines[i+1] = geo.Spline2.fromSpline2VaryDDY(temp0, kEpsilon, 0);
-            cp.push(this._sumDCurveSq() - lastCurvature)/ kEpsilon;
-
+            this.splines[i+1] = geo.Spline2.fromSpline2VaryDDY(temp1, kEpsilon, 0);
+            let curveDY = this._sumDCurveSq(); 
+            cp.push((curveDY- lastCurvature)/kEpsilon);
+            controlPoints.push(cp);
             magnitude += cp[0]*cp[0] + cp[1]*cp[1];
 
-            controlPoints.push(cp);
+            // reset segment i
+            this.splines[i] = temp0;
+            this.splines[i+1] = temp1;
         }
         magnitude = Math.sqrt(magnitude);
 
@@ -100,6 +112,7 @@ class Spline2Array
         let knorm = kStepSize / magnitude; // normalize to step size
         for(let i=0;i<this.splines.length-1;i++)
         {
+            if(controlPoints[i] == null) continue;
             controlPoints[i][0] *= knorm;
             controlPoints[i][1] *= knorm;
             this.splines[i].x.tweakCurvature(0, -controlPoints[i][0]); 
@@ -112,10 +125,8 @@ class Spline2Array
         let p2; // offset from middle location by +stepSize
         for(let i=0;i<this.splines.length-1;i++)
         {
-            controlPoints[i][0] *= knorm;
-            controlPoints[i][1] *= knorm;
-
-            // opposite gradient
+            // opposite gradient by stepsize
+            if(controlPoints[i] == null) continue;
             this.splines[i].x.tweakCurvature(0, 2*controlPoints[i][0]); 
             this.splines[i].y.tweakCurvature(0, 2*controlPoints[i][1]);
             this.splines[i+1].x.tweakCurvature(2*controlPoints[i][0], 0); 
@@ -127,10 +138,12 @@ class Spline2Array
         knorm = 1 + stepSize / kStepSize;
         for(let i=0;i<this.splines.length-1;i++)
         {
+            // move by the step size calculated by the parabola fit 
+            // (+1 to offset for the final transformation to find p3)
+            if(controlPoints[i] == null) continue;
             controlPoints[i][0] *= knorm;
             controlPoints[i][1] *= knorm;
 
-            // opposite gradient
             this.splines[i].x.tweakCurvature(0, controlPoints[i][0]); 
             this.splines[i].y.tweakCurvature(0, controlPoints[i][1]);
             this.splines[i+1].x.tweakCurvature(controlPoints[i][0], 0); 
