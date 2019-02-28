@@ -1,7 +1,6 @@
 /* Quintic 1D Hermite Spline */
-if(window.geo == undefined) window.geo = {};
 
-class Spline1
+export class Spline1
 {
     static fromSplineVaryDD(spline, dd0, dd1)
     {
@@ -138,4 +137,4 @@ class Spline1
     }
 }
 
-window.geo.Spline1 = Spline1;
+export default Spline1;

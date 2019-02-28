@@ -1,8 +1,7 @@
-/* global geo */
-/* Quintic Hermite Spline for 2 dimensions */
-if(window.geo == undefined) window.geo = {};
+import {Pose2d, Translation2d, Rotation2d} from "./pose2d.js";
+import Spline1 from "./spline1.js";
 
-class Spline2
+export class Spline2
 {
     constructor(splineX, splineY)
     {
@@ -15,8 +14,8 @@ class Spline2
                              xk1, yk1, xdk1, ydk1, xddk1, yddk1)
     {
         return new Spline2(
-                        new geo.Spline1(xk0, xdk0, xddk0, xk1, xdk1, xddk1),
-                        new geo.Spline1(yk0, ydk0, yddk0, yk1, ydk1, yddk1)
+                        new Spline1(xk0, xdk0, xddk0, xk1, xdk1, xddk1),
+                        new Spline1(yk0, ydk0, yddk0, yk1, ydk1, yddk1)
                     );
     }
 
@@ -42,7 +41,7 @@ class Spline2
     static fromSpline2VaryDDX(spline, ddx0, ddx1)
     {
         return new Spline2(
-                geo.Spline1.fromSplineVaryDD(spline.x, ddx0, ddx1), 
+                Spline1.fromSplineVaryDD(spline.x, ddx0, ddx1), 
                 spline.y);
     }
     
@@ -50,7 +49,7 @@ class Spline2
     static fromSpline2VaryDDY(spline, ddy0, ddy1)
     {
         return new Spline2(spline.x, 
-                geo.Spline1.fromSplineVaryDD(spline.y, ddy0, ddy1));
+                Spline1.fromSplineVaryDD(spline.y, ddy0, ddy1));
     }
     
     getStartPose()
@@ -85,9 +84,9 @@ class Spline2
             this.evalCache.dx = this.x.getTangent(t);
             this.evalCache.dy = this.y.getTangent(t);
         }
-        return new geo.Pose2d(new geo.Translation2d(this.evalCache.x, 
+        return new Pose2d(new Translation2d(this.evalCache.x, 
                                             this.evalCache.y),
-                              new geo.Rotation2d(this.evalCache.dx, 
+                              new Rotation2d(this.evalCache.dx, 
                                             this.evalCache.dy, true));
     }
 
@@ -112,7 +111,7 @@ class Spline2
             this.evalCache.dx = this.x.getTangent(t);
             this.evalCache.dy = this.y.getTangent(t);
         }
-        return new geo.Rotation2d(this.evalCache.dx, this.evalCache.dy, true);
+        return new Rotation2d(this.evalCache.dx, this.evalCache.dy, true);
     }
 
     getCurvature(t)
@@ -199,4 +198,4 @@ class Spline2
     }
 }
 
-window.geo.Spline2 = Spline2;
+export default Spline2;

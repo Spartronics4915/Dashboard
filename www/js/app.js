@@ -13,6 +13,8 @@
  *  layout must be located below www/layouts dir
  *
  */
+import Test from "/js/paths/geo/test.js";
+
 export class App
 {
     constructor()
@@ -91,6 +93,7 @@ export class App
     onReady()
     {
         this.firstLoad = false;
+        this.test = new Test();
         this.robotState = new RobotState();
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),

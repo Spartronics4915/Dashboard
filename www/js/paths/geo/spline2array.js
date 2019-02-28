@@ -1,12 +1,13 @@
-/* global geo */
-if(window.geo == undefined) window.geo = {};
-window.geo.kCurveSamples = 100;
-window.geo.kEpsilon = 1e-5;
-window.geo.kMinDelta = .001;
-window.geo.kStepSize = 1.0;
-window.geo.kMaxIterations = 100;
+import Translation2d from "./pose2d.js";
+import Spline2 from "./spline2.js";
 
-class Spline2Array
+let kCurveSamples = 100;
+let kEpsilon = 1e-5;
+let kMinDelta = .001;
+let kStepSize = 1.0;
+let kMaxIterations = 100;
+
+export class Spline2Array
 {
     constructor()
     {
@@ -15,7 +16,7 @@ class Spline2Array
  
     sample(maxDx, maxDy, maxDTheta)
     {
-        return geo.Spline2Sampler.sampleSplines(this, 
+        return Spline2Sampler.sampleSplines(this, 
                                         maxDx, maxDy, maxDTheta);
     }
 
@@ -24,7 +25,7 @@ class Spline2Array
         let sa = new Spline2Array(); // a spline2 for every 2 points
         for(let i=1;i<pose2Array.length;i++)
         {
-            sa.push(geo.Spline2.fromPoses(pose2Array[i-1], pose2Array[i]));
+            sa.push(Spline2.fromPoses(pose2Array[i-1], pose2Array[i]));
         }
         return sa;
     }
@@ -55,11 +56,11 @@ class Spline2Array
         // the sum of the change in curvature over the path.
         let count = 0;
         let prev = this._sumDCurveSq();
-        while(count < geo.kMaxIterations)
+        while(count < kMaxIterations)
         {
             this._optimizationStep(prev);
             let current = this._sumDCurveSq();
-            if (prev - current < geo.kMinDelta)
+            if (prev - current < kMinDelta)
                 return current;
             prev = current;
             count++;
@@ -90,16 +91,16 @@ class Spline2Array
             let cp = []; // ddx, ddy
 
             // partialX derivative of integratedCurvature
-            this.splines[i] = geo.Spline2.fromSpline2VaryDDX(temp0, 0, geo.kEpsilon);
-            this.splines[i+1] = geo.Spline2.fromSpline2VaryDDX(temp1, geo.kEpsilon, 0);
+            this.splines[i] = Spline2.fromSpline2VaryDDX(temp0, 0, kEpsilon);
+            this.splines[i+1] = Spline2.fromSpline2VaryDDX(temp1, kEpsilon, 0);
             let curveDX = this._sumDCurveSq(); 
-            cp.push((curveDX-lastCurvature)/geo.kEpsilon);
+            cp.push((curveDX-lastCurvature)/kEpsilon);
 
             // partialY derivative of integratedCurvature
-            this.splines[i] = geo.Spline2.fromSpline2VaryDDY(temp0, 0, geo.kEpsilon);
-            this.splines[i+1] = geo.Spline2.fromSpline2VaryDDY(temp1, geo.kEpsilon, 0);
+            this.splines[i] = Spline2.fromSpline2VaryDDY(temp0, 0, kEpsilon);
+            this.splines[i+1] = Spline2.fromSpline2VaryDDY(temp1, kEpsilon, 0);
             let curveDY = this._sumDCurveSq(); 
-            cp.push((curveDY- lastCurvature)/geo.kEpsilon);
+            cp.push((curveDY- lastCurvature)/kEpsilon);
             controlPoints.push(cp);
             magnitude += cp[0]*cp[0] + cp[1]*cp[1];
 
@@ -113,10 +114,10 @@ class Spline2Array
         // minimize along the direction of the gradient
 
         // middle point is at the current location
-        let p1 = new geo.Translation2d(0, lastCurvature); 
+        let p1 = new Translation2d(0, lastCurvature); 
 
         let p0; // offset from the middle location by -stepSize
-        let knorm = geo.kStepSize / magnitude; // normalize to step size
+        let knorm = kStepSize / magnitude; // normalize to step size
         for(let i=0;i<this.splines.length-1;i++)
         {
             if(controlPoints[i] == null) continue;
@@ -127,7 +128,7 @@ class Spline2Array
             this.splines[i+1].x.tweakCurvature(-controlPoints[i][0], 0); 
             this.splines[i+1].y.tweakCurvature(-controlPoints[i][1], 0);
         }
-        p0 = new geo.Translation2d(-geo.kStepSize, this._sumDCurveSq());
+        p0 = new Translation2d(-kStepSize, this._sumDCurveSq());
 
         let p2; // offset from middle location by +stepSize
         for(let i=0;i<this.splines.length-1;i++)
@@ -139,10 +140,10 @@ class Spline2Array
             this.splines[i+1].x.tweakCurvature(2*controlPoints[i][0], 0); 
             this.splines[i+1].y.tweakCurvature(2*controlPoints[i][1], 0);
         }
-        p2 = new geo.Translation2d(geo.kStepSize, this._sumDCurveSq());
+        p2 = new Translation2d(kStepSize, this._sumDCurveSq());
 
         const stepSize = this._fitParabola(p0, p1, p2);
-        knorm = 1 + stepSize / geo.kStepSize;
+        knorm = 1 + stepSize / kStepSize;
         for(let i=0;i<this.splines.length-1;i++)
         {
             // move by the step size calculated by the parabola fit 
@@ -163,7 +164,7 @@ class Spline2Array
         let sum = 0;
         for(let spline of this.splines)
         {
-            sum += spline.sumDCurveSq(geo.kCurveSamples);
+            sum += spline.sumDCurveSq(kCurveSamples);
         }
         return sum;
     }
@@ -180,4 +181,5 @@ class Spline2Array
     }
 }
 
-window.geo.Spline2Array = Spline2Array;
+export default Spline2Array;
+

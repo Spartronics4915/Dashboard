@@ -1,6 +1,4 @@
-if(window.geo == undefined) window.geo = {};
-
-class Units
+export class Units
 {
     static rpmToRadsPerSec(rpm)
     {
@@ -52,5 +50,7 @@ class Units
         return Units.inchesToMeters(feet*12.0);
     }
 }
+
+export default Units;
 
 window.geo.Units = Units;
