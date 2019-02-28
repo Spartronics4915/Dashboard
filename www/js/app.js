@@ -13,7 +13,7 @@
  *  layout must be located below www/layouts dir
  *
  */
-class App
+export class App
 {
     constructor()
     {

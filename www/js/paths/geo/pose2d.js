@@ -1,6 +1,10 @@
-/* global app */
-
-const kEps = 1E-9;
+/* global app, geo */
+if(window.geo == undefined) window.geo = {};
+window.geo.kEpsilon = 1E-9;
+window.geo.lerp = function(a, b, pct) 
+{
+    return a + (b - a) * pct;
+};
 
 class Translation2d 
 {
@@ -8,6 +12,11 @@ class Translation2d
     {
         this.x = x;
         this.y = y;
+    }
+
+    static clone(other)
+    {
+        return new Translation2d(other.x, other.y);
     }
 
     static fromIdentity()
@@ -111,7 +120,7 @@ class Translation2d
     equals(other, epsilon)
     {
         if(epsilon == undefined)
-            epsilon = kEps;
+            epsilon = geo.kEpsilon;
         if(Math.abs(other.x - this.x) > epsilon) return false;
         if(Math.abs(other.y - this.y) > epsilon) return false;
         return true;
@@ -134,12 +143,9 @@ class Translation2d
 
 class Rotation2d 
 {
-    constructor(x, y, donormalize) 
+    static clone(other)
     {
-        this.cos = x;
-        this.sin = y;
-        if (donormalize)
-            this.normalize();
+        return new Rotation2d(other.cos, other.sin);
     }
     
     static fromIdentity()
@@ -172,10 +178,18 @@ class Rotation2d
         return r * (180 / Math.PI);
     }
 
+    constructor(x, y, donormalize) 
+    {
+        this.cos = x;
+        this.sin = y;
+        if (donormalize)
+            this.normalize();
+    }
+
     normalize()
     {
         let magnitude = Math.hypot(this.cos, this.sin);
-        if (magnitude > kEps) 
+        if (magnitude > geo.kEpsilon) 
         {
             this.cos /= magnitude;
             this.sin /= magnitude;
@@ -189,7 +203,7 @@ class Rotation2d
 
     tan() 
     {
-        if (Math.abs(this.cos) < kEps) 
+        if (Math.abs(this.cos) < geo.kEpsilon) 
         {
             if (this.sin >= 0.0)
                 return Number.POSITIVE_INFINITY;
@@ -216,7 +230,7 @@ class Rotation2d
             this.cos * other.sin + this.sin * other.cos, true);
     }
 
-    perp()  // ie: normal
+    perp()  // perpendicular ie: normal
     {
         return new Rotation2d(-this.sin, this.cos, false);
     }
@@ -229,8 +243,8 @@ class Rotation2d
     isParallel(other)
     {
         // angles are the same (hm: we assume normalized)
-        if(Math.abs(other.cos - this.cos) > kEps) return false;
-        if(Math.abs(other.sin - this.sin) > kEps) return false;
+        if(Math.abs(other.cos - this.cos) > geo.kEpsilon) return false;
+        if(Math.abs(other.sin - this.sin) > geo.kEpsilon) return false;
         return true;
     }
 
@@ -268,12 +282,18 @@ class Twist2d
         this.dtheta = dtheta;
     }
 
+    static fromXYTheta(x, y, theta)
+    {
+        return new Pose2d(new Translation2d(x,y),
+                        Rotation2d.fromDegrees(theta));
+    }
+
     static fromIdentity()
     {
         return Twist2d(0, 0, 0);
     }
 
-    static fromTwist(t)
+    static clone(t)
     {
         return Twist2d(t.dx, t.dy, t.dtheta);
     }
@@ -294,7 +314,7 @@ class Twist2d
 
     curvature()
     {
-        if(Math.abs(this.dtheta) < kEps)
+        if(Math.abs(this.dtheta) < geo.kEpsilon)
             return 0;
         else
             return this.dtheta / this.length(); // length of zero means straight
@@ -302,14 +322,13 @@ class Twist2d
 
     // interpolating twist is invalid for common cases, consider
     // using Pose2d.interpolate.
-
     interpolate(other, pct)
     {
         if(pct <= 0)
-            return Twist2d.fromTwist(this);
+            return Twist2d.clone(this);
         else
         if(pct >= 1)
-            return Twist2d.fromTwist(other);
+            return Twist2d.clone(other);
         else
         {
             return new Twist2d(
@@ -320,19 +339,26 @@ class Twist2d
     }
 }
 
-class Pose2d 
+class Pose2d  /* this is also a Pose2dWithCurvature when values are present */
 {
-    constructor(translation, rotation, comment)
-    {
-        this.translation = translation;
-        this.rotation = rotation;
-        this.comment = comment || "";
-    }
-
     static fromIdentity()
     {
         return new Pose2d(Translation2d.fromIdentity(), 
                           Rotation2d.fromIdentity());
+    }
+
+    static clone(other)
+    {
+        let newPose = new Pose2d(
+                        Translation2d.clone(other.translation), 
+                        Rotation2d.clone(other.rotation));
+        if(other.curvature != undefined)
+        {
+            newPose.curvature = other.curvature;
+            newPose.dcurvature = other.dcurvature;
+        }
+        if(other.distance != undefined)
+            newPose.distance = other.distance;
     }
 
     static fromDelta(p0, p1)
@@ -354,7 +380,7 @@ class Pose2d
         let sinTwist = Math.sin(twist.dtheta);
         let s, c;
 
-        if (Math.abs(twist.dtheta) < kEps) 
+        if (Math.abs(twist.dtheta) < geo.kEpsilon) 
         {
             s = 1.0 - 1.0 / 6.0 * twist.dtheta * twist.dtheta;
             c = .5 * twist.dtheta;
@@ -376,7 +402,7 @@ class Pose2d
         let half_dtheta = 0.5 * dtheta;
         let cos_minus_one = transform.getRotation().cos - 1.0;
         let halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < kEps) 
+        if (Math.abs(cos_minus_one) < geo.kEpsilon) 
         {
             halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
         } 
@@ -387,6 +413,26 @@ class Pose2d
         let translation_part = transform.getTranslation()
             .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta, false));
         return new Twist2d(translation_part.x, translation_part.y, dtheta);
+    }
+
+    static computeDistances(pose2dArray)
+    {
+        let totalDist = 0;
+        pose2dArray[0].distance = 0.0;
+        for(let i=1;i<pose2dArray.length;i++)
+        {
+            let last = pose2dArray[i-1];
+            pose2dArray[i].distance = pose2dArray[i].distance(last);
+            totalDist += pose2dArray[i].distance;
+        }
+        pose2dArray.totalDist = totalDist;
+    }
+
+    constructor(translation, rotation, comment)
+    {
+        this.translation = translation;
+        this.rotation = rotation;
+        this.comment = comment || "";
     }
 
     getTranslation()
@@ -412,7 +458,7 @@ class Pose2d
         return new Pose2d(this.translation.inverse().rotateBy(invRot), invRot);
     }
 
-    perp() 
+    perp()  // perpendicular, ie: normal
     {
         return new Pose2d(this.translation, this.rotation.perp());
     }
@@ -433,7 +479,7 @@ class Pose2d
             return true;
         // was:
         // const twist = Pose2d.log(this.inverse().transformBy(otherPose));
-        // return (Math.abs(twist.dy) < kEps) && (Math.abs(twist.dtheta)< kEps);
+        // return (Math.abs(twist.dy) < geo.kEpsilon) && (Math.abs(twist.dtheta)< geo.kEpsilon);
     }
 
     intersection(otherPose)
@@ -442,27 +488,34 @@ class Pose2d
         // used by pure-pursuit
     }
 
-    interpolate(other, x) 
+    interpolate(otherPose, x)
     {
-        if (x <= 0) 
+        if (x <= 0)
         {
-            return new Pose2d(this.translation, this.rotation, this.comment);
-        } 
-        else 
-        if (x >= 1) 
-        {
-            return new Pose2d(other.translation, other.rotation, other.comment);
+            return Pose2d.fromPose(this);
         }
-        else
+        else if (x >= 1)
         {
-            let twist = Pose2d.log(this.inverse().transformBy(other));
-            return this.transformBy(Pose2d.exp(twist.scaled(x)));
+            return Pose2d.fromPose(otherPose);
         }
+        let twist = Pose2d.log(this.inverse().transformBy(otherPose));
+        let newpose = this.transformBy(Pose2d.exp(twist.scaled(x)));
+        if(this.curvature != undefined)
+        {
+            newpose.curvature = geo.lerp(this.curvature, otherPose.curvature, x);
+            newpose.dcurvature = geo.lerp(this.dcurvature, otherPose.dcurvature, x);
+        }
+        if(this.distance != undefined)
+        {
+            newpose.curvature = geo.lerp(this.distance, otherPose.distance, x);
+        }
+        return newpose;
     }
 
     distance(other) 
     {
-        return Pose2d.log(this.inverse().transformBy(other)).perp();
+        let twist = Pose2d.log(this.inverse().transformBy(other));
+        return twist.length();
     }
 
     heading(other) 
@@ -508,10 +561,7 @@ class Pose2d
     }
 }
 
-if(window.geo == undefined)
-    window.geo = {};
-
-window.geo.Pose2d = Pose2d;
 window.geo.Translation2d = Translation2d;
 window.geo.Rotation2d = Rotation2d;
 window.geo.Twist2d = Twist2d;
+window.geo.Pose2d = Pose2d;

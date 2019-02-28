@@ -1,4 +1,5 @@
 /* Quintic 1D Hermite Spline */
+if(window.geo == undefined) window.geo = {};
 
 class Spline1
 {
@@ -137,6 +138,4 @@ class Spline1
     }
 }
 
-if(window.geo == undefined)
-    window.geo = {};
 window.geo.Spline1 = Spline1;

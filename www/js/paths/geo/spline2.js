@@ -1,6 +1,7 @@
 /* global geo */
-
 /* Quintic Hermite Spline for 2 dimensions */
+if(window.geo == undefined) window.geo = {};
+
 class Spline2
 {
     constructor(splineX, splineY)
@@ -85,9 +86,9 @@ class Spline2
             this.evalCache.dy = this.y.getTangent(t);
         }
         return new geo.Pose2d(new geo.Translation2d(this.evalCache.x, 
-                                                    this.evalCache.y),
+                                            this.evalCache.y),
                               new geo.Rotation2d(this.evalCache.dx, 
-                                                this.evalCache.dy, true));
+                                            this.evalCache.dy, true));
     }
 
     getVelocity(t) // a scalar quantity, ie: tangential speed
@@ -197,8 +198,5 @@ class Spline2
         return sum;
     }
 }
-
-if(window.geo == undefined)
-    window.geo = {};
 
 window.geo.Spline2 = Spline2;
