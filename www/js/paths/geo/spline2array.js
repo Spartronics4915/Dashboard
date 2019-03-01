@@ -1,6 +1,6 @@
-import Translation2d from "./pose2d.js";
-import Spline2 from "./spline2.js";
-import Spline2Sampler from "./spline2sampler.js";
+import {Translation2d} from "./pose2d.js";
+import {Spline2} from "./spline2.js";
+import {Spline2Sampler} from "./spline2sampler.js";
 
 let kCurveSamples = 100;
 let kEpsilon = 1e-5;
@@ -49,6 +49,12 @@ export class Spline2Array
     pop()
     {
         this.splines.pop();
+    }
+
+    draw(ctx, color)
+    {
+        for(let s of this.splines)
+            s.draw(ctx, color);
     }
 
     optimizeCurvature()

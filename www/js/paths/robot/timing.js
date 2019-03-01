@@ -1,4 +1,4 @@
-import Units from "../geo/units.js";
+import {Units} from "../geo/units.js";
 
 export class TimingConstraint
 {

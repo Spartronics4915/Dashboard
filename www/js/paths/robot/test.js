@@ -1,5 +1,5 @@
-import Pose2d from "../geo/pose2d.js";
-import Trajectory from "./trajectory.js";
+import {Pose2d} from "../geo/pose2d.js";
+import {Trajectory} from "./trajectory.js";
 
 export class Test
 {

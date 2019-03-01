@@ -1,4 +1,4 @@
-import Pose2d from "./pose2d.js";
+import {Pose2d} from "./pose2d.js";
 
 export const kMaxDX = 2.0; //inches
 export const kMaxDY = 0.05; //inches

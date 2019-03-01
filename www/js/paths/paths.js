@@ -3,6 +3,7 @@ import Spline2Array from "./geo/spline2array.js";
 import {Spline2Sampler, kMaxDX} from "./geo/spline2sampler.js";
 import Trajectory from "./robot/trajectory.js";
 import {Pose2d} from "./geo/pose2d.js";
+import {Units as U} from "./geo/units.js";
 
 const defaultPathConfig = 
 {
@@ -41,6 +42,12 @@ export class Path
         case "optspline":
             for(let p of this.getOptimizedSplineSamples())
                 p.draw(ctx, color);
+            break;
+        case "splineCtls":
+            this.getSplines().draw(ctx, color);
+            break;
+        case "optsplineCtls":
+            this.getOptimizedSplines().draw(ctx, color);
             break;
         case "trajectory":
             break;
@@ -111,6 +118,23 @@ export class Path
 }
 
 // a repository for paths, keyed by pathname
+const field =
+{
+    xsize:684,
+    ysize:342,
+    xrange: [-342, 342],
+    yrange: [-171, 171],
+}
+
+const landmarks = 
+{
+    bottomLeftLoadingStation: 
+        Pose2d.fromXYTheta(field.xrange[0]+24, field.yrange[0]+29, 0),
+    centerLeftHalfUp:
+        Pose2d.fromXYTheta(field.xrange[0]+171, field.yrange[0]+171, 90),
+    topLeftRocketHatch1: Pose2d.fromXYTheta(-125, 145, 28.75),
+}
+
 export class PathsRepo
 {
     constructor()
@@ -135,12 +159,11 @@ export class PathsRepo
         const cx = -150;
         const cy = 20;
         const radius = 40;
-        let waypoints = [];
-        waypoints.push(Pose2d.fromXYTheta(cx, cy+radius, 0));
-        waypoints.push(Pose2d.fromXYTheta(cx+radius, cy, -90));
-        waypoints.push(Pose2d.fromXYTheta(cx, cy-radius, -180));
-        waypoints.push(Pose2d.fromXYTheta(cx-radius, cy, -270));
-        waypoints.push(Pose2d.fromXYTheta(cx, cy+2*radius, 0));
+        let waypoints = [
+            landmarks.bottomLeftLoadingStation,
+            landmarks.centerLeftHalfUp,
+            landmarks.topLeftRocketHatch1,
+        ];
         this.addPath("test1", new Path(waypoints,"test1"));
     }
 }

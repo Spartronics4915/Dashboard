@@ -1,7 +1,7 @@
 import {Pose2d, Translation2d, Rotation2d, Twist2d} from "./pose2d.js";
-import Spline2Sampler from "./spline2sampler.js";
-import Spline2Array from "./spline2array.js";
-import Spline2 from "./spline2.js";
+import {Spline2Sampler} from "./spline2sampler.js";
+import {Spline2Array} from "./spline2array.js";
+import {Spline2} from "./spline2.js";
 
 export function epsilonEquals(x, y, epsilon=1e-10)
 {

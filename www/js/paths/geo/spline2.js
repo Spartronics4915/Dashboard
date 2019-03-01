@@ -1,5 +1,5 @@
 import {Pose2d, Translation2d, Rotation2d} from "./pose2d.js";
-import Spline1 from "./spline1.js";
+import {Spline1} from "./spline1.js";
 
 export class Spline2
 {
@@ -88,6 +88,42 @@ export class Spline2
                                             this.evalCache.y),
                               new Rotation2d(this.evalCache.dx, 
                                             this.evalCache.dy, true));
+    }
+
+    draw(ctx, color, radius)
+    {
+        // draw positions, tangent and curvature 
+        radius = radius | 2;
+
+        this.getPose(0);
+        this.getCurvature(0); // populate the evalCache
+        this._draw(ctx, color, radius);
+
+        this.getPose(1);
+        this.getCurvature(1); // populate the evalCache
+        this._draw(ctx, color, radius);
+    }
+
+    _draw(ctx, color, radius)
+    {
+        let c = this.evalCache;
+        ctx.beginPath()
+        ctx.arc(c.x, c.y, radius, 0, 2*Math.PI, false);
+        ctx.fill();
+
+        ctx.lineCap = "round";
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo(c.x, c.y);
+        ctx.lineTo(c.x + c.dx, c.y + c.dy);
+        ctx.stroke();
+
+        ctx.strokeStyle = "yellow";
+        ctx.beginPath();
+        ctx.moveTo(c.x, c.y);
+        ctx.lineTo(c.x + c.ddx, c.y + c.ddy);
+        ctx.stroke();
     }
 
     getVelocity(t) // a scalar quantity, ie: tangential speed

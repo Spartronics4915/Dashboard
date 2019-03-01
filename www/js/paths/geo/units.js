@@ -32,7 +32,7 @@ export class Units
 
     static mmToInches(mm)
     {
-        return Units.metersToInches(mm/1000);
+        return mm / 25.4
     }
 
     static inchesToMeters(inches)
@@ -42,7 +42,7 @@ export class Units
 
     static inchesToMM(inches)
     {
-        return Units.inchesToMeters(inches) * 1000;
+        return inches * 25.4;
     }
 
     static feetToMeters(feet)
@@ -52,5 +52,3 @@ export class Units
 }
 
 export default Units;
-
-window.geo.Units = Units;

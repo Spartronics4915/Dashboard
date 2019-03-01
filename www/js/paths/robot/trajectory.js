@@ -1,6 +1,6 @@
-import Pose2d from "../geo/pose2d.js";
+import {Pose2d} from "../geo/pose2d.js";
 import {epsilonEquals} from "../geo/test.js";
-import Spline2Array from "../geo/spline2array.js";
+import {Spline2Array} from "../geo/spline2array.js";
 
 export class Trajectory
 {
