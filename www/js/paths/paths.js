@@ -26,13 +26,23 @@ export class Path
         this.trajectory = null;
     }
 
-    draw(ctx, mode)
+    draw(ctx, mode, color)
     {
         switch(mode)
         {
         case "waypoints":
             for(let p of this.waypoints)
-                p.draw(ctx, true/*heading*/);
+                p.draw(ctx, color);
+            break;
+        case "spline":
+            for(let p of this.getSplineSamples())
+                p.draw(ctx, color);
+            break;
+        case "optspline":
+            for(let p of this.getOptimizedSplineSamples())
+                p.draw(ctx, color);
+            break;
+        case "trajectory":
             break;
         default:
             app.warning("Path.draw unknown mode " + mode);
@@ -53,10 +63,13 @@ export class Path
     
     getSplineSamples()
     {
-        let splines = this.getSplines();
-        let samps = [];
-        Spline2Sampler.sampleSplines(splines, samps);
-        return samps;
+        if(!this.splinesamps)
+        {
+            let splines = this.getSplines();
+            this.splinesamps = 
+                Spline2Sampler.sampleSplines(splines);
+        }
+        return this.splinesamps;
     }
 
     getOptimizedSplines()
@@ -71,11 +84,13 @@ export class Path
 
     getOptimizedSplineSamples()
     {
-        let osplines = this.getOptimizedSplines();
-        let samps = [];
-        Spline2Sampler.sampleSplines(osplines, samps);
-        // NB: maxDx, maxDy, maxDTheta are optional params
-        return samps;
+        if(!this.osplinesamps)
+        {
+            let osplines = this.getOptimizedSplines();
+            this.osplinesamps = Spline2Sampler.sampleSplines(osplines);
+                // NB: maxDx, maxDy, maxDTheta are optional params
+        }
+        return this.osplinesamps;
     }
 
     getTrajectory()
@@ -125,7 +140,7 @@ export class PathsRepo
         waypoints.push(Pose2d.fromXYTheta(cx+radius, cy, -90));
         waypoints.push(Pose2d.fromXYTheta(cx, cy-radius, -180));
         waypoints.push(Pose2d.fromXYTheta(cx-radius, cy, -270));
-        waypoints.push(Pose2d.fromXYTheta(cx, cy+radius, 0));
+        waypoints.push(Pose2d.fromXYTheta(cx, cy+2*radius, 0));
         this.addPath("test1", new Path(waypoints,"test1"));
     }
 }

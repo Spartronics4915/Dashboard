@@ -227,9 +227,19 @@
                                 {
                                     "key": "Paths/current",
                                     "class": "path",
+                                    "enable": false,
+                                    "config": {
+                                        "mode": "spline",
+                                        "color": "blue"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/current",
+                                    "class": "path",
                                     "enable": true,
                                     "config": {
-                                        "mode": "waypoints"
+                                        "mode": "optspline",
+                                        "color": "orange"
                                     }
                                 }
                             ]

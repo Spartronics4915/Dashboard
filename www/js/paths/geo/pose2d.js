@@ -508,30 +508,26 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
                           this.translation.x - other.translation.x);
     }
 
-    draw(ctx, drawHeading, radius) 
+    draw(ctx, color, radius) 
     {
-        let color = "#2CFF2C";
-        radius = radius || 4;
+        color = color || "#2CFF2C";
+        radius = radius || 2;
+        let x = this.translation.x;
+        let y = this.translation.y;
         ctx.beginPath();
-        ctx.arc(this.translation.x, 
-                this.translation.y, 
-                radius, 0, 2 * Math.PI, false);
+        ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
         ctx.fillStyle = color;
-        ctx.strokeStyle = color;
         ctx.lineCap = "round";
         ctx.fill();
-        if (drawHeading)
-        {
-            let x = this.translation.x;
-            let y = this.translation.y;
-            let len = 12;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + len * this.rotation.cos, 
-                       y + len * this.rotation.sin);
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
+
+        let len = 12;
+        ctx.strokeStyle = "red"; // color;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + len * this.rotation.cos, 
+                   y + len * this.rotation.sin);
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
 
     toString() 

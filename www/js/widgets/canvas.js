@@ -427,7 +427,7 @@ class CanvasWidget extends Widget
                 let ctx = this._drawFieldBegin();
                 if(!item.config.mode)
                     item.config.mode = "waypoints";
-                path.draw(ctx, item.config.mode);
+                path.draw(ctx, item.config.mode, item.config.color);
                 this._drawFieldEnd();
             }
             else
