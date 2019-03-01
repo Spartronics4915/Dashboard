@@ -632,7 +632,8 @@ export class App
                 break;
             }
             break;
-        case "/SmartDashboard/Robot/pose":
+        case "/SmartDashboard/RobotState/pose":
+            this.robotState.addPose(value);
             break;
         }
 

@@ -123,21 +123,6 @@ export class Translation2d
         if(Math.abs(other.y - this.y) > epsilon) return false;
         return true;
     }
-
-    // place a circle at our location, presumes that ctx has been
-    // scaled accordingly
-    draw(ctx, color, radius) 
-    {
-        color = color || "#2CFF2C";
-        radius = radius || 4;
-        ctx.beginPath();
-        ctx.arc(this.x, this.x, radius, 0, 2 * Math.PI, false);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 0;
-        ctx.stroke();
-    }
 }
 
 export class Rotation2d 
@@ -525,19 +510,27 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
 
     draw(ctx, drawHeading, radius) 
     {
-        this.translation.draw(ctx, radius);
+        let color = "#2CFF2C";
+        radius = radius || 4;
+        ctx.beginPath();
+        ctx.arc(this.translation.x, 
+                this.translation.y, 
+                radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.lineCap = "round";
+        ctx.fill();
         if (drawHeading)
         {
             let x = this.translation.x;
-            let y = this.translation.x;
-            let len = 25;
+            let y = this.translation.y;
+            let len = 12;
             ctx.beginPath();
             ctx.moveTo(x, y);
             ctx.lineTo(x + len * this.rotation.cos, 
                        y + len * this.rotation.sin);
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
             ctx.stroke();
-            ctx.closePath();
         }
     }
 

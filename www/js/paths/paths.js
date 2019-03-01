@@ -117,8 +117,8 @@ export class PathsRepo
 
     _createTests()
     {
-        const cx = -100;
-        const cy = 0;
+        const cx = -150;
+        const cy = 20;
         const radius = 40;
         let waypoints = [];
         waypoints.push(Pose2d.fromXYTheta(cx, cy+radius, 0));
