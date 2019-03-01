@@ -1,7 +1,8 @@
-/* global robot, geo */
-if(window.robot == undefined) window.robot = {};
+import Pose2d from "../geo/pose2d.js";
+import {epsilonEquals} from "../geo/test.js";
+import Spline2Array from "../geo/spline2array.js";
 
-class Trajectory
+export class Trajectory
 {
     constructor()
     {
@@ -24,13 +25,13 @@ class Trajectory
             timingConstraints, startVelocity, endVelocity, maxVelocity, 
             maxAbsAccel)
     {
-        let splines = geo.Spline2Array.fromPose2Array(pose2Array);
+        let splines = Spline2Array.fromPose2Array(pose2Array);
         let samples = splines.sample(splines, maxDx, maxDy, maxDTheta);
         // Resample with equidistant steps along the trajectory. 
         // Note that we sampled the spline with the same value for maxDx. 
         // In that case, we were working on the xy plane. 
         // Now, we're working along the robot trajectory. 
-        geo.Pose2d.computeDistances(samples);
+        Pose2d.computeDistances(samples);
         let ndistSamples = Math.ceil(1 + samples.totalDist/maxDx);
         let currentDist = maxDx;
         let insamp = 0;
@@ -48,10 +49,10 @@ class Trajectory
                 if(insamp == samples.length)
                     break;
             }
-            if(geo.epsilonEquals(currentDist, lastSample.distance))
+            if(epsilonEquals(currentDist, lastSample.distance))
                 result.push(lastSample);
             else
-            if(geo.epsilonEquals(currentDist, nextSample.distance))
+            if(epsilonEquals(currentDist, nextSample.distance))
                 result.push(nextSample);
             else
             {
@@ -66,4 +67,5 @@ class Trajectory
     }
 }
 
-window.robot.Trajectory = Trajectory;
+export default Trajectory;
+

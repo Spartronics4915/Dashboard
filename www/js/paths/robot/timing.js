@@ -1,7 +1,6 @@
-/* global robot, geo */
-if(window.robot == undefined) window.robot = {};
+import Units from "../geo/units.js";
 
-class TimingConstraint
+export class TimingConstraint
 {
     constructor(maxVelocity, minAccel, maxAccel)
     {
@@ -31,7 +30,7 @@ class TimingConstraint
     }
 }
 
-class CentripetalMax extends TimingConstraint
+export class CentripetalMax extends TimingConstraint
 {
     constructor(maxCentripetalAccel)
     {
@@ -47,7 +46,7 @@ class CentripetalMax extends TimingConstraint
     // we impose/inherit no limits on minmax accel
 }
 
-class DifferentialDriveDynamics extends TimingConstraint
+export class DifferentialDriveDynamics extends TimingConstraint
 {
     constructor(drive, maxvoltage)
     {
@@ -60,25 +59,25 @@ class DifferentialDriveDynamics extends TimingConstraint
     // drive wants SI units.
     getMaxVelocity(tsamp)
     {
-        return geo.Units.metersToInches(
+        return Units.metersToInches(
             this.drive.getMaxAbsVelocity(
                 // Curvature is in inverse inches
-                geo.Units.inchesToMeters(tsamp.curvature), 
+                Units.inchesToMeters(tsamp.curvature), 
                 this.maxV));
     }
 
     getMinMaxAcceleration(tsamp, velocity)
     {
         let mm = this.drive.getMinMaxAcceleration(
-                    new robot.DifferentialDrive.ChassisState(
-                        geo.Units.inchesToMeters(velocity), 
+                    new DifferentialDrive.ChassisState(
+                        Units.inchesToMeters(velocity), 
                         tsamp.curvature * velocity /*inverse seconds*/),
-                    geo.Units.inchesToMeters(tsamp.curvature), 
+                    Units.inchesToMeters(tsamp.curvature), 
                     this.maxV);
-        return [geo.Units.metersToInches(mm[0]), 
-                geo.Units.metersToInches(mm[1])];
+        return [Units.metersToInches(mm[0]), 
+                Units.metersToInches(mm[1])];
     }
 }
 
-window.robot.CentripetalMax = CentripetalMax;
-window.robot.DifferentialDriveDynamics = DifferentialDriveDynamics;
+export default TimingConstraint;
+

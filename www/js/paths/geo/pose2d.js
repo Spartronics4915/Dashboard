@@ -280,12 +280,6 @@ export class Twist2d
         this.dtheta = dtheta;
     }
 
-    static fromXYTheta(x, y, theta)
-    {
-        return new Pose2d(new Translation2d(x,y),
-                        Rotation2d.fromDegrees(theta));
-    }
-
     static fromIdentity()
     {
         return Twist2d(0, 0, 0);
@@ -357,6 +351,12 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         }
         if(other.distance != undefined)
             newPose.distance = other.distance;
+    }
+
+    static fromXYTheta(x, y, theta)
+    {
+        return new Pose2d(new Translation2d(x,y),
+                        Rotation2d.fromDegrees(theta));
     }
 
     static fromDelta(p0, p1)
@@ -490,11 +490,11 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
     {
         if (x <= 0)
         {
-            return Pose2d.fromPose(this);
+            return Pose2d.clone(this);
         }
         else if (x >= 1)
         {
-            return Pose2d.fromPose(otherPose);
+            return Pose2d.clone(otherPose);
         }
         let twist = Pose2d.log(this.inverse().transformBy(otherPose));
         let newpose = this.transformBy(Pose2d.exp(twist.scaled(x)));

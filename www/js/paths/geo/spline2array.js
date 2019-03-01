@@ -1,5 +1,6 @@
 import Translation2d from "./pose2d.js";
 import Spline2 from "./spline2.js";
+import Spline2Sampler from "./spline2sampler.js";
 
 let kCurveSamples = 100;
 let kEpsilon = 1e-5;

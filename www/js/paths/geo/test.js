@@ -27,6 +27,10 @@ export function assertTrue(b, msg)
 
 export class Test
 {
+    constructor()
+    {
+    }
+
     runAll()
     {
         app.info("testpose2d");

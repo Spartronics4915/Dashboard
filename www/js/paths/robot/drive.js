@@ -1,13 +1,16 @@
-if(window.robot == undefined) window.robot = {};
-
-class ChassisState
+export class ChassisState
 {
+    constructor()
+    {
+    }
+}
+
+export class DifferentialDrive
+{
+    constructor()
+    {
+    }
 
 }
 
-class DifferentialDrive
-{
-
-}
-
-window.robot = DifferentialDrive;
+export default DifferentialDrive();

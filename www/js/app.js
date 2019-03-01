@@ -1,19 +1,20 @@
 /* global app NetworkTables RobotLog WebAPISubscriber $ Widget RobotState*/
 
 /* special url config syntax:
- *
- *   http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0
- *
- *  url hash selects the current nav page:
- *      #tab0, follows the optional configuration
- *
- *  shownav controls display of navbar
- *  demo controls whether random data is generated
- *  env selects different layout variants according to provided key
- *  layout must be located below www/layouts dir
- *
- */
-import Test from "/js/paths/geo/test.js";
+*
+*   http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0
+*
+*  url hash selects the current nav page:
+*      #tab0, follows the optional configuration
+*
+*  shownav controls display of navbar
+*  demo controls whether random data is generated
+*  env selects different layout variants according to provided key
+*  layout must be located below www/layouts dir
+*
+**/
+
+import pathTests from "/js/paths/paths.js";
 
 export class App
 {
@@ -93,7 +94,7 @@ export class App
     onReady()
     {
         this.firstLoad = false;
-        this.test = new Test();
+        this.pathTests = pathTests;
         this.robotState = new RobotState();
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
