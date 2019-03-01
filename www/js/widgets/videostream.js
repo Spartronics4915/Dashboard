@@ -32,7 +32,7 @@ class VideoStreamWidget extends Widget
             let ss = this.config.params.streams[camkey];
             this.streamStates[camkey] = 
                     new streamState(this.baseId, this.config.params.overlayId, 
-                                    index++, camkey, ss);
+                                    index++, camkey, ss, this.pageHandler);
         }
         this.targetElem = targetElem;
         html += "<div id='${this.baseId}' class='container'></div>";
@@ -85,7 +85,7 @@ class VideoStreamWidget extends Widget
 
 class streamState
 {
-    constructor(targetId, overlayId, index, camkey, ss)
+    constructor(targetId, overlayId, index, camkey, ss, ph)
     {
         this.targetId = targetId;
         this.targetElem = document.getElementById(this.targetId);
@@ -103,6 +103,7 @@ class streamState
         this.url = ss.url;
         this.cls = ss.cls;
         this.activations = 0;
+        this.pageHandler = ph;
     }
 
     activate()
@@ -214,11 +215,12 @@ class streamState
     {
         if(this.overlayId != null)
         {
-            let canvEl = document.getElementById(this.overlayId);
-            if(canvEl)
-            {
-                CanvasUtils.placeCanvasOver(canvEl, this.targetElem);
-            }
+            let oid = this.overlayId;
+            let w = this.pageHandler.getWidgetById(oid);
+            if(w)
+                w.placeOver(this.targetElem);
+            else
+                app.warning("can't find overlay widget: " + oid);
         }
     }
 

@@ -92,7 +92,7 @@
                     {
                         "//": "selector:false -> no menu in this widget",
                         "selector": false,
-                        "overlayId": "drivercamOverlayCanv",
+                        "overlayId": "drivercamOverlay",
                         "cameras":
                         {
                             "Test":
@@ -195,7 +195,7 @@
                     "size": ["fill", "fill"],
                     "params": 
                     {
-                        "overlayId": "fieldmapOverlayCanv",
+                        "overlayId": "fieldmapOverlay",
                         "url": "/images/field2019.png",
                         "cls": "nopointer"
                     }
@@ -208,7 +208,7 @@
                         "overlay":
                         {
                             "enable": true,
-                            "updateinterval": 500,
+                            "updateinterval": 0,
                             "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
@@ -223,6 +223,14 @@
                                         "OFFLINE":"rgb(10,10,100)"
                                     },
                                     "strokeStyle": "rgb(255,0,0)"
+                                },
+                                {
+                                    "key": "Paths/current",
+                                    "class": "path",
+                                    "enable": true,
+                                    "config": {
+                                        "mode": "waypoints"
+                                    }
                                 }
                             ]
                         }
@@ -828,7 +836,7 @@
                     "ntkeys": "Driver/VideoStream",
                     "params":
                     {
-                        "overlayId": "videoOverlayCanv",
+                        "overlayId": "videoOverlay",
                         "streams":
                         {
                             "Test":

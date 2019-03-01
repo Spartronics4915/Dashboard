@@ -274,11 +274,12 @@ class CamerasWidget extends Widget
     {
         if(this.config.params.overlayId != undefined)
         {
-            let canvEl = document.getElementById(this.config.params.overlayId);
-            if(canvEl)
-            {
-                CanvasUtils.placeCanvasOver(canvEl, el);
-            }
+            let oid = this.config.params.overlayId;
+            let w = this.pageHandler.getWidgetById(oid);
+            if(w)
+                w.placeOver(el);
+            else
+                app.warning("can't find overlay widget: " + oid);
         }
     }
 }

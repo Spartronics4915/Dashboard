@@ -34,6 +34,12 @@ class CanvasWidget extends Widget
         // TODO: for opencv of other img or video src, we need its element id
     }
 
+    placeOver(targetEl)
+    {
+        CanvasWidget.placeCanvasOver(this.canvasEl, targetEl);
+        this._updateOverlay();
+    }
+
     getHiddenNTKeys()
     {
         // Always expose our enabled hidden nt keys since this is only
@@ -144,6 +150,9 @@ class CanvasWidget extends Widget
             {
             case "poselist":
                 this._drawPoselist(item);
+                break;
+            case "path":
+                this._drawPath(item);
                 break;
             case "time":
                 if(item.value == undefined || item.value == "" || !app.robotConnected)
@@ -408,11 +417,21 @@ class CanvasWidget extends Widget
         //      time-constrained spline: 
         //          color-coding velocity
         //          color-coding curvature
-        let path = app.getPathByName("default");
-        if(path != null)
+        if(!item.value) return;
+        let repo = app.getPathsRepo();
+        if(repo)
         {
-            this._drawFieldBegin();
-            this._drawFieldEnd();
+            let path = repo.getPath(item.value);
+            if(path != null)
+            {
+                let ctx = this._drawFieldBegin();
+                if(!item.config.mode)
+                    item.config.mode = "waypoints";
+                path.draw(ctx, item.config.mode);
+                this._drawFieldEnd();
+            }
+            else
+                app.warning("missing path " + item.value);
         }
     }
 

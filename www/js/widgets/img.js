@@ -33,9 +33,11 @@ class ImgWidget extends Widget
     {
         if(this.params.overlayId)
         {
-            let canvEl = document.getElementById(this.params.overlayId);
-            if(canvEl)
-                CanvasUtils.placeCanvasOver(canvEl, this.imgEl);
+            let w = this.pageHandler.getWidgetById(this.params.overlayId);
+            if(w)
+                w.placeOver(this.imgEl);
+            else
+                app.warning("can't find overlay widget: " + this.params.overlayId);
         }
     }
 }

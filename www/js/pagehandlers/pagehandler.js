@@ -9,6 +9,7 @@ class PageHandler
         this.ntkeyMap = {}; // maps to widget
         this.websubMap = {}; // maps to widget
         this.idToNTKeyMap = {}; // maps widget id to ntkey
+        this.widgetMap = {};
     }
 
     // buildPage: return html representation of tab contents.  For
@@ -136,6 +137,7 @@ class PageHandler
                     let targetElem = $(`#${w.id}`);
                     w.widget = Widget.BuildWidgetByName(w.type,
                                                     w, targetElem, this);
+                    this.widgetMap[w.id] = w.widget;
                     if(!w.widget)
                         app.warning("unimplemented widget type " + w.type);
                     else
@@ -165,6 +167,11 @@ class PageHandler
         {
             this.layoutWidgets(this.pageTemplate.widgets, loadHtmlCB);
         }
+    }
+
+    getWidgetById(id)
+    {
+        return this.widgetMap[id];
     }
 
     cleanup()

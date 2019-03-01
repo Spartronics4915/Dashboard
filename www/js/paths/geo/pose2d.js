@@ -129,6 +129,7 @@ export class Translation2d
     draw(ctx, color, radius) 
     {
         color = color || "#2CFF2C";
+        radius = radius || 4;
         ctx.beginPath();
         ctx.arc(this.x, this.x, radius, 0, 2 * Math.PI, false);
         ctx.fillStyle = color;
@@ -524,7 +525,7 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
 
     draw(ctx, drawHeading, radius) 
     {
-        this.translation.draw(null, radius);
+        this.translation.draw(ctx, radius);
         if (drawHeading)
         {
             let x = this.translation.x;

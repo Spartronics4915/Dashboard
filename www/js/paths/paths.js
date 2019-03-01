@@ -1,8 +1,8 @@
+/* global app */
 import Spline2Array from "./geo/spline2array.js";
 import {Spline2Sampler, kMaxDX} from "./geo/spline2sampler.js";
 import Trajectory from "./robot/trajectory.js";
 import {Pose2d} from "./geo/pose2d.js";
-
 
 const defaultPathConfig = 
 {
@@ -24,6 +24,19 @@ export class Path
         this.splines = null;
         this.osplines = null;
         this.trajectory = null;
+    }
+
+    draw(ctx, mode)
+    {
+        switch(mode)
+        {
+        case "waypoints":
+            for(let p of this.waypoints)
+                p.draw(ctx, true/*heading*/);
+            break;
+        default:
+            app.warning("Path.draw unknown mode " + mode);
+        }
     }
 
     getWaypoints()

@@ -90,6 +90,11 @@ export class App
         this.pageHandlers[page] = handler;
     }
 
+    getPathsRepo()
+    {
+        return this.pathsRepo;
+    }
+
     // onReady is invoked after all scripts have finished loading.
     onReady()
     {
