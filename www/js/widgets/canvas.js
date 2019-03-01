@@ -323,6 +323,28 @@ class CanvasWidget extends Widget
         }
     }
 
+    _drawFieldBegin()
+    {
+        // paths and poses
+        // FRC field is 684 x 342, we assume we have the
+        // correct aspect ratio. We assume field poses have
+        // an origin at the midpoint and y is up.
+        let ctx = this.canvasCtx;
+        let width = this.canvasEl.width;
+        let height = this.canvasEl.height;
+        let sx = width/684;
+        let sy = -height/342; // flip y
+        ctx.save();
+        ctx.translate(width*.5, height*.5);
+        ctx.scale(sx, sy);
+        return ctx;
+    }
+
+    _drawFieldEnd()
+    {
+        this.canvasCtx.restore();
+    }
+
     _drawPoselist(item)
     {
         // A poselist is assumed to accumulate over the course of
@@ -335,21 +357,14 @@ class CanvasWidget extends Widget
         // FRC field is 684 x 342, we assume we have the
         // correct aspect ratio. We assume field poses have
         // an origin at the midpoint and y is up.
-        let ctx = this.canvasCtx;
-        let width = this.canvasEl.width;
-        let height = this.canvasEl.height;
-        let sx = width/684;
-        let sy = -height/342; // flip y
-        ctx.save();
-        ctx.translate(width*.5, height*.5);
-        ctx.scale(sx, sy);
+        let ctx = this._drawFieldBegin();
         let poselists = app.getRobotState().getPoseLists();
         // assume: one stroke style
         if(item.strokeStyle)
             ctx.strokeStyle = item.strokeStyle;
 
-        this.canvasCtx.lineWidth = 2;
-        this.canvasCtx.lineCap = "round";
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
         ctx.shadowColor =  "rgba(0,0,0,.8)";
         ctx.shadowOffsetX = 3;
         ctx.shadowOffsetY = 3;
@@ -380,7 +395,25 @@ class CanvasWidget extends Widget
                 ctx.stroke();
             }
         }
-        ctx.restore();
+        this._drawFieldEnd();
+    }
+
+    _drawPath(item)
+    {
+        // modes:
+        //      waypoints only (x,y,theta)
+        //      full path as used by robot
+        //      spline prior to curvature optimization
+        //      spline after currvature optimization
+        //      time-constrained spline: 
+        //          color-coding velocity
+        //          color-coding curvature
+        let path = app.getPathByName("default");
+        if(path != null)
+        {
+            this._drawFieldBegin();
+            this._drawFieldEnd();
+        }
     }
 
     addRandomPt()

@@ -1,9 +1,9 @@
 import Pose2d from "./pose2d.js";
 
-const kMaxDX = 2.0; //inches
-const kMaxDY = 0.05; //inches
-const kMaxDTheta = 0.1; //radians!
-const kMinSampleSize = 1;
+export const kMaxDX = 2.0; //inches
+export const kMaxDY = 0.05; //inches
+export const kMaxDTheta = 0.1; //radians!
+export const kMinSampleSize = 1;
 
 export class Spline2Sampler
 {

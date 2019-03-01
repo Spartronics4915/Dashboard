@@ -14,7 +14,7 @@
 *
 **/
 
-import pathTests from "/js/paths/paths.js";
+import PathsRepo from "/js/paths/paths.js";
 
 export class App
 {
@@ -94,7 +94,7 @@ export class App
     onReady()
     {
         this.firstLoad = false;
-        this.pathTests = pathTests;
+        this.pathsRepo = new PathsRepo();
         this.robotState = new RobotState();
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),

@@ -4,8 +4,9 @@ import Spline2Array from "../geo/spline2array.js";
 
 export class Trajectory
 {
-    constructor()
+    constructor(poseSamples)
     {
+        this.poseSamples = poseSamples;
         this.timedPoses = [];
     }
 
@@ -16,29 +17,26 @@ export class Trajectory
 
     mirror()
     {
-
     }
 
-    // returns an array of pose2d,curvature,dcurvature,time
-    //  cf: timeParameterizeTrajectory
-    static generateTrajectory(pose2Array, maxDx, maxDy, maxDTheta,
-            timingConstraints, startVelocity, endVelocity, maxVelocity, 
-            maxAbsAccel)
+    // returns a trajectory:
+    //   array of pose2d,curvature,dcurvature,time
+    //  cf: timeParameterizeTrajectory (java implementation)
+    static generate(poseSamples, timingConstraints, maxDx,
+            startVelocity, endVelocity, maxVelocity, maxAbsAccel)
     {
-        let splines = Spline2Array.fromPose2Array(pose2Array);
-        let samples = splines.sample(splines, maxDx, maxDy, maxDTheta);
         // Resample with equidistant steps along the trajectory. 
         // Note that we sampled the spline with the same value for maxDx. 
         // In that case, we were working on the xy plane. 
         // Now, we're working along the robot trajectory. 
-        Pose2d.computeDistances(samples);
-        let ndistSamples = Math.ceil(1 + samples.totalDist/maxDx);
+        Pose2d.computeDistances(poseSamples);
+        let ndistSamples = Math.ceil(1 + poseSamples.totalDist/maxDx);
         let currentDist = maxDx;
         let insamp = 0;
         let lastSample = samples[insamp++];
         let nextSample = samples[insamp++];
         let sampleDist = nextSample.distance - lastSample.distance;
-        let result = [lastSample];
+        let samps = [lastSample];
         for(let i=1;i<ndistSamples;i++,currentDist+=maxDx);
         {
             while(currentDist > nextSample.distance)
@@ -61,9 +59,13 @@ export class Trajectory
             }
         }
 
-        // finally we apply time constraints to deliver per-sample velocity
-        // target.
-        return result;
+        if(timingConstraints)
+        {
+            // apply time constraints to deliver per-sample  velocity 
+            // target. (tbd)
+        }
+
+        return new Trajectory(result);
     }
 }
 
