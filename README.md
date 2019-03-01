@@ -23,8 +23,9 @@ To run the dashboard:
   3. make sure the javascript side of pynetworktable2js is up to date 
     (below www/js).
   3. start dashboard server: python DashboardServer.py
-  4. point your favorite web browser to http://localhost:5080, Firefox 
-     is recommended over Chrome due to improved performance of mjpg streaming.
+  4. point your favorite web browser to http://localhost:5080, Chrome
+     is recommended over Firefox due to improved performance of h264
+     streaming and faster canvas implementation.
 
 ### Windows driver station
 
@@ -36,9 +37,10 @@ disable UAC (the window-dimming 'are you sure' thing) otherwise the
 dashboard won't start up on boot.
 
 ### Administration
-We've found that Chrome is flaky when it comes to mjpg streams.  We 
-therefore highly recommend that you use Firefox as your primary web 
-brower for this application.
+We've found that Chrome is flaky when it comes to mjpg streams.  On
+the other hand, we've found that Firefox is less stable for H264
+and slower for canvas drawing.  For 2019 season, we now recommend
+that you use Chrome as your primary web browser for this application.
 
 Because so much code is reused across years, we chose to maintain a 
 single repository for multiple years. We will tag the commit at the 
