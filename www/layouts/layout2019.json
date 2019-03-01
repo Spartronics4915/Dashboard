@@ -227,9 +227,9 @@
                                 {
                                     "key": "Paths/current",
                                     "class": "path",
-                                    "enable": false,
+                                    "enable": true,
                                     "config": {
-                                        "mode": "spline",
+                                        "mode": "optspline",
                                         "color": "blue"
                                     }
                                 },
@@ -238,7 +238,7 @@
                                     "class": "path",
                                     "enable": true,
                                     "config": {
-                                        "mode": "optspline",
+                                        "mode": "optsplineCtls",
                                         "color": "orange"
                                     }
                                 }
