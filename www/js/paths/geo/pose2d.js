@@ -399,19 +399,6 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         return new Twist2d(translation_part.x, translation_part.y, dtheta);
     }
 
-    static computeDistances(pose2dArray)
-    {
-        let totalDist = 0;
-        pose2dArray[0].distance = 0.0;
-        for(let i=1;i<pose2dArray.length;i++)
-        {
-            let last = pose2dArray[i-1];
-            pose2dArray[i].distance = pose2dArray[i].distance(last);
-            totalDist += pose2dArray[i].distance;
-        }
-        pose2dArray.totalDist = totalDist;
-    }
-
     constructor(translation, rotation, comment)
     {
         this.translation = translation;
