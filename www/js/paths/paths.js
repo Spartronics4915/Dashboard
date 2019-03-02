@@ -1,7 +1,7 @@
 /* global app */
 import Spline2Array from "./geo/spline2array.js";
 import {Spline2Sampler, kMaxDX} from "./geo/spline2sampler.js";
-import Trajectory from "./robot/trajectory.js";
+import {Trajectory} from "./robot/trajectory.js";
 import {Pose2d} from "./geo/pose2d.js";
 import {Units as U} from "./geo/units.js";
 
@@ -50,6 +50,7 @@ export class Path
             this.getOptimizedSplines().draw(ctx, color);
             break;
         case "trajectory":
+            this.getTrajectory().draw(ctx, mode, color);
             break;
         default:
             app.warning("Path.draw unknown mode " + mode);

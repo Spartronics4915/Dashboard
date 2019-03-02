@@ -12,50 +12,52 @@ export class Trajectory
 
     reverse()
     {
-
     }
 
     mirror()
     {
     }
 
+    draw(ctx, mode, color)
+    {
+        for(let p of this.poseSamples)
+            p.draw(ctx, color);
+    }
+
     // returns a trajectory:
     //   array of pose2d,curvature,dcurvature,time
     //  cf: timeParameterizeTrajectory (java implementation)
-    static generate(poseSamples, timingConstraints, maxDx,
+    static generate(samples, timingConstraints, maxDx,
             startVelocity, endVelocity, maxVelocity, maxAbsAccel)
     {
         // Resample with equidistant steps along the trajectory. 
-        // Note that we sampled the spline with the same value for maxDx. 
-        // In that case, we were working on the xy plane. 
-        // Now, we're working along the robot trajectory. 
-        Pose2d.computeDistances(poseSamples);
-        let ndistSamples = Math.ceil(1 + poseSamples.totalDist/maxDx);
-        let currentDist = maxDx;
-        let insamp = 0;
-        let lastSample = samples[insamp++];
-        let nextSample = samples[insamp++];
-        let sampleDist = nextSample.distance - lastSample.distance;
-        let samps = [lastSample];
-        for(let i=1;i<ndistSamples;i++,currentDist+=maxDx);
+        // Note that we may have sampled the spline with the same 
+        // value for maxDx. In that case, we were working on the xy 
+        // plane. Now, we're working along the robot trajectory. 
+        //
+        let result = [];
+        let totalDist = 0;
+        samples[0].distance = 0.0;
+        result.push(samples[0]);
+        let last = samples[0];
+        let next;
+        for(let i=1;i<samples.length;i++)
         {
-            while(currentDist > nextSample.distance)
+            next = samples[i];
+            let dist = next.distance(last);
+            totalDist += dist;
+            if(dist >= maxDx)
             {
-                lastSample = nextSample;
-                nextSample = samples[insamp++];
-                sampleDist = nextSample.distance - lastSample.distance;
-                if(insamp == samples.length)
-                    break;
-            }
-            if(epsilonEquals(currentDist, lastSample.distance))
-                result.push(lastSample);
+                let pct = maxDx/dist;
+                result.push(last.interpolate(next, pct));
+                last = next;
+            } 
             else
-            if(epsilonEquals(currentDist, nextSample.distance))
-                result.push(nextSample);
-            else
+            if(i == samples.length-1)
             {
-                let pct = (currentDist - lastSample.distance) / sampleDist;
-                result.push(lastSample.interpolate(nextSample, pct));
+                // last sample isn't as far as maxDx, but it
+                // is important, so lets just append it for now.
+                result.push(next);
             }
         }
 
