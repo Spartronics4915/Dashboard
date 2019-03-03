@@ -1,3 +1,4 @@
+/* global app */
 import {Pose2d, Translation2d, Rotation2d, Twist2d} from "./pose2d.js";
 import {Spline2Sampler} from "./spline2sampler.js";
 import {Spline2Array} from "./spline2array.js";
@@ -43,10 +44,10 @@ export class Test
         this.splineTest1();
 
         app.info("testSplineOptimizer");
-        this.testSplineOptimizer()
+        this.testSplineOptimizer();
 
         app.info("testSplineSampler");
-        this.testSplineSampler()
+        this.testSplineSampler();
     }
 
     testPose2d()

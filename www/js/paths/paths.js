@@ -3,16 +3,21 @@ import Spline2Array from "./geo/spline2array.js";
 import {Spline2Sampler, kMaxDX} from "./geo/spline2sampler.js";
 import {Trajectory} from "./robot/trajectory.js";
 import {Pose2d} from "./geo/pose2d.js";
-import {Units as U} from "./geo/units.js";
+import {CentripetalMax} from "./robot/timing.js";
+import {Constants} from "./robot/constants.js";
+import {DCMotorTransmission} from "./robot/dcmotor.js";
+import {DifferentialDrive} from "./robot/drive.js";
+import {DifferentialDriveDynamics} from "./robot/timing.js";
 
 const defaultPathConfig = 
 {
     maxDX: kMaxDX,
     startVelocity: 0, 
     endVelocity: 0,
-    maxVelocity: 60, // 5 fps
+    maxVelocity: 120, // 10 fps
     maxAbsAccel: 3,  // fps/s
 };
+
 
 // an individual path, borne from waypoints
 export class Path
@@ -25,6 +30,7 @@ export class Path
         this.splines = null;
         this.osplines = null;
         this.trajectory = null;
+        this.constants = Constants.getInstance(); // robotid is optional
     }
 
     draw(ctx, mode, color)
@@ -106,8 +112,17 @@ export class Path
         if(this.trajectory == null)
         {
             let osamps = this.getOptimizedSplineSamples();
+            let timing = [];
+            let leftTrans = new DCMotorTransmission(
+                                        this.constants.drive.LeftTransmission);
+            let rightTrans = new DCMotorTransmission(
+                                        this.constants.drive.RightTransmission);
+            let drive = new DifferentialDrive(this.constants, leftTrans, rightTrans);
+            timing.push(new CentripetalMax(this.constants.paths.MaxCentripetalAccel));
+            timing.push(new DifferentialDriveDynamics(drive, 
+                                            this.constants.paths.kMaxVoltage));
             this.trajectory = Trajectory.generate(osamps,
-                                    null,  // timing constraints tbd
+                                    timing,  // timing constraints tbd
                                     this.config.maxDX, 
                                     this.config.startVelocity, 
                                     this.config.endVelocity, 
@@ -125,7 +140,7 @@ const field =
     ysize:342,
     xrange: [-342, 342],
     yrange: [-171, 171],
-}
+};
 
 const landmarks = 
 {
@@ -134,7 +149,7 @@ const landmarks =
     centerLeftHalfUp:
         Pose2d.fromXYTheta(field.xrange[0]+171, field.yrange[0]+171, 90),
     topLeftRocketHatch1: Pose2d.fromXYTheta(-125, 145, 28.75),
-}
+};
 
 export class PathsRepo
 {

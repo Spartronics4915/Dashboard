@@ -1,4 +1,7 @@
+/* global app */
+
 let kEpsilon = 1E-9;
+
 export function lerp(a, b, pct) 
 {
     return a + (b - a) * pct;

@@ -113,7 +113,7 @@ export class Trajectory
                 // lets first apply velocity constraints
                 for(let c of constraints)
                 {
-                    s.maxVel = Math.min(s.maxVel, c.getMaxVel(s));
+                    s.maxVel = Math.min(s.maxVel, c.getMaxVelocity(s));
                     if(s.maxVel < 0)
                     {
                         // shouldn't happen
@@ -158,9 +158,9 @@ export class Trajectory
                     // we repapir it in backward pass.
                     break; // while 1 loop
                 }
-            }
+            } /* end while */
             last = s;
-        }
+        } /* end foreach sample */
 
         // Backward Pass
         let next = samples[samples.length-1];
@@ -190,22 +190,49 @@ export class Trajectory
                     s.accelLimits[1] = Math.min(s.accelLimits[1],
                                                 minmax[1]);
                 }
-            }
-            if(s.accelLimits[0] > s.accelLimits[1])
-                throw "trajectory bogus minmax accel 1";
-            if(ds < kEpsilon) 
-                break;
-            const actualAccel = (s.maxVel*s.maxVel - next.maxVel*last.maxVel) 
-                                    / (2.0 * ds); 
-            if(s.accelLimits[0] > (actualAccel + kEpsilon))
-                next.accelLimits[0] = s.accelLimits[0];
-            else
+                if(s.accelLimits[0] > s.accelLimits[1])
+                    throw "trajectory bogus minmax accel 1";
+                if(ds < kEpsilon) 
+                    break;
+                const actualAccel = (s.maxVel*s.maxVel - next.maxVel*last.maxVel) 
+                                        / (2.0 * ds); 
+                if(s.accelLimits[0] > (actualAccel + kEpsilon))
+                    next.accelLimits[0] = s.accelLimits[0];
+                else
+                {
+                    next.accelLimits[0] = actualAccel;
+                    break; // out of while
+                }
+            } // end while
+            next = s;
+        } /* end foreach sample */
+
+        // Integrate constrained states forward in time to obtain
+        // timed states
+        let t = 0, s = 0, v = 0;
+        for(let i=0;i<samples.length;i++)
+        {
+            let samp = samples[i];
+            const ds = samp.distance - s;
+            const accel = (s.maxVel * s.maxVel - v*v) / (2*ds);
+            let dt = 0;
+            if(i>0) 
             {
-                next.accelLimits[0] = actualAccel;
-                break;
+                samples[i-1].accel = accel; // todo: reverse?
+                if(Math.abs(accel > kEpsilon))
+                    dt = (samp.maxVel - v) / accel;
+                else
+                if(Math.abs(v) > kEpsilon)
+                    dt = ds / v;
+                else
+                    throw "trajectory: invalid timedstate 0";
             }
+            t += dt;
+            v = samp.maxVel;
+            s = samp.distance;
+            samp.velocity = v;
+            samp.acceleration = accel;
         }
-        next = s;
     }
 }
 

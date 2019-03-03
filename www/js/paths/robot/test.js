@@ -1,3 +1,4 @@
+/* global app */
 import {Pose2d} from "../geo/pose2d.js";
 import {Trajectory} from "./trajectory.js";
 

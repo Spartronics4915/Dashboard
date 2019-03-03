@@ -107,7 +107,7 @@ export class Spline2
     _draw(ctx, color, radius)
     {
         let c = this.evalCache;
-        ctx.beginPath()
+        ctx.beginPath();
         ctx.arc(c.x, c.y, radius, 0, 2*Math.PI, false);
         ctx.fill();
 

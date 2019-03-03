@@ -32,7 +32,7 @@ export class Units
 
     static mmToInches(mm)
     {
-        return mm / 25.4
+        return mm / 25.4;
     }
 
     static inchesToMeters(inches)

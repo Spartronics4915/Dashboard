@@ -1,4 +1,5 @@
 import {Units} from "../geo/units.js";
+import {ChassisState} from "./drive.js";
 
 export class TimingConstraint
 {
@@ -69,7 +70,7 @@ export class DifferentialDriveDynamics extends TimingConstraint
     getMinMaxAcceleration(tsamp, velocity)
     {
         let mm = this.drive.getMinMaxAcceleration(
-                    new DifferentialDrive.ChassisState(
+                    new ChassisState(
                         Units.inchesToMeters(velocity), 
                         tsamp.curvature * velocity /*inverse seconds*/),
                     Units.inchesToMeters(tsamp.curvature), 
