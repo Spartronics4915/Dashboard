@@ -323,6 +323,11 @@ footer
     pointer-events: none;
 }
 
+.yespointer
+{
+    pointer-events: all;
+}
+
 .xtrapad
 {
     padding-top:10px;

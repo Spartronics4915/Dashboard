@@ -33,6 +33,46 @@ export class Path
         this.constants = Constants.getInstance(); // robotid is optional
     }
 
+    intersect(mode, x, y)
+    {
+        switch(mode)
+        {
+        case "waypoints":
+            for(let p of this.waypoints)
+            {
+                if(p.intersect(x, y)) 
+                    return p;
+            }
+            break;
+        case "spline":
+            for(let p of this.getSplineSamples())
+            {
+                if(p.intersect(x, y)) 
+                    return p;
+            }
+            break;
+        case "optspline":
+            for(let p of this.getOptimizedSplineSamples())
+            {
+                if(p.intersect(x, y)) 
+                    return p;
+            }
+            break;
+        case "splineCtls":
+            app.warning("splineCtls.intersection not implemented");
+            break;
+        case "optsplineCtls":
+            app.warning("optsplineCtls.intersection not implemented");
+            break;
+        case "trajectory":
+            return this.getTrajectory().intersect(x,y);
+        default:
+            app.warning("Path.draw unknown mode " + mode);
+            break;
+        }
+        return null;
+    }
+
     draw(ctx, mode, color)
     {
         switch(mode)
@@ -120,7 +160,7 @@ export class Path
             let drive = new DifferentialDrive(this.constants, leftTrans, rightTrans);
             timing.push(new CentripetalMax(this.constants.paths.MaxCentripetalAccel));
             timing.push(new DifferentialDriveDynamics(drive, 
-                                            this.constants.paths.kMaxVoltage));
+                                            this.constants.paths.MaxVoltage));
             this.trajectory = Trajectory.generate(osamps,
                                     timing,  // timing constraints tbd
                                     this.config.maxDX, 
@@ -138,7 +178,7 @@ const field =
 {
     xsize:684,
     ysize:342,
-    xrange: [-342, 342],
+    xrange: [0, 684],
     yrange: [-171, 171],
 };
 
@@ -148,7 +188,7 @@ const landmarks =
         Pose2d.fromXYTheta(field.xrange[0]+24, field.yrange[0]+29, 0),
     centerLeftHalfUp:
         Pose2d.fromXYTheta(field.xrange[0]+171, field.yrange[0]+171, 90),
-    topLeftRocketHatch1: Pose2d.fromXYTheta(-125, 145, 28.75),
+    topLeftRocketHatch1: Pose2d.fromXYTheta(342-125, 145, 28.75),
 };
 
 export class PathsRepo
@@ -172,9 +212,6 @@ export class PathsRepo
 
     _createTests()
     {
-        const cx = -150;
-        const cy = 20;
-        const radius = 40;
         let waypoints = [
             landmarks.bottomLeftLoadingStation,
             landmarks.centerLeftHalfUp,

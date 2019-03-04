@@ -10,7 +10,7 @@ class CanvasWidget extends Widget
         this.canvId = this.config.id+"Canv"; // NB: others may refer to us (careful)
         this.canvasEl = null;
         if(!this.config.params.canvcls)
-            this.config.params.canvcls = "canvaswidget";
+            this.config.params.canvcls = "nopointer";
 
         let html = "";
         html += `<canvas id='${this.canvId}' class='${this.config.params.canvcls}'></canvas>`;
@@ -30,6 +30,7 @@ class CanvasWidget extends Widget
                         "canvas");
             }
         }
+        this.canvasEl.onmousemove = this._onMouseMove.bind(this);
 
         // TODO: for opencv of other img or video src, we need its element id
     }
@@ -84,6 +85,36 @@ class CanvasWidget extends Widget
         }
     }
 
+    _onMouseMove(evt)
+    {
+        if(this.config.params.overlay)
+        {
+            for(let item of this.config.params.overlay.items)
+            {
+                if(item.pointerevents)
+                {
+                    switch(item.class)
+                    {
+                    case "poselist":
+                        this._drawPoselist(item, evt);
+                        break;
+                    case "path":
+                        this._drawPath(item, evt);
+                        break;
+                    default:
+                        app.warning("canvas: unexpected item requested pointereverts");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    _evtToCanvasCoords(evt)
+    {
+        let r = this.canvasEl.getBoundingClientRect();
+        return [evt.clientX - r.left, evt.clientY - r.top];
+    }
     // _updateOverlay should be called on any nettab change whether
     //  overlays are enabled or not. This allows us to keep the
     //  correct values in place should a camera-switch occur that
@@ -332,6 +363,16 @@ class CanvasWidget extends Widget
         }
     }
 
+    _canvasToFieldCoords(coords)
+    {
+        // 0-cwidth -> 0->684
+        // 0->cheight =>  171->-171 (flipY)
+        let x = 684 * (coords[0] / this.canvasEl.width);
+        let y = 171 - 342 * (coords[1] / this.canvasEl.height);
+        app.putValue("Paths/Coords", `${x.toFixed(1)} ${y.toFixed(1)}`);
+        return [x, y];
+    }
+
     _drawFieldBegin()
     {
         // paths and poses
@@ -356,7 +397,7 @@ class CanvasWidget extends Widget
         this.canvasCtx.restore();
     }
 
-    _drawPoselist(item)
+    _drawPoselist(item, evt)
     {
         // A poselist is assumed to accumulate over the course of
         // a competition.  We rely on the app to store our list
@@ -368,8 +409,15 @@ class CanvasWidget extends Widget
         // FRC field is 684 x 342, we assume we have the
         // correct aspect ratio. We assume field poses have
         // an origin at the midpoint and y is up.
-        let ctx = this._drawFieldBegin();
         let poselists = app.getRobotState().getPoseLists();
+
+        if(evt != undefined)
+        {
+            // this is a mouse/hover event
+            return;
+        }
+
+        let ctx = this._drawFieldBegin();
         // assume: one stroke style
         if(item.strokeStyle)
             ctx.strokeStyle = item.strokeStyle;
@@ -409,7 +457,7 @@ class CanvasWidget extends Widget
         this._drawFieldEnd();
     }
 
-    _drawPath(item)
+    _drawPath(item, evt)
     {
         // modes:
         //      waypoints only (x,y,theta)
@@ -426,11 +474,24 @@ class CanvasWidget extends Widget
             let path = repo.getPath(item.value);
             if(path != null)
             {
-                let ctx = this._drawFieldBegin();
-                if(!item.config.mode)
-                    item.config.mode = "waypoints";
-                path.draw(ctx, item.config.mode, item.config.color);
-                this._drawFieldEnd();
+                if(evt != undefined)
+                {
+                    let coords = this._evtToCanvasCoords(evt);
+                    coords = this._canvasToFieldCoords(coords);
+                    let p = path.intersect(item.config.mode, coords[0], coords[1]);
+                    if(p)
+                        app.putValue("Paths/Details", p.asDetails());
+                    else
+                        app.putValue("Paths/Details", "n/a");
+                }
+                else
+                {
+                    let ctx = this._drawFieldBegin();
+                    if(!item.config.mode)
+                        item.config.mode = "waypoints";
+                    path.draw(ctx, item.config.mode, item.config.color);
+                    this._drawFieldEnd();
+                }
             }
             else
                 app.warning("missing path " + item.value);
@@ -543,8 +604,8 @@ class CanvasWidget extends Widget
 
     static placeCanvasOver(canvEl, targetEl)
     {
+        // control pointerevents by canvcls
         canvEl.style.position = "absolute";
-        canvEl.style.pointerEvents = "none";
         canvEl.style.left = targetEl.offsetLeft + "px";
         canvEl.style.top = targetEl.offsetTop + "px";
         canvEl.setAttribute("width", targetEl.offsetWidth);

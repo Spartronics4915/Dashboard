@@ -7,6 +7,12 @@ export function lerp(a, b, pct)
     return a + (b - a) * pct;
 }
 
+function sq(x) { return x*x; }
+function distSq(x0, x1, y0, y1)
+{
+    return sq(x1-x0) + sq(y1-y0);
+}
+
 export class Translation2d 
 {
     constructor(x, y) 
@@ -113,7 +119,7 @@ export class Translation2d
         return new Translation2d(this.x * s, this.y * s);
     }
 
-    distance(other) 
+    getDistance(other) 
     {
         return this.inverse().translateBy(other).length();
     }
@@ -254,7 +260,7 @@ export class Rotation2d
         }
     }
 
-    distance(other)  // dtheta in radians
+    getDistance(other)  // dtheta in radians
     {
         return this.inverse().rotateBy(other).getRadians();
     }
@@ -479,23 +485,30 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
             newpose.curvature = lerp(this.curvature, otherPose.curvature, x);
             newpose.dcurvature = lerp(this.dcurvature, otherPose.dcurvature, x);
         }
-        if(this.distance != undefined)
+        if(otherPose.distance != undefined)
         {
-            newpose.curvature = lerp(this.distance, otherPose.distance, x);
+            // distance is presumed to be the distance between points
+            newpose.distance = x * otherPose.distance;
         }
         return newpose;
     }
 
-    distance(other) 
+    getDistance(other) 
     {
         let twist = Pose2d.log(this.inverse().transformBy(other));
         return twist.length();
     }
 
-    heading(other) 
+    getHeading(other) 
     {
         return Math.atan2(this.translation.y - other.translation.y, 
                           this.translation.x - other.translation.x);
+    }
+
+    intersect(mx, my, radius)
+    {
+        let rsq = sq(radius || 2);
+        return distSq(mx, this.translation.x, my, this.translation.y) < rsq;
     }
 
     draw(ctx, color, radius) 
@@ -518,6 +531,28 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
                    y + len * this.rotation.sin);
         ctx.lineWidth = 2;
         ctx.stroke();
+    }
+
+    asInfo()
+    {
+        return `xy:(${this.translation.x.toFixed(1)} ${this.translation.y.toFixed(1)}) ` +
+               `heading:(${this.rotation.cos} ${this.rotation.sin} `;
+    }
+
+    asDetails()
+    {
+        let result = "";
+        if(this.t != undefined)
+            result += `time: ${this.t.toFixed(1)} `; 
+        if(this.velocity != undefined)
+            result += `speed: ${this.velocity.toFixed(2)} `; 
+        if(this.accel != undefined)
+            result += `accel: ${this.accel.toFixed(2)} `;
+        if(this.curvature != undefined)
+            result += `curvature: ${this.curvature.toFixed(4)} `;
+        if(this.distance != undefined)
+            result += `distance: ${this.distance.toFixed(1)} `;
+        return result;
     }
 
     toString() 

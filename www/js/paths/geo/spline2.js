@@ -26,7 +26,7 @@ export class Spline2
         const p1Xlate = p1.getTranslation();
         const p1Rotate = p1.getRotation();
         // produce a tangent vector proportional to the distance between poses
-        const scale = 1.2 * p0Xlate.distance(p1Xlate); 
+        const scale = 1.2 * p0Xlate.getDistance(p1Xlate); 
         return Spline2.fromControlPoints(
                     p0Xlate.x, p0Xlate.y,
                     p0Rotate.cos*scale, p0Rotate.sin*scale, // p0 tangent
@@ -167,7 +167,8 @@ export class Spline2
         }
         const c = this.evalCache;
         const lensq = c.dx*c.dx + c.dy*c.dy;
-        return (c.dx*c.ddy - c.ddx*c.dy) / (lensq*Math.sqrt(lensq));
+        let curvature = (c.dx*c.ddy - c.ddx*c.dy) / (lensq*Math.sqrt(lensq));
+        return curvature; // curvature may be infinite, this is okay (turn in place)
     }
 
     getDCurvature(t)

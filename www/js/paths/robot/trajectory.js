@@ -1,6 +1,3 @@
-import {Pose2d} from "../geo/pose2d.js";
-import {epsilonEquals} from "../geo/test.js";
-import {Spline2Array} from "../geo/spline2array.js";
 
 export class Trajectory
 {
@@ -16,6 +13,16 @@ export class Trajectory
 
     mirror()
     {
+    }
+
+    intersect(x,y)
+    {
+        for(let p of this.poseSamples)
+        {
+            if(p.intersect(x,y))
+                return p;
+        }
+        return null;
     }
 
     draw(ctx, mode, color)
@@ -44,12 +51,13 @@ export class Trajectory
         for(let i=1;i<samples.length;i++)
         {
             next = samples[i];
-            let dist = next.distance(last);
+            let dist = next.getDistance(last);
             totalDist += dist;
             if(dist >= stepSize)
             {
                 let pct = stepSize/dist;
                 let ipose = last.interpolate(next, pct);
+                ipose.distance = pct*dist; // should be stepSize;
                 result.push(ipose);
                 last = ipose;
             } 
@@ -61,6 +69,7 @@ export class Trajectory
                 result.push(next);
             }
         }
+        result.totalDist = totalDist;
 
         if(timingConstraints)
         {
@@ -92,7 +101,7 @@ export class Trajectory
         for(let i=1;i<samples.length;i++)
         {
             let s = samples[i];
-            const ds = s.distance(last);
+            const ds = s.getDistance(last);
             s.distance = ds + last.distance;
 
             // Enforce global maxvel and max reachable vel by global
@@ -104,7 +113,7 @@ export class Trajectory
                 // global acceleration limit. vf = sqrt(vi^2 + 2*a*d)
                 s.maxVel = Math.min(maxV, 
                             Math.sqrt(last.maxVel*last.maxVel + 
-                                      2*last.accelLimits.max * ds));
+                                      2*last.accelLimits[1] * ds));
                 s.accelLimits = [-maxAbsAccel, maxAbsAccel];
 
                 // At this point s is ready, but no constraints have been 
@@ -113,7 +122,7 @@ export class Trajectory
                 // lets first apply velocity constraints
                 for(let c of constraints)
                 {
-                    s.maxVel = Math.min(s.maxVel, c.getMaxVelocity(s));
+                    s.maxVel = Math.min(s.maxVel, c.getMaxVel(s));
                     if(s.maxVel < 0)
                     {
                         // shouldn't happen
@@ -124,7 +133,7 @@ export class Trajectory
                 // now enforce accel constraints
                 for(const c of constraints)
                 {
-                    let minmax = c.getMinMaxAcceleration(s, s.maxVel);
+                    let minmax = c.getMinMaxAccel(s, s.maxVel);
                     if(minmax[1] < minmax[0])
                         throw "trajectory bogus minmax accel 0";
                     // reverse could be applied here... (subtle)
@@ -167,7 +176,7 @@ export class Trajectory
         if(next.distance == undefined)
             throw "trajectory: bogus backward state";
         next.maxVel = vel1;
-        next.accelLimts = [-maxAbsAccel, maxAbsAccel];
+        next.accelLimits = [-maxAbsAccel, maxAbsAccel];
         for(let i=samples.length-2; i>=0; --i)
         {
             let s = samples[i]; // 
@@ -181,7 +190,7 @@ export class Trajectory
                 s.maxVel = newMaxVel;
                 for(const c of constraints)
                 {
-                    let minmax = c.getMinMaxAcceleration(s, s.maxVel);
+                    let minmax = c.getMinMaxAccel(s, s.maxVel);
                     if(minmax[1] < minmax[0])
                         throw "trajectory bogus minmax accel 2";
                     // xxx: reverse not implemented
@@ -213,8 +222,9 @@ export class Trajectory
         for(let i=0;i<samples.length;i++)
         {
             let samp = samples[i];
+            samp.t = t;
             const ds = samp.distance - s;
-            const accel = (s.maxVel * s.maxVel - v*v) / (2*ds);
+            const accel = (samp.maxVel*samp.maxVel - v*v) / (2*ds);
             let dt = 0;
             if(i>0) 
             {
@@ -232,6 +242,7 @@ export class Trajectory
             s = samp.distance;
             samp.velocity = v;
             samp.acceleration = accel;
+            delete samp.maxVel;
         }
     }
 }

@@ -182,11 +182,13 @@
             "icon":  "t-highway-divided ticon", "///": "was fas fa-road",
             "widgets": [
                 {
-                    "id": "pathplanning",
+                    "id": "Paths",
                     "label": "Path Planning",
                     "type": "systemstate",
                     "size": ["fill", "row"],
                     "ntkeys": [
+                        "Paths/Coords",
+                        "Paths/Details"
                     ]
                 },
                 {
@@ -205,6 +207,7 @@
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
                     "params": {
+                        "canvcls": "yespointer",
                         "overlay":
                         {
                             "enable": true,
@@ -227,7 +230,7 @@
                                 {
                                     "key": "Paths/current",
                                     "class": "path",
-                                    "enable": true,
+                                    "enable": false,
                                     "config": {
                                         "mode": "optspline",
                                         "color": "blue"
@@ -236,9 +239,19 @@
                                 {
                                     "key": "Paths/current",
                                     "class": "path",
-                                    "enable": true,
+                                    "enable": false,
                                     "config": {
                                         "mode": "optsplineCtls",
+                                        "color": "blue"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/current",
+                                    "class": "path",
+                                    "enable": true,
+                                    "pointerevents": true,
+                                    "config": {
+                                        "mode": "trajectory",
                                         "color": "orange"
                                     }
                                 }

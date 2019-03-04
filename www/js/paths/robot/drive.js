@@ -1,7 +1,11 @@
+//
+// this is a translation of Team254's 2018 version of DifferentialDrive.java
+//
 import {Units} from "../geo/units.js";
 import {DCMotorTransmission} from "./dcmotor.js";
 
-function epsilonEquals(a,b,eps=1e-9)
+const kEpsilon = 1e-9;
+function epsilonEquals(a,b,eps=kEpsilon)
 {
     return Math.abs(a-b) < eps;
 }
@@ -34,6 +38,11 @@ export class WheelState
         this.zero();
     }
 
+    get(left)
+    {
+        return left ? this.left : this.right;
+    }
+
     zero()
     {
         this.left = 0;
@@ -54,7 +63,6 @@ export class DriveDynamics
         this.wheelVolts = new WheelState("voltage");
         this.wheelTorque = new WheelState("torque");
     }
-
 }
 
 export class DifferentialDrive
@@ -134,7 +142,7 @@ export class DifferentialDrive
         dynamics.wheelVel = this.solveInverseKinematics(chassisVel);
         dynamics.chassisVel = chassisVel;
         dynamics.curvature = chassisVel.angular / chassisVel.linear;
-        if(!Number.isFinite(dynamics.curvature))
+        if(!Number.isNaN(dynamics.curvature))
             dynamics.curvature = 0;
         dynamics.wheelVolts = wheelVolts;
         this.solveFwd(dynamics);
@@ -148,7 +156,7 @@ export class DifferentialDrive
         dynamics.chassisVel = this.solveForwardKinematics(wheelVel);
         dynamics.curvature = dynamics.chassisVel.angular / 
                              dynamics.chassisVel.linear;
-        if(!Number.isFinite(dynamics.curvature))
+        if(!Number.isNaN(dynamics.curvature))
             dynamics.curvature = 0.0;
         dynamics.wheelVolts = wheelVolts;
         this.solveFwd(dynamics);
@@ -194,7 +202,7 @@ export class DifferentialDrive
             d.dcurvature = 
                 (d.chassisAccel.angular-d.chassisAccel.linear*dynamics.curvature) /
                     (d.chassisVel.linear * d.chassisVel.linear);
-            if(!Number.isFinite(d.dcurvature))
+            if(Number.isNaN(d.dcurvature))
                 d.dcurvature = 0.0;
     
             // Resolve chassis accelerations to each wheel.
@@ -212,13 +220,13 @@ export class DifferentialDrive
         let dynamics = new DriveDynamics();
         dynamics.chassisVel = chassisVel;
         dynamics.curvature = chassisVel.angular / chassisVel.linear;
-        if(!Number.isFinite(dynamics.curvature))
+        if(Number.isNaN(dynamics.curvature))
             dynamics.curvature = 0;
         dynamics.chassisAccel = chassisAccel;
         dynamics.dcurvature = chassisAccel.angular - 
                                 chassisAccel.linear*dynamics.curvature;
         dynamics.dcurvature /= (chassisVel.linear * chassisVel.linear);
-        if(!Number.isFinite(dynamics.dcurvature))
+        if(Number.isNaN(dynamics.dcurvature))
             dynamics.dcurvature = 0;
         dynamics.wheelVel = this.solveInverseKinematics(chassisVel);
         dynamics.wheelAccel = this.solveInverseKinematics(chassisAccel);
@@ -234,12 +242,12 @@ export class DifferentialDrive
         dynamics.chassisVel = this.solveForwardKinematics(wheelVel);
         dynamics.chassisAccel = this.solveForwardKinematics(wheelAccel);
         dynamics.curvature = dynamics.chassisVel.angular/dynamics.chassisVel.linear;
-        if(!Number.isFinite(dynamics.curvature))
+        if(Number.isNaN(dynamics.curvature))
             dynamics.curvature = 0;
         dynamics.dcurvature = dynamics.chassisAccel.angular - 
                         dynamics.chassisAccel.linear*dynamics.curvature;
         dynamics.dcurvature /= dynamics.chassisVel.linear*dynamics.chassisVel.linear;
-        if(!Number.isFinite(dynamics.dcurvature))
+        if(Number.isNaN(dynamics.dcurvature))
             dynamics.dcurvature = 0;
         this.solveInverse(dynamics);
         return dynamics;
@@ -263,6 +271,136 @@ export class DifferentialDrive
                                                         d.wheelTorque.left);
         d.voltage.right = this.rightTrans.getVoltsForTorque(d.wheelVel.right, 
                                                         d.wheelTorque.right);
+    }
+
+    // --------------------------------------------------------------------------
+    getMaxAbsVel(curvature, maxAbsVolts)
+    {
+        // Alternative implementation:
+        // (Tr - Tl) * r_wb / r_w = I * v^2 * dk
+        // (Tr + Tl) / r_w = 0
+        // T = Tr = -Tl
+        // 2T * r_wb / r_w = I*v^2*dk
+        // T = 2*I*v^2*dk*r_w/r_wb
+        // T = kt*(-vR/kv + V) = -kt*(-vL/vmax + V)
+        // Vr = v * (1 + k*r_wb)
+        // 0 = 2*I*dk*r_w/r_wb * v^2 + kt * ((1 + k*r_wb) * v / kv) - kt * V
+        // solve using quadratic formula?
+        // -b +/- sqrt(b^2 - 4*a*c) / (2a)
+
+        // k = w / v
+        // v = r_w*(wr + wl) / 2
+        // w = r_w*(wr - wl) / (2 * r_wb)
+        // Plug in max_abs_voltage for each wheel.
+        const leftSpeedAtMaxV = this.leftTrans.freeSpeedAtVolts(maxAbsVolts);
+        const rightSpeedAtMaxV = this.rightTrans.freeSpeedAtVolts(maxAbsVolts);
+        if (epsilonEquals(curvature, 0.0))
+        {
+            // drive straight
+            return this.wheelRadius*Math.min(leftSpeedAtMaxV, rightSpeedAtMaxV);
+        }
+        if (!Number.isFinite(curvature))
+        {
+            // Turn in place.  Return value meaning becomes angular velocity.
+            const wheelSpeed = Math.min(leftSpeedAtMaxV, rightSpeedAtMaxV);
+            return Math.sign(curvature) * this.wheelRadius * wheelSpeed / 
+                        this.effWheelbaseRad;
+        }
+
+        const rightSpeedIfLeftMax = leftSpeedAtMaxV * 
+            (this.effWheelbaseRad*curvature + 1.0) / (1.0 - this.effWheelbaseRad*curvature);
+        if (Math.abs(rightSpeedIfLeftMax) <= (rightSpeedAtMaxV + kEpsilon))
+        {
+            // Left max is active constraint.
+            return this.wheelRadius * (leftSpeedAtMaxV+rightSpeedIfLeftMax)/2.0;
+        }
+        const leftSpeedIfRightMax = leftSpeedAtMaxV * 
+            (1.0 - this.effWheelbaseRad*curvature) / (1.0 + this.effWheelbaseRad*curvature);
+        // Right at max is active constraint.
+        return this.wheelRadius * (rightSpeedAtMaxV+leftSpeedIfRightMax)/2.0;
+    }
+
+    // getMinMaxAccel is used by trajectory generator to constrain trajectories
+    //  within specified vel and accel limits according to curvature.
+    // Curvature is redundant here in the case that chassis_velocity is not 
+    // purely angular.  It is the responsibility of the caller to ensure that 
+    // curvature = angular vel / linear vel in these cases.
+    getMinMaxAccel(chassisVel, curvature, maxAbsVolts)
+    {
+        let minmax = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];
+        let wheelVel = this.solveInverseKinematics(chassisVel);
+
+        // Math:
+        // (Tl + Tr) / r_w = m*a
+        // (Tr - Tl) / r_w * r_wb - drag*w = i*(a * k + v^2 * dk)
+        // 2 equations, 2 unknowns.
+        // Solve for a and (Tl|Tr)
+        let linearTerm, angularTerm;
+        if(Number.isFinite(curvature))
+        {
+            linearTerm = this.mass * this.effWheelbaseRad;
+            angularTerm = this.moi * curvature;
+        }
+        else
+        {
+            // turning in place
+            linearTerm = 0;
+            angularTerm = this.moi;
+        }
+
+        const dragTorque = chassisVel.angular * this.angularDrag;
+
+        // Check all four cases and record the min and max valid accelerations.
+        for (let left of [false, true])
+        {
+            for (let sign of [1, -1])
+            {
+                const fixedTrans = left ? this.leftTrans : this.rightTrans;
+                const variableTrans = left ? this.rightTrans : this.leftTrans;
+                const fixedTorque = fixedTrans.getTorqueForVolts(wheelVel.get(left), 
+                                                            sign*maxAbsVolts);
+                let variableTorque;
+                // NOTE: variableTorque is wrong.  Units don't work out correctly.  
+                // We made a math error somewhere... Leaving this "as is" for 
+                // code release so as not to be disingenuous, but this whole 
+                // function needs revisiting in the future...
+                if (left)
+                {
+                    variableTorque =
+                        ((/*-moi_ * chassis_velocity.linear * chassis_velocity.linear * dcurvature*/ -dragTorque) * this.mass * this.wheelRadius,
+                        + fixedTorque * (linearTerm + angularTerm))
+                                    / (linearTerm - angularTerm);
+                }
+                else
+                {
+                    variableTorque =
+                            ((/* moi_ * chassis_velocity.linear * chassis_velocity.linear * dcurvature */ +dragTorque) * this.mass * this.wheelRadius,
+                                + fixedTorque * (linearTerm - angularTerm))
+                                    / (linearTerm + angularTerm);
+                }
+                const variableVolts = variableTrans.getVoltsForTorque(wheelVel.get(!left), 
+                                                                variableTorque);
+                if (Math.abs(variableVolts) <= (maxAbsVolts+kEpsilon))
+                {
+                    let accel = 0.0;
+                    if (!Number.isFinite(curvature))
+                    {
+                        // turn in place
+                        accel = (left ? -1.0 : 1.0) * 
+                            (fixedTorque - variableTorque) * this.effWheelbaseRad
+                                / (this.moi * this.wheelRadius) - dragTorque / this.moi /*- chassis_velocity.linear * chassis_velocity.linear * dcurvature*/;
+                    }
+                    else
+                    {
+                        accel = (fixedTorque + variableTorque) / 
+                                        (this.mass * this.wheelRadius);
+                    }
+                    minmax[0] = Math.min(minmax[0], accel);
+                    minmax[1] = Math.max(minmax[1], accel);
+                }
+            }
+        }
+        return minmax;
     }
 }
 

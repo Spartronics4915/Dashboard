@@ -20,12 +20,12 @@ export class TimingConstraint
 
     }
 
-    getMaxVelocity(trajectorySample) 
+    getMaxVel(trajectorySample) 
     { 
         return this.maxVelocity;
     }
 
-    getMinMaxAcceleration(trajectorySample, velocity)
+    getMinMaxAccel(trajectorySample, velocity)
     {
         return [this.minAccel, this.maxAccel];
     }
@@ -39,7 +39,7 @@ export class CentripetalMax extends TimingConstraint
         this.maxCAccel = maxCentripetalAccel;
     }
 
-    getMaxVelocity(tsamp) 
+    getMaxVel(tsamp) 
     { 
         return Math.sqrt(Math.abs(this.maxCAccel / tsamp.curvature));
     }
@@ -53,28 +53,28 @@ export class DifferentialDriveDynamics extends TimingConstraint
     {
         super();
         this.drive = drive;
-        this.maxV = maxvoltage;
+        this.maxVolts = maxvoltage;
     }
 
     // Curvature is in inverse inches, velocity measured in ips,
     // drive wants SI units.
-    getMaxVelocity(tsamp)
+    getMaxVel(tsamp)
     {
         return Units.metersToInches(
-            this.drive.getMaxAbsVelocity(
+            this.drive.getMaxAbsVel(
                 // Curvature is in inverse inches
                 Units.inchesToMeters(tsamp.curvature), 
-                this.maxV));
+                this.maxVolts));
     }
 
-    getMinMaxAcceleration(tsamp, velocity)
+    getMinMaxAccel(tsamp, velocity)
     {
-        let mm = this.drive.getMinMaxAcceleration(
+        let mm = this.drive.getMinMaxAccel(
                     new ChassisState(
                         Units.inchesToMeters(velocity), 
                         tsamp.curvature * velocity /*inverse seconds*/),
                     Units.inchesToMeters(tsamp.curvature), 
-                    this.maxV);
+                    this.maxVolts);
         return [Units.metersToInches(mm[0]), 
                 Units.metersToInches(mm[1])];
     }
