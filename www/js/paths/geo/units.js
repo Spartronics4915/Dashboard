@@ -25,9 +25,19 @@ export class Units
         return meters / 0.0254;
     }
 
+    static metersPerInch()
+    {
+        return Units.inchesToMeters(1.);
+    }
+
     static metersToFeet(meters)
     {
         return Units.metersToInches(meters) / 12.0;
+    }
+
+    static metersPerFoot()
+    {
+        return Units.feetToMeters(1);
     }
 
     static mmToInches(mm)
@@ -38,6 +48,11 @@ export class Units
     static inchesToMeters(inches)
     {
         return inches * 0.0254;
+    }
+
+    static inchesPerMeter()
+    {
+        return Units.metersPerInch(1);
     }
 
     static inchesToMM(inches)
