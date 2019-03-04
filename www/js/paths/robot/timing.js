@@ -62,8 +62,10 @@ export class DifferentialDriveDynamics extends TimingConstraint
     {
         return Units.metersToInches(
             this.drive.getMaxAbsVel(
-                // Curvature is in inverse inches
-                Units.inchesToMeters(tsamp.curvature), 
+                // Curvature is in inverse inches:
+                //   1/in * in/m -> 1/m
+                //   and in/m == metersToInches
+                Units.metersToInches(tsamp.curvature), 
                 this.maxVolts));
     }
 
@@ -73,7 +75,7 @@ export class DifferentialDriveDynamics extends TimingConstraint
                     new ChassisState(
                         Units.inchesToMeters(velocity), 
                         tsamp.curvature * velocity /*inverse seconds*/),
-                    Units.inchesToMeters(tsamp.curvature), 
+                    Units.metersToInches(tsamp.curvature), 
                     this.maxVolts);
         return [Units.metersToInches(mm[0]), 
                 Units.metersToInches(mm[1])];
