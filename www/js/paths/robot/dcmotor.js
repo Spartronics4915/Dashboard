@@ -9,53 +9,37 @@ export class DCMotorTransmission
         this.torquePerV = constants.Ka;
     }
 
-    freeSpeedAtVoltage(V)
+    freeSpeedAtVolts(V)
     {
         if(V > kEpsilon)
-        {
             return Math.max(0, (V - this.frictionV)*this.speedPerV);
-        }
         else
         if(V < -kEpsilon)
-        {
             return Math.min(0, (V + this.frictionV)*this.speedPerV);
-        }
         else
             return 0;
     }
 
-    getTorqueForVoltage(currentSpeed, V)
+    getTorqueForVolts(currentSpeed, V)
     {
         let effectiveV = V;
-        if(currentSpeed > kEpsilon)
-        {
-            // fwd motion, rolling friction
+        if(currentSpeed > kEpsilon) // fwd motion, rolling friction
             effectiveV -= this.frictionV;
-        }
         else
-        if(currentSpeed < -kEpsilon)
-        {
-            // rev motion, rolling friction
+        if(currentSpeed < -kEpsilon) // rev motion, rolling friction
             effectiveV += this.frictionV;
-        }
         else
-        if(V > kEpsilon)
-        {
-            // static, fwd torque
+        if(V > kEpsilon) // static, fwd torque
             effectiveV = Math.max(0.0, V - this.frictionV);
-        }
         else
-        if(V < -kEpsilon)
-        {
-            // static, rev torque
+        if(V < -kEpsilon) // static, rev torque
             effectiveV = Math.min(0.0, V + this.frictionV);
-        }
         else
             return 0; // Idle
         return this.torquePerV * (effectiveV - currentSpeed/this.speedPerV);
     }
 
-    getVoltageForTorque(currentSpeed, torque)
+    getVoltsForTorque(currentSpeed, torque)
     {
         let frictionV;
         if(currentSpeed > kEpsilon)
