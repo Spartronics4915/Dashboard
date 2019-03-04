@@ -344,7 +344,9 @@ class CanvasWidget extends Widget
         let sx = width/684;
         let sy = -height/342; // flip y
         ctx.save();
-        ctx.translate(width*.5, height*.5);
+        // origin x is "left"
+        // origin y is middle
+        ctx.translate(0, height*.5);
         ctx.scale(sx, sy);
         return ctx;
     }

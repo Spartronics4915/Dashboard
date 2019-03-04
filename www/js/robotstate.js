@@ -45,12 +45,26 @@ class RobotState
             let lastPose = this.activeList[this.activeList.length-1];
             let newpose = null;
             if(lastPose == undefined)
-                newpose = "-140 30 90";
+                newpose = "20 30 0";
             else
             {
-                let x = lastPose[0] + lastPose[3] * Math.random() * 4;
-                let y = lastPose[1] + lastPose[4] * Math.random() * 4;
-                let rads = lastPose[2] + Math.random() * .1; // 5ish degs
+                const xmin = 0, xmax = 684, ymin = -684/4, ymax = -ymin;
+                let x = lastPose[0] + lastPose[3] * Math.random() * 8;
+                let y = lastPose[1] + lastPose[4] * Math.random() * 8;
+                let rads;
+                if(x < xmin)
+                    rads = 0;
+                else
+                if(x > 684)
+                    rads = -Math.PI;
+                else
+                if(y < ymin)
+                    rads = Math.PI / 2;
+                else
+                if(y > ymax)
+                    rads = -Math.PI / 2;
+                else
+                    rads = lastPose[2] + (Math.random()-.5) * .1; 
                 let degs = Math.floor(180 * rads / Math.PI) % 360;
                 newpose = `${x.toFixed(1)} ${y.toFixed(1)} ${degs}`;
             }

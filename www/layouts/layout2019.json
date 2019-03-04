@@ -229,7 +229,7 @@
                                     "class": "path",
                                     "enable": true,
                                     "config": {
-                                        "mode": "trajectory",
+                                        "mode": "optspline",
                                         "color": "blue"
                                     }
                                 },
