@@ -115,6 +115,7 @@ export class App
                                                 true);
         NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
 
+        window.onbeforeunload = this.onBeforeUnload.bind(this);
 
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
@@ -122,6 +123,22 @@ export class App
             envname: this.config.layoutEnv,
             onLoad: this.onLayoutLoaded.bind(this)
         });
+    }
+
+    onBeforeUnload(evt)
+    {
+        app.info("before unload");
+        if(this.currentPage && this.pageHandlers[this.currentPage])
+            this.pageHandlers[this.currentPage].cleanup();
+        if (evt == undefined) 
+            evt = window.event;
+        if(false)
+        {
+            // return code can pop an alert
+            if (evt)
+                evt.returnValue = "before unloading...";
+            return "before unloading(2)...";
+        }
     }
 
     registerPageIdler(h, interval, clientdata)
