@@ -56,14 +56,21 @@ class VideoStreamWidget extends Widget
     {
         if(app.ntkeyCompare(this.config.ntkeys[0], key))
         {
+            let cleanup = true;    
             for(let camkey in this.streamStates)
             {
                 let ss = this.streamStates[camkey];
                 if(camkey == value)
+                {
+                    cleanup = false;
                     ss.activate();
+                }
                 else
                     ss.deactivate();
             }
+            // no camkey matches is the signal that it's time to cleanup
+            if(cleanup)
+                this.cleanup();
         }
     }
 

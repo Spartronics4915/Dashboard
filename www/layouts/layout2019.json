@@ -71,6 +71,7 @@
                                     "ntkey": "Driver/VideoStream",
                                     "//": "make sure these options are substrings of videochannel's streams array",
                                     "options": [
+                                        "_cleanup_",
                                         "Test",
                                         "Front",
                                         "Back"
