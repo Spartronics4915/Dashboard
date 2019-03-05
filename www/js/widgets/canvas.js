@@ -467,6 +467,13 @@ class CanvasWidget extends Widget
         //      time-constrained spline: 
         //          color-coding velocity
         //          color-coding curvature
+        let coords = null;
+        if(evt != undefined)
+        {
+            // has the side-effect of printing canvas coords
+            coords = this._evtToCanvasCoords(evt);
+            coords = this._canvasToFieldCoords(coords);
+        }
         if(!item.value) return;
         let repo = app.getPathsRepo();
         if(repo)
@@ -476,8 +483,6 @@ class CanvasWidget extends Widget
             {
                 if(evt != undefined)
                 {
-                    let coords = this._evtToCanvasCoords(evt);
-                    coords = this._canvasToFieldCoords(coords);
                     let p = path.intersect(item.config.mode, coords[0], coords[1]);
                     if(p)
                         app.putValue("Paths/Details", p.asDetails());
