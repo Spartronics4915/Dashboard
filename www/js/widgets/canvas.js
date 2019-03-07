@@ -177,7 +177,6 @@ class CanvasWidget extends Widget
                     break;
                 }
             }
-            console.log(item.class);
             switch(item.class)
             {
             case "poselist":
@@ -217,10 +216,10 @@ class CanvasWidget extends Widget
                 this.canvasCtx.stroke();
                 this.canvasCtx.beginPath();
                 this.canvasCtx.strokeStyle = item.color2;
-                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 - 3, 0);
-                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 - 3, this.canvasCtx.canvas.height);
-                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 + 3, 0);
-                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 + 3, this.canvasCtx.canvas.height);
+                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 - item.lineWidth, 0);
+                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 - item.lineWidth, this.canvasCtx.canvas.height);
+                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 + item.lineWidth, 0);
+                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 + item.lineWidth, this.canvasCtx.canvas.height);
                 this.canvasCtx.stroke();
                 this.canvasCtx.restore();
                 break;

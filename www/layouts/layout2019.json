@@ -178,7 +178,7 @@
                                     "enable": true,
                                     "color1": "rgba(255, 255, 0, 1)",
                                     "color2": "rgba(0, 0, 0, 1)",
-                                    "lineWidth": 3,
+                                    "lineWidth": 2,
                                     "value": ""
                                 }
                             ]
