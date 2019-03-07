@@ -9,9 +9,9 @@
         },
         "dana": {
             "envparam": "env=dana",
-            "visionbackcam": "192.168.0.9",
             "driverbackcam": "192.168.0.7",
-            "driverfrontcam": "192.168.0.8"
+            "driverfrontcam": "192.168.0.8",
+            "visionbackcam": "192.168.0.8"
         }
     },
     "pageTemplates": [
@@ -570,40 +570,28 @@
                         "selector": true,
                         "cameras":
                         {
-                            "PiCam default (.10)":
+                            "PiCam default":
                             {
                                 "ip": "${visionbackcam}:5080",
                                 "url": "/default.mjpg",
                                 "cls": "rotate0 size640"
                             },
-                            "PiCam hsv (.10)":
+                            "PiCam hsv":
                             {
                                 "ip": "${visionbackcam}:5080",
                                 "url": "/hsv.mjpg",
                                 "cls": "rotate0 size640"
                             },
-                            "PiCam bypass mjpg (.10)":
+                            "PiCam bypass mjpg":
                             {
                                 "ip": "${visionbackcam}:5080",
                                 "url": "/bypass.mjpg",
                                 "cls": "rotate0 size640"
                             },
-                            "PiCam default vision":
+                            "PiCam mask mjpg":
                             {
-                                "ip": "frcvision.local:5080",
-                                "url": "/default.mjpg",
-                                "cls": "rotate0 size640"
-                            },
-                            "PiCam mask":
-                            {
-                                "ip": "frcvision.local:5080",
+                                "ip": "${visionbackcam}:5080",
                                 "url": "/mask.mjpg",
-                                "cls": "rotate0 size640"
-                            },
-                            "PiCam bypass mjpg":
-                            {
-                                "ip": "frcvision.local:5080",
-                                "url": "/bypass.mjpg",
                                 "cls": "rotate0 size640"
                             }
                         }
