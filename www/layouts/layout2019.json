@@ -116,18 +116,18 @@
                                     "range": [0, 120],
                                     "bgColor": "rgba(45, 45, 110, .8)",
                                     "fgColors": [
-                                        [0, "rgba(255,0,0, .9)"],
-                                        [70, "rgba(255,0,0, .9)"],
-                                        [80, "rgba(255,255,0, .9)"],
-                                        [100, "rgba(100,255, 0, .9)"],
-                                        [120, "rgba(0, 255, 0, .9)"]
+                                        [0, "rgba(255,0,0, .5)"],
+                                        [70, "rgba(255,40,0, .5)"],
+                                        [80, "rgba(200,255,0, .7)"],
+                                        [100, "rgba(100,255, 0, .7)"],
+                                        [120, "rgba(0, 255, 0, .7)"]
                                                 ],
                                     "value": 95,
                                     "label": {
                                         "offset": [10, 30],
                                         "text": "Pressure {value}",
-                                        "font": "14px Verdana",
-                                        "fillStyle": "rgb(220, 220, 220)"
+                                        "font": "18px Verdana",
+                                        "fillStyle": "#ddd"
                                     }
                                 }
                             ]
@@ -158,7 +158,7 @@
                     {
                         "overlayId": "fieldmapOverlay",
                         "url": "/images/field2019.png",
-                        "cls": "nopointer"
+                        "cls": "nopointer size1x"
                     }
                 },
                 {
