@@ -61,48 +61,22 @@
                     ]
                 },
                 {
-                    "type": "cameras",
-                    "id": "drivercams",
-                    "size": [1340, 800],
-                    "ntkeys":
-                    [
-                        "Driver/Camera1"
-                    ],
+                    "type": "img",
+                    "id": "fieldmap",
+                    "size": ["fill", "fill"],
                     "params":
                     {
-                        "//": "selector:false -> no menu in this widget",
-                        "selector": false,
-                        "overlayId": "drivercamOverlay",
-                        "cameras":
-                        {
-                            "Test":
-                            {
-                                "protocol": "testpattern",
-                                "cls": "size720"
-                            },
-                            "Front":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverfrontcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0"
-                            },
-                            "Back":
-                            {
-                                "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "rotate0"
-                            },
-                            "//": "back is in other panel"
-                        }
+                        "overlayId": "fieldmapOverlay",
+                        "url": "/images/field2019.png",
+                        "cls": "nopointer size1x"
                     }
                 },
                 {
                     "type": "canvas",
-                    "id": "drivercamOverlay",
+                    "id": "fieldmapOverlay",
                     "size": [0, 0],
                     "params": {
+                        "canvcls": "yespointer",
                         "overlay":
                         {
                             "enable": true,
@@ -111,23 +85,26 @@
                             "items":
                             [
                                 {
+                                    "key": "RobotState/pose",
+                                    "class": "poselist",
+                                    "enable": true,
+                                    "fillStyle": {
+                                        "AUTONOMOUS": "rgb(200,150,0)",
+                                        "TELEOP": "rgb(0,100,250)",
+                                        "DISABLED":"rgb(10,10,140)",
+                                        "OFFLINE":"rgb(10,10,100)"
+                                    },
+                                    "strokeStyle": "rgb(255,0,0)"
+                                },
+                                {
                                     "key": "DriverStation/MatchTime",
                                     "class": "text",
                                     "subclass": "time",
                                     "enable": true,
-                                    "origin": [300, 30],
+                                    "origin": [30, 30],
                                     "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": ""
-                                },
-                                {
-                                    "key": "Driver/Camera1",
-                                    "class": "text",
-                                    "enable": true,
-                                    "origin": [10, 30],
-                                    "font": "30px Impact",
-                                    "fillStyle": "rgba(255, 255, 10, .85)",
-                                    "value": "<nocamera>"
                                 }
                             ]
                         }

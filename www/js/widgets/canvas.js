@@ -17,6 +17,7 @@ class CanvasWidget extends Widget
         this.targetElem.html(html);
         this.canvasEl = document.getElementById(this.canvId);
         this.canvasCtx = this.canvasEl.getContext("2d");
+        this.resizeListener = null;
 
         if(this.config.params.overlay && this.config.params.overlay.enable)
         {
@@ -35,8 +36,35 @@ class CanvasWidget extends Widget
         // TODO: for opencv of other img or video src, we need its element id
     }
 
+    cleanup()
+    {
+        if(this.resizeListener)
+        {
+            window.removeEventListener("resize", this.resizeListener);
+            this.resizeListener = null;
+        }
+        if(this.config.params.overlay)
+        {
+            for(let item of this.config.params.overlay.items)
+            {
+                // cleanup items ref to imdata
+                if(item.class == "opencv")
+                    item.imdata = null;
+            }
+        }
+    }
+
     placeOver(targetEl)
     {
+        if(this.underlayEl != targetEl)
+        {
+            this.resizeListener = function() {
+                app.info("on resize " + this.canvId);
+                CanvasWidget.placeCanvasOver(this.canvasEl, targetEl);
+                this._updateOverlay();
+            }.bind(this);
+            window.addEventListener("resize", this.resizeListener);
+        }
         CanvasWidget.placeCanvasOver(this.canvasEl, targetEl);
         this._updateOverlay();
     }
@@ -72,18 +100,6 @@ class CanvasWidget extends Widget
         this._updateOverlay(key, value, isNew);
     }
 
-    _cleanup()
-    {
-        if(this.config.params.overlay)
-        {
-            for(let item of this.config.params.overlay.items)
-            {
-                // cleanup items ref to imdata
-                if(item.class == "opencv")
-                    item.imdata = null;
-            }
-        }
-    }
 
     _onMouseMove(evt)
     {
