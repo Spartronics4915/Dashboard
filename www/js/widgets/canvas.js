@@ -132,10 +132,10 @@ class CanvasWidget extends Widget
         var h = this.canvasEl.getAttribute("height");
 
         // first we update the value of any/all items, that care
-        // about key. If one or more opencv items changes, we nominate 
+        // about key. If one or more opencv items changes, we nominate
         // one for the (expensive) computation. (Generally two opencv
         // items don't listen on the same key).
-        let opencvItem = null; 
+        let opencvItem = null;
         for(let item of this.config.params.overlay.items)
         {
             if(item.enable == undefined || item.enable)
@@ -177,6 +177,7 @@ class CanvasWidget extends Widget
                     break;
                 }
             }
+            console.log(item.class);
             switch(item.class)
             {
             case "poselist":
@@ -205,6 +206,23 @@ class CanvasWidget extends Widget
                                 item.origin[0], item.origin[1]);
                     this.canvasCtx.restore();
                 }
+                break;
+            case "crosshairs":
+                this.canvasCtx.save();
+                this.canvasCtx.strokeStyle = item.color1;
+                this.canvasCtx.lineWidth = item.lineWidth;
+                this.canvasCtx.beginPath();
+                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2, 0);
+                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2, this.canvasCtx.canvas.height);
+                this.canvasCtx.stroke();
+                this.canvasCtx.beginPath();
+                this.canvasCtx.strokeStyle = item.color2;
+                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 - 3, 0);
+                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 - 3, this.canvasCtx.canvas.height);
+                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 + 3, 0);
+                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 + 3, this.canvasCtx.canvas.height);
+                this.canvasCtx.stroke();
+                this.canvasCtx.restore();
                 break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
@@ -464,7 +482,7 @@ class CanvasWidget extends Widget
         //      full path as used by robot
         //      spline prior to curvature optimization
         //      spline after currvature optimization
-        //      time-constrained spline: 
+        //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
         if(!item.value) return;
