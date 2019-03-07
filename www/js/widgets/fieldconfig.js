@@ -22,26 +22,31 @@ class FieldConfig extends Widget
         // Auto Strategy (filled with our custom selector widget below)
         // html +=     "<span class='title'> Auto Strategy</span> ";
         html += `<div id='strategyWidget' ${gstyle([30, "row"])}></div> `;
+
+        let i = 0; // id convention assumed by _buildCamSelector
         if (this.config.params.camera1Selector)
         {
             let label = this.config.params.camera1Selector.label;
             if(label == undefined) label = "Camera";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector1' ${gstyle([20, "row"])}></div>`;
+            html += `<div id='cameraSelector{$i}' ${gstyle([20, "row"])}></div>`;
+            i++;
         }
         if (this.config.params.camera2Selector)
         {
             let label = this.config.params.camera2Selector.label;
             if(label == undefined) label = "Camera";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector2' ${gstyle([20, "row"])}></div>`;
+            html += `<div id='cameraSelector${i}' ${gstyle([20, "row"])}></div>`;
+            i++;
         }
         if (this.config.params.videoStream)
         {
             let label = this.config.params.videoStream.label;
             if(label == undefined) label = "Channel";
             // html +=     `<span class='title'>${label}</span> `;
-            html += `<div id='cameraSelector3' ${gstyle([20, "row"])}></div>`;
+            html += `<div id='cameraSelector${i}' ${gstyle([20, "row"])}></div>`;
+            i++;
         }
 
         html += "</div>";
@@ -71,6 +76,7 @@ class FieldConfig extends Widget
         this.strategyConfig.widget = new SelectorWidget(this.strategyConfig, el);
 
         this.camSelConfigs = [];
+        // cam selectors are optional
         this._buildCamSelector(this.config.params.camera1Selector);
         this._buildCamSelector(this.config.params.camera2Selector);
         this._buildCamSelector(this.config.params.videoStream, {
@@ -82,7 +88,7 @@ class FieldConfig extends Widget
     {
         if(sel)
         {
-            let id = this.camSelConfigs.length+1;
+            let id = this.camSelConfigs.length;
             let camSelConfig =
             {
                 id: "cameraSelector" + id,

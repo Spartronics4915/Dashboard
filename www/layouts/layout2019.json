@@ -44,27 +44,6 @@
                                 "/FMSInfo/MatchNumber"
                             ],
                             "params": {
-                                "camera1Selector":
-                                {
-                                    "label": "Camera1",
-                                    "ntkey": "Driver/Camera1",
-                                    "//": "make sure these options are supported by the camera",
-                                    "options": [
-                                        "Test",
-                                        "Front",
-                                        "Back"
-                                    ]
-                                },
-                                "camera2Selector":
-                                {
-                                    "label": "Camera2",
-                                    "ntkey": "Driver/Camera2",
-                                    "//": "make sure these options are supported by the camera",
-                                    "options": [
-                                        "Test",
-                                        "Back"
-                                    ]
-                                },
                                 "videoStream":
                                 {
                                     "label": "VideoStream",
