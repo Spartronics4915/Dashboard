@@ -76,7 +76,7 @@
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
                     "params": {
-                        "canvcls": "yespointer",
+                        "canvcls": "nopointer",
                         "overlay":
                         {
                             "enable": true,
@@ -101,10 +101,34 @@
                                     "class": "text",
                                     "subclass": "time",
                                     "enable": true,
-                                    "origin": [30, 30],
+                                    "origin": [30, 40],
                                     "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": ""
+                                },
+                                {
+                                    "key": "Robot/Pressure",
+                                    "class": "lineargauge",
+                                    "subclass": "horizontal",
+                                    "enable": true,
+                                    "origin": [180, 5],
+                                    "size": [150, 50],
+                                    "range": [0, 120],
+                                    "bgColor": "rgba(45, 45, 110, .8)",
+                                    "fgColors": [
+                                        [0, "rgba(255,0,0, .9)"],
+                                        [70, "rgba(255,0,0, .9)"],
+                                        [80, "rgba(255,255,0, .9)"],
+                                        [100, "rgba(100,255, 0, .9)"],
+                                        [120, "rgba(0, 255, 0, .9)"]
+                                                ],
+                                    "value": 95,
+                                    "label": {
+                                        "offset": [10, 30],
+                                        "text": "Pressure {value}",
+                                        "font": "14px Verdana",
+                                        "fillStyle": "rgb(220, 220, 220)"
+                                    }
                                 }
                             ]
                         }

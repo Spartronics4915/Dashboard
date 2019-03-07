@@ -47,9 +47,9 @@ class CanvasWidget extends Widget
         {
             for(let item of this.config.params.overlay.items)
             {
-                // cleanup items ref to imdata
-                if(item.class == "opencv")
-                    item.imdata = null;
+                // cleanup items ref to per-item-class dynamic data
+                if(item._data != undefined)
+                    item._data = null;
             }
         }
     }
@@ -251,6 +251,120 @@ class CanvasWidget extends Widget
                     this.canvasCtx.restore();
                 }
                 break;
+            case "lineargauge":
+                {
+                    let ctx = this.canvasCtx;
+                    ctx.save();
+                    // first draw background
+                    let x0 = item.origin[0]; 
+                    let y0 = item.origin[1];
+                    let xsz = item.size[0];
+                    let ysz = item.size[1];
+                    let x1, y1, crad = 5;
+                    if(xsz > ysz)
+                    {
+                        // horizontal
+                        x1 = x0 + xsz;
+                        y1 = y0;
+                    }
+                    else
+                    {
+                        x1 = 0;
+                        y1 = y0 + ysz;
+                    }
+                    ctx.fillStyle = item.bgColor;
+                    CanvasWidget.roundRect(ctx, x0, y0, 
+                                            item.size[0], item.size[1],
+                                            crad, true, true);
+                    if(item.fgColors)
+                    {
+                        let grad = ctx.createLinearGradient(x0, y0, x1, y1);
+                        for(let stop of item.fgColors)
+                        {
+                            let pct = (stop[0] - item.range[0]) / 
+                                    (item.range[1] - item.range[0]);
+                            grad.addColorStop(pct, stop[1]);
+                        }
+                        ctx.fillStyle = grad;
+                    }
+                    else
+                        ctx.fillStyle = item.fgColor;
+
+                    let valPct = (item.value - item.range[0]) / 
+                                (item.range[1] - item.range[0]);
+                    let ino = 3; 
+                    let insz = 2*ino;
+                    if(xsz > ysz)
+                    {
+                        CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
+                                            valPct*item.size[0]-insz, 
+                                            item.size[1]-insz,
+                                            crad, true, true);
+                    }
+                    else
+                    {
+                        CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
+                                            item.size[0]-insz, 
+                                            valPct*item.size[1]-insz,
+                                            crad, true, true);
+                    }
+                    if(item.label)
+                    {
+                        ctx.fillStyle = item.label.fillStyle;
+                        ctx.font = item.label.font;
+                        ctx.shadowColor =  "rgba(0,0,0,.8)";
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowOffsetY = 2;
+                        ctx.shadowBlur = 1;
+                        let txt = app.interpolate(item.label.text, {
+                                                    value: item.value
+                                                });
+                        ctx.fillText(txt, 
+                                x0 + item.label.offset[0], 
+                                y0 + item.label.offset[1]);
+                    }
+                    ctx.restore();
+                }
+                break;
+            case "radialgauge":
+                {
+                    let label = item.key;
+                    let ctx = this.canvasCtx;
+                    ctx.save();
+                    // we'll draw a half circle, so radius is ysize
+                    let radius = item.size[1] - .5 * item.width;
+                    let cx = item.origin[0] + item.size[0]/2;
+                    let cy = item.origin[1] + item.size[1];
+
+                    // first draw background
+                    ctx.lineCap = "round";
+                    ctx.lineWidth = item.width;
+                    ctx.strokeStyle = item.bgColor;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, -Math.PI, 0);
+                    ctx.stroke();
+
+                    // next fgd value
+                    ctx.lineCap = "butt";
+                    let pct = (item.value - item.range[0]) / 
+                                (item.range[1] - item.range[0]);
+                    ctx.lineWidth = .8*item.width;
+                    // radial gradient can be used to give 3d effect
+                    let gradient = ctx.createRadialGradient(
+                                        cx, cy, radius - item.width,
+                                        cx, cy, radius + item.width);
+                    gradient.addColorStop(0, item.bgColor);
+                    gradient.addColorStop(0.5, item.fgColor);
+                    gradient.addColorStop(1.0, item.bgColor);
+                    ctx.strokeStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, -Math.PI, -Math.PI+pct*Math.PI);
+                    ctx.stroke();
+
+                    // to-do: add label, color change is a little tricky
+                    ctx.restore();
+                }
+                break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
                 // for multiple circles, we currently require multiples-of-4
@@ -316,12 +430,12 @@ class CanvasWidget extends Widget
                 break;
             case "opencv":
                 {
-                    if(item.imdata)
+                    if(item._data)
                     {
                         this.canvasCtx.save();
                         this.canvasCtx.globalCompositeOperation = "destination-over";
-                        this.canvasCtx.putImageData(item.imdata, 0, 0);
-                        // this.overlayCtx.drawImage(item.imdata, 0, 0);
+                        this.canvasCtx.putImageData(item._data, 0, 0);
+                        // this.overlayCtx.drawImage(item._data, 0, 0);
                         this.canvasCtx.restore();
                     }
                 }
@@ -377,7 +491,7 @@ class CanvasWidget extends Widget
                     let output = new cv.Mat();
                     cv.blur(src, output, [10, 10], [-1, -1], 4);
                     cv.flip(output, output, -1);
-                    updateItem.imdata = this._getImgData(output, 128);
+                    updateItem._data = this._getImgData(output, 128);
                     output.delete();
                 }
                 break;
@@ -394,7 +508,7 @@ class CanvasWidget extends Widget
                     }
                     else
                         cv.Canny(src, output, cthresh, cthresh*2, 3, 0);
-                    updateItem.imdata = this._getImgData(output, 0, cc);
+                    updateItem._data = this._getImgData(output, 0, cc);
                     if(blurred)
                         blurred.delete();
                     output.delete();
@@ -552,43 +666,7 @@ class CanvasWidget extends Widget
     {
         if(!this.config.params.overlay || !this.config.params.overlay.enable)
             return;
-
-        if(!this.demoRadius)
-        {
-            this.demoRadius = 20;
-            this.deltaRadius = 2;
-        }
-        this.demoRadius += this.deltaRadius;
-        if(this.demoRadius > 250 || this.demoRadius < 10)
-            this.deltaRadius *= -1;
-        app.putValue("/SmartDashboard/Driver/CameraOverlay/Circle",
-                     `100,100,${this.demoRadius},4`);
-
-        if(!this.demoRect)
-        {
-            this.demoRect = [300, 250, 30, 50, 10, 2]; // x,y,w,h,r,linewidth
-            this.deltaRect = [5, 8, 2, .2];
-        }
-        // play with w, h
-        this.demoRect[2] += this.deltaRect[0];
-        if(this.demoRect[2] > 250 || this.demoRect[2] < 15)
-            this.deltaRect[0] *= -1;
-        this.demoRect[3] += this.deltaRect[1];
-        if(this.demoRect[3] > 250 || this.demoRect[3] < 30)
-            this.deltaRect[1] *= -1;
-
-        // play with radius
-        this.demoRect[4] += this.deltaRect[2];
-        if(this.demoRect[4] > 12 || this.demoRect[4] < 1)
-            this.deltaRect[2] *= -1;
-
-        // play with linewidth
-        this.demoRect[5] += this.deltaRect[3];
-        if(this.demoRect[5] > 12 || this.demoRect[5] < 1)
-            this.deltaRect[3] *= -1;
-
-        app.putValue("/SmartDashboard/Driver/CameraOverlay/Rect",
-                        this.demoRect.join(","));
+        // distribute random to each overlay item?
     }
 
     // convert from opencv to canvas img data
