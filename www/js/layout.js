@@ -43,7 +43,6 @@ class Layout
                                 this.config.envname);
             }
         }
-        let newText
         this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];
         for(let i=0;i<this.pageTemplates.length;i++)
