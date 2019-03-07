@@ -171,6 +171,15 @@
                                     "strokeStyle": "rgba(100, 0, 150, .85)",
                                     "//": "300,300,30,30,3,5",
                                     "value": ""
+                                },
+                                {
+                                    "key": "Driver/CameraOverlay/Crosshairs",
+                                    "class": "crosshairs",
+                                    "enable": true,
+                                    "color1": "rgba(255, 255, 0, 1)",
+                                    "color2": "rgba(0, 0, 0, 1)",
+                                    "lineWidth": 2,
+                                    "value": ""
                                 }
                             ]
                         }
@@ -196,7 +205,7 @@
                     "type": "img",
                     "id": "fieldmap",
                     "size": ["fill", "fill"],
-                    "params": 
+                    "params":
                     {
                         "overlayId": "fieldmapOverlay",
                         "url": "/images/field2019.png",
