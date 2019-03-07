@@ -99,10 +99,8 @@ class streamState
         this.overlayId = overlayId;
         this.camkey = camkey;
         this.elemId = targetId+index;
-        this.vidElemId = this.elemId + "Vid";
-        this.vidMsgElemId = this.elemId + "VidMsg";
         this.elem = null;
-        this.vidElem = null;
+        this.msgElemId = this.elemId + "Msg";
         this.handler = null;
         this.active = false;
         this.protocol = ss.protocol;
@@ -127,10 +125,10 @@ class streamState
                             `class='${this.cls}'></img>`;
                 break;
             case "ws": // webrtc
-                html = `<div id='${this.elemId}'>` +
-                        `<video muted id='${this.vidElemId}' ` +
+                html = `<div id='${this.elemId}Div'>` +
+                        `<video muted id='${this.elemId}' ` +
                            `class='${this.cls}'>video unsupported</video>`+
-                        "<div id='${this.elemId}VidMsg'></div>" +
+                        "<div id='${this.msgElemId}'></div>" +
                         "</div>";
                 break;
             case "testpattern":
@@ -152,7 +150,6 @@ class streamState
             }
             else
             {
-                this.vidElem = document.getElementById(this.vidElemId);
                 let url = `ws:${this.ip}${this.url}`;
                 this.handler = new WebRTCSignaling(url,
                                         this.vformat,
@@ -225,7 +222,7 @@ class streamState
             let oid = this.overlayId;
             let w = this.pageHandler.getWidgetById(oid);
             if(w)
-                w.placeOver(this.targetElem);
+                w.placeOver(this.elem);
             else
                 app.warning("can't find overlay widget: " + oid);
         }
@@ -234,10 +231,10 @@ class streamState
     _onStreamOpen(stream)
     {
         app.notice("video stream opened for " + this.camkey);
-        this.vidElem.srcObject = stream;
+        this.elem.srcObject = stream;
 
         // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
-        let playPromise = this.vidElem.play();
+        let playPromise = this.elem.play();
         if(playPromise != undefined)
         {
             playPromise.then(function() {
@@ -259,8 +256,8 @@ class streamState
     _onStreamClose()
     {
         app.notice("camera stream closed: " + this.camkey);
-        if(this.vidElem)
-            this.vidElem.srcObject = null;
+        if(this.elem)
+            this.elem.srcObject = null;
         this.elem = null;
         this.active = false;
         this.handler = null;
@@ -269,7 +266,7 @@ class streamState
     _onStreamError(msg)
     {
         app.error("camera stream error: " + msg + " for: " + this.camkey);
-        let vmsg = document.getElementById(this.elemId+"VidMsg");
+        let vmsg = document.getElementById(this.msgElemId);
         if(vmsg)
             vmsg.innerHTML = `<span class="WARNING">${msg}</span>`;
         if(this.handler)
@@ -277,13 +274,13 @@ class streamState
             this.handler.hangup(); // XXX: is this wise?
             this.handler = null;
         }
-        this.vidElem.srcObject = null;
+        this.elem.srcObject = null;
     }
 
     _onStreamMsg(msg)
     {
         app.warning("stream message:" + msg + " for:" + this.camkey);
-        let vmsg = document.getElementById(this.elemId+"VidMsg");
+        let vmsg = document.getElementById(this.msgElemId);
         if(vmsg)
             vmsg.innerHTML = `<span class="WARNING">${msg}</span>`;
     }
@@ -297,8 +294,7 @@ class streamState
             "/images/offair.jpg",
             "/images/colortest.jpg",
             "/images/testbeeld1956.jpg",
-            "/images/underattack.jpg",
-            "/images/404.jpg"
+            "/images/underattack.jpg"
         ];
         let i = Math.floor(Math.random() * testimgs.length);
         return testimgs[i];

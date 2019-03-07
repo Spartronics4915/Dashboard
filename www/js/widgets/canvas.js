@@ -207,21 +207,33 @@ class CanvasWidget extends Widget
                 }
                 break;
             case "crosshairs":
-                this.canvasCtx.save();
-                this.canvasCtx.strokeStyle = item.color1;
-                this.canvasCtx.lineWidth = item.lineWidth;
-                this.canvasCtx.beginPath();
-                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2, 0);
-                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2, this.canvasCtx.canvas.height);
-                this.canvasCtx.stroke();
-                this.canvasCtx.beginPath();
-                this.canvasCtx.strokeStyle = item.color2;
-                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 - item.lineWidth, 0);
-                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 - item.lineWidth, this.canvasCtx.canvas.height);
-                this.canvasCtx.moveTo(this.canvasCtx.canvas.width/2 + item.lineWidth, 0);
-                this.canvasCtx.lineTo(this.canvasCtx.canvas.width/2 + item.lineWidth, this.canvasCtx.canvas.height);
-                this.canvasCtx.stroke();
-                this.canvasCtx.restore();
+                {
+                    let centerX = w / 2;
+                    this.canvasCtx.save();
+                    this.canvasCtx.shadowColor = item.color2;
+                    this.canvasCtx.shadowOffsetX = 0;
+                    this.canvasCtx.shadowOffsetY = 0;
+                    this.canvasCtx.shadowBlur = 8;
+
+                    this.canvasCtx.strokeStyle = item.color1;
+                    this.canvasCtx.lineWidth = item.lineWidth;
+                    this.canvasCtx.beginPath();
+                    this.canvasCtx.moveTo(centerX, 0);
+                    this.canvasCtx.lineTo(centerX, h);
+                    this.canvasCtx.stroke();
+                    if(false)
+                    {
+                        // just use shadow
+                        this.canvasCtx.beginPath();
+                        this.canvasCtx.strokeStyle = item.color2;
+                        this.canvasCtx.moveTo(centerX - item.lineWidth, 0);
+                        this.canvasCtx.lineTo(centerX - item.lineWidth, h);
+                        this.canvasCtx.moveTo(centerX + item.lineWidth, 0);
+                        this.canvasCtx.lineTo(centerX + item.lineWidth, h);
+                        this.canvasCtx.stroke();
+                    }
+                    this.canvasCtx.restore();
+                }
                 break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
