@@ -59,7 +59,7 @@ class CanvasWidget extends Widget
         if(this.underlayEl != targetEl)
         {
             this.resizeListener = function() {
-                app.info("on resize " + this.canvId);
+                // app.info("on resize " + this.canvId);
                 CanvasWidget.placeCanvasOver(this.canvasEl, targetEl);
                 this._updateOverlay();
             }.bind(this);
