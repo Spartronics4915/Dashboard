@@ -1,4 +1,5 @@
 /* global Widget, app, cv */
+
 class CanvasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -32,6 +33,9 @@ class CanvasWidget extends Widget
             }
         }
         this.canvasEl.onmousemove = this._onMouseMove.bind(this);
+
+        this.visionRectsColors = ["Chartreuse", "DeepPink", "Cyan", "DarkOrange"];
+        this.visionIdxNames = ["Left", "Right"];
 
         // TODO: for opencv of other img or video src, we need its element id
     }
@@ -191,6 +195,13 @@ class CanvasWidget extends Widget
                 case "cameraname":
                     item.value = this.cameraName;
                     break;
+                case "selectedidx":
+                    let selectedIdx = app.getValue(item.key, -1);
+                    item.value = "Target selected: " +
+                        (selectedIdx >= this.visionIdxNames.length || selectedIdx < 0 ?
+                            "Invalid (" + selectedIdx + ")! Is vision running?" : this.visionIdxNames[selectedIdx]);
+
+                    break;
                 }
             }
             switch(item.class)
@@ -201,12 +212,56 @@ class CanvasWidget extends Widget
             case "path":
                 this._drawPath(item);
                 break;
-            case "time":
-                if(item.value == undefined || item.value == "" || !app.robotConnected)
-                    item.value = new Date().toLocaleTimeString();
-                // else we're presumably listening on a nettab value
-                // and will receive an update.
-                // fall through
+            case "visionrects":
+                let rawData = app.getValue(item.key, []);
+                if (!Array.isArray(rawData))
+                    app.error("visionrects key " + item.key + " must be an array. Is a " + typeof item.key);
+                else if ((rawData.length - 1) % 3 !== 0)
+                    app.error("visionrects rawData for key " + item.key + " is mis-sized.");
+
+                let numTargets = (rawData.length - 1) / 3;
+                if (numTargets > 3)
+                    app.warning("Suspect number of targets: " + numTargets + " found.");
+
+                let poseList = app.getRobotState().activeList;
+                if (poseList.length <= 0) break;
+
+                let robotPose = poseList[poseList.length - 1];
+                for (let i = 0, j = 0; i < numTargets; i++, j+= 3)
+                {
+                    let width = item.width || 24.0;
+                    let height = item.height || 32.0;
+
+                    let targetPose = new app.Pose2d(new app.Translation2d(robotPose[0], robotPose[1]), new app.Rotation2d(robotPose[3], robotPose[4]));
+                    targetPose = targetPose.transformBy(new app.Pose2d(
+                        new app.Translation2d(rawData[j], rawData[j + 1]),
+                        app.Rotation2d.fromDegrees(rawData[j + 2])
+                    ));
+                    targetPose = targetPose.transformBy(new app.Pose2d(
+                        new app.Translation2d(item.cameraOffset.x, item.cameraOffset.y),
+                        app.Rotation2d.fromDegrees(item.cameraOffset.theta)
+                    ));
+
+                    this.canvasCtx.save();
+
+                    this._drawFieldBegin();
+                    this.canvasCtx.translate(targetPose.getTranslation().x, targetPose.getTranslation().y);
+                    this.canvasCtx.rotate(targetPose.getRotation().getRadians());
+
+                    // Stroke style assumes we'll have no more than 4 vision rects at any time
+                    this.canvasCtx.strokeStyle = this.visionRectsColors[i];
+                    this.canvasCtx.fillStyle = item.fillStyle || "rgba(0, 0, 0, 0)";
+                    this.canvasCtx.lineWidth = item.lineWidth || "3px";
+                    CanvasWidget.roundRect(this.canvasCtx,
+                                        -width / 2, -height / 2, width, height, item.radius || 3);
+
+                    
+                    this.canvasCtx.translate(-targetPose.getTranslation().x, -targetPose.getTranslation().y);
+
+                    this.canvasCtx.restore();
+                }
+                
+                break;
             case "text":
                 // if(0)
                 {

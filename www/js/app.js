@@ -15,6 +15,7 @@
 **/
 
 import PathsRepo from "/js/paths/paths.js";
+import {Pose2d, Rotation2d, Translation2d} from "/js/paths/geo/pose2d.js";
 
 export class App
 {
@@ -47,6 +48,12 @@ export class App
         this.webapi = null;
         this.opencv = {};
         this.opencv.loaded = false; // accessed directly by opencv factory
+
+        // Jank-o-matic... We would need to convert everything to modules
+        // to do this correctly, and I have limited time.
+        this.Pose2d = Pose2d;
+        this.Translation2d = Translation2d;
+        this.Rotation2d = Rotation2d;
 
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
