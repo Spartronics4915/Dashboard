@@ -88,6 +88,7 @@
                                     "key": "Vision/Reverse/solvePNP",
                                     "class": "visionrects",
                                     "enable": true,
+                                    "targetStaleTime": 500,
                                     "cameraOffset": {
                                         "x": 0,
                                         "y": 0,

@@ -36,6 +36,7 @@ class CanvasWidget extends Widget
 
         this.visionRectsColors = ["Chartreuse", "DeepPink", "Cyan", "DarkOrange"];
         this.visionIdxNames = ["Left", "Right"];
+        this.lastVisionKeyUpdate = null;
 
         // TODO: for opencv of other img or video src, we need its element id
     }
@@ -102,6 +103,8 @@ class CanvasWidget extends Widget
     valueChanged(key, value, isNew)
     {
         this._updateOverlay(key, value, isNew);
+        if (key.startsWith("/SmartDashboard/Vision"))
+            this.lastVisionKeyUpdate = new Date();
     }
 
 
@@ -213,6 +216,9 @@ class CanvasWidget extends Widget
                 this._drawPath(item);
                 break;
             case "visionrects":
+                // Only one visionrects widget at a time is currently supported
+                if (this.lastVisionKeyUpdate === null || new Date() - this.lastVisionKeyUpdate > item.targetStaleTime) break;
+
                 let rawData = app.getValue(item.key, []);
                 if (!Array.isArray(rawData))
                     app.error("visionrects key " + item.key + " must be an array. Is a " + typeof item.key);
