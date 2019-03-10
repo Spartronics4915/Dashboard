@@ -193,20 +193,34 @@ class CanvasWidget extends Widget
                 break;
             case "text":
                 {
-                    var txt;
+                    let txt;
                     if(item.subclass != undefined)
                         txt = this._getItemText(item);
                     else
                         txt = item.value ? item.value : "<no value>";
-                    this.canvasCtx.save();
-                    this.canvasCtx.fillStyle = item.fillStyle;
-                    this.canvasCtx.font = item.font;
-                    this.canvasCtx.shadowColor =  "rgba(0,0,0,.8)";
-                    this.canvasCtx.shadowOffsetX = 3;
-                    this.canvasCtx.shadowOffsetY = 3;
-                    this.canvasCtx.shadowBlur = 3;
-                    this.canvasCtx.fillText(txt, item.origin[0], item.origin[1]);
-                    this.canvasCtx.restore();
+                    let ctx = this.canvasCtx;
+                    ctx.save();
+                    ctx.fillStyle = item.fillStyle;
+                    ctx.font = item.font;
+                    ctx.shadowColor =  "rgba(0,0,0,.8)";
+                    ctx.shadowOffsetX = 3;
+                    ctx.shadowOffsetY = 3;
+                    ctx.shadowBlur = 3;
+                    if(Array.isArray(txt)) // array of {txt:, fill:}
+                    {
+                        let x = item.origin[0];
+                        let y = item.origin[1];
+                        for(let el of txt)
+                        {
+                            if(el.fill)
+                                ctx.fillStyle = el.fill;
+                            ctx.fillText(el.txt, x, y);
+                            x += ctx.measureText(el.txt).width;
+                        }
+                    }
+                    else
+                        ctx.fillText(txt, item.origin[0], item.origin[1]);
+                    ctx.restore();
                 }
                 break;
             case "crosshairs":
@@ -432,34 +446,41 @@ class CanvasWidget extends Widget
 
     _getItemText(item)
     {
-        var txt;
+        let ret;
         switch(item.subclass)
         {
         case "time":
             if(item.value == undefined || item.value == "" || !app.robotConnected)
-                txt = new Date().toLocaleTimeString();
+                ret = new Date().toLocaleTimeString();
             else
             {
                 // else we're presumably listening on a nettab value
                 // and will receive an update.
-                txt = item.value;
+                ret = item.value;
             }
             break;
         case "cameraname":
+            ret = this.cameraName;
             item.value = this.cameraName;
             break;
-        case "selectedidx":
+        case "selection":
             {
+                ret = [];
+                if(item.prompt)
+                {
+                    ret.push({txt: item.prompt,
+                               fill: item.promptStyle});
+                }
                 let idx = item.value;
-                let l = item.idxRange[idx];
+                let l = item.range[idx];
                 if(l == undefined)
-                    txt = "selected vision target: none";
+                    ret.push({txt:"none"}); // no fill ?
                 else
-                    txt = "selected vision target: " + l;
+                    ret.push({txt:l, fill:item.styles[idx]});
             }
             break;
         }
-        return txt;
+        return ret;
     }
 
     _drawGauge(item)

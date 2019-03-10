@@ -120,12 +120,17 @@
                                     "enable": true,
                                     "key": "Vision/selectedIdx",
                                     "class": "text",
-                                    "subclass": "selectedidx",
+                                    "subclass": "selection",
                                     "origin": [400, 40],
                                     "font": "30px Impact",
-                                    "fillStyle": "cornflowerblue",
                                     "value": "",
-                                    "idxRange": ["Left", "Right"]
+                                    "prompt": "selected vision target: ",
+                                    "promptStyle": "cornflowerblue",
+                                    "range": ["Left", "Right"],
+                                    "styles": [
+                                        "Chartreuse",
+                                        "DeepPink"
+                                    ]
                                 },
                                 {
                                     "key": "DriverStation/MatchTime",
