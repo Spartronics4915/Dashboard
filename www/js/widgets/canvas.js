@@ -99,6 +99,8 @@ class CanvasWidget extends Widget
     valueChanged(key, value, isNew)
     {
         this._updateOverlay(key, value, isNew);
+        if (key.startsWith("/SmartDashboard/Vision"))
+            this.lastVisionKeyUpdate = new Date();
     }
 
     _onMouseMove(evt)
