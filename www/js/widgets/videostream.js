@@ -191,6 +191,7 @@ class streamState
             if(this.elem.nodeName == "IMG")
             {
                 this.elem.src = "";
+                this.elem.parentNode.removeChild(this.elem);
             }
             else
             {
@@ -306,6 +307,5 @@ class streamState
         return testimgs[i];
     }
 }
-
 
 Widget.AddWidgetClass("videostream", VideoStreamWidget);
