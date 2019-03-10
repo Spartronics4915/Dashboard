@@ -35,7 +35,7 @@ class VideoStreamWidget extends Widget
                                     index++, camkey, ss, this.pageHandler);
         }
         this.targetElem = targetElem;
-        html += "<div id='${this.baseId}' class='container'></div>";
+        html += `<div id='${this.baseId}' class='container'></div>`;
         this.targetElem.html(html);
         app.debug("videostream.js constructed");
     }
@@ -135,6 +135,7 @@ class streamState
                 html = `<img id='${this.elemId}' class='${this.cls}'/>`;
                 break;
             case "img":
+            default:
                 html = `<img id='${this.elemId}' src='${this.url}' class='${this.cls}'/>`;
                 break;
             }
@@ -174,6 +175,11 @@ class streamState
         {
             app.info(`deactivating ${this.camkey} ${this.elemId}`);
             this.elem.style.visibility = "hidden";
+            if(this.elem.nodeName == "IMG")
+            {
+                // no advantage to keeping the stream open for img/mjpg
+                this.cleanup();
+            }
         }
     }
 
