@@ -34,9 +34,6 @@ class CanvasWidget extends Widget
         }
         this.canvasEl.onmousemove = this._onMouseMove.bind(this);
 
-        this.visionRectsColors = ["Chartreuse", "DeepPink", "Cyan", "DarkOrange"];
-        this.visionIdxNames = ["Left", "Right"];
-
         // TODO: for opencv of other img or video src, we need its element id
     }
 
@@ -104,7 +101,6 @@ class CanvasWidget extends Widget
         this._updateOverlay(key, value, isNew);
     }
 
-
     _onMouseMove(evt)
     {
         if(this.config.params.overlay)
@@ -135,6 +131,7 @@ class CanvasWidget extends Widget
         let r = this.canvasEl.getBoundingClientRect();
         return [evt.clientX - r.left, evt.clientY - r.top];
     }
+
     // _updateOverlay should be called on any nettab change whether
     //  overlays are enabled or not. This allows us to keep the
     //  correct values in place should a camera-switch occur that
@@ -178,32 +175,12 @@ class CanvasWidget extends Widget
         // good to go
         app.debug("drawOverlay");
         this.canvasCtx.clearRect(0, 0, w, h);
-        // see also: https://www.google.com/search?q=spaceship+docking+hud
+
         for(let item of this.config.params.overlay.items)
         {
             if(!item.enable) continue;
-            if(item.subclass)
-            {
-                switch(item.subclass)
-                {
-                case "time":
-                    if(item.value == undefined || item.value == "" || !app.robotConnected)
-                        item.value = new Date().toLocaleTimeString();
-                    // else we're presumably listening on a nettab value
-                    // and will receive an update.
-                    break;
-                case "cameraname":
-                    item.value = this.cameraName;
-                    break;
-                case "selectedidx":
-                    let selectedIdx = app.getValue(item.key, -1);
-                    item.value = "Target selected: " +
-                        (selectedIdx >= this.visionIdxNames.length || selectedIdx < 0 ?
-                            "Invalid (" + selectedIdx + ")! Is vision running?" : this.visionIdxNames[selectedIdx]);
-
-                    break;
-                }
-            }
+            if(key && app.ntkeyCompare(key, item.key))
+                item.lastUpdate = new Date();
             switch(item.class)
             {
             case "poselist":
@@ -212,59 +189,13 @@ class CanvasWidget extends Widget
             case "path":
                 this._drawPath(item);
                 break;
-            case "visionrects":
-                let rawData = app.getValue(item.key, []);
-                if (!Array.isArray(rawData))
-                    app.error("visionrects key " + item.key + " must be an array. Is a " + typeof item.key);
-                else if ((rawData.length - 1) % 3 !== 0)
-                    app.error("visionrects rawData for key " + item.key + " is mis-sized.");
-
-                let numTargets = (rawData.length - 1) / 3;
-                if (numTargets > 3)
-                    app.warning("Suspect number of targets: " + numTargets + " found.");
-
-                let poseList = app.getRobotState().activeList;
-                if (poseList.length <= 0) break;
-
-                let robotPose = poseList[poseList.length - 1];
-                for (let i = 0, j = 0; i < numTargets; i++, j+= 3)
-                {
-                    let width = item.width || 24.0;
-                    let height = item.height || 32.0;
-
-                    let targetPose = new app.Pose2d(new app.Translation2d(robotPose[0], robotPose[1]), new app.Rotation2d(robotPose[3], robotPose[4]));
-                    targetPose = targetPose.transformBy(new app.Pose2d(
-                        new app.Translation2d(rawData[j], rawData[j + 1]),
-                        app.Rotation2d.fromDegrees(rawData[j + 2])
-                    ));
-                    targetPose = targetPose.transformBy(new app.Pose2d(
-                        new app.Translation2d(item.cameraOffset.x, item.cameraOffset.y),
-                        app.Rotation2d.fromDegrees(item.cameraOffset.theta)
-                    ));
-
-                    this.canvasCtx.save();
-
-                    this._drawFieldBegin();
-                    this.canvasCtx.translate(targetPose.getTranslation().x, targetPose.getTranslation().y);
-                    this.canvasCtx.rotate(targetPose.getRotation().getRadians());
-
-                    // Stroke style assumes we'll have no more than 4 vision rects at any time
-                    this.canvasCtx.strokeStyle = this.visionRectsColors[i];
-                    this.canvasCtx.fillStyle = item.fillStyle || "rgba(0, 0, 0, 0)";
-                    this.canvasCtx.lineWidth = item.lineWidth || "3px";
-                    CanvasWidget.roundRect(this.canvasCtx,
-                                        -width / 2, -height / 2, width, height, item.radius || 3);
-
-                    
-                    this.canvasCtx.translate(-targetPose.getTranslation().x, -targetPose.getTranslation().y);
-
-                    this.canvasCtx.restore();
-                }
-                
-                break;
             case "text":
-                // if(0)
                 {
+                    var txt;
+                    if(item.subclass != undefined)
+                        txt = this._getItemText(item);
+                    else
+                        txt = item.value ? item.value : "<no value>";
                     this.canvasCtx.save();
                     this.canvasCtx.fillStyle = item.fillStyle;
                     this.canvasCtx.font = item.font;
@@ -272,8 +203,7 @@ class CanvasWidget extends Widget
                     this.canvasCtx.shadowOffsetX = 3;
                     this.canvasCtx.shadowOffsetY = 3;
                     this.canvasCtx.shadowBlur = 3;
-                    this.canvasCtx.fillText(item.value ? item.value : "<no label>",
-                                item.origin[0], item.origin[1]);
+                    this.canvasCtx.fillText(txt, item.origin[0], item.origin[1]);
                     this.canvasCtx.restore();
                 }
                 break;
@@ -306,119 +236,8 @@ class CanvasWidget extends Widget
                     this.canvasCtx.restore();
                 }
                 break;
-            case "lineargauge":
-                {
-                    let ctx = this.canvasCtx;
-                    ctx.save();
-                    // first draw background
-                    let x0 = item.origin[0]; 
-                    let y0 = item.origin[1];
-                    let xsz = item.size[0];
-                    let ysz = item.size[1];
-                    let x1, y1, crad = 5;
-                    if(xsz > ysz)
-                    {
-                        // horizontal
-                        x1 = x0 + xsz;
-                        y1 = y0;
-                    }
-                    else
-                    {
-                        x1 = 0;
-                        y1 = y0 + ysz;
-                    }
-                    ctx.fillStyle = item.bgColor;
-                    CanvasWidget.roundRect(ctx, x0, y0, 
-                                            item.size[0], item.size[1],
-                                            crad, true, true);
-                    if(item.fgColors)
-                    {
-                        let grad = ctx.createLinearGradient(x0, y0, x1, y1);
-                        for(let stop of item.fgColors)
-                        {
-                            let pct = (stop[0] - item.range[0]) / 
-                                    (item.range[1] - item.range[0]);
-                            grad.addColorStop(pct, stop[1]);
-                        }
-                        ctx.fillStyle = grad;
-                    }
-                    else
-                        ctx.fillStyle = item.fgColor;
-
-                    let valPct = (item.value - item.range[0]) / 
-                                (item.range[1] - item.range[0]);
-                    let ino = 3; 
-                    let insz = 2*ino;
-                    if(xsz > ysz)
-                    {
-                        CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
-                                            valPct*item.size[0]-insz, 
-                                            item.size[1]-insz,
-                                            crad, true, true);
-                    }
-                    else
-                    {
-                        CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
-                                            item.size[0]-insz, 
-                                            valPct*item.size[1]-insz,
-                                            crad, true, true);
-                    }
-                    if(item.label)
-                    {
-                        ctx.fillStyle = item.label.fillStyle;
-                        ctx.font = item.label.font;
-                        ctx.shadowColor =  "rgba(0,0,0,.8)";
-                        ctx.shadowOffsetX = 2;
-                        ctx.shadowOffsetY = 2;
-                        ctx.shadowBlur = 1;
-                        let txt = app.interpolate(item.label.text, {
-                                                    value: item.value
-                                                });
-                        ctx.fillText(txt, 
-                                x0 + item.label.offset[0], 
-                                y0 + item.label.offset[1]);
-                    }
-                    ctx.restore();
-                }
-                break;
-            case "radialgauge":
-                {
-                    let label = item.key;
-                    let ctx = this.canvasCtx;
-                    ctx.save();
-                    // we'll draw a half circle, so radius is ysize
-                    let radius = item.size[1] - .5 * item.width;
-                    let cx = item.origin[0] + item.size[0]/2;
-                    let cy = item.origin[1] + item.size[1];
-
-                    // first draw background
-                    ctx.lineCap = "round";
-                    ctx.lineWidth = item.width;
-                    ctx.strokeStyle = item.bgColor;
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, radius, -Math.PI, 0);
-                    ctx.stroke();
-
-                    // next fgd value
-                    ctx.lineCap = "butt";
-                    let pct = (item.value - item.range[0]) / 
-                                (item.range[1] - item.range[0]);
-                    ctx.lineWidth = .8*item.width;
-                    // radial gradient can be used to give 3d effect
-                    let gradient = ctx.createRadialGradient(
-                                        cx, cy, radius - item.width,
-                                        cx, cy, radius + item.width);
-                    gradient.addColorStop(0, item.bgColor);
-                    gradient.addColorStop(0.5, item.fgColor);
-                    gradient.addColorStop(1.0, item.bgColor);
-                    ctx.strokeStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, radius, -Math.PI, -Math.PI+pct*Math.PI);
-                    ctx.stroke();
-
-                    // to-do: add label, color change is a little tricky
-                    ctx.restore();
-                }
+            case "gauge":
+                this._drawGauge(item);
                 break;
             case "circle":
                 // expect value string "x, y, r [, strokewidth]"
@@ -455,34 +274,56 @@ class CanvasWidget extends Widget
                 }
                 break;
             case "rect":
-                // expect value string "x0, y0, width, height, [cornerradius [, strokewidth]]"
+            case "rects":
                 // if(0)
                 {
-                    let vals = item.value.split(",");
-                    if(vals.length >= 4)
+                    // rects are derived from item according to subclass
+                    // a rect is expected to be an object with keys:
+                    //   org: [x,y], 
+                    //   size: [x,y], 
+                    //   rotate: undefined/radians
+                    //   radius: r/undefined
+                    //   linewidth: l/undefined
+                    //   stroke: style/undefined
+                    //   fill: style/undefined
+                    //   coordsys: "field", "canvas", undefined
+                    
+                    let rects = this._getRects(item);
+                    if(!rects) 
+                        break;
+                    let ctx = this.canvasCtx;
+                    for(let i=0;i<rects.length;i++)
                     {
-                        let stroke = false;
-                        let fill = false;
-                        this.overlayCtx.save();
-                        if(item.fillStyle)
+                        let r = rects[i];
+                        ctx.save();
+                        if(r.fill)
+                            ctx.fillStyle = r.fill;
+                        if(r.stroke)
+                            ctx.strokeStyle = r.stroke;
+                        if(r.linewidth)
+                            ctx.lineWidth = r.linewidth;
+                        if(r.coordsys && r.coordsys == "field")
+                            this._drawFieldBegin();
+                        if(r.rotation)
                         {
-                            this.overlayCtx.fillStyle = item.fillStyle;
-                            fill = true;
+                            ctx.translate(r.org[0], r.org[1]);
+                            ctx.rotate(r.rotation);
+                            CanvasWidget.roundRect(ctx,
+                                            -r.size[0]/2, -r.size[1]/2,
+                                            r.size[0], r.size[1], 
+                                            r.radius, r.stroke, r.fill);
                         }
-                        if(item.strokeStyle)
+                        else
                         {
-                            this.overlayCtx.strokeStyle = item.strokeStyle;
-                            stroke = true;
+                            CanvasWidget.roundRect(ctx,
+                                            r.org[0], r.org[1],
+                                            r.size[0], r.size[1], 
+                                            r.radius, r.stroke, r.fill);
                         }
-                        this.overlayCtx.lineWidth = (vals.length >= 6) ? vals[5]:3;
-                        CanvasWidget.roundRect(this.canvasCtx,
-                                            vals[0], vals[1], vals[2], vals[3],
-                                            (vals.length >= 5) ? vals[4] : 0, // radius
-                                            stroke, fill);
-                        this.canvasCtx.restore();
+                        ctx.restore();
                     }
+                    break;
                 }
-                break;
             case "opencv":
                 {
                     if(item._data)
@@ -587,6 +428,255 @@ class CanvasWidget extends Widget
         return [x, y];
     }
 
+    _getItemText(item)
+    {
+        var txt;
+        switch(item.subclass)
+        {
+        case "time":
+            if(item.value == undefined || item.value == "" || !app.robotConnected)
+                txt = new Date().toLocaleTimeString();
+            else
+            {
+                // else we're presumably listening on a nettab value
+                // and will receive an update.
+                txt = item.value;
+            }
+            break;
+        case "cameraname":
+            item.value = this.cameraName;
+            break;
+        case "selectedidx":
+            {
+                let idx = item.value;
+                let l = item.idxRange[idx];
+                if(l == undefined)
+                    txt = "selected vision target: none";
+                else
+                    txt = "selected vision target: " + l;
+            }
+            break;
+        }
+        return txt;
+    }
+
+    _drawGauge(item)
+    {
+        switch(item.subclass)
+        {
+        case "linear":
+            {
+                let ctx = this.canvasCtx;
+                ctx.save();
+                // first draw background
+                let x0 = item.origin[0]; 
+                let y0 = item.origin[1];
+                let xsz = item.size[0];
+                let ysz = item.size[1];
+                let x1, y1, crad = 5;
+                if(xsz > ysz) // horizontal
+                {
+                    x1 = x0 + xsz;
+                    y1 = y0;
+                }
+                else
+                {
+                    x1 = 0;
+                    y1 = y0 + ysz;
+                }
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 1;
+                ctx.fillStyle = item.bgColor;
+                CanvasWidget.roundRect(ctx, x0, y0, 
+                                        item.size[0], item.size[1],
+                                        crad, true, true);
+                if(item.fgColors)
+                {
+                    let grad = ctx.createLinearGradient(x0, y0, x1, y1);
+                    for(let stop of item.fgColors)
+                    {
+                        let pct = (stop[0] - item.range[0]) / 
+                                (item.range[1] - item.range[0]);
+                        grad.addColorStop(pct, stop[1]);
+                    }
+                    ctx.fillStyle = grad;
+                }
+                else
+                    ctx.fillStyle = item.fgColor;
+
+                let valPct = (item.value - item.range[0]) / 
+                            (item.range[1] - item.range[0]);
+                let ino = 3; 
+                let insz = 2*ino;
+                if(xsz > ysz)
+                {
+                    CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
+                                        valPct*item.size[0]-insz, 
+                                        item.size[1]-insz,
+                                        crad, true, true);
+                }
+                else
+                {
+                    CanvasWidget.roundRect(ctx, x0+ino, y0+ino, 
+                                        item.size[0]-insz, 
+                                        valPct*item.size[1]-insz,
+                                        crad, true, true);
+                }
+                if(item.label)
+                {
+                    ctx.fillStyle = item.label.fillStyle;
+                    ctx.font = item.label.font;
+                    ctx.shadowColor =  "rgba(0,0,0,.8)";
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    ctx.shadowBlur = 1;
+                    let txt = app.interpolate(item.label.text, {
+                                                value: item.value
+                                            });
+                    ctx.fillText(txt, 
+                            x0 + item.label.offset[0], 
+                            y0 + item.label.offset[1]);
+                }
+                ctx.restore();
+            }
+            break;
+        case "radial":
+            {
+                let ctx = this.canvasCtx;
+                ctx.save();
+                // we'll draw a half circle, so radius is ysize
+                let radius = item.size[1] - .5 * item.width;
+                let cx = item.origin[0] + item.size[0]/2;
+                let cy = item.origin[1] + item.size[1];
+
+                // first draw background
+                ctx.lineCap = "round";
+                ctx.lineWidth = item.width;
+                ctx.strokeStyle = item.bgColor;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, -Math.PI, 0);
+                ctx.stroke();
+
+                // next fgd value
+                ctx.lineCap = "butt";
+                let pct = (item.value - item.range[0]) / 
+                            (item.range[1] - item.range[0]);
+                ctx.lineWidth = .8*item.width;
+                // radial gradient can be used to give 3d effect
+                let gradient = ctx.createRadialGradient(
+                                    cx, cy, radius - item.width,
+                                    cx, cy, radius + item.width);
+                gradient.addColorStop(0, item.bgColor);
+                gradient.addColorStop(0.5, item.fgColor);
+                gradient.addColorStop(1.0, item.bgColor);
+                ctx.strokeStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, -Math.PI, -Math.PI+pct*Math.PI);
+                ctx.stroke();
+
+                // to-do: add label, color change is a little tricky
+                ctx.restore();
+            }
+            break;
+        }
+    }
+
+    // return an array of rect objects comprised of
+    //   org: [x,y], 
+    //   size: [x,y], 
+    //   radius: r/undefined
+    //   linewidth: l/undefined
+    //   stroke: style/undefined
+    //   fill: style/undefined
+    //   coordsys: "field", "canvas", undefined
+    _getRects(item)
+    {
+        if(!item.subclass)
+        {
+            // we expect a string with one or more rects separated by ';'
+            let rects = [];
+            let rarray = item.value.split(";");
+            for(let i=0;i<rarray.length;i++)
+            {
+                let fields = rarray[i].split(",");
+                if(fields.length >= 4)
+                {
+                    let r = {};
+                    r.org = [fields[0], fields[1]];
+                    r.size = [fields[1], fields[2]];
+                    r.radius = fields[3];
+                    r.linewidth = fields[4] ? fields[4] : item.lineWidth;
+                    r.stroke = fields[5] ? fields[5] : item.strokeStyle;
+                    r.fill = fields[6] ? fields[6] : item.fillStyle;
+                    r.coordsys = fields[7];
+                    rects.push(r);
+                }
+            }
+            return rects;
+        }
+        else
+        if(item.subclass == "pnp")
+        {
+            if(!item.lastUpdate || 
+               (item.lastUpdate+item.targetTimeout) < new Date())
+            {
+                // target is stale
+                return [];
+            }
+
+            let rects = [];
+            let value = app.getValue(item.key, []);
+            if (!Array.isArray(value))
+            {
+                app.error("pnp key " + item.key + 
+                    " must be an array. Is a " + typeof item.value);
+            }
+            else 
+            if((value.length-1) % 3 !== 0)
+            {
+                app.error("pnp value for key " + item.key + " is mis-sized.");
+            }
+            else
+            {
+                let numTargets = (value.length-1) / 3;
+                if (numTargets > 3)
+                    app.warning("Suspect number of targets: " + numTargets + " found.");
+                else
+                {
+                    let stateMgr = app.getRobotStateMgr();
+                    let lastState = stateMgr.getLatest(item.cameraOffset);
+                    if (lastState)
+                    {
+                        let size = [item.width||16.0, item.height||12.0];
+                        let radius = item.radius || 3;
+                        let lineWidth = item.lineWidth || 3;
+                        let stroke = item.strokeStyle;
+                        let fill = item.fillStyle || "rgba(20,20,20,.5)";
+                        for (let i=0,j=0; i<numTargets; i++,j+=3)
+                        {
+                            // Values are assumed relative offsets in
+                            //  x, y (inches) and theta (radians)
+                            let visState = stateMgr.relativeState(lastState,
+                                            value[j], value[j+1], value[j+2]);
+                            let r = {
+                                org: [visState[0], visState[1]],
+                                size: size,
+                                rotation: visState[2],
+                                radius: radius,
+                                linewidth: lineWidth,
+                                stroke : item.styles[i] || stroke,
+                                fill : fill,
+                                coordsys: "field"
+                            };
+                            rects.push(r);
+                        }
+                    }
+                }
+                return rects;
+            }
+        }
+    }
+
     _drawFieldBegin()
     {
         // paths and poses
@@ -623,7 +713,7 @@ class CanvasWidget extends Widget
         // FRC field is 684 x 342, we assume we have the
         // correct aspect ratio. We assume field poses have
         // an origin at the midpoint and y is up.
-        let poselists = app.getRobotState().getPoseLists();
+        let poselists = app.getRobotStateMgr().getPoseLists();
 
         if(evt != undefined)
         {
@@ -642,7 +732,7 @@ class CanvasWidget extends Widget
         ctx.shadowOffsetX = 3;
         ctx.shadowOffsetY = 3;
         ctx.shadowBlur = 3;
-        for(let key of app.getRobotState().getPoseListKeys())
+        for(let key of app.getRobotStateMgr().getPoseListKeys())
         {
             // assume: one fill style per game-phase
             if(item.fillStyle[key])

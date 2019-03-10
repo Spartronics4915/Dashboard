@@ -67,7 +67,7 @@ class WebRTCSignaling
         // var config = {"iceServers": [{"urls": ["stun:192.168.1.51:3478"]}]}; // worked in lan-only, not wlan(?)
         var config = {"iceServers": [{"urls": [
                 `stun:${this.ip}:3478`,
-                "stun:stun.l.google.com:19302"
+                // "stun:stun.l.google.com:19302"
             ]}]}; // works
         var options = {optional: []};
         this.iceCandidates = [];

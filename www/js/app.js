@@ -1,4 +1,4 @@
-/* global app NetworkTables RobotLog WebAPISubscriber $ Widget RobotState*/
+/* global app NetworkTables RobotLog WebAPISubscriber $ Widget */
 
 /* special url config syntax:
 *
@@ -15,7 +15,7 @@
 **/
 
 import PathsRepo from "/js/paths/paths.js";
-import {Pose2d, Rotation2d, Translation2d} from "/js/paths/geo/pose2d.js";
+import RobotStateMgr from "./RobotStateMgr.js";
 
 export class App
 {
@@ -44,16 +44,10 @@ export class App
         this.robotConnected = false;
         this.robotBatteryW = null;
         this.robotCurrentW = null;
-        this.robotState = null; 
+        this.robotStateMgr = null; 
         this.webapi = null;
         this.opencv = {};
         this.opencv.loaded = false; // accessed directly by opencv factory
-
-        // Jank-o-matic... We would need to convert everything to modules
-        // to do this correctly, and I have limited time.
-        this.Pose2d = Pose2d;
-        this.Translation2d = Translation2d;
-        this.Rotation2d = Rotation2d;
 
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
@@ -107,7 +101,7 @@ export class App
     {
         this.firstLoad = false;
         this.pathsRepo = new PathsRepo();
-        this.robotState = new RobotState();
+        this.robotStateMgr = new RobotStateMgr();
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
                                                 true);
@@ -183,7 +177,7 @@ export class App
                 // of robotConnection state
                 this.robotBatteryW.addRandomPt();
                 this.robotCurrentW.addRandomPt();
-                this.robotState.addRandomPose();
+                this.robotStateMgr.addRandomPose();
                 this.pageHandlers[this.currentPage].randomData();
             }
         }
@@ -462,9 +456,9 @@ export class App
         return this.robotAddr;
     }
 
-    getRobotState()
+    getRobotStateMgr()
     {
-        return this.robotState;
+        return this.robotStateMgr;
     }
 
     onRobotConnect(cnx)
@@ -635,7 +629,7 @@ export class App
                 this.robotCurrentW.valueChanged(key, value, isNew);
             break;
         case "/SmartDashboard/Robot/GamePhase":
-            this.robotState.changeGamePhase(value);
+            this.robotStateMgr.changeGamePhase(value);
             switch(value)
             {
             case "ROBOT INIT":
@@ -659,7 +653,7 @@ export class App
             }
             break;
         case "/SmartDashboard/RobotState/pose":
-            this.robotState.addPose(value);
+            this.robotStateMgr.addPose(value);
             break;
         }
 

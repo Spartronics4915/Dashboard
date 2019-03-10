@@ -1,5 +1,5 @@
 /* global app */
-class RobotState
+export class RobotStateMgr
 {
     constructor()
     {
@@ -65,12 +65,72 @@ class RobotState
                     rads = -Math.PI / 2;
                 else
                     rads = lastPose[2] + (Math.random()-.5) * .1; 
-                let degs = Math.floor(180 * rads / Math.PI) % 360;
+                let degs = Math.floor(this.radToDeg(rads)) % 360;
                 newpose = `${x.toFixed(1)} ${y.toFixed(1)} ${degs}`;
             }
             if(newpose)
                 app.putValue("RobotState/pose", newpose);
+
+            // trigger vision target too
+            if(!this.visionTarget)
+            {
+                this.visionTarget = {};
+                this.visionTarget.timeStamp = Date.now(); 
+            }
+            if(this.visionTarget.timeStamp + 500 < Date.now())
+            {
+                // produce a robot-relative target (reverse) around
+                // 48-72 inches away with a relative orientation of -15-15 deg
+                let targets = [48+24*Math.random(), 
+                          12*Math.random(),
+                          this.degToRad((Math.random()-.5)*30),
+                         ];
+                targets.push(targets[0], targets[1], targets[2]);
+                targets[4] *= -1;
+                targets.push(30); // latency
+                app.putValue("Vision/Reverse/solvePNP", targets);
+                this.visionTarget.timeStamp = Date.now(); 
+            }
         }
+    }
+
+    getLatest(offset)
+    {
+        if(this.activeList)
+        {
+            let laststate = this.activeList[this.activeList.length -1];
+            if(!offset)
+                return laststate;
+            let ostate = [];
+            ostate.push(laststate[0] + offset.x);
+            ostate.push(laststate[1] + offset.y);
+            ostate.push(laststate[2] + this.degToRad(offset.theta));
+            ostate.push(Math.cos(ostate[2]), Math.sin(ostate[2]));
+            return ostate;
+        }
+        else
+            return null;
+    }
+
+    degToRad(deg)
+    {
+        return Math.PI * deg / 180.;
+    }
+
+    radToDeg(rad)
+    {
+        return rad * 180. / Math.PI;
+    }
+
+    relativeState(state, dx, dy, dtheta/*radians*/)
+    {
+        let result = [];
+        let cos = state[3];
+        let sin = state[4];
+        result.push(state[0] + cos*dx);
+        result.push(state[1] + sin*dy);
+        result.push(state[2] + dtheta);
+        return result;
     }
 
     addPose(pstr)
@@ -84,13 +144,14 @@ class RobotState
             //  angle to radians.
             this._checkSize(this.activeList);
             let pose = pstr.split(" ").map(parseFloat);
-            pose[2] = pose[2] * Math.PI / 180.0;
+            pose[2] = this.degToRad(pose[2]);
             let lastpose = this.activeList[this.activeList.length-1];
             if(lastpose)
             {
                 // constrain poses to be sufficiently different
-                if(Math.abs(pose[0] - lastpose[0]) > 5 ||
-                   Math.abs(pose[1] - lastpose[1]) > 5 ||
+                //  3 inchs or 2 degrees
+                if(Math.abs(pose[0] - lastpose[0]) > 3 ||
+                   Math.abs(pose[1] - lastpose[1]) > 3 ||
                    Math.abs(pose[2] - lastpose[2]) > .04) /*around 2 degree*/
                 {
                     // append with sin and cos for drawing faster
@@ -122,4 +183,4 @@ class RobotState
     }
 }
 
-window.RobotState = RobotState;
+export default RobotStateMgr;

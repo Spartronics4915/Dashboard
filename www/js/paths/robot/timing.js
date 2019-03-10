@@ -60,13 +60,14 @@ export class DifferentialDriveDynamics extends TimingConstraint
     // drive wants SI units.
     getMaxVel(tsamp)
     {
-        return Units.metersToInches(
-            this.drive.getMaxAbsVel(
+        let maxVel = this.drive.getMaxAbsVel(
                 // Curvature is in inverse inches:
                 //   1/in * in/m -> 1/m
                 //   and in/m == metersToInches
                 Units.metersToInches(tsamp.curvature), 
-                this.maxVolts));
+                this.maxVolts);
+        let maxVelIPS = Units.metersToInches(maxVel);
+        return maxVelIPS;
     }
 
     getMinMaxAccel(tsamp, velocity)

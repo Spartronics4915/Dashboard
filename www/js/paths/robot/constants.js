@@ -16,7 +16,7 @@ export class Constants
         this.paths =
         {
             MaxVelocity: 240, // in/s (20 ft/s)
-            MaxAccel: 40, // in/s*s
+            MaxAccel: 120, // in/s*s
             MaxCentripetalAccel: 30,  // in/s*s (?)
             MaxVoltage: 9,  // V
         };

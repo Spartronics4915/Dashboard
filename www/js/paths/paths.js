@@ -9,28 +9,26 @@ import {DCMotorTransmission} from "./robot/dcmotor.js";
 import {DifferentialDrive} from "./robot/drive.js";
 import {DifferentialDriveDynamics} from "./robot/timing.js";
 
-const defaultPathConfig = 
-{
-    maxDX: kMaxDX,
-    startVelocity: 0, 
-    endVelocity: 0,
-    maxVelocity: 120, // 10 fps
-    maxAbsAccel: 3,  // fps/s
-};
-
-
 // an individual path, borne from waypoints
 export class Path
 {
     constructor(waypoints, name, config)
     {
         this.name = name;
+        this.constants = Constants.getInstance(); // robotid is optional
+        let defaultPathConfig = 
+        {
+            maxDX: kMaxDX, // from spline sampler
+            startVelocity: 0, 
+            endVelocity: 0,
+            maxVelocity: this.constants.paths.MaxVelocity,
+            maxAbsAccel: this.constants.paths.MaxAccel,
+        };
         this.config = Object.assign({}, defaultPathConfig, config);
         this.waypoints = waypoints;
         this.splines = null;
         this.osplines = null;
         this.trajectory = null;
-        this.constants = Constants.getInstance(); // robotid is optional
     }
 
     intersect(mode, x, y)

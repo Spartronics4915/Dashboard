@@ -85,29 +85,9 @@
                             "items":
                             [
                                 {
-                                    "key": "Vision/Reverse/solvePNP",
-                                    "class": "visionrects",
                                     "enable": true,
-                                    "cameraOffset": {
-                                        "x": 0,
-                                        "y": 0,
-                                        "theta": 180
-                                    }
-                                },
-                                {
-                                    "key": "Vision/selectedIdx",
-                                    "class": "text",
-                                    "subclass": "selectedidx",
-                                    "enable": true,
-                                    "origin": [400, 40],
-                                    "font": "30px Impact",
-                                    "fillStyle": "cornflowerblue",
-                                    "value": ""
-                                },
-                                {
                                     "key": "RobotState/pose",
                                     "class": "poselist",
-                                    "enable": true,
                                     "fillStyle": {
                                         "AUTONOMOUS": "rgb(200,150,0)",
                                         "TELEOP": "rgb(0,100,250)",
@@ -115,6 +95,37 @@
                                         "OFFLINE":"rgb(10,10,100)"
                                     },
                                     "strokeStyle": "rgb(255,0,0)"
+                                },
+                                {
+                                    "enable": true,
+                                    "key": "Vision/Reverse/solvePNP",
+                                    "class": "rects",
+                                    "subclass": "pnp",
+                                    "targetTimeout": 500, 
+                                    "cameraOffset": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "theta": 180
+                                    },
+                                    "width": 20,
+                                    "height": 20,
+                                    "styles": [
+                                         "Chartreuse", 
+                                         "DeepPink", 
+                                         "Cyan", 
+                                         "DarkOrange"
+                                    ]
+                                },
+                                {
+                                    "enable": true,
+                                    "key": "Vision/selectedIdx",
+                                    "class": "text",
+                                    "subclass": "selectedidx",
+                                    "origin": [400, 40],
+                                    "font": "30px Impact",
+                                    "fillStyle": "cornflowerblue",
+                                    "value": "",
+                                    "idxRange": ["Left", "Right"]
                                 },
                                 {
                                     "key": "DriverStation/MatchTime",
@@ -128,8 +139,8 @@
                                 },
                                 {
                                     "key": "Robot/Pressure",
-                                    "class": "lineargauge",
-                                    "subclass": "horizontal",
+                                    "class": "gauge",
+                                    "subclass": "linear",
                                     "enable": true,
                                     "origin": [220, 5],
                                     "size": [150, 50],
@@ -833,6 +844,13 @@
                             {
                                 "protocol": "testpattern",
                                 "cls": "size1280"
+                            },
+                            "TestM":
+                            {
+                                "protocol": "http",
+                                "ip": "${driverbackcam}:1181",
+                                "url": "/stream.mjpg",
+                                "cls": "size1x"
                             },
                             "Front":
                             {

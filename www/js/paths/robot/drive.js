@@ -100,8 +100,8 @@ export class DifferentialDrive
         // theoretical to compensate for skid steer.  Measure by turning 
         // the robot in place several times and figuring out what the 
         // equivalent wheelbase radius is.
-        this.effWheelbaseRad = .5 * constants.drive.WheelBase *
-                                        constants.drive.TrackScrubFactor;
+        this.effWheelbaseRad = .5 * constants.drive.TrackScrubFactor *
+                        Units.inchesToMeters(constants.drive.WheelBase);
         
         this.leftTrans = leftTransmission;
         this.rightTrans = rightTransmission;
