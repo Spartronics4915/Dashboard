@@ -1,4 +1,5 @@
 /* global app */
+import {Pose2d,Rotation2d,Translation2d} from "./paths/geo/pose2d.js";
 export class RobotStateMgr
 {
     constructor()
@@ -81,12 +82,18 @@ export class RobotStateMgr
             {
                 // produce a robot-relative target (reverse) around
                 // 48-72 inches away with a relative orientation of -15-15 deg
-                let targets = [48+24*Math.random(), 
+                let targets; 
+                if(true)
+                {
+                    targets = [48+24*Math.random(), 
                           12*Math.random(),
-                          this.degToRad((Math.random()-.5)*30),
+                          this.degToRad((Math.random()-.5)*0),
                          ];
-                targets.push(targets[0], targets[1], targets[2]);
-                targets[4] *= -1;
+                    targets.push(targets[0], targets[1], targets[2]);
+                    targets[4] *= -1;
+                }
+                else
+                    targets = [20, 0, 0];
                 targets.push(30); // latency
                 app.putValue("Vision/Reverse/solvePNP", targets);
                 this.visionTarget.timeStamp = Date.now(); 
@@ -101,12 +108,10 @@ export class RobotStateMgr
             let laststate = this.activeList[this.activeList.length -1];
             if(!offset)
                 return laststate;
-            let ostate = [];
-            ostate.push(laststate[0] + offset.x);
-            ostate.push(laststate[1] + offset.y);
-            ostate.push(laststate[2] + this.degToRad(offset.theta));
-            ostate.push(Math.cos(ostate[2]), Math.sin(ostate[2]));
-            return ostate;
+            let rpose = this.relativePose(laststate, offset.x, offset.y, 
+                                            this.degToRad(offset.theta));
+            rpose.push(Math.cos(rpose[2]), Math.sin(rpose[2]));
+            return rpose;
         }
         else
             return null;
@@ -122,15 +127,15 @@ export class RobotStateMgr
         return rad * 180. / Math.PI;
     }
 
-    relativeState(state, dx, dy, dtheta/*radians*/)
+    relativePose(robotPose, dx, dy, dtheta)
     {
-        let result = [];
-        let cos = state[3];
-        let sin = state[4];
-        result.push(state[0] + cos*dx);
-        result.push(state[1] + sin*dy);
-        result.push(state[2] + dtheta);
-        return result;
+        let targetPose = new Pose2d(new Translation2d(robotPose[0], robotPose[1]), 
+                                    new Rotation2d(robotPose[3], robotPose[4]));
+        targetPose = targetPose.transformBy(new Pose2d(
+            new Translation2d(dx, dy),
+            Rotation2d.fromRadians(dtheta)
+        ));
+        return targetPose.asArray();
     }
 
     addPose(pstr)

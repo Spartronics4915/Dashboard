@@ -555,6 +555,12 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         return result;
     }
 
+    asArray()
+    {
+        return [this.translation.x, this.translation.y, 
+                this.rotation.getRadians()];
+    }
+
     toString() 
     {
         return "new Pose2d(" +

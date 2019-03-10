@@ -175,11 +175,8 @@ class streamState
         {
             app.info(`deactivating ${this.camkey} ${this.elemId}`);
             this.elem.style.visibility = "hidden";
-            if(this.elem.nodeName == "IMG")
-            {
-                // no advantage to keeping the stream open for img/mjpg
-                this.cleanup();
-            }
+            if(this.elem.nodename == "IMG")
+                this.cleanup(); // no advantage to keeping img/mjpg stream open
         }
     }
 

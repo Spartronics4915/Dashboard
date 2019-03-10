@@ -658,7 +658,7 @@ class CanvasWidget extends Widget
                         {
                             // Values are assumed relative offsets in
                             //  x, y (inches) and theta (radians)
-                            let visState = stateMgr.relativeState(lastState,
+                            let visState = stateMgr.relativePose(lastState,
                                             value[j], value[j+1], value[j+2]);
                             let r = {
                                 org: [visState[0], visState[1]],
