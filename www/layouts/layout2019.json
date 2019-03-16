@@ -163,7 +163,8 @@
                                         "offset": [10, 30],
                                         "text": "Pressure {value}",
                                         "font": "18px Verdana",
-                                        "fillStyle": "#ddd"
+                                        "fillStyle": "#ddd",
+                                        "precision": 1
                                     }
                                 }
                             ]
@@ -859,14 +860,14 @@
                             },
                             "Front":
                             {
-                                "protocol": "ws",
+                                "protocol": "webrtc",
                                 "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "size1280"
                             },
                             "Back":
                             {
-                                "protocol": "ws",
+                                "protocol": "webrtc",
                                 "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "size1280"

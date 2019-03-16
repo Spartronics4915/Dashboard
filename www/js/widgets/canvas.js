@@ -553,8 +553,11 @@ class CanvasWidget extends Widget
                     ctx.shadowOffsetX = 2;
                     ctx.shadowOffsetY = 2;
                     ctx.shadowBlur = 1;
+                    let prec = item.label.precision;
+                    if(prec == undefined)
+                        prec = 1;
                     let txt = app.interpolate(item.label.text, {
-                                                value: item.value
+                                    value: Number(item.value).toFixed(prec)
                                             });
                     ctx.fillText(txt, 
                             x0 + item.label.offset[0], 

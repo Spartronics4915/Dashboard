@@ -1,4 +1,4 @@
-/* global SelectorWidget, Widget, $, app, WebRTCSignaling, CanvasUtils, cv */
+/* global WSAvcPlayer, Widget, $, app, WebRTCSignaling, */
 
 // VideoStream presentation of videostream (of various flavors) targeting
 //   the multi-stream in one widget case. If you only have a single stream
@@ -35,8 +35,8 @@ class VideoStreamWidget extends Widget
                                     index++, camkey, ss, this.pageHandler);
         }
         this.targetElem = targetElem;
-        html += `<div id='${this.baseId}' class='container'></div>`;
-        this.targetElem.html(html);
+        // html += `<div id='${this.baseId}' class='container'></div>`;
+        // this.targetElem.html(html);
         app.debug("videostream.js constructed");
     }
 
@@ -124,7 +124,18 @@ class streamState
                             `src='http://${this.ip}${this.url}' ` +
                             `class='${this.cls}'></img>`;
                 break;
-            case "ws": // webrtc
+            case "ws": // broadway
+                html = `<div id='${this.elemId}Div'>` +
+                        `<div id='${this.elemId}Ctls'>` +
+                          `<button id='${this.elemId}Play'>Play</button>` +
+                          `<button id='${this.elemId}Pause'>Pause</button>` +
+                          `<button id='${this.elemId}Stop'>Stop</button>` +
+                        "</div>" +
+                        `<canvas id='${this.elemId}' class='${this.cls}'></canvas>`+
+                        "<div id='${this.msgElemId}'></div>" +
+                       "</div>";
+                break;
+            case "webrtc":
                 html = `<div id='${this.elemId}Div'>` +
                         `<video muted id='${this.elemId}' ` +
                            `class='${this.cls}'>video unsupported</video>`+
@@ -151,14 +162,35 @@ class streamState
             }
             else
             {
-                let url = `ws:${this.ip}${this.url}`;
-                this.handler = new WebRTCSignaling(url,
+                switch(this.protocol)
+                {
+                case "ws":
+                    {
+                        let url = `ws://${this.ip}`;
+                        let b0 = document.getElementById(this.elemId+"Play");
+                        let b1 = document.getElementById(this.elemId+"Pause");
+                        let b2 = document.getElementById(this.elemId+"Stop");
+                        b0.addEventListener("click", this._onPlay.bind(this));
+                        b1.addEventListener("click", this._onPause.bind(this));
+                        b2.addEventListener("click", this._onStop.bind(this));
+                        this.handler = new WSAvcPlayer(this.elem, "webgl", 1, 35);
+                        this.handler.connect(url);
+                        this.active = true;
+                    }
+                    break;
+                case "webrtc":
+                    {
+                        let url = `ws:${this.ip}${this.url}`;
+                        this.handler = new WebRTCSignaling(url,
                                         this.vformat,
                                         this._onStreamOpen.bind(this),
                                         this._onStreamError.bind(this),
                                         this._onStreamClose.bind(this),
                                         this._onStreamMsg.bind(this)
                                         );
+                    }
+                    break;
+                }
             }
             app.info("creating " + this.camkey);
         }
@@ -194,14 +226,41 @@ class streamState
             {
                 if(this.handler)
                 {
-                    if(this.active)
-                        this.handler.hangup(); // takes a while
+                    switch(this.protocol)
+                    {
+                    case "webrtc":
+                        if(this.active)
+                            this.handler.hangup(); // takes a while
+                        break;
+                    case "ws":
+                        if(this.active)
+                            this.handler.disconnect();
+                        break;
+                    }
                     this.handler = null;
                 }
             }
             this.elem = null;
             this.active = false;
         }
+    }
+
+    _onPlay()
+    {
+        if(this.handler)
+             this.handler.playStream();
+    }
+
+    _onPause()
+    {
+        if(this.handler)
+             this.handler.stopStream();
+    }
+
+    _onStop()
+    {
+        if(this.handler)
+             this.handler.disconnect();
     }
 
     _onImageLoad()
