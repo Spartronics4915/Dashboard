@@ -129,6 +129,8 @@ export class RobotStateMgr
 
     relativePose(robotPose, dx, dy, dtheta)
     {
+        if(!robotPose)
+            robotPose = [0, 0, 1, 0];
         let targetPose = new Pose2d(new Translation2d(robotPose[0], robotPose[1]), 
                                     new Rotation2d(robotPose[3], robotPose[4]));
         targetPose = targetPose.transformBy(new Pose2d(
