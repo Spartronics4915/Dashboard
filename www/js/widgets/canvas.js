@@ -436,10 +436,10 @@ class CanvasWidget extends Widget
 
     _canvasToFieldCoords(coords)
     {
-        // 0-cwidth -> 0->684
-        // 0->cheight =>  171->-171 (flipY)
-        let x = 684 * (coords[0] / this.canvasEl.width);
-        let y = 171 - 342 * (coords[1] / this.canvasEl.height);
+        // 0-cwidth -> 0->648
+        // 0->cheight =>  162->-162 (flipY)
+        let x = 648 * (coords[0] / this.canvasEl.width);
+        let y = 162 - 324 * (coords[1] / this.canvasEl.height);
         app.putValue("Paths/Coords", `${x.toFixed(1)} ${y.toFixed(1)}`);
         return [x, y];
     }
