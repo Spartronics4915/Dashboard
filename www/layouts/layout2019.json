@@ -50,7 +50,6 @@
                                     "ntkey": "Driver/VideoStream",
                                     "//": "make sure these options are substrings of videochannel's streams array",
                                     "options": [
-                                        "_cleanup_",
                                         "Test",
                                         "Front",
                                         "Back"
@@ -860,12 +859,26 @@
                             },
                             "Front":
                             {
+                                "protocol": "ws",
+                                "ip": "${driverfrontcam}:8080",
+                                "cls": "size1280",
+                                "cmd": "raspivid -t 0 -b 2000000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+                            },
+                            "Back":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverbackcam}:8080",
+                                "cls": "size1280",
+                                "cmd": "raspivid -t 0 -b 2000000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+                            },
+                            "_Front_deprecated":
+                            {
                                 "protocol": "webrtc",
                                 "ip": "${driverfrontcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "size1280"
                             },
-                            "Back":
+                            "_Back_deprecated":
                             {
                                 "protocol": "webrtc",
                                 "ip": "${driverbackcam}:8080",
@@ -914,6 +927,17 @@
                                     "color2": "rgba(0, 0, 0, 1)",
                                     "lineWidth": 2,
                                     "value": "on"
+                                },
+                                {
+                                    "key": "Driver/VideoStreamOverlay/Msg",
+                                    "class": "text",
+                                    "enable": true,
+                                    "origin": [800, 30],
+                                    "font": "14px Verdana",
+                                    "fillStyle": "rgb(150, 120, 0)",
+                                    "shadowOffsetX": 1,
+                                    "shadowOffsetY": 1,
+                                    "value": ""
                                 }
                             ]
                         }

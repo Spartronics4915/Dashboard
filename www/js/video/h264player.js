@@ -1971,7 +1971,7 @@ var YUVCanvas = new Class({
     this.canvasCtx.putImageData(this.canvasBuffer, 0, 0);
     
     var date = new Date();
-    //console.log("WSAvcPlayer: Decode time: " + (date.getTime() - this.rcvtime) + " ms");
+    console.log("WSAvcPlayer: Decode time: " + (date.getTime() - this.rcvtime) + " ms");
   },
 
 });
@@ -4418,7 +4418,7 @@ var WSAvcPlayer = new Class({
     this.avc.decode(data);
   },
 
-  connect : function(url) {
+  connect : function(url, callback) {
 
     // Websocket initialization
     if (this.ws != undefined) {
@@ -4430,6 +4430,8 @@ var WSAvcPlayer = new Class({
 
     this.ws.onopen = () => {
       log("Connected to " + url);
+      if(callback)
+        callback("onopen", url);
     };
 
 
@@ -4476,12 +4478,15 @@ var WSAvcPlayer = new Class({
     this.ws.onclose = () => {
       running = false;
       log("WSAvcPlayer: Connection closed")
+      if(callback)
+        callback("onclose");
     };
 
   },
 
   initCanvas : function(width, height) {
-    var canvasFactory = this.canvastype == "webgl" || this.canvastype == "YUVWebGLCanvas"
+    var canvasFactory = this.canvastype == "webgl" || 
+                        this.canvastype == "YUVWebGLCanvas"
                         ? YUVWebGLCanvas
                         : YUVCanvas;
 
@@ -4511,8 +4516,10 @@ var WSAvcPlayer = new Class({
     this.ws.close();
   },
 
-  playStream : function() {
+  playStream : function(data) {
     var message = "REQUESTSTREAM ";
+    if(data)
+        message = message + data;
     this.ws.send(message);
     log("Sent " + message);
   },

@@ -131,11 +131,10 @@ export class App
         app.info("before unload");
         if(this.currentPage && this.pageHandlers[this.currentPage])
             this.pageHandlers[this.currentPage].cleanup();
-        if (evt == undefined) 
-            evt = window.event;
-        if(false)
+        if(false) // return code can pop an alert
         {
-            // return code can pop an alert
+            if (evt == undefined) 
+                evt = window.event;
             if (evt)
                 evt.returnValue = "before unloading...";
             return "before unloading(2)...";

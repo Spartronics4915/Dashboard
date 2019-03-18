@@ -17,6 +17,8 @@
 //    by robot or driverstation to select/switch the current stream.
 //
 
+const s_videoOverlayNTKey = "Driver/VideoStreamOverlay/Msg";
+
 class VideoStreamWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -100,7 +102,6 @@ class streamState
         this.camkey = camkey;
         this.elemId = targetId+index;
         this.elem = null;
-        this.msgElemId = this.elemId + "Msg";
         this.handler = null;
         this.active = false;
         this.protocol = ss.protocol;
@@ -126,20 +127,13 @@ class streamState
                 break;
             case "ws": // broadway
                 html = `<div id='${this.elemId}Div'>` +
-                        `<div id='${this.elemId}Ctls'>` +
-                          `<button id='${this.elemId}Play'>Play</button>` +
-                          `<button id='${this.elemId}Pause'>Pause</button>` +
-                          `<button id='${this.elemId}Stop'>Stop</button>` +
-                        "</div>" +
-                        `<canvas id='${this.elemId}' class='${this.cls}'></canvas>`+
-                        "<div id='${this.msgElemId}'></div>" +
-                       "</div>";
+                    `<canvas id='${this.elemId}' class='${this.cls}'></canvas>`+
+                "</div>";
                 break;
             case "webrtc":
                 html = `<div id='${this.elemId}Div'>` +
                         `<video muted id='${this.elemId}' ` +
                            `class='${this.cls}'>video unsupported</video>`+
-                        "<div id='${this.msgElemId}'></div>" +
                         "</div>";
                 break;
             case "testpattern":
@@ -167,15 +161,9 @@ class streamState
                 case "ws":
                     {
                         let url = `ws://${this.ip}`;
-                        let b0 = document.getElementById(this.elemId+"Play");
-                        let b1 = document.getElementById(this.elemId+"Pause");
-                        let b2 = document.getElementById(this.elemId+"Stop");
-                        b0.addEventListener("click", this._onPlay.bind(this));
-                        b1.addEventListener("click", this._onPause.bind(this));
-                        b2.addEventListener("click", this._onStop.bind(this));
                         this.handler = new WSAvcPlayer(this.elem, "webgl", 1, 35);
-                        this.handler.connect(url);
-                        this.active = true;
+                        this.handler.connect(url, this._onWSEvent.bind(this));
+                        this.handler.on("canvasReady", this._onWSCanvasReady.bind(this));
                     }
                     break;
                 case "webrtc":
@@ -194,10 +182,29 @@ class streamState
             }
             app.info("creating " + this.camkey);
         }
+        else
+        if(!this.active)
+        {
+            switch(this.protocol)
+            {
+            case "ws":
+                {
+                    let url = `ws://${this.ip}`;
+                    this.handler.connect(url, this._onWSEvent.bind(this));
+                }
+                break;
+            case "webrtc":
+                break;
+            default:
+                break;
+            }
+        }
         if(this.protocol == "testpattern")
             this.elem.src = this._getRandomImg();
         this.activations++;
-        app.info(`activating ${this.camkey} ${this.elemId}`);
+        let str = `${this.camkey} active `;
+        app.info(str + this.elemId);
+        app.putValue(s_videoOverlayNTKey, str);
         this.elem.style.visibility = "visible";
     }
 
@@ -228,13 +235,18 @@ class streamState
                 {
                     switch(this.protocol)
                     {
+                    case "canvasReady":
+                        break;
                     case "webrtc":
                         if(this.active)
                             this.handler.hangup(); // takes a while
                         break;
                     case "ws":
                         if(this.active)
+                        {
+                            app.info("videostream/ws disconnecting");
                             this.handler.disconnect();
+                        }
                         break;
                     }
                     this.handler = null;
@@ -245,23 +257,39 @@ class streamState
         }
     }
 
-    _onPlay()
+    _onWSCanvasReady(w, h)
     {
-        if(this.handler)
-             this.handler.playStream();
+        let str = `ws canvasready ${w} ${h}`;
+        app.putValue(s_videoOverlayNTKey, str);
     }
 
-    _onPause()
+    _onWSEvent(evt)
     {
-        if(this.handler)
-             this.handler.stopStream();
+        switch(evt)
+        {
+        case "onopen":
+            {
+                let str = "videostream/ws open " + this.ip;
+                app.info(str);
+                app.putValue(s_videoOverlayNTKey, str);
+                this.active = true;
+                this.handler.playStream(this.cmd);
+            }
+            break;
+        case "onclose":
+            {
+                let str = "videostream/ws closed " + this.ip;
+                app.info(str);
+                app.putValue(s_videoOverlayNTKey, str);
+                this.active = false;
+            }
+            break;
+        default:
+            app.warning("unexpected ws event" + evt);
+            break;
+        }
     }
 
-    _onStop()
-    {
-        if(this.handler)
-             this.handler.disconnect();
-    }
 
     _onImageLoad()
     {

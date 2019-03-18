@@ -242,6 +242,12 @@ nav .fas.primary
     width: 35px;
 }
 
+.videomsg
+{
+    color: rgb(136, 128, 24);
+    text-align: right;
+}
+
 #navtitle
 {
     font-size: 18px;

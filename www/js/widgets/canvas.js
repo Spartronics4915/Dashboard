@@ -202,10 +202,19 @@ class CanvasWidget extends Widget
                     ctx.save();
                     ctx.fillStyle = item.fillStyle;
                     ctx.font = item.font;
-                    ctx.shadowColor =  "rgba(0,0,0,.8)";
-                    ctx.shadowOffsetX = 3;
-                    ctx.shadowOffsetY = 3;
-                    ctx.shadowBlur = 3;
+                    if(item.shadowColor == undefined)
+                        item.shadowColor =  "rgba(0,0,0,.8)";
+                    if(item.shadowBlur == undefined)
+                        item.shadowBlur = 3;
+                    if(item.shadowOffsetX == undefined)
+                        item.shadowOffsetX = 3;
+                    if(item.shadowOffsetY == undefined)
+                        item.shadowOffsetY = 3;
+                    ctx.shadowColor =  item.shadowColor;
+                    ctx.shadowBlur = item.shadowBlur;
+                    ctx.shadowOffsetX = item.shadowOffsetX;
+                    ctx.shadowOffsetY = item.shadowOffsetY;
+
                     if(Array.isArray(txt)) // array of {txt:, fill:}
                     {
                         let x = item.origin[0];
