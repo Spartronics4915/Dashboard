@@ -1,6 +1,6 @@
 /* global Widget, app, cv */
 
-const _fieldSize = [12*54, 12*27]; // 648 x 324
+const s_fieldSize = [12*54, 12*27]; // 648 x 324
 
 class CanvasWidget extends Widget
 {
@@ -439,24 +439,22 @@ class CanvasWidget extends Widget
 
     _canvasToFieldCoords(ccoords)
     {
-        // 0-cwidth -> 0->648
-        // 0->cheight => 162->-162 (flipY)
-        // fx = 648 * cx/w
-        // fy = 162 - 324 * cy/h
-        // cx = fx * w/648
-        // cy = (fy-162)*h/-324
-        let fx = _fieldSize[0] * (ccoords[0] / this.canvasEl.width);
-        let fy = _fieldSize[1]*.5 - 
-                 _fieldSize[1] * (ccoords[1] / this.canvasEl.height);
+        // fx = fW * cx/w
+        // fy = fH/2 - fH * cy/h
+        // cx = fx * w/fW
+        // cy = (fy-fH/2)*h/-fH
+        let fx = s_fieldSize[0] * (ccoords[0] / this.canvasEl.width);
+        let fy = s_fieldSize[1]*.5 - 
+                 s_fieldSize[1] * (ccoords[1] / this.canvasEl.height);
         app.putValue("Paths/Coords", `${fx.toFixed(1)} ${fy.toFixed(1)}`);
         return [fx, fy];
     }
 
-    _fieldToCanvasCoords(pose)
+    s_fieldToCanvasCoords(pose)
     {
         // pose is x, y (inches), cosangle, sinangle
-        let cx = pose[0] * this.canvasEl.width / _fieldSize[0];
-        let cy = (pose[1]-_fieldSize[1]*.5)*this.canvasEl.height / -_fieldSize[1];
+        let cx = pose[0] * this.canvasEl.width / s_fieldSize[0];
+        let cy = (pose[1]-s_fieldSize[1]*.5)*this.canvasEl.height / -s_fieldSize[1];
         // angles in canvas coords are just flipped in y (rotated 180)o
         // console.log(pose, cx, cy);
         return [cx, cy, pose[2], -pose[3]];
@@ -733,8 +731,8 @@ class CanvasWidget extends Widget
         {
             let width = this.canvasEl.width;
             let height = this.canvasEl.height;
-            let sx = width/_fieldSize[0];
-            let sy = -height/_fieldSize[1]; // flip y
+            let sx = width/s_fieldSize[0];
+            let sy = -height/s_fieldSize[1]; // flip y
             // origin x is "left"
             // origin y is middle
             ctx.translate(0, height*.5);
