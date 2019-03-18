@@ -1,5 +1,7 @@
 /* global Widget, app, cv */
 
+const s_fieldSize = [12*54, 12*27]; // 648 x 324
+
 class CanvasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -19,6 +21,7 @@ class CanvasWidget extends Widget
         this.canvasEl = document.getElementById(this.canvId);
         this.canvasCtx = this.canvasEl.getContext("2d");
         this.resizeListener = null;
+        this._trustCanvXform = true;
 
         if(this.config.params.overlay && this.config.params.overlay.enable)
         {
@@ -443,14 +446,27 @@ class CanvasWidget extends Widget
         }
     }
 
-    _canvasToFieldCoords(coords)
+    _canvasToFieldCoords(ccoords)
     {
-        // 0-cwidth -> 0->684
-        // 0->cheight =>  171->-171 (flipY)
-        let x = 684 * (coords[0] / this.canvasEl.width);
-        let y = 171 - 342 * (coords[1] / this.canvasEl.height);
-        app.putValue("Paths/Coords", `${x.toFixed(1)} ${y.toFixed(1)}`);
-        return [x, y];
+        // fx = fW * cx/w
+        // fy = fH/2 - fH * cy/h
+        // cx = fx * w/fW
+        // cy = (fy-fH/2)*h/-fH
+        let fx = s_fieldSize[0] * (ccoords[0] / this.canvasEl.width);
+        let fy = s_fieldSize[1]*.5 - 
+                 s_fieldSize[1] * (ccoords[1] / this.canvasEl.height);
+        app.putValue("Paths/Coords", `${fx.toFixed(1)} ${fy.toFixed(1)}`);
+        return [fx, fy];
+    }
+
+    s_fieldToCanvasCoords(pose)
+    {
+        // pose is x, y (inches), cosangle, sinangle
+        let cx = pose[0] * this.canvasEl.width / s_fieldSize[0];
+        let cy = (pose[1]-s_fieldSize[1]*.5)*this.canvasEl.height / -s_fieldSize[1];
+        // angles in canvas coords are just flipped in y (rotated 180)o
+        // console.log(pose, cx, cy);
+        return [cx, cy, pose[2], -pose[3]];
     }
 
     _getItemText(item)
@@ -719,15 +735,18 @@ class CanvasWidget extends Widget
         // correct aspect ratio. We assume field poses have
         // an origin at the midpoint and y is up.
         let ctx = this.canvasCtx;
-        let width = this.canvasEl.width;
-        let height = this.canvasEl.height;
-        let sx = width/684;
-        let sy = -height/342; // flip y
         ctx.save();
-        // origin x is "left"
-        // origin y is middle
-        ctx.translate(0, height*.5);
-        ctx.scale(sx, sy);
+        if(this._trustCanvXform)
+        {
+            let width = this.canvasEl.width;
+            let height = this.canvasEl.height;
+            let sx = width/s_fieldSize[0];
+            let sy = -height/s_fieldSize[1]; // flip y
+            // origin x is "left"
+            // origin y is middle
+            ctx.translate(0, height*.5);
+            ctx.scale(sx, sy);
+        }
         return ctx;
     }
 
@@ -777,19 +796,37 @@ class CanvasWidget extends Widget
             {
                 const pose = poselist[i];
                 // pose is x, y (inches), cosangle, sinangle
-                const x = pose[0];
-                const y = pose[1];
-                // const rads = pose[2];
-                const cos = pose[3];
-                const sin = pose[4];
+
+                let x, y, cos, sin, rad, len;
+                if(!this._trustCanvXform)
+                {
+                    const cpose = this._fieldToCanvasCoords(pose);
+                    x = cpose[0];
+                    y = cpose[1];
+                    // const rads = pose[2];
+                    cos = pose[3];
+                    sin = -pose[4]; // flip y
+                    len = 12;  // pixels
+                    rad = 5;
+                }
+                else
+                {
+                    x = pose[0];
+                    y = pose[1];
+                    // const rads = pose[2];
+                    cos = pose[3];
+                    sin = pose[4]; 
+                    len = 8;  // inches
+                    rad = 3;
+                }
                 ctx.beginPath();
-                ctx.arc(x, y, 3/*radius inches*/, 0, 2*Math.PI); // ends path
+                ctx.arc(x, y, rad, 0, 2*Math.PI); // ends path
                 ctx.closePath();
                 ctx.fill();
 
                 ctx.beginPath();
                 ctx.moveTo(x,y);
-                ctx.lineTo(x + cos*8, y + sin*8);
+                ctx.lineTo(x + cos*len, y + sin*len); 
                 ctx.stroke();
             }
         }
@@ -802,7 +839,7 @@ class CanvasWidget extends Widget
         //      waypoints only (x,y,theta)
         //      full path as used by robot
         //      spline prior to curvature optimization
-        //      spline after currvature optimization
+        //      spline after curvature optimization
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
