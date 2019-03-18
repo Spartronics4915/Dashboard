@@ -15,7 +15,7 @@
 **/
 
 import PathsRepo from "/js/paths/paths.js";
-import RobotStateMgr from "./RobotStateMgr.js";
+import RobotStateMgr from "./robotStateMgr.js";
 
 export class App
 {
