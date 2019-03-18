@@ -788,8 +788,6 @@
                             "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
                             "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
                             "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
-                            "  <li><a href='http://${driverfrontcam}:8080' target='_blank'>Front UV4L Status</a>",
-                            "  <li><a href='http://${driverbackcam}:8080' target='_blank'>Back UV4L Status</a>",
                             "</ul",
                             "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
                             "</div>"
@@ -934,9 +932,10 @@
                                     "enable": true,
                                     "origin": [800, 30],
                                     "font": "14px Verdana",
-                                    "fillStyle": "rgb(150, 120, 0)",
+                                    "fillStyle": "rgb(180, 180, 0)",
                                     "shadowOffsetX": 1,
                                     "shadowOffsetY": 1,
+                                    "shadowBlur": 1,
                                     "value": ""
                                 }
                             ]
