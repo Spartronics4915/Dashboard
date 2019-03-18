@@ -4500,6 +4500,13 @@ var WSAvcPlayer = new Class({
     }
   },
 
+  readyState : function() {
+    if(this.ws) 
+        return this.ws.readyState;
+    else
+        return undefined;
+  },
+
   disconnect : function() {
     this.ws.close();
   },
@@ -4510,10 +4517,14 @@ var WSAvcPlayer = new Class({
     log("Sent " + message);
   },
 
-
   stopStream : function() {
     this.ws.send("STOPSTREAM");
     log("Sent STOPSTREAM");
+  },
+
+  resetStream : function() {
+    this.ws.send("RESETSTREAM");
+    log("Sent RESETSTREAM");
   },
 });
 
