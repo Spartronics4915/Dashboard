@@ -37,4 +37,6 @@ it includes:
 webRTCSignaling was derived from and is for use with uv4l.
 
 an opensource webRTC + pi solution is https://github.com/kclyu/rpi-webrt
-and is preferred over the closed-source uv4l.  
+and would be preferred over the closed-source uv4l.  Should we opt for
+this, we'll need to migrate code that plays the same role as both
+webRTCSingaling and h264player from our Vision repo here.
