@@ -849,6 +849,9 @@
                     "params":
                     {
                         "overlayId": "videoOverlay",
+                        "//lazycleanup:true":  "keep streams open throughout match",
+                        "//lazycleanup:false":  "close stream when not being viewed",
+                        "lazycleanup": false,
                         "streams":
                         {
                             "Test":
