@@ -108,6 +108,7 @@ class streamState
         this.ip = ss.ip;
         this.url = ss.url;
         this.cls = ss.cls;
+        this.cmd = ss.cmd;
         this.activations = 0;
         this.pageHandler = ph;
     }
