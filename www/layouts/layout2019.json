@@ -860,14 +860,14 @@
                                 "protocol": "ws",
                                 "ip": "${driverfrontcam}:8080",
                                 "cls": "size1280",
-                                "cmd": "raspivid -t 0 -b 2000000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
+                                "cmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
                                 "ip": "${driverbackcam}:8080",
                                 "cls": "size1280",
-                                "cmd": "raspivid -t 0 -b 2000000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
+                                "cmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
                             },
                             "_Front_deprecated":
                             {
