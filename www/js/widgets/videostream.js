@@ -33,7 +33,7 @@ class VideoStreamWidget extends Widget
         {
             let ss = this.config.params.streams[camkey];
             this.streamStates[camkey] = 
-                    new streamState(this.baseId, this.config.params.overlayId, 
+                    new streamState(this.baseId, this.config.params, 
                                     index++, camkey, ss, this.pageHandler);
         }
         this.targetElem = targetElem;
@@ -94,11 +94,12 @@ class VideoStreamWidget extends Widget
 
 class streamState
 {
-    constructor(targetId, overlayId, index, camkey, ss, ph)
+    constructor(targetId, params, index, camkey, ss, ph)
     {
         this.targetId = targetId;
         this.targetElem = document.getElementById(this.targetId);
-        this.overlayId = overlayId;
+        this.overlayId = params.overlayId;
+        this.lazycleanup = params.lazycleanup; // may be undefined
         this.camkey = camkey;
         this.elemId = targetId+index;
         this.elem = null;
@@ -172,10 +173,10 @@ class streamState
                         let url = `ws:${this.ip}${this.url}`;
                         this.handler = new WebRTCSignaling(url,
                                         this.vformat,
-                                        this._onStreamOpen.bind(this),
-                                        this._onStreamError.bind(this),
-                                        this._onStreamClose.bind(this),
-                                        this._onStreamMsg.bind(this)
+                                        this._onWebRTCOpen.bind(this),
+                                        this._onWebRTCError.bind(this),
+                                        this._onWebRTCClose.bind(this),
+                                        this._onWebRTCMsg.bind(this)
                                         );
                     }
                     break;
@@ -215,7 +216,7 @@ class streamState
         {
             app.info(`deactivating ${this.camkey} ${this.elemId}`);
             this.elem.style.visibility = "hidden";
-            if(this.elem.nodename == "IMG")
+            if(!this.lazycleanup || this.elem.nodename == "IMG")
                 this.cleanup(); // no advantage to keeping img/mjpg stream open
         }
     }
@@ -258,6 +259,26 @@ class streamState
         }
     }
 
+    _onImageLoad()
+    {
+        app.debug("cameras._onLoad " + this.camkey);
+        this.active = true;
+        this._updateOverlaySize();
+    }
+
+    _updateOverlaySize()
+    {
+        if(this.overlayId != null)
+        {
+            let oid = this.overlayId;
+            let w = this.pageHandler.getWidgetById(oid);
+            if(w)
+                w.placeOver(this.elem);
+            else
+                app.warning("can't find overlay widget: " + oid);
+        }
+    }
+
     _onWSCanvasReady(w, h)
     {
         let str = `ws canvasready ${w} ${h}`;
@@ -291,36 +312,15 @@ class streamState
         }
     }
 
-
-    _onImageLoad()
-    {
-        app.debug("cameras._onLoad " + this.camkey);
-        this.active = true;
-        this._updateOverlaySize();
-    }
-
-    // _onCanPlay only called when we're in video-feed mode
-    _onCanPlay()
+    // only called when we're in video-feed mode
+    _onWebRTCCanPlay()
     {
         app.debug("videostream._onCanPlay " + this.camkey);
         this.active = true;
         this._updateOverlaySize();
     }
 
-    _updateOverlaySize()
-    {
-        if(this.overlayId != null)
-        {
-            let oid = this.overlayId;
-            let w = this.pageHandler.getWidgetById(oid);
-            if(w)
-                w.placeOver(this.elem);
-            else
-                app.warning("can't find overlay widget: " + oid);
-        }
-    }
-
-    _onStreamOpen(stream)
+    _onWebRTCOpen(stream)
     {
         app.notice("video stream opened for " + this.camkey);
         this.elem.srcObject = stream;
@@ -330,7 +330,7 @@ class streamState
         if(playPromise != undefined)
         {
             playPromise.then(function() {
-                this._onCanPlay();
+                this._onWebRTCCanPlay();
             }.bind(this))
             .catch(function(error)
             {
@@ -345,7 +345,7 @@ class streamState
         }
     }
 
-    _onStreamClose()
+    _onWebRTCClose()
     {
         app.notice("camera stream closed: " + this.camkey);
         if(this.elem)
@@ -355,7 +355,7 @@ class streamState
         this.handler = null;
     }
 
-    _onStreamError(msg)
+    _onWebRTCError(msg)
     {
         app.error("camera stream error: " + msg + " for: " + this.camkey);
         let vmsg = document.getElementById(this.msgElemId);
@@ -369,7 +369,7 @@ class streamState
         this.elem.srcObject = null;
     }
 
-    _onStreamMsg(msg)
+    _onWebRTCMsg(msg)
     {
         app.warning("stream message:" + msg + " for:" + this.camkey);
         let vmsg = document.getElementById(this.msgElemId);

@@ -2,6 +2,7 @@
     "layoutName": "Test2019.json",
     "environments": {
         "default": {
+            "//": "official robot settings",
             "envparam": "env=default",
             "visionbackcam": "10.49.15.10",
             "driverbackcam": "10.49.15.11",
@@ -12,6 +13,13 @@
             "driverbackcam": "192.168.0.7",
             "driverfrontcam": "192.168.0.8",
             "visionbackcam": "192.168.0.8"
+        },
+        "test": {
+            "//": "available for editing on-the-fly",
+            "envparam": "env=test",
+            "driverbackcam": "10.49.15.109",
+            "driverfrontcam": "10.49.15.110",
+            "visionbackcam": "10.49.15.111"
         }
     },
     "pageTemplates": [
@@ -841,6 +849,9 @@
                     "params":
                     {
                         "overlayId": "videoOverlay",
+                        "//lazycleanup:true":  "keep streams open throughout match",
+                        "//lazycleanup:false":  "close stream when not being viewed",
+                        "lazycleanup": false,
                         "streams":
                         {
                             "Test":
