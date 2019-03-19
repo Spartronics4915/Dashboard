@@ -33,7 +33,7 @@ class VideoStreamWidget extends Widget
         {
             let ss = this.config.params.streams[camkey];
             this.streamStates[camkey] = 
-                    new streamState(this.baseId, this.config.params.overlayId, 
+                    new streamState(this.baseId, this.config.params, 
                                     index++, camkey, ss, this.pageHandler);
         }
         this.targetElem = targetElem;
@@ -94,11 +94,12 @@ class VideoStreamWidget extends Widget
 
 class streamState
 {
-    constructor(targetId, overlayId, index, camkey, ss, ph)
+    constructor(targetId, params, index, camkey, ss, ph)
     {
         this.targetId = targetId;
         this.targetElem = document.getElementById(this.targetId);
-        this.overlayId = overlayId;
+        this.overlayId = params.overlayId;
+        this.lazycleanup = params.lazycleanup; // may be undefined
         this.camkey = camkey;
         this.elemId = targetId+index;
         this.elem = null;
@@ -215,7 +216,7 @@ class streamState
         {
             app.info(`deactivating ${this.camkey} ${this.elemId}`);
             this.elem.style.visibility = "hidden";
-            if(this.elem.nodename == "IMG")
+            if(!this.lazycleanup || this.elem.nodename == "IMG")
                 this.cleanup(); // no advantage to keeping img/mjpg stream open
         }
     }
