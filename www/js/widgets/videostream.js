@@ -171,10 +171,10 @@ class streamState
                         let url = `ws:${this.ip}${this.url}`;
                         this.handler = new WebRTCSignaling(url,
                                         this.vformat,
-                                        this._onStreamOpen.bind(this),
-                                        this._onStreamError.bind(this),
-                                        this._onStreamClose.bind(this),
-                                        this._onStreamMsg.bind(this)
+                                        this._onWebRTCOpen.bind(this),
+                                        this._onWebRTCError.bind(this),
+                                        this._onWebRTCClose.bind(this),
+                                        this._onWebRTCMsg.bind(this)
                                         );
                     }
                     break;
@@ -257,6 +257,26 @@ class streamState
         }
     }
 
+    _onImageLoad()
+    {
+        app.debug("cameras._onLoad " + this.camkey);
+        this.active = true;
+        this._updateOverlaySize();
+    }
+
+    _updateOverlaySize()
+    {
+        if(this.overlayId != null)
+        {
+            let oid = this.overlayId;
+            let w = this.pageHandler.getWidgetById(oid);
+            if(w)
+                w.placeOver(this.elem);
+            else
+                app.warning("can't find overlay widget: " + oid);
+        }
+    }
+
     _onWSCanvasReady(w, h)
     {
         let str = `ws canvasready ${w} ${h}`;
@@ -290,36 +310,15 @@ class streamState
         }
     }
 
-
-    _onImageLoad()
-    {
-        app.debug("cameras._onLoad " + this.camkey);
-        this.active = true;
-        this._updateOverlaySize();
-    }
-
-    // _onCanPlay only called when we're in video-feed mode
-    _onCanPlay()
+    // only called when we're in video-feed mode
+    _onWebRTCCanPlay()
     {
         app.debug("videostream._onCanPlay " + this.camkey);
         this.active = true;
         this._updateOverlaySize();
     }
 
-    _updateOverlaySize()
-    {
-        if(this.overlayId != null)
-        {
-            let oid = this.overlayId;
-            let w = this.pageHandler.getWidgetById(oid);
-            if(w)
-                w.placeOver(this.elem);
-            else
-                app.warning("can't find overlay widget: " + oid);
-        }
-    }
-
-    _onStreamOpen(stream)
+    _onWebRTCOpen(stream)
     {
         app.notice("video stream opened for " + this.camkey);
         this.elem.srcObject = stream;
@@ -329,7 +328,7 @@ class streamState
         if(playPromise != undefined)
         {
             playPromise.then(function() {
-                this._onCanPlay();
+                this._onWebRTCCanPlay();
             }.bind(this))
             .catch(function(error)
             {
@@ -344,7 +343,7 @@ class streamState
         }
     }
 
-    _onStreamClose()
+    _onWebRTCClose()
     {
         app.notice("camera stream closed: " + this.camkey);
         if(this.elem)
@@ -354,7 +353,7 @@ class streamState
         this.handler = null;
     }
 
-    _onStreamError(msg)
+    _onWebRTCError(msg)
     {
         app.error("camera stream error: " + msg + " for: " + this.camkey);
         let vmsg = document.getElementById(this.msgElemId);
@@ -368,7 +367,7 @@ class streamState
         this.elem.srcObject = null;
     }
 
-    _onStreamMsg(msg)
+    _onWebRTCMsg(msg)
     {
         app.warning("stream message:" + msg + " for:" + this.camkey);
         let vmsg = document.getElementById(this.msgElemId);
