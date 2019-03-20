@@ -6,13 +6,17 @@
             "envparam": "env=default",
             "visionbackcam": "10.49.15.10",
             "driverbackcam": "10.49.15.11",
-            "driverfrontcam": "10.49.15.12"
+            "driverfrontcam": "10.49.15.12",
+            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf",
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
         },
         "dana": {
             "envparam": "env=dana",
             "driverbackcam": "192.168.0.7",
             "driverfrontcam": "192.168.0.8",
-            "visionbackcam": "192.168.0.8"
+            "visionbackcam": "192.168.0.8",
+            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf"
         },
         "test": {
             "//": "available for editing on-the-fly",
@@ -871,14 +875,14 @@
                                 "protocol": "ws",
                                 "ip": "${driverfrontcam}:8080",
                                 "cls": "size1280",
-                                "cmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
+                                "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
                                 "ip": "${driverbackcam}:8080",
                                 "cls": "size1280",
-                                "cmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf"
+                                "cmd": "${driverbackcamcmd}"
                             },
                             "_Front_deprecated":
                             {
