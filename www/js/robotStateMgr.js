@@ -104,20 +104,20 @@ export class RobotStateMgr
                 newpose = "20 30 0";
             else
             {
-                const xmin = 0, xmax = 684, ymin = -684/4, ymax = -ymin;
+                const fieldSize = [12*54, 12*27]; // 648 x 324
                 let x = lastPose[0] + lastPose[3] * Math.random() * 8;
                 let y = lastPose[1] + lastPose[4] * Math.random() * 8;
                 let rads;
-                if(x < xmin)
+                if(x < 0)
                     rads = 0;
                 else
-                if(x > 684)
+                if(x > fieldSize[0])
                     rads = -Math.PI;
                 else
-                if(y < ymin)
+                if(y < -fieldSize[1]/2)
                     rads = Math.PI / 2;
                 else
-                if(y > ymax)
+                if(y > fieldSize[1]/2)
                     rads = -Math.PI / 2;
                 else
                     rads = lastPose[2] + (Math.random()-.5) * .1; 
