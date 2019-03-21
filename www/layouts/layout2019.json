@@ -815,13 +815,13 @@
                             "<div class='references'>",
                             "<h2>Dashboard Links</h2>",
                             "<ul>",
-                            "<li><a href='/?${envparam}&'>Standard Launch</a>",
-                            "<li><a href='/?${envparam}&demo=1'>Demo</a>",
-                            "<li><a href='/?${envparam}&shownav=0&#tab8' target='_blank'>Camera Only</a>",
+                            "<li><a href='/index.html?${envparam}&'>Standard Launch</a>",
+                            "<li><a href='/index.html?${envparam}&demo=1'>Demo</a>",
+                            "<li><a href='/index.html?${envparam}&shownav=0&#tab8' target='_blank'>Camera Only</a>",
                             "</ul>",
                             "Dashboard URL syntax:",
                             "<br /><br />",
-                            "<code>http://localhost:5080/?shownav=0&demo=1&layout=filename.json&env=dana&#tab0</code>",
+                            "<code>http://localhost:5080/index.html?shownav=0&demo=1&layout=filename.json&env=dana&#tab0</code>",
                             "<br />",
                             "<br />",
                             "<code><b>shownav</b></code>",
@@ -853,9 +853,9 @@
                     "params":
                     {
                         "overlayId": "videoOverlay",
-                        "//lazycleanup:true":  "keep streams open throughout match",
-                        "//lazycleanup:false":  "close stream when not being viewed",
-                        "lazycleanup": false,
+                        "//multistream:true":  "keep streams open throughout match",
+                        "//multistream:false":  "close streams not being viewed",
+                        "multistream": false,
                         "streams":
                         {
                             "Test":

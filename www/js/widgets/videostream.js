@@ -99,7 +99,7 @@ class streamState
         this.targetId = targetId;
         this.targetElem = document.getElementById(this.targetId);
         this.overlayId = params.overlayId;
-        this.lazycleanup = params.lazycleanup; // may be undefined
+        this.multistream = params.multistream; // may be undefined
         this.camkey = camkey;
         this.elemId = targetId+index;
         this.elem = null;
@@ -216,7 +216,7 @@ class streamState
         {
             app.info(`deactivating ${this.camkey} ${this.elemId}`);
             this.elem.style.visibility = "hidden";
-            if(!this.lazycleanup || this.elem.nodename == "IMG")
+            if(!this.multistream || this.elem.nodename == "IMG")
                 this.cleanup(); // no advantage to keeping img/mjpg stream open
         }
     }
