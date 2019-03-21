@@ -7,6 +7,18 @@ export class DCMotorTransmission
         this.frictionV = Ks;
         this.speedPerV = 1.0 / Kv;
         const r = Units.inchesToMeters(WheelRadiusIn);
+
+        // newton's second law:
+        // https://www.khanacademy.org/science/physics/torque-angular-momentum/torque-tutorial/v/rotational-version-of-newtons-second-law
+        //  F = ma (tangential)
+        //  torque = F*r
+        //  torque = r*m*a
+        //  a = alpha*r (a is linear, alpha is angular acceleration)
+        //  torque = r*r*m*alpha  
+        //  alpha = torque / I  (I is rotational inertia (moi), rsq*m)
+        //  I units: kg*m*m
+        //  but force distributed through the wheel, perfect 
+        //  cylinder/disk as I = 1/2 m*rsq
         this.torquePerV = r * r * RobotMass / (2*Ka);
     }
 
