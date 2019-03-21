@@ -15,10 +15,13 @@ function epsilonEquals(a,b,eps=kEpsilon)
 // its context.
 export class ChassisState
 {
-    constructor(usage)
+    constructor(usage, linear, angular)
     {
         this.usage = usage;
-        this.zero();
+        this.linear = linear;
+        this.angular = angular;
+        if(this.linear == undefined)
+            this.zero();
     }
 
     zero()

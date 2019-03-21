@@ -1,15 +1,16 @@
-
+import {Units} from "../geo/units.js";
 let kEpsilon = 1e-9;
 export class DCMotorTransmission
 {
-    constructor(constants)
+    constructor(Ks, Kv, Ka, WheelRadiusIn, RobotMass)
     {
-        this.frictionV = constants.Ks;
-        this.speedPerV = constants.Kv;
-        this.torquePerV = constants.Ka;
+        this.frictionV = Ks;
+        this.speedPerV = 1.0 / Kv;
+        const r = Units.inchesToMeters(WheelRadiusIn);
+        this.torquePerV = r * r * RobotMass / (2*Ka);
     }
 
-    freeSpeedAtVolts(V)
+    freeSpeedAtVolts(V) // returns rad/sec
     {
         if(V > kEpsilon)
             return Math.max(0, (V - this.frictionV)*this.speedPerV);

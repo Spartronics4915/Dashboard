@@ -73,13 +73,41 @@ export class DifferentialDriveDynamics extends TimingConstraint
     getMinMaxAccel(tsamp, velocity)
     {
         let mm = this.drive.getMinMaxAccel(
-                    new ChassisState(
+                    new ChassisState("velocity",
                         Units.inchesToMeters(velocity), 
                         tsamp.curvature * velocity /*inverse seconds*/),
                     Units.metersToInches(tsamp.curvature), 
                     this.maxVolts);
         return [Units.metersToInches(mm[0]), 
                 Units.metersToInches(mm[1])];
+    }
+}
+
+export class VelocityLimitRegionConstraint extends TimingConstraint
+{
+    constructor(maxVel, xmin, xmax, ymin, ymax)
+    {
+        super();
+        this.maxVel = maxVel;
+        this.xmin = xmin;
+        this.xmax = xmax;
+        this.ymin = ymin;
+        this.ymax = ymax;
+    }
+    
+    getMaxVel(tsamp)
+    {
+        const x = tsamp.translation.x;
+        const y = tsamp.translation.y;
+        if (x >= this.xmin && x <= this.xmax && y >= this.ymin && y < this.ymax)
+            return this.maxVel;
+        else
+            return Number.POSITIVE_INFINITY;
+    }
+
+    getMinMaxAccel(tsamp, velocity)
+    {
+        return [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY];
     }
 }
 

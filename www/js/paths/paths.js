@@ -152,9 +152,17 @@ export class Path
             let osamps = this.getOptimizedSplineSamples();
             let timing = [];
             let leftTrans = new DCMotorTransmission(
-                                        this.constants.drive.LeftTransmission);
+                            this.constants.drive.LeftTransmission.Ks,
+                            this.constants.drive.LeftTransmission.Kv,
+                            this.constants.drive.LeftTransmission.Ka,
+                            this.constants.drive.WheelRadius,
+                            this.constants.robot.LinearInertia);
             let rightTrans = new DCMotorTransmission(
-                                        this.constants.drive.RightTransmission);
+                            this.constants.drive.RightTransmission.Ks,
+                            this.constants.drive.RightTransmission.Kv,
+                            this.constants.drive.RightTransmission.Ka,
+                            this.constants.drive.WheelRadius,
+                            this.constants.robot.LinearInertia);
             let drive = new DifferentialDrive(this.constants, leftTrans, rightTrans);
             timing.push(new CentripetalMax(this.constants.paths.MaxCentripetalAccel));
             timing.push(new DifferentialDriveDynamics(drive, 
@@ -174,19 +182,19 @@ export class Path
 // a repository for paths, keyed by pathname
 const field =
 {
-    xsize:684,
-    ysize:342,
-    xrange: [0, 684],
-    yrange: [-171, 171],
+    xsize:54*12, // 648
+    ysize:27*12, // 324
+    xrange: [0, 648],
+    yrange: [-162, 162],
 };
 
 const landmarks = 
 {
     bottomLeftLoadingStation: 
-        Pose2d.fromXYTheta(field.xrange[0]+24, field.yrange[0]+29, 0),
+        Pose2d.fromXYTheta(18, -136, 0),
     centerLeftHalfUp:
-        Pose2d.fromXYTheta(field.xrange[0]+171, field.yrange[0]+171, 90),
-    topLeftRocketHatch1: Pose2d.fromXYTheta(342-125, 145, 28.75),
+        Pose2d.fromXYTheta(160, 0, 90),
+    topLeftRocketHatch1: Pose2d.fromXYTheta(199.5, 136, 28.75),
 };
 
 export class PathsRepo
