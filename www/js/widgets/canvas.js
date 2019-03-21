@@ -843,12 +843,12 @@ class CanvasWidget extends Widget
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
-        let coords = null;
+        let coords = null, fcoords = null;
         if(evt != undefined)
         {
             // has the side-effect of printing canvas coords
             coords = this._evtToCanvasCoords(evt);
-            coords = this._canvasToFieldCoords(coords);
+            fcoords = this._canvasToFieldCoords(coords);
         }
         if(!item.value) return;
         let repo = app.getPathsRepo();
@@ -857,13 +857,18 @@ class CanvasWidget extends Widget
             let path = repo.getPath(item.value);
             if(path != null)
             {
-                if(evt != undefined)
+                if(evt != undefined) // mouse moved
                 {
-                    let p = path.intersect(item.config.mode, coords[0], coords[1]);
+                    let p = path.intersect(item.config.mode, fcoords[0], fcoords[1]);
                     if(p)
-                        app.putValue("Paths/Details", p.asDetails());
+                    {
+                        item._intersect = {
+                            txt: p.asDetails(),
+                            coords: coords
+                        };
+                    }
                     else
-                        app.putValue("Paths/Details", "n/a");
+                        item._intersect = undefined;
                 }
                 else
                 {
@@ -872,6 +877,20 @@ class CanvasWidget extends Widget
                         item.config.mode = "waypoints";
                     path.draw(ctx, item.config.mode, item.config.color);
                     this._drawFieldEnd();
+                    if(item.label && item._intersect)
+                    {
+                        ctx.save();
+                        ctx.fillStyle = item.label.fillStyle;
+                        ctx.font = item.label.font;
+                        ctx.shadowColor = "black";
+                        ctx.shadowBlur = 1;
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowOffsetY = 2;
+                        ctx.fillText(item._intersect.txt, 
+                                    item._intersect.coords[0]+10, 
+                                    item._intersect.coords[1]+10);
+                        ctx.restore();
+                    }
                 }
             }
             else

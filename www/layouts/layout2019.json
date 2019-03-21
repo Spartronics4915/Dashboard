@@ -194,8 +194,7 @@
                     "type": "systemstate",
                     "size": ["fill", "row"],
                     "ntkeys": [
-                        "Paths/Coords",
-                        "Paths/Details"
+                        "Paths/Coords"
                     ]
                 },
                 {
@@ -218,7 +217,7 @@
                         "overlay":
                         {
                             "enable": true,
-                            "updateinterval": 0,
+                            "updateinterval": 20,
                             "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
@@ -246,10 +245,15 @@
                                 {
                                     "key": "Paths/current",
                                     "class": "path",
-                                    "enable": false,
+                                    "enable": true,
+                                    "pointerevents": true,
                                     "config": {
-                                        "mode": "optsplineCtls",
-                                        "color": "blue"
+                                        "mode": "trajectory",
+                                        "color": "orange"
+                                    },
+                                    "label": {
+                                        "fillStyle": "orange",
+                                        "font": "15px Impact"
                                     }
                                 },
                                 {
@@ -258,8 +262,21 @@
                                     "enable": true,
                                     "pointerevents": true,
                                     "config": {
-                                        "mode": "trajectory",
-                                        "color": "orange"
+                                        "mode": "waypoints",
+                                        "color": "blue"
+                                    },
+                                    "label": {
+                                        "fillStyle": "cornflowerblue",
+                                        "font": "18px Impact"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/current",
+                                    "class": "path",
+                                    "enable": false,
+                                    "config": {
+                                        "mode": "optsplineCtls",
+                                        "color": "blue"
                                     }
                                 }
                             ]

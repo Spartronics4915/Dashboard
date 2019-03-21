@@ -535,23 +535,25 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
 
     asInfo()
     {
-        return `xy:(${this.translation.x.toFixed(1)} ${this.translation.y.toFixed(1)}) ` +
-               `heading:(${this.rotation.cos} ${this.rotation.sin} `;
+        let x = this.translation.x.toFixed(1); 
+        let y = this.translation.y.toFixed(1);
+        let deg = this.rotation.getDegrees().toFixed(0);
+        return `${x} ${y} ${deg}°`;
     }
 
     asDetails()
     {
-        let result = "";
+        let result = this.asInfo();
         if(this.t != undefined)
-            result += `time: ${this.t.toFixed(1)} `; 
+            result += ` t: ${this.t.toFixed(1)}`; 
         if(this.velocity != undefined)
-            result += `speed: ${this.velocity.toFixed(2)} `; 
+            result += ` v: ${this.velocity.toFixed(2)}`;
         if(this.accel != undefined)
-            result += `accel: ${this.accel.toFixed(2)} `;
+            result += ` a: ${this.accel.toFixed(2)}`;
         if(this.curvature != undefined)
-            result += `curvature: ${this.curvature.toFixed(4)} `;
+            result += ` curv: ${this.curvature.toFixed(4)}`;
         if(this.distance != undefined)
-            result += `distance: ${this.distance.toFixed(1)} `;
+            result += ` dist: ${this.distance.toFixed(1)}`;
         return result;
     }
 
