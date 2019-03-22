@@ -4,11 +4,12 @@ export class Trajectory
     constructor(poseSamples)
     {
         this.poseSamples = poseSamples;
-        this.timedPoses = [];
     }
 
     reverse()
     {
+        for(let p of this.poseSamples)
+            p.reverse();
     }
 
     mirror()

@@ -857,6 +857,8 @@ class CanvasWidget extends Widget
             let path = repo.getPath(item.value);
             if(path != null)
             {
+                if(!item.config.mode)
+                    item.config.mode = "waypoints";
                 if(evt != undefined) // mouse moved
                 {
                     let p = path.intersect(item.config.mode, fcoords[0], fcoords[1]);
@@ -873,8 +875,6 @@ class CanvasWidget extends Widget
                 else
                 {
                     let ctx = this._drawFieldBegin();
-                    if(!item.config.mode)
-                        item.config.mode = "waypoints";
                     path.draw(ctx, item.config.mode, item.config.color);
                     this._drawFieldEnd();
                     if(item.label && item._intersect)
@@ -888,7 +888,7 @@ class CanvasWidget extends Widget
                         ctx.shadowOffsetY = 2;
                         ctx.fillText(item._intersect.txt, 
                                     item._intersect.coords[0]+10, 
-                                    item._intersect.coords[1]+10);
+                                    item._intersect.coords[1]+30);
                         ctx.restore();
                     }
                 }

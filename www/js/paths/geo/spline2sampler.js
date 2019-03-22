@@ -1,9 +1,11 @@
+/* global app */
 import {Pose2d} from "./pose2d.js";
 
 export const kMaxDX = 2.0; //inches
 export const kMaxDY = 0.05; //inches
 export const kMaxDTheta = 0.1; //radians!
 export const kMinSampleSize = 1;
+const kRecursionDepthLimit = 500;
 
 export class Spline2Sampler
 {
@@ -41,18 +43,25 @@ export class Spline2Sampler
         }
     }
 
-    static getSegmentArc(spline2, accum, t0, t1, maxDx, maxDy, maxDTheta)
+    static getSegmentArc(spline2, accum, t0, t1, maxDx, maxDy, maxDTheta, depth)
     {
         const p0 = spline2.getPose(t0);
         const p1 = spline2.getPose(t1);
         const twist = Pose2d.getTwist(p0, p1);
-        if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta)
+        if(depth == undefined) depth = 0;
+        if(Math.abs(twist.dy) > maxDy || Math.abs(twist.dx) > maxDx || 
+           Math.abs(twist.dtheta) > maxDTheta)
         {
             // subdivide
+            if(depth > kRecursionDepthLimit)
+            {
+                app.warning("recursion depth limit exceeded");
+                return;
+            }
             Spline2Sampler.getSegmentArc(spline2, accum, t0, (t0 + t1) / 2, 
-                                        maxDx, maxDy, maxDTheta);
+                                        maxDx, maxDy, maxDTheta, depth+1);
             Spline2Sampler.getSegmentArc(spline2, accum, (t0 + t1) / 2, t1, 
-                                        maxDx, maxDy, maxDTheta);
+                                        maxDx, maxDy, maxDTheta, depth+1);
         }
         else
         {

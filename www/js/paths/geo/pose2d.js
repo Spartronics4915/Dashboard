@@ -80,6 +80,11 @@ export class Translation2d
     {
         return Translation2d.add(this, other);
     }
+    
+    translateByXY(x, y)
+    {
+        return Translation2d.add(this, new Translation2d(x, y));
+    }
 
     rotateBy(rotation) 
     {
@@ -216,6 +221,15 @@ export class Rotation2d
         return Rotation2d.r2d(this.getRadians());
     }
 
+    reverse()
+    {
+        // other.cos(180) = -1 
+        // other.sin(180) = 0
+        // reverse == rotate by 180 degrees
+        this.cos = this.cos * -1;
+        this.sin = this.sin * -1;
+    }
+
     rotateBy(other) 
     {
         return new Rotation2d(
@@ -339,6 +353,12 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         let newPose = new Pose2d(
                         Translation2d.clone(other.translation), 
                         Rotation2d.clone(other.rotation));
+        if(other.t != undefined)
+            newPose.t = other.t;
+        if(other.velocity != undefined)
+            newPose.velocity = other.velocity;
+        if(other.accel != undefined)
+            newPose.accel = other.accel;
         if(other.curvature != undefined)
         {
             newPose.curvature = other.curvature;
@@ -346,6 +366,7 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         }
         if(other.distance != undefined)
             newPose.distance = other.distance;
+        return newPose;
     }
 
     static fromXYTheta(x, y, theta)
@@ -423,6 +444,14 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
     getRotation()
     {
         return this.rotation;
+    }
+
+    // offsetBy simply moves pose along its heading to another location
+    offsetBy(x, y)
+    {
+        return new Pose2d(this.translation.translateBy(
+                            new Translation2d(x,y).rotateBy(this.rotation)),
+                          Rotation2d.clone(this.rotation));
     }
 
     transformBy(other) 
@@ -511,7 +540,7 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         return distSq(mx, this.translation.x, my, this.translation.y) < rsq;
     }
 
-    draw(ctx, color, radius) 
+    draw(ctx, color, radius, reverse) 
     {
         color = color || "#2CFF2C";
         radius = radius || 2;
@@ -523,14 +552,25 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         ctx.lineCap = "round";
         ctx.fill();
 
-        let len = 12;
+        let len = reverse ? -12 : 12;
         ctx.strokeStyle = "red"; // color;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + len * this.rotation.cos, 
-                   y + len * this.rotation.sin);
+                    y + len * this.rotation.sin);
         ctx.lineWidth = 2;
         ctx.stroke();
+    }
+
+    reverse()
+    {
+        // reverse motion and heading, not position, not time, not distance
+        this.rotation.reverse();
+        if(this.velocity != undefined)
+            this.velocity *= -1;
+        if(this.accel != undefined)
+            this.accel *= -1;
+        // curvature?
     }
 
     asInfo()
