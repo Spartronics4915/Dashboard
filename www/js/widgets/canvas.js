@@ -883,12 +883,21 @@ class CanvasWidget extends Widget
                         ctx.fillStyle = item.label.fillStyle;
                         ctx.font = item.label.font;
                         ctx.shadowColor = "black";
-                        ctx.shadowBlur = 1;
+                        ctx.shadowBlur = 0;
                         ctx.shadowOffsetX = 2;
                         ctx.shadowOffsetY = 2;
-                        ctx.fillText(item._intersect.txt, 
-                                    item._intersect.coords[0]+10, 
-                                    item._intersect.coords[1]+30);
+                        let mtxt = ctx.measureText(item._intersect.txt);
+                        let x = item._intersect.coords[0]+10, y;
+                        let height = parseInt(item.label.font, 10);
+                        if(item.config.mode == "waypoints")
+                            y = item._intersect.coords[1];
+                        else
+                            y = item._intersect.coords[1]+height+5;
+                        let rectY = Math.floor(y - .9*height);
+                        ctx.fillStyle = "rgb(10,10,10)";
+                        ctx.fillRect(x, rectY, mtxt.width, height);
+                        ctx.fillStyle = item.label.fillStyle;
+                        ctx.fillText(item._intersect.txt, x, y);
                         ctx.restore();
                     }
                 }
