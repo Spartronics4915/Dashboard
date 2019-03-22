@@ -297,7 +297,7 @@ export class PathsRepo
         return this.pathMap[nm];
     }
 
-    getPaths()
+    getPathNames()
     {
         return Object.keys(this.pathMap);
     }

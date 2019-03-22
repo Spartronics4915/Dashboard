@@ -4,7 +4,7 @@ class SelectorWidget extends Widget
     // usage:
     //  - config.id is the id of a div into which we place our widget
     //  - config.params.ntkey is the ntkey to putValue on changes.
-    //  - config.optionsntkeyh is the optional ntkey of a comma-separated
+    //  - config.params.optionsntkey is the optional ntkey of a comma-separated
     //    string that, when changed, triggers an update to our options menu.
     // magic html notes:
     //  - a select within a custom-select div is hidden, then
@@ -66,7 +66,7 @@ class SelectorWidget extends Widget
     valueChanged(key, value, isNew)
     {
         app.debug(`selector: ${key} -> ${value}`);
-        if(key == this.params.optionsntkey)
+        if(app.ntkeyCompare(key, this.params.optionsntkey))
         {
             this.optionsChanged(value.split(","));
         }

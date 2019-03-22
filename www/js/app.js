@@ -523,6 +523,7 @@ export class App
         this.putValueIfUndefined("Driver/Camera1", "Test");
         this.putValueIfUndefined("Driver/Camera2", "Test");
         this.putValueIfUndefined("Driver/VideoStream", "Test");
+        this.putValue("Paths/Options", this.pathsRepo.getPathNames().join(","));
 
         // subtlety: should we re-establish values for AutoStrategy
         //  on the grounds that the user's choice should always take
