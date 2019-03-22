@@ -195,6 +195,24 @@
                     "size": ["fill", "row"],
                     "ntkeys": [
                         "Paths/Coords"
+                    ],
+                    "wsize": [800, "row"],
+                    "widgets": [
+                        {
+                            "type": "selector",
+                            "label": "Path",
+                            "id": "pathsel",
+                            "size": [200, "row"],
+                            "ntkeys": [
+                                "Paths/Current",
+                                "Paths/Options"
+                            ],
+                            "params": {
+                                "width": "18em",
+                                "ntkey": "Paths/Current",
+                                "optionsntkey": "Paths/Options"
+                            }
+                        }
                     ]
                 },
                 {
@@ -234,7 +252,7 @@
                                     "strokeStyle": "rgb(255,0,0)"
                                 },
                                 {
-                                    "key": "Paths/current",
+                                    "key": "Paths/Current",
                                     "class": "path",
                                     "enable": false,
                                     "config": {
@@ -243,7 +261,7 @@
                                     }
                                 },
                                 {
-                                    "key": "Paths/current",
+                                    "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
@@ -257,7 +275,7 @@
                                     }
                                 },
                                 {
-                                    "key": "Paths/current",
+                                    "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
@@ -271,7 +289,7 @@
                                     }
                                 },
                                 {
-                                    "key": "Paths/current",
+                                    "key": "Paths/Current",
                                     "class": "path",
                                     "enable": false,
                                     "config": {
