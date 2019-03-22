@@ -1,3 +1,4 @@
+/* global app */
 
 export class Trajectory
 {
@@ -126,8 +127,7 @@ export class Trajectory
                     s.maxVel = Math.min(s.maxVel, c.getMaxVel(s));
                     if(s.maxVel < 0)
                     {
-                        // shouldn't happen
-                        throw "trajectory maxvel underflow";
+                        app.error(`trajectory velocity underflow ${s.maxVel} sample ${i}`);
                     }
                 }
 
@@ -144,7 +144,9 @@ export class Trajectory
                                                 minmax[1]);
                 }
                 if(s.accelLimits[0] > s.accelLimits[1])
+                {
                     throw "trajectory bogus minmax accel 1";
+                }
                 
                 if(ds < kEpsilon) break;
 
@@ -236,7 +238,9 @@ export class Trajectory
                 if(Math.abs(v) > kEpsilon)
                     dt = ds / v;
                 else
-                    throw "trajectory: invalid timedstate 0";
+                {
+                    app.error("trajectory invalid sample " + samp);
+                }
             }
             t += dt;
             v = samp.maxVel;

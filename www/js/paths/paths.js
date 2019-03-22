@@ -342,7 +342,7 @@ export class PathsRepo
                     _adjustPose("frontcenter", Pose2d.fromXYTheta(222, 0, 0)),
                     ]).reverse());
         this.addPath(new Path("curvedTest", [
-                    _adjustPose("backcenter", Pose2d.fromXYTheta(30, 30, 180)),
+                    _adjustPose("backcenter", Pose2d.fromXYTheta(30, 30, 270)),
                     _adjustPose("frontcenter", Pose2d.fromXYTheta(78, 78, 90)),
                     ]));
         this.addPath(new Path("rightPlatformToRightCargo1", [

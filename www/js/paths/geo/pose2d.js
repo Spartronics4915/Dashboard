@@ -606,12 +606,10 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
     toString() 
     {
         return "new Pose2d(" +
-            "new Translation2d(" + 
-                this.translation.x + ", " + this.translation.y + 
-                "), " +
-            "new Rotation2d(" + 
-                this.rotation.cos + ", " + this.rotation.sin + ", " + 
-                this.rotation.normalize + "))";
+                  `new Translation2d(${this.translation.x.toFixed(3)},`+
+                  ` ${this.translation.y.toFixed(3)}), ` +
+                  `new Rotation2d(${this.rotation.cos.toFixed(2)},` +
+                  ` ${this.rotation.sin.toFixed(2)}));`;
     }
 
     transform(other) 
