@@ -8,6 +8,7 @@ import {Constants} from "./robot/constants.js";
 import {DCMotorTransmission} from "./robot/dcmotor.js";
 import {DifferentialDrive} from "./robot/drive.js";
 import {DifferentialDriveDynamics} from "./robot/timing.js";
+import {VelocityLimitRegionConstraint} from "./robot/timing.js";
 
 // an individual path, borne from waypoints
 export class Path
@@ -24,7 +25,7 @@ export class Path
             endVelocity: 0,
             maxVelocity: constants.paths.MaxVelocity,
             maxAbsAccel: constants.paths.MaxAccel,
-            regionConstraints: [] // list of 5-tuple: maxVel,xmin,xmax,ymin,ymax
+            regionConstraints: [] // list of {maxVel,xmin,ymin,xmax,ymax}
         };
         this.config = Object.assign({}, defaultPathConfig, config);
         this.waypoints = waypoints;
@@ -183,6 +184,12 @@ export class Path
                             constants.drive.WheelRadius,
                             constants.robot.LinearInertia);
             let drive = new DifferentialDrive(constants, leftTrans, rightTrans);
+            for(let rc of this.config.regionConstraints)
+            {
+                timing.push(new VelocityLimitRegionConstraint(
+                    rc.maxVel, rc.xmin, rc.xmax, rc.ymin, rc.ymax
+                ));
+            }
             timing.push(new CentripetalMax(constants.paths.MaxCentripetalAccel));
             timing.push(new DifferentialDriveDynamics(drive, 
                                             constants.paths.MaxVoltage));
@@ -200,7 +207,7 @@ export class Path
     }
 }
 
-function _adjustPose(refpt, pose)
+function _adjustXY(refpt, x, y)
 {
     let constants = Constants.getInstance(); // robotid is optional
     let dx, dy;
@@ -235,8 +242,14 @@ function _adjustPose(refpt, pose)
         dx = dy = 0;
         break;
     }
-    if(dx != 0 || dy != 0)
-        return pose.offsetBy(dx, dy); // in the direction of its heading
+    return [dx, dy];
+}
+
+function _adjustPose(refpt, pose)
+{
+    let adj = _adjustXY(refpt, pose.translation.x, pose.translation.y);
+    if(adj[0] != 0 || adj[1] != 0)
+        return pose.offsetBy(adj[0], adj[1]); // in the direction of its heading
     else
         return pose;
 }
@@ -265,6 +278,8 @@ const landmarks =
     leftCargoBay3: Pose2d.fromXYTheta(304, 26, -90),
     centerCargoBay1: Pose2d.fromXYTheta(220, 11, 0),
     centerCargoBay2: Pose2d.fromXYTheta(220, -11, 0),
+    leftHabZoneMin:Pose2d.fromXYTheta(46, -76, 0),
+    leftHabZoneMax:Pose2d.fromXYTheta(96, 76, 0),
 };
 
 // a repository for paths, keyed by pathname
@@ -294,6 +309,20 @@ export class PathsRepo
 
     _createPaths()
     {
+        const lhabMin = _adjustPose("frontleft", landmarks.leftHabZoneMin);
+        const lhabMax = _adjustPose("backright", landmarks.leftHabZoneMax);
+        const maxVel = 16; // travel 4 ft in 3 sec: 16ips
+        const habConstraint = {
+            regionConstraints: [
+                {
+                    maxVel: maxVel, 
+                    xmin: lhabMin.translation.x,
+                    ymin: lhabMin.translation.y,
+                    xmax: lhabMax.translation.x,
+                    ymax: lhabMax.translation.y,
+                },
+            ],
+        };
         this.addPath(new Path("test1", [
                     _adjustPose("backcenter", landmarks.bottomLeftLoadingStation),
                     landmarks.leftMidfieldUp,
@@ -316,58 +345,47 @@ export class PathsRepo
                     _adjustPose("backcenter", Pose2d.fromXYTheta(30, 30, 180)),
                     _adjustPose("frontcenter", Pose2d.fromXYTheta(78, 78, 90)),
                     ]));
-        this.addPath(new Path("rightPlatformToRightCargo1",
-                     [
+        this.addPath(new Path("rightPlatformToRightCargo1", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.rightCargoBay1)
-                     ]));
-        this.addPath(new Path("rightPlatformToRightCargo1Rev",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToRightCargo1Rev", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.rightCargoBay1)
-                     ]).reverse());
-        this.addPath(new Path("rightPlatformToRightCargo2",
-                     [
+                     ], habConstraint).reverse());
+        this.addPath(new Path("rightPlatformToRightCargo2", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.rightCargoBay2)
-                     ]));
-        this.addPath(new Path("rightPlatformToRightCargo3",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToRightCargo3", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.rightCargoBay3)
-                     ]));
-        this.addPath(new Path("rightPlatformToLeftCargo1",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToLeftCargo1", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.leftCargoBay1)
-                     ]));
-        this.addPath(new Path("rightPlatformToLeftCargo2",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToLeftCargo2", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.leftCargoBay2)
-                     ]));
-        this.addPath(new Path("rightPlatformToLeftCargo3",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToLeftCargo3", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.leftCargoBay3)
-                     ]));
-        this.addPath(new Path("rightPlatformToCenterCargo1",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToCenterCargo1", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.centerCargoBay1)
-                     ]));
-        this.addPath(new Path("rightPlatformToCenterCargo2",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("rightPlatformToCenterCargo2", [
                     _adjustPose("backright", landmarks.rightPlatformBackCorner),
                     _adjustPose("frontcenter", landmarks.centerCargoBay2)
-                     ]));
-        this.addPath(new Path("bottomLoadingToCenterCargo1",
-                     [
+                     ], habConstraint));
+        this.addPath(new Path("bottomLoadingToCenterCargo1", [
                     _adjustPose("backcenter", landmarks.bottomLeftLoadingStation),
                     _adjustPose("frontcenter", landmarks.centerCargoBay1)
                      ]));
-        this.addPath(new Path("bottomLoadingToCenterCargo2",
-                     [
+        this.addPath(new Path("bottomLoadingToCenterCargo2", [
                     _adjustPose("backcenter", landmarks.bottomLeftLoadingStation),
                     _adjustPose("frontcenter", landmarks.centerCargoBay2)
                      ]));
