@@ -1,11 +1,16 @@
 
 let instances = {};
+let s_defaultRobotId = "default";
 export class Constants
 {
+    static setRobotId(id)
+    {
+        s_defaultRobotId = id;
+    }
+
     static getInstance(robotid)
     {
-        if(!robotid)
-            robotid = "default";
+        if(!robotid) robotid = s_defaultRobotId;
         if(instances[robotid] == undefined)
             instances[robotid] = new Constants(robotid);
         return instances[robotid];
@@ -22,7 +27,7 @@ export class Constants
         };
         switch(robotid)
         {
-        case "testchassis":
+        case "TestChassis":
             this.drive =
             {
                 WheelBase: 23.75,
@@ -80,6 +85,7 @@ export class Constants
                 AngularDrag: 12,   // N*m/(rad/sec)
             };
             break;
+        case "FirstRobot":
         default:
             this.drive =
             {

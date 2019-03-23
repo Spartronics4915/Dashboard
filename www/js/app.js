@@ -16,6 +16,7 @@
 
 import PathsRepo from "/js/paths/paths.js";
 import RobotStateMgr from "./robotStateMgr.js";
+import Constants from "./paths/robot/constants.js"; 
 
 export class App
 {
@@ -40,6 +41,7 @@ export class App
 
         // nb: initialization of js members occurs in 'onReady'
         this.robotAddr = null;
+        this.robotId = null;
         this.robotLog = null;
         this.robotConnected = false;
         this.robotBatteryW = null;
@@ -455,6 +457,11 @@ export class App
         return this.robotAddr;
     }
 
+    getRobotId()
+    {
+        return this.robotId;
+    }
+
     getRobotStateMgr()
     {
         return this.robotStateMgr;
@@ -651,6 +658,11 @@ export class App
                 app.warning("app encountered unexpected game phase: " + value);
                 break;
             }
+            break;
+        case "/SmartDashboard/Robot/Id":
+            this.robotId = value;
+            Constants.setRobotId(value);
+            $("#robotId").html(value);
             break;
         case "/SmartDashboard/RobotState/pose":
             this.robotStateMgr.addPose(value);
