@@ -268,8 +268,8 @@
                                     "config": {
                                         "mode": "robot",
                                         "colors": {
-                                            "back": "blue",
-                                            "front": "orange",
+                                            "backwheels": "blue",
+                                            "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
                                             "body/active": "rgba(200,150,100,.8)"
                                         }

@@ -43,12 +43,12 @@ export class Trajectory
             for(let p of this.poseSamples)
             {
                 this._drawWheels("back", p, xrad, yrad, ctx, 
-                                config.colors["back"]);
+                                config.colors["backwheels"]);
             }
             for(let p of this.poseSamples)
             {
                 this._drawWheels("front", p, xrad, yrad, ctx, 
-                                config.colors["front"]);
+                                config.colors["frontwheels"]);
             }
 
             // draw the pose that matches our time
