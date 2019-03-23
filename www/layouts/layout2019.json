@@ -266,8 +266,13 @@
                                     "enable": true,
                                     "pointerevents": true,
                                     "config": {
-                                        "mode": "trajectory",
-                                        "color": "orange"
+                                        "mode": "robot",
+                                        "colors": {
+                                            "back": "blue",
+                                            "front": "orange",
+                                            "body": "rgba(10,10,10,.08)",
+                                            "body/active": "rgba(200,150,100,.8)"
+                                        }
                                     },
                                     "label": {
                                         "fillStyle": "orange",

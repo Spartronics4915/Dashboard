@@ -1,5 +1,5 @@
 /* global app */
-
+import {Constants} from "./constants.js";
 export class Trajectory
 {
     constructor(poseSamples)
@@ -27,10 +27,104 @@ export class Trajectory
         return null;
     }
 
-    draw(ctx, mode, color)
+    draw(ctx, config)
     {
-        for(let p of this.poseSamples)
-            p.draw(ctx, color);
+        if(config.mode == "robot")
+        {
+            let constants = Constants.getInstance();
+            let yrad = constants.drive.CenterToSide;
+            let xrad = constants.drive.CenterToFront;
+            let endT = this.poseSamples[this.poseSamples.length-1].getSampleTime();
+            let endTMS = endT * 1000;
+            let modT = (Date.now() % endTMS) / 1000;
+
+            for(let p of this.poseSamples)
+                this._drawRobot(p, xrad, yrad, ctx, config);
+            for(let p of this.poseSamples)
+            {
+                this._drawWheels("back", p, xrad, yrad, ctx, 
+                                config.colors["back"]);
+            }
+            for(let p of this.poseSamples)
+            {
+                this._drawWheels("front", p, xrad, yrad, ctx, 
+                                config.colors["front"]);
+            }
+
+            // draw the pose that matches our time
+            for(let p of this.poseSamples)
+            {
+                if(p.getSampleTime() < modT)
+                    continue;
+                else
+                {
+                    this._drawTimeBar(p, xrad, yrad, ctx, config);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for(let p of this.poseSamples)
+                p.draw(ctx, config.color);
+        }
+    }
+
+    _drawRobot(p, xrad, yrad, ctx, config)
+    {
+        ctx.save();
+        ctx.fillStyle = config.colors["body"];
+        ctx.translate(p.translation.x, p.translation.y);
+        ctx.rotate(p.rotation.getRadians());
+        ctx.fillRect(-xrad, -yrad, 2*xrad, 2*yrad);
+        ctx.restore();
+    }
+
+    _drawTimeBar(p, xrad, yrad, ctx, config)
+    {
+        ctx.save();
+        ctx.fillStyle = config.colors["body/active"];
+        ctx.translate(p.translation.x, p.translation.y);
+        ctx.rotate(p.rotation.getRadians());
+        ctx.fillRect(-xrad, -yrad, 2*xrad, 2*yrad);
+        ctx.restore();
+    }
+
+    _drawWheels(subset, p, xrad, yrad, ctx, color)
+    {
+        ctx.save();
+        ctx.translate(p.translation.x, p.translation.y);
+        ctx.rotate(p.rotation.getRadians());
+        if(subset == "back" || subset == "all")
+        {
+            // back left (x is front)
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(-xrad, -yrad, 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+            // back right
+            ctx.beginPath();
+            ctx.arc(-xrad, yrad, 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+        }
+        if(subset == "front" || subset == "all")
+        {
+            ctx.fillStyle = color;
+            // front left
+            ctx.beginPath();
+            ctx.arc(xrad, -yrad, 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+            // front right
+            ctx.beginPath();
+            ctx.arc(xrad, yrad, 2, 0, 2 * Math.PI, false);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    getSamples()
+    {
+        return this.poseSamples;
     }
 
     // returns a trajectory:

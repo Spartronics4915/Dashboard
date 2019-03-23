@@ -16,8 +16,7 @@ export class Path
     constructor(name, waypoints, config)
     {
         this.name = name;
-        let constants = Constants.getInstance(); // robotid is optional
-
+        let constants = Constants.getInstance();
         let defaultPathConfig = 
         {
             maxDX: kMaxDX, // from spline sampler
@@ -41,9 +40,9 @@ export class Path
         return this;
     }
 
-    intersect(mode, x, y)
+    intersect(config, x, y)
     {
-        switch(mode)
+        switch(config.mode)
         {
         case "waypoints":
             for(let p of this.waypoints)
@@ -81,42 +80,44 @@ export class Path
         case "optsplineCtls":
             app.warning("optsplineCtls.intersection not implemented");
             break;
+        case "robot":
         case "trajectory":
             return this.getTrajectory().intersect(x,y);
         default:
-            app.warning("Path.draw unknown mode " + mode);
+            app.warning("Path.draw unknown mode " + config.mode);
             break;
         }
         return null;
     }
 
-    draw(ctx, mode, color)
+    draw(ctx, config)
     {
-        switch(mode)
+        switch(config.mode)
         {
         case "waypoints":
             for(let p of this.waypoints)
-                p.draw(ctx, color, 4, this._reverse);
+                p.draw(ctx, config.color, 4, this._reverse);
             break;
         case "spline":
             for(let p of this.getSplineSamples())
-                p.draw(ctx, color, 2);
+                p.draw(ctx, config.color, 2);
             break;
         case "optspline":
             for(let p of this.getOptimizedSplineSamples())
-                p.draw(ctx, color, 2);
+                p.draw(ctx, config.color, 2);
             break;
         case "splineCtls":
-            this.getSplines().draw(ctx, color);
+            this.getSplines().draw(ctx, config.color);
             break;
         case "optsplineCtls":
-            this.getOptimizedSplines().draw(ctx, color);
+            this.getOptimizedSplines().draw(ctx, config.color);
             break;
         case "trajectory":
-            this.getTrajectory().draw(ctx, mode, color);
+        case "robot":
+            this.getTrajectory().draw(ctx, config);
             break;
         default:
-            app.warning("Path.draw unknown mode " + mode);
+            app.warning("Path.draw unknown mode " + config.mode);
         }
     }
 

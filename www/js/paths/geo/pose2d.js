@@ -581,6 +581,11 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         return `${x} ${y} ${deg}°`;
     }
 
+    getSampleTime()
+    {
+        return this.t; // may be undefined
+    }
+
     asDetails()
     {
         let result = this.asInfo();

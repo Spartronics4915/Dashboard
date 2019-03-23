@@ -843,6 +843,7 @@ class CanvasWidget extends Widget
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
+        if(!item.value) return;
         let coords = null, fcoords = null;
         if(evt != undefined)
         {
@@ -850,61 +851,57 @@ class CanvasWidget extends Widget
             coords = this._evtToCanvasCoords(evt);
             fcoords = this._canvasToFieldCoords(coords);
         }
-        if(!item.value) return;
-        let repo = app.getPathsRepo();
-        if(repo)
+        let path = app.getPathsRepo().getPath(item.value);
+        if(path != null)
         {
-            let path = repo.getPath(item.value);
-            if(path != null)
+            if(!item.config.mode)
+                item.config.mode = "waypoints";
+            if(evt != undefined) // mouse moved
             {
-                if(!item.config.mode)
-                    item.config.mode = "waypoints";
-                if(evt != undefined) // mouse moved
+                let p = path.intersect(item.config, fcoords[0], fcoords[1]);
+                if(p)
                 {
-                    let p = path.intersect(item.config.mode, fcoords[0], fcoords[1]);
-                    if(p)
-                    {
-                        item._intersect = {
-                            txt: p.asDetails(),
-                            coords: coords
-                        };
-                    }
-                    else
-                        item._intersect = undefined;
+                    item._intersect = {
+                        txt: p.asDetails(),
+                        coords: coords
+                    };
                 }
                 else
-                {
-                    let ctx = this._drawFieldBegin();
-                    path.draw(ctx, item.config.mode, item.config.color);
-                    this._drawFieldEnd();
-                    if(item.label && item._intersect)
-                    {
-                        ctx.save();
-                        ctx.fillStyle = item.label.fillStyle;
-                        ctx.font = item.label.font;
-                        ctx.shadowColor = "black";
-                        ctx.shadowBlur = 0;
-                        ctx.shadowOffsetX = 2;
-                        ctx.shadowOffsetY = 2;
-                        let mtxt = ctx.measureText(item._intersect.txt);
-                        let x = item._intersect.coords[0]+10, y;
-                        let height = parseInt(item.label.font, 10);
-                        if(item.config.mode == "waypoints")
-                            y = item._intersect.coords[1];
-                        else
-                            y = item._intersect.coords[1]+height+5;
-                        let rectY = Math.floor(y - .9*height);
-                        ctx.fillStyle = "rgb(10,10,10)";
-                        ctx.fillRect(x, rectY, mtxt.width, height);
-                        ctx.fillStyle = item.label.fillStyle;
-                        ctx.fillText(item._intersect.txt, x, y);
-                        ctx.restore();
-                    }
-                }
+                    item._intersect = undefined;
             }
             else
-                app.warning("missing path " + item.value);
+            {
+                let ctx = this._drawFieldBegin();
+                path.draw(ctx, item.config);
+                this._drawFieldEnd();
+                if(item.label && item._intersect)
+                {
+                    ctx.save();
+                    ctx.fillStyle = item.label.fillStyle;
+                    ctx.font = item.label.font;
+                    ctx.shadowColor = "black";
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    let mtxt = ctx.measureText(item._intersect.txt);
+                    let x = item._intersect.coords[0]+10; 
+                    let y;
+                    let height = parseInt(item.label.font, 10);
+                    if(item.config.mode == "waypoints")
+                        y = item._intersect.coords[1];
+                    else
+                        y = item._intersect.coords[1]+height+5;
+                    let rectY = Math.floor(y - .9*height);
+                    ctx.fillStyle = "rgb(10,10,10)";
+                    ctx.fillRect(x, rectY, mtxt.width, height);
+                    ctx.fillStyle = item.label.fillStyle;
+                    ctx.fillText(item._intersect.txt, x, y);
+                    ctx.restore();
+                }
+            }
         }
+        else
+            app.warning("missing path " + item.value);
     }
 
     addRandomPt()
