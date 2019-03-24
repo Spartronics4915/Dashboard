@@ -68,6 +68,13 @@ a:active /* selected link */
     padding-right: 10px;
 }
 
+.paneltitle
+{
+    font-size: 110%;
+    color:#25b;
+    padding-right: 10px;
+}
+
 .yellow
 {
   color: rgb(200,200,10);
@@ -275,6 +282,41 @@ nav .fas.primary
     color:#24F;
 }
 
+#alert
+{
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;  
+    left: 50%;  
+    bottom: 30px;  
+    font-size: 16px;
+}
+
+#alert.show
+{
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 5s;
+}
+
+@keyframes fadein 
+{
+    from {bottom: 0; opacity: 0;}  
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout 
+{
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
 footer
 {
     display: flex;
@@ -439,7 +481,6 @@ input[type="text"]
     /* margin-top: 5px; */
 }
 
-
 .cameraViewImg
 {
     width: 640px;
@@ -447,6 +488,24 @@ input[type="text"]
     background-color: black;
 }
 
+.textEditorWidget
+{
+    position: relative;
+}
+
+.textEditor
+{ 
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.ace_gutter
+{
+    z-index: 0; /* prevent ace gutter from occluding the footer */
+}
 
 /* robolog -------------------------------------------*/
 .logmsg

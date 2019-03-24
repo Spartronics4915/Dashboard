@@ -34,6 +34,43 @@ export class Path
         this._reverse = false;
     }
 
+    serialize()
+    {
+        let path = {name: this.name, reverse: this._reverse};
+        let pts = [];
+        for(let wp of this.waypoints)
+        {
+            let h = wp.rotation.getDegrees();
+            let o = {x: wp.translation.x, y: wp.translation.y, heading: h};
+            pts.push(o);
+        }
+        path.waypoints = pts;
+        // XXX: constraints!
+        return JSON.stringify(path, null, 4);
+    }
+
+    static deserialize(txt)
+    {
+        let path = null;
+        try
+        {
+            let o = JSON.parse(txt);
+            let waypoints = [];
+            for (let wp of o.waypoints)
+                waypoints.push(Pose2d.fromXYTheta(wp.x, wp.y, wp.heading));
+            path = new Path(o.name, waypoints);
+            if(o.reverse)
+                path.reverse();
+            // XXX: constraints!
+        }
+        catch(err)
+        {
+            app.error(""+err);
+            app.alertuser(""+err);
+        }
+        return path;
+    }
+
     reverse()
     {
         this._reverse = true;
@@ -263,7 +300,12 @@ const field =
     yrange: [-162, 162],
 };
 
-const landmarks = 
+// landmarks are points on the field.
+// When non-zero, heading assumes frontcenter of robot 
+//  on approach. Path reversal, mirroring is dealt with 
+//  elsewhere. Don't create reversal or mirror-sensitive
+//  landmarks.
+const landmarks =  
 {
     bottomLeftLoadingStation: Pose2d.fromXYTheta(0, -136, 0),
     topLeftLoadingStation: Pose2d.fromXYTheta(0, 136, 0),
@@ -296,6 +338,32 @@ export class PathsRepo
     getPath(nm)
     {
         return this.pathMap[nm];
+    }
+
+    // return 0 on success
+    setContents(nm, txt)
+    {
+        // currently we ignore nm, since the serialization is
+        // expected to include the name field. This allows us to
+        // make copies.
+        let newpath = Path.deserialize(txt);
+        if(newpath)
+        {
+            this.pathMap[newpath.name] = newpath;
+            return 0;
+        }
+        else
+            return -1;
+    }
+
+    getContents(nm)
+    {
+        // return our waypoints in a concise json format
+        let txt = "";
+        let path = this.getPath(nm);
+        if(path)
+            txt = path.serialize();
+        return txt;
     }
 
     getPathNames()

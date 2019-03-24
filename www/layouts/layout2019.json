@@ -196,7 +196,7 @@
                     "ntkeys": [
                         "Paths/Coords"
                     ],
-                    "wsize": [800, "row"],
+                    "wsize": [600, "row"],
                     "widgets": [
                         {
                             "type": "selector",
@@ -218,7 +218,7 @@
                 {
                     "type": "img",
                     "id": "fieldmap",
-                    "size": ["fill", "fill"],
+                    "size": [1280, "fill"],
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
@@ -227,6 +227,19 @@
                     }
                 },
                 {
+                    "type": "texteditor",
+                    "id": "patheditor",
+                    "size": [400, 600],
+                    "ntkeys": ["Paths/Current"],
+                    "params": {
+                        "title": "Path Editor",
+                        "theme": "ace/theme/terminal",
+                        "mode": "ace/mode/json",
+                        "filesystem": "paths"
+                    }
+                },
+                {
+                    "//": "canvas goes last since it occupies one grid",
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],

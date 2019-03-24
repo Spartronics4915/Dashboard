@@ -13,7 +13,8 @@ class SystemState extends Widget
         let gstyle = pagehandler.newGridElemStyle.bind(pagehandler);
 
         let html = "<div class='systemstate container gridded'>";
-        html +=     `<div ${gstyle([120, "row"])}>`; // 120-grid-units for title
+        let gw = 180;
+        html +=     `<div ${gstyle([gw, "row"])}>`; 
         html +=       `<span class="title">${w.label}</span> `;
         // add spans to title div according to ntkeys (like status, etc)
         for(let i=0;i<this.numKeys;i++)
@@ -25,7 +26,7 @@ class SystemState extends Widget
             html += `<span class='state'>${label}</span> `+
                     `<span class='strong' id='${domid}'>n/a</span> `;
         }
-        html += "</div>"; // end of 120-grid-units
+        html += "</div>"; // end of $gw-grid-units
         if(this.config.widgets)
         {
             this.widgetsId = `${w.id}Widgets`;

@@ -1,4 +1,4 @@
-/* global app NetworkTables RobotLog WebAPISubscriber $ Widget */
+/* global app ace NetworkTables RobotLog WebAPISubscriber $ Widget */
 
 /* special url config syntax:
 *
@@ -50,10 +50,22 @@ export class App
         this.webapi = null;
         this.opencv = {};
         this.opencv.loaded = false; // accessed directly by opencv factory
-
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
 
+    }
+
+    alertuser(msg)
+    {
+        let x = document.getElementById("alert");
+        if(x) 
+        {
+            x.className = "show";
+            x.innerHTML = msg;
+            setTimeout(function() { 
+                x.className = x.className.replace("show", ""); 
+            }, 5000);
+        }
     }
 
     logMsg(msg)
@@ -98,6 +110,30 @@ export class App
         return this.pathsRepo;
     }
 
+    getFileContents(filesystem, filename)
+    {
+        switch(filesystem)
+        {
+        case "paths":
+            return this.pathsRepo.getContents(filename);
+        default:
+            this.error("unknown filesystem:" + filesystem);
+            return "";
+        }
+    }
+
+    setFileContents(filesystem, filename, txt)
+    {
+        switch(filesystem)
+        {
+        case "paths":
+            return this.pathsRepo.setContents(filename, txt);
+        default:
+            this.error("unknown filesystem:" + filesystem);
+            break;
+        }
+    }
+
     // onReady is invoked after all scripts have finished loading.
     onReady()
     {
@@ -110,6 +146,7 @@ export class App
         this.webapi = new WebAPISubscriber();
         this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
         this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
+
 
         // we establish default values for nettab entries onConnect
         NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this),
