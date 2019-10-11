@@ -926,14 +926,14 @@
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}:8080",
+                                "ip": "${driverfrontcam}:5805",
                                 "cls": "size1280",
                                 "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverbackcam}:8080",
+                                "ip": "${driverbackcam}:5805",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },
