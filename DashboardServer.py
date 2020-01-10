@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# here python should be python3 variant...
 '''
     This is our dashboard server application, using the tornado handlers,
     that you can use to connect your HTML/Javascript dashboard code to
@@ -16,6 +17,10 @@
 from os.path import abspath, dirname, exists, join
 from optparse import OptionParser
 
+import sys
+
+import mimetypes
+
 import tornado.web
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
@@ -31,6 +36,14 @@ import pylib.ApiHandler as ApiHandler
 import functools
 import logging
 logger = logging.getLogger('dashboard')
+
+import asyncio
+
+mimetypes.add_type("text/javascript", ".js")
+
+if sys.platform == 'win32':
+    # python-3.8
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  
 
 def initNetworktables(options):
     if options.dashboard:
@@ -117,5 +130,11 @@ if __name__ == '__main__':
     app.listen(options.port)
     ioLoop = IOLoop.current()
     robotlog.initConnection(ioLoop)
-    ioLoop.start()
+
+    try:
+        ioLoop.start()
+    except KeyboardInterrupt:
+        logger.info("interrupted")
+        ioLoop.stop()
+        exit()
 
