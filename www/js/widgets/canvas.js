@@ -243,28 +243,30 @@ class CanvasWidget extends Widget
                     this.canvasCtx.shadowOffsetX = 0;
                     this.canvasCtx.shadowOffsetY = 0;
                     this.canvasCtx.shadowBlur = 8;
-
-                    var turretOffset = 80 * (w / 360); //get from networktables
+                    var turretOffset = document.getElementById("turretOffsetSliderSlider").value; //get from networktables
                     //
                     // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
                     //
                     // Add thickness/box for accuracy of shooter
+                    item.viewAngle = document.getElementById("visionViewSliderSlider").value;
+                    var boxWidth = item.viewAngle * w/360;
+
                     this.canvasCtx.lineWidth = item.lineWidth;
-                    if(Math.abs(turretOffset) > (90 * (w / 360))) {
+                    if(Math.abs(turretOffset) > 90) {
                         this.canvasCtx.strokeStyle = "rgba(255, 0, 0, 1)";
-                    } else if(Math.abs(turretOffset) > (item.boxWidth / 360) && Math.abs(turretOffset) <= (90 * (w / 360))) {
+                    } else if(Math.abs(turretOffset) > item.viewAngle / 2 && Math.abs(turretOffset) <= 90) {
                         this.canvasCtx.strokeStyle = "rgba(255, 255, 0, 1)";
-                    } else if(Math.abs(turretOffset) <= ((item.boxWidth / 2)) && turretOffset != 0) {
+                    } else if(Math.abs(turretOffset) <= (item.viewAngle / 2) && turretOffset != 0) {
                         this.canvasCtx.strokeStyle = "rgba(0, 255, 0, 1)";
                     } else if(turretOffset == 0) {
                         this.canvasCtx.strokeStyle = "rgba(255, 255, 255, 1)";
                     }
-                    this.canvasCtx.fillRect(centerX - item.boxWidth/2, 20, item.boxWidth, item.boxHeight);
-                    this.canvasCtx.strokeRect(centerX - item.boxWidth/2, 20, item.boxWidth, item.boxHeight);
+                    this.canvasCtx.fillRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
+                    this.canvasCtx.strokeRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
                     this.canvasCtx.strokeStyle = item.color1;
                     this.canvasCtx.beginPath();
-                    this.canvasCtx.moveTo(centerX + turretOffset, 20);
-                    this.canvasCtx.lineTo(centerX + turretOffset, item.boxHeight + 20);
+                    this.canvasCtx.moveTo(centerX + turretOffset * (w / 360), 20);
+                    this.canvasCtx.lineTo(centerX + turretOffset * (w / 360), item.boxHeight + 20);
                     this.canvasCtx.stroke();
 
                     this.canvasCtx.restore();

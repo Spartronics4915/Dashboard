@@ -78,7 +78,7 @@
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
-                        "url": "/images/field2019.png",
+                        "url": "/images/field2020.png",
                         "cls": "nopointer size1x"
                     }
                 },
@@ -222,7 +222,7 @@
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
-                        "url": "/images/field2019.png",
+                        "url": "/images/field2020.png",
                         "cls": "nopointer size1x"
                     }
                 },
@@ -284,7 +284,9 @@
                                             "backwheels": "blue",
                                             "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
-                                            "body/active": "rgba(200,150,100,.8)"
+                                            "body/active": "rgba(200,150,100,.8)",
+                                            "visionArea/search": "rgba(250,50,50,.8)",
+                                            "visionArea/locked": "rgba(50,250,50,.8)"
                                         }
                                     },
                                     "label": {
@@ -899,6 +901,30 @@
             "navtext": "videostream",
             "widgets": [
                 {
+                    "type": "slider",
+                    "id": "visionViewSlider",
+                    "label": "Vision View Angle:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "slider",
+                    "id": "turretOffsetSlider",
+                    "label": "Turret Offset:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider2"],
+                    "params": {
+                        "min": -180,
+                        "max": 180,
+                        "step": 1
+                    }
+                },
+                {
                     "type": "videostream",
                     "id": "driverstream",
                     "size": ["fill", "fill"],
@@ -989,6 +1015,9 @@
                                     "key": "Driver/VideoStreamOverlay/Crosshairs",
                                     "class": "crosshairs",
                                     "enable": true,
+                                    "formatStyle": 1,
+                                    "viewAngle": 0,
+                                    "boxHeight": 20,
                                     "color1": "rgba(255, 255, 0, 1)",
                                     "color2": "rgba(0, 0, 0, 1)",
                                     "lineWidth": 2,
