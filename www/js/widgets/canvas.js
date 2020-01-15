@@ -243,24 +243,32 @@ class CanvasWidget extends Widget
                     this.canvasCtx.shadowOffsetX = 0;
                     this.canvasCtx.shadowOffsetY = 0;
                     this.canvasCtx.shadowBlur = 8;
+                    var turretOffset = document.getElementById("turretOffsetSliderSlider").value; //get from networktables
+                    //
+                    // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
+                    //
+                    // Add thickness/box for accuracy of shooter
+                    item.viewAngle = document.getElementById("visionViewSliderSlider").value;
+                    var boxWidth = item.viewAngle * w/360;
 
-                    this.canvasCtx.strokeStyle = item.color1;
                     this.canvasCtx.lineWidth = item.lineWidth;
-                    this.canvasCtx.beginPath();
-                    this.canvasCtx.moveTo(centerX, 0);
-                    this.canvasCtx.lineTo(centerX, h);
-                    this.canvasCtx.stroke();
-                    if(false)
-                    {
-                        // just use shadow
-                        this.canvasCtx.beginPath();
-                        this.canvasCtx.strokeStyle = item.color2;
-                        this.canvasCtx.moveTo(centerX - item.lineWidth, 0);
-                        this.canvasCtx.lineTo(centerX - item.lineWidth, h);
-                        this.canvasCtx.moveTo(centerX + item.lineWidth, 0);
-                        this.canvasCtx.lineTo(centerX + item.lineWidth, h);
-                        this.canvasCtx.stroke();
+                    if(Math.abs(turretOffset) > 90) {
+                        this.canvasCtx.strokeStyle = "rgba(255, 0, 0, 1)";
+                    } else if(Math.abs(turretOffset) > item.viewAngle / 2 && Math.abs(turretOffset) <= 90) {
+                        this.canvasCtx.strokeStyle = "rgba(255, 255, 0, 1)";
+                    } else if(Math.abs(turretOffset) <= (item.viewAngle / 2) && turretOffset != 0) {
+                        this.canvasCtx.strokeStyle = "rgba(0, 255, 0, 1)";
+                    } else if(turretOffset == 0) {
+                        this.canvasCtx.strokeStyle = "rgba(255, 255, 255, 1)";
                     }
+                    this.canvasCtx.fillRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
+                    this.canvasCtx.strokeRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
+                    this.canvasCtx.strokeStyle = item.color1;
+                    this.canvasCtx.beginPath();
+                    this.canvasCtx.moveTo(centerX + turretOffset * (w / 360), 20);
+                    this.canvasCtx.lineTo(centerX + turretOffset * (w / 360), item.boxHeight + 20);
+                    this.canvasCtx.stroke();
+
                     this.canvasCtx.restore();
                 }
                 break;

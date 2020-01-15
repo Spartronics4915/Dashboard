@@ -31,6 +31,8 @@ export class Trajectory
     {
         if(config.mode == "robot")
         {
+            let visionViewAngle = Math.PI/4;
+            let visionDist = 20;
             let constants = Constants.getInstance();
             let yrad = constants.drive.CenterToSide;
             let xrad = constants.drive.CenterToFront;
@@ -59,6 +61,7 @@ export class Trajectory
                 else
                 {
                     this._drawTimeBar(p, xrad, yrad, ctx, config);
+                    this._drawVisionViewCone(p, visionDist, visionViewAngle, ctx, config);
                     break;
                 }
             }
@@ -77,6 +80,19 @@ export class Trajectory
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
         ctx.fillRect(-xrad, -yrad, 2*xrad, 2*yrad);
+        ctx.restore();
+    }
+
+    _drawVisionViewCone(p, visionDist, visionViewAngle, ctx, config)
+    {
+        ctx.save(); // no functionality for search sweeping or locking to target yet. 
+        ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red
+        ctx.translate(p.translation.x, p.translation.y);
+        ctx.rotate(p.rotation.getRadians());
+        ctx.beginPath();
+        ctx.arc(0, 0, visionDist * 10, (visionViewAngle / 2), -(visionViewAngle / 2), true);
+        ctx.lineTo(0,0);
+        ctx.fill();
         ctx.restore();
     }
 

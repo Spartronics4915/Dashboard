@@ -35,7 +35,7 @@ export class App
         this.config.shownav = true;
         this.config.netTabVersion = 1802;
         this.config.demoMode = false;
-        this.config.layout = "/layouts/layout2019.json";
+        this.config.layout = "/layouts/layout2020.json";//layout to use.
         this.config.layoutEnv = "default";
         this.config.demomode = false;
 
