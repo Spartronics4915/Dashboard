@@ -31,17 +31,24 @@ class Layout
         this.environments = this.layout.environments;
         if(this.environments != undefined)
         {
-            this.env = this.environments[this.config.envname];
-            if(this.env != undefined)
-            {
-                this.layoutBefore = this.layout;
-                this.layout = this._doSubst(jqXHR.responseText, this.env);
-            }
-            else
+            // compose named env over default
+            let namedEnv = this.environments[this.config.envname];
+            if(!namedEnv)
             {
                 app.warning("layout.environments is missing " +
                                 this.config.envname);
             }
+            this.env = Object.assign({}, this.environments.default, namedEnv);
+            this.layoutBefore = this.layout;
+            this.layout = this._doSubst(jqXHR.responseText, this.env);
+        }
+        this.season = this.layout.season;
+        if(!this.season)
+        {
+            this.season = {
+                "year": "2019",
+                "robotid": "FirstRobot"
+            };
         }
         this.pageTemplates = this.layout.pageTemplates;
         let htmlList = [];

@@ -1,5 +1,5 @@
 {
-    "layoutName": "Test2019.json",
+    "layoutName": "Test2020.json",
     "environments": {
         "default": {
             "//": "official robot settings",
@@ -8,7 +8,8 @@
             "driverbackcam": "10.49.15.11",
             "driverfrontcam": "10.49.15.12",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf"
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "robotid": "main2020"
         },
         "dana": {
             "envparam": "env=dana",
@@ -25,6 +26,10 @@
             "driverfrontcam": "10.49.15.110",
             "visionbackcam": "10.49.15.111"
         }
+    },
+    "season": {
+        "year": "2020",
+        "robotid":  "${robotid}"
     },
     "pageTemplates": [
         { "//": "--------- driver page -------------------------- ",
@@ -152,31 +157,6 @@
                                     "font": "30px Impact",
                                     "fillStyle": "rgba(255, 255, 10, .85)",
                                     "value": ""
-                                },
-                                {
-                                    "key": "Robot/Pressure",
-                                    "class": "gauge",
-                                    "subclass": "linear",
-                                    "enable": true,
-                                    "origin": [220, 5],
-                                    "size": [150, 50],
-                                    "range": [0, 120],
-                                    "bgColor": "rgba(45, 45, 110, .8)",
-                                    "fgColors": [
-                                        [0, "rgba(255,0,0, .5)"],
-                                        [70, "rgba(255,40,0, .5)"],
-                                        [80, "rgba(200,255,0, .7)"],
-                                        [100, "rgba(100,255, 0, .7)"],
-                                        [120, "rgba(0, 255, 0, .7)"]
-                                                ],
-                                    "value": 95,
-                                    "label": {
-                                        "offset": [10, 30],
-                                        "text": "Pressure {value}",
-                                        "font": "18px Verdana",
-                                        "fillStyle": "#ddd",
-                                        "precision": 1
-                                    }
                                 }
                             ]
                         }
@@ -223,6 +203,7 @@
                     {
                         "overlayId": "fieldmapOverlay",
                         "url": "/images/field2020.png",
+                        "//": "mouse tracking handled by fieldMapOverlayCanv",
                         "cls": "nopointer size1x"
                     }
                 },

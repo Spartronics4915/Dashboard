@@ -292,7 +292,10 @@ function _adjustPose(refpt, pose)
         return pose;
 }
 
-const field =
+// Field is always in inches, since field measurements are provided that way
+// GameConfig may require robots and paths in m or in, so we convert in-m-in
+// on the fly.
+const Field = 
 {
     xsize: 54*12, // 648
     ysize: 27*12, // 324
@@ -305,7 +308,7 @@ const field =
 //  on approach. Path reversal, mirroring is dealt with 
 //  elsewhere. Don't create reversal or mirror-sensitive
 //  landmarks.
-const landmarks =  
+const landmarks2019 =  
 {
     bottomLeftLoadingStation: Pose2d.fromXYTheta(0, -136, 0),
     topLeftLoadingStation: Pose2d.fromXYTheta(0, 136, 0),
@@ -323,15 +326,24 @@ const landmarks =
     centerCargoBay2: Pose2d.fromXYTheta(220, -11, 0),
     leftHabZoneMin:Pose2d.fromXYTheta(46, -76, 0),
     leftHabZoneMax:Pose2d.fromXYTheta(96, 76, 0),
+}
+
+const landmarks2020 = 
+{
+    leftmidRight: Pose2d.fromXYTheta(0, 0, 0),
+    rightmidLeft: Pose2d.fromXYTheta(Field.xsize-1, 0, 180),
+    midmidRight: Pose2d.fromXYTheta(Field.xsize*.5, 0, 0),
+    midmidLeft: Pose2d.fromXYTheta(Field.xsize*.5, 0, 180),
 };
 
 // a repository for paths, keyed by pathname
 export class PathsRepo
 {
-    constructor()
+    constructor(year="2019")
     {
         this.pathMap = {};
-        this._createPaths();
+        this.year = year;
+        this._createPaths(year);
         // load more from disk, localStorage, etc
     }
 
@@ -378,6 +390,34 @@ export class PathsRepo
 
     _createPaths()
     {
+        switch(this.year)
+        {
+        case "2020":
+            this._createPaths2020();
+            break;
+        case "2019":
+        default:
+            this._createPaths2019();
+            break;
+        }
+    }
+
+    _createPaths2020()
+    {
+        let landmarks = landmarks2020;
+        this.addPath(new Path("test1", [
+                    _adjustPose("backcenter", landmarks.leftmidRight),
+                    _adjustPose("frontcenter", landmarks.midmidRight),
+                    ]));
+        this.addPath(new Path("test1Reverse", [
+                    _adjustPose("backcenter", landmarks.leftmidRight),
+                    _adjustPose("frontcenter", landmarks.midmidRight),
+                    ]).reverse());
+    }
+
+    _createPaths2019()
+    {
+        let landmarks = landmarks2019;
         const lhabMin = _adjustPose("frontleft", landmarks.leftHabZoneMin);
         const lhabMax = _adjustPose("backright", landmarks.leftHabZoneMax);
         const maxVel = 16; // travel 4 ft in 3 sec: 16ips

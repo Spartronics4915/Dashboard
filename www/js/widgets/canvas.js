@@ -129,6 +129,10 @@ class CanvasWidget extends Widget
                 }
             }
         }
+        else
+        {
+            console.debug("no overlay config params");
+        }
     }
 
     _evtToCanvasCoords(evt)
@@ -243,6 +247,9 @@ class CanvasWidget extends Widget
                     this.canvasCtx.shadowOffsetX = 0;
                     this.canvasCtx.shadowOffsetY = 0;
                     this.canvasCtx.shadowBlur = 8;
+
+                    // XXX: we need to make this year-agnostic by providing
+                    // generic controls that can be configured via the layout file.
                     var turretOffset = document.getElementById("turretOffsetSliderSlider").value; //get from networktables
                     //
                     // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
@@ -851,14 +858,15 @@ class CanvasWidget extends Widget
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
-        if(!item.value) return;
         let coords = null, fcoords = null;
         if(evt != undefined)
         {
             // has the side-effect of printing canvas coords
             coords = this._evtToCanvasCoords(evt);
-            fcoords = this._canvasToFieldCoords(coords);
+            fcoords = this._canvasToFieldCoords(coords); // updates nettables
         }
+        if(!item.value) return;
+
         let path = app.getPathsRepo().getPath(item.value);
         if(path != null)
         {
@@ -908,8 +916,6 @@ class CanvasWidget extends Widget
                 }
             }
         }
-        else
-            app.warning("missing path " + item.value);
     }
 
     addRandomPt()

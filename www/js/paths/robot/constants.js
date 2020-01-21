@@ -5,6 +5,7 @@ export class Constants
 {
     static setRobotId(id)
     {
+        console.assert(id);
         s_defaultRobotId = id;
     }
 
@@ -56,7 +57,42 @@ export class Constants
                 AngularDrag: 12,   // N*m/(rad/sec)
             };
             break;
+        case "main2020":
+            // copied from 2019, XXX: update me when we actually know the
+            // robot parameters.
+            this.drive =
+            {
+                WheelBase: 25.75,
+                WheelDiameter: 6,
+                WheelRadius: 3,
+                TrackScrubFactor: 1.1982,
+                RightTransmission: {
+                    Ks: .9167,
+                    Kv: .2405,
+                    Ka: .0651,
+                },
+                LeftTransmission: {
+                    Ks: .9238,
+                    Kv: .2448,
+                    Ka: .0643,
+                },
+                CenterToFront: 17.625, // in
+                CenterToSide: 18.75,
+                // hm what about CenterToBack?
+                VelocityKp: .3,
+            };
+            this.robot =
+            {
+                LinearInertia: 67.812 + 5, // kg
+                AngularInertia: 5.58, // moment of inertia
+                AngularDrag: 12,   // N*m/(rad/sec)
+                // XXX: add support for view-cones to represent
+                // camera or turret views.  This could be an array.
+                // 
+            };
+            break;
         case "SecondRobot":
+        case "SecondRobot2019":
             this.drive =
             {
                 WheelBase: 25.75,
@@ -86,6 +122,7 @@ export class Constants
             };
             break;
         case "FirstRobot":
+        case "FirstRobot2019":
         default:
             this.drive =
             {

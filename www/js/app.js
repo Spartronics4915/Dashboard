@@ -35,11 +35,13 @@ export class App
         this.config.shownav = true;
         this.config.netTabVersion = 1802;
         this.config.demoMode = false;
-        this.config.layout = "/layouts/layout2020.json";//layout to use.
+        // default layout to use, potentially overridden by URI args
+        this.config.layout = "/layouts/layout2020.json";
         this.config.layoutEnv = "default";
         this.config.demomode = false;
 
         // nb: initialization of js members occurs in 'onReady'
+        this.pathsRepo = null;
         this.robotAddr = null;
         this.robotId = null;
         this.robotLog = null;
@@ -138,31 +140,19 @@ export class App
     onReady()
     {
         this.firstLoad = false;
-        this.pathsRepo = new PathsRepo();
         this.robotStateMgr = new RobotStateMgr();
-        this.robotLog = new RobotLog();
-        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
-                                                true);
-        this.webapi = new WebAPISubscriber();
-        this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
-        this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
-
-
-        // we establish default values for nettab entries onConnect
-        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this),
-                                                true);
-        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
-                                                true);
-        NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
-
-        window.onbeforeunload = this.onBeforeUnload.bind(this);
-
         this._parseURLSearch(); // override layout and env
         this.layout = new window.Layout({
             layout: this.config.layout,
             envname: this.config.layoutEnv,
             onLoad: this.onLayoutLoaded.bind(this)
         });
+
+        // NB: we wait 'til onLayoutLoaded to connect with robot and
+        // networktables - because the layout may establish parameters
+        // for characterizing default robot and field conditions.
+
+        window.onbeforeunload = this.onBeforeUnload.bind(this);
     }
 
     onBeforeUnload(evt)
@@ -244,6 +234,28 @@ export class App
 
     onLayoutLoaded()
     {
+        if(this.layout.season)
+        {
+            if(this.layout.season.robotid)
+                Constants.setRobotId(this.layout.season.robotid);
+            this.pathsRepo = new PathsRepo(this.layout.season.year);
+        }
+        else
+            this.pathsRepo = new PathsRepo();
+
+        this.robotLog = new RobotLog();
+        this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
+                                                true);
+        this.webapi = new WebAPISubscriber();
+        this.webapi.addWsConnectionListener(this.onWebSubConnect.bind(this));
+        this.webapi.addSubscriber(this.onWebSubMsg.bind(this));
+
+        // we establish default values for nettab entries onConnect
+        NetworkTables.addWsConnectionListener(this.onNetTabConnect.bind(this),
+                                                true);
+        NetworkTables.addRobotConnectionListener(this.onRobotConnect.bind(this),
+                                                true);
+        NetworkTables.addGlobalListener(this.onNetTabChange.bind(this), true);
         // install globally visible widgets
         let targetEl = $(document.getElementById("batteryVoltage"));
         if(targetEl)
@@ -567,7 +579,8 @@ export class App
         this.putValueIfUndefined("Driver/Camera1", "Test");
         this.putValueIfUndefined("Driver/Camera2", "Test");
         this.putValueIfUndefined("Driver/VideoStream", "Test");
-        this.putValue("Paths/Options", this.pathsRepo.getPathNames().join(","));
+        if(this.pathsRepo)
+            this.putValue("Paths/Options", this.pathsRepo.getPathNames().join(","));
 
         // subtlety: should we re-establish values for AutoStrategy
         //  on the grounds that the user's choice should always take
