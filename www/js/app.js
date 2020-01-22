@@ -14,7 +14,7 @@
 *
 **/
 
-import PathsRepo from "/js/paths/paths.js";
+import PathsRepo from "/js/paths/pathsrepo.js";
 import RobotStateMgr from "./robotStateMgr.js";
 import Constants from "./paths/robot/constants.js"; 
 

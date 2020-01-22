@@ -91,6 +91,8 @@ class CanvasWidget extends Widget
         return Object.keys(hiddenMap);
     }
 
+    // onIdle is registered with app as a "page idler", called when associated
+    // page is visible.
     onIdle()
     {
         if(this.config.params.overlay  && this.config.params.overlay.enable)
@@ -99,6 +101,8 @@ class CanvasWidget extends Widget
         }
     }
 
+    // like all widgets, changes to requested networktable keys ('ntkeys') 
+    // trigger this message.
     valueChanged(key, value, isNew)
     {
         this._updateOverlay(key, value, isNew);
@@ -106,6 +110,8 @@ class CanvasWidget extends Widget
             this.lastVisionKeyUpdate = new Date();
     }
 
+    // when this canvas widget is of class "yespointer", this method is
+    // invoked with mouse events.
     _onMouseMove(evt)
     {
         if(this.config.params.overlay)
