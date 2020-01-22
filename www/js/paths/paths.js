@@ -405,6 +405,11 @@ export class PathsRepo
     _createPaths2020()
     {
         let landmarks = landmarks2020;
+        this.addPath(new Path("home", []));
+        this.addPath(new Path("midfield", [
+                    landmarks.midmidRight,
+                    landmarks.midmidRight,
+                    ]));
         this.addPath(new Path("test1", [
                     _adjustPose("backcenter", landmarks.leftmidRight),
                     _adjustPose("frontcenter", landmarks.midmidRight),

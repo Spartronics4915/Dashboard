@@ -11,17 +11,27 @@ export class Spline2Sampler
 {
     static sampleSplines(spline2array, maxDx, maxDy, maxDTheta)
     {
-        let accum = []; // array of post2d with curvature
-        if(maxDx == undefined) maxDx = kMaxDX;
-        if(maxDy == undefined) maxDy = kMaxDY;
-        if(maxDTheta == undefined) maxDTheta = kMaxDTheta;
-        accum.push(spline2array.get(0).getPose2dWithCurvature(0.0));
-        for(let i=0;i<spline2array.length;i++)
+        let accum = []; // array of pose2d with curvature
+        if(spline2array.length > 0)
         {
-            let s = spline2array.get(i);
-            Spline2Sampler.sampleSpline(s, accum, 0.0, 1.0,
-                                        maxDx, maxDy, maxDTheta, 
-                                        /*skip first*/ true);
+            if(maxDx == undefined) maxDx = kMaxDX;
+            if(maxDy == undefined) maxDy = kMaxDY;
+            if(maxDTheta == undefined) maxDTheta = kMaxDTheta;
+            accum.push(spline2array.get(0).getPose2dWithCurvature(0.0));
+            for(let i=0;i<spline2array.length;i++)
+            {
+                let s = spline2array.get(i);
+                Spline2Sampler.sampleSpline(s, accum, 0.0, 1.0,
+                                            maxDx, maxDy, maxDTheta, 
+                                            /*skip first*/ true);
+            }
+        }
+        else
+        {
+            let pose = Pose2d.fromIdentity();
+            pose.curvature = 0;
+            pose.dcurvature = 0;
+            accum.push(pose);
         }
         return accum;
     }
