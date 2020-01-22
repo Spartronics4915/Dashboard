@@ -53,7 +53,16 @@ export default class PathsRepo
     {
         this.pathMap = {};
         this.year = year;
-        this._createPaths(year);
+        switch(year)
+        {
+        case "2020":
+            this._createPaths2020();
+            break;
+        case "2019":
+        default:
+            this._createPaths2019();
+            break;
+        }
         // load more from disk, localStorage, etc
     }
 
@@ -96,20 +105,6 @@ export default class PathsRepo
     addPath(path)
     {
         this.pathMap[path.name] = path;
-    }
-
-    _createPaths()
-    {
-        switch(this.year)
-        {
-        case "2020":
-            this._createPaths2020();
-            break;
-        case "2019":
-        default:
-            this._createPaths2019();
-            break;
-        }
     }
 
     _createPaths2020()
