@@ -1,0 +1,551 @@
+/* general ------------------------------------------*/
+html, body
+{
+    height: 100%;
+    padding: 5px;
+    margin: 0px;
+    background-color: #111111;
+    color: #888888;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    border-color: yellow;
+}
+
+hr
+{
+    color:#25b;
+    border-color: #25b;
+    margin-top: 1px;
+}
+
+td
+{
+    padding: 4px;
+}
+
+label
+{
+    font-size: 14px;
+    font-weight: normal;
+}
+
+a:link /* unvisited link */
+{
+    color: rgb(43, 116, 253)
+}
+
+a:visited /* visited link */
+{
+    color: rgb(43, 116, 253)
+}
+
+a:hover /* mouse over link */
+{
+    color: rgb(200,130,0);
+}
+
+a:active /* selected link */
+{
+    color: rgb(200,130,0);
+}
+
+.flex
+{
+    display: flex;
+    align-items: center;
+}
+
+.bigfont
+{
+  font-size: 30px; /* overridden when in .container below */
+}
+
+.title
+{
+    font-size: 150%;
+    color:#25b;
+    padding-right: 10px;
+}
+
+.paneltitle
+{
+    font-size: 110%;
+    color:#25b;
+    padding-right: 10px;
+}
+
+.yellow
+{
+  color: rgb(200,200,10);
+}
+
+.amber
+{
+  color: rgb(200,130,0);
+}
+
+.red
+{
+    color: rgb(200, 30, 30);
+}
+
+.blue
+{
+    color: rgb(30, 90, 255);
+}
+
+.lessblue
+{
+    color: rgb(86,111,181);
+}
+
+.green
+{
+  color: rgb(3, 83, 17);
+}
+
+.strong
+{
+    color: #aaa;
+}
+
+.weak
+{
+    color: #666;
+}
+
+.blinkRed
+{
+  animation:blinkingRed 0.8s infinite;
+}
+
+.spinimg
+{
+    width: 60%;
+    animation: spin 4s linear infinite;
+}
+
+/* animation --------------------------------------*/
+@-moz-keyframes spin {
+    100% { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); }
+}
+
+@keyframes blinkingRed
+{
+    0% { color: red; }
+    49% { color: transparent; }
+    50% { color: transparent; }
+    100% { color:red; }
+}
+
+/* rotate0,90 are used by camera */
+.rotate90
+{
+    transform: rotate(90deg) translate(12%, 0%);
+    border: 1px solid gray;
+}
+
+.rotate0
+{
+    transform: rotate(0deg);
+    border: 1px solid blue;
+}
+
+.size640
+{
+    width: 640px;
+}
+
+.size720
+{
+    width: 720px;
+}
+
+.size1024
+{
+    width: 1024px;
+}
+
+.size1280
+{
+    width: 1280px;
+}
+
+.size1x
+{
+    width: 100%;
+}
+
+.size2x
+{
+    width: 200%;
+}
+
+.scaled /* manually determined pct to "fill" a screen with h264 */
+{
+    width: 180%;
+}
+
+.halfsize
+{
+    width: 50%;
+}
+
+.invalid
+{
+    border: 1px solid rgb(200,130,0);
+}
+
+/* navbar -------------------------------------------*/
+nav
+{
+    display: flex;
+    align-items: center;
+    border-bottom: 4px solid black;
+    background-color: #222;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    height: 50px; /* This should match .container margin */
+    z-index: 10; /* make sure navbar is always above scrolling content */
+}
+
+nav > div
+{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-radius: 5px;
+}
+
+.nopadX
+{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+nav .fas
+{
+    font-size: 32px;
+}
+
+nav .fas.primary
+{
+    font-size: 50px;
+}
+
+#navlogo > img
+{
+    width: 35px;
+}
+
+.videomsg
+{
+    color: rgb(136, 128, 24);
+    text-align: right;
+}
+
+#navtitle
+{
+    font-size: 18px;
+    padding-left: 0px;
+}
+
+.navtab
+{
+    font-size: 16px;
+}
+
+.navtab.active a
+{
+    color: yellow;
+}
+
+.navtab:hover a
+{
+    color: rgb(200,200,25);
+}
+
+.navtab > a
+{
+    text-decoration: none;
+    color:#24F;
+}
+
+#alert
+{
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;  
+    left: 50%;  
+    bottom: 30px;  
+    font-size: 16px;
+}
+
+#alert.show
+{
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 5s;
+}
+
+@keyframes fadein 
+{
+    from {bottom: 0; opacity: 0;}  
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout 
+{
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+footer
+{
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: 100%; /* Full width */
+    height: 30px;
+    font-size: 14px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: #111;
+    padding-top: 5px;
+}
+
+#footerpad
+{
+    width: 100%;
+    height: 30px; /* matches footer, ensures that we can scroll to end */
+}
+
+/* widget layout --------------------------------------*/
+/* learn css grid: https://scrimba.com/g/gR8PTE */
+
+#mainlayout
+{
+    margin-top: 40px;
+}
+
+.container
+{
+    border-left-style: solid;
+    border-left-color:#222; /* rgb(1, 25, 49);*/
+    border-left-width: 5px;
+}
+
+.gridded
+{
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
+    /* grid-auto-flow: row/dense */
+}
+
+.containerrow
+{
+    grid-column: 1/-1;
+    grid-row: span 3;
+    display: flex;
+    align-items: center;
+    padding-top:5px;
+    padding-bottom:0px;
+}
+
+.nopointer
+{
+    pointer-events: none;
+}
+
+.yespointer
+{
+    pointer-events: all;
+}
+
+.xtrapad
+{
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+.fullheight
+{
+    height: 100%; /* nb: prevents scrolling */
+}
+
+.container > div
+{
+    background-color: #222;
+    align-items: center;
+    vertical-align: baseline;
+    padding: 0px; /* was 5, 0 is tighter */
+}
+
+.container strong
+{
+    color: #aaa;
+}
+
+.container .bigfont
+{
+    font-size: 20px;
+    vertical-align: baseline;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+}
+
+.systemstate
+{
+    color: #16c;
+    background-image: linear-gradient(#111, #111);
+    /* vertical-align: baseline; */
+}
+
+.references
+{
+    font-size: 14px;
+    margin: 10px;
+}
+
+/* widgets -------------------------------------------*/
+input:focus,
+input:hover,
+select:focus,
+select:hover
+{
+    outline: 1px solid rgb(136, 128, 24);
+}
+
+button
+{
+    color: #ccc;
+    background-color: #111;
+    border-color: rgb(30, 30, 40) rgb(25,25,40) rgb(30,30,40);
+    border-style: solid;
+    border-width: 1px;
+}
+
+input,
+select
+{
+    color: #888888;
+    background-color: #111;
+    padding: 4px 4px;
+    margin-left: 5px;
+    border-radius: 5px;
+    border: 0px;
+    font-size: 14px;
+}
+
+input[type="number"]
+{
+    width: 80px;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button
+{
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="checkbox"]
+{
+    margin-top: 5px;
+}
+
+input[type="text"]
+{
+    /* margin-top: 5px; */
+}
+
+.cameraViewImg
+{
+    width: 640px;
+    height: 480px;
+    background-color: black;
+}
+
+.textEditorWidget
+{
+    position: relative;
+}
+
+.textEditor
+{ 
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.ace_gutter
+{
+    z-index: 0; /* prevent ace gutter from occluding the footer */
+}
+
+/* robolog -------------------------------------------*/
+.logmsg
+{
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.timestamp
+{
+    color: #555;
+}
+
+.namespace
+{
+    color: #383;
+}
+
+.DEBUG
+{
+   color: #555;
+}
+
+.INFO
+{
+   color: #248;
+}
+
+.NOTICE
+{
+   color: #24F;
+}
+
+.WARNING
+{
+    color: #842;
+}
+
+.ERROR,
+.EXCEPTION
+{
+    color: #822;
+}

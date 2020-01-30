@@ -1,0 +1,1026 @@
+{
+    "layoutName": "Test2020.json",
+    "environments": {
+        "default": {
+            "//": "official robot settings",
+            "envparam": "env=default",
+            "visionbackcam": "10.49.15.10",
+            "driverbackcam": "10.49.15.11",
+            "driverfrontcam": "10.49.15.12",
+            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "robotid": "main2020"
+        },
+        "dana": {
+            "envparam": "env=dana",
+            "driverbackcam": "192.168.0.7",
+            "driverfrontcam": "192.168.0.8",
+            "visionbackcam": "192.168.0.8",
+            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+        },
+        "test": {
+            "//": "available for editing on-the-fly",
+            "envparam": "env=test",
+            "driverbackcam": "10.49.15.109",
+            "driverfrontcam": "10.49.15.110",
+            "visionbackcam": "10.49.15.111"
+        }
+    },
+    "season": {
+        "year": "2020",
+        "robotid":  "${robotid}"
+    },
+    "pageTemplates": [
+        { "//": "--------- driver page -------------------------- ",
+            "icon": "fas fa-gamepad primary",
+            "navtext": "Compete",
+            "widgets": [
+                {
+                    "type": "systemstate",
+                    "id": "compete",
+                    "label": "Driver Interface",
+                    "size": ["fill", "row"],
+                    "wsize": [800, "row"],
+                    "widgets": [
+                        {
+                            "type": "fieldconfig",
+                            "label": "Field Config",
+                            "id": "fieldconfig",
+                            "size": [800, "row"],
+                            "ntkeys": [
+                                "AutoStrategy",
+                                "AutoStrategyOptions",
+                                "/FMSInfo/IsRedAlliance",
+                                "/FMSInfo/StationNumber",
+                                "/FMSInfo/GameSpecificMessage",
+                                "/FMSInfo/ReplayNumber",
+                                "/FMSInfo/FMSControlData",
+                                "/FMSInfo/EventName",
+                                "/FMSInfo/MatchType",
+                                "/FMSInfo/MatchNumber"
+                            ],
+                            "params": {
+                                "videoStream":
+                                {
+                                    "label": "VideoStream",
+                                    "ntkey": "Driver/VideoStream",
+                                    "//": "make sure these options are substrings of videochannel's streams array",
+                                    "options": [
+                                        "Test",
+                                        "Front",
+                                        "Back"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "img",
+                    "id": "fieldmap",
+                    "size": ["fill", "fill"],
+                    "params":
+                    {
+                        "overlayId": "fieldmapOverlay",
+                        "url": "/images/field2020.png",
+                        "cls": "nopointer size1x"
+                    }
+                },
+                {
+                    "type": "canvas",
+                    "id": "fieldmapOverlay",
+                    "size": [0, 0],
+                    "params": {
+                        "canvcls": "nopointer",
+                        "overlay":
+                        {
+                            "enable": true,
+                            "updateinterval": 500,
+                            "//": "items drawn in order (bottom-to-top)",
+                            "items":
+                            [
+                                {
+                                    "enable": true,
+                                    "key": "RobotState/pose",
+                                    "class": "poselist",
+                                    "fillStyle": {
+                                        "AUTONOMOUS": "rgb(200,150,0)",
+                                        "TELEOP": "rgb(0,100,250)",
+                                        "DISABLED":"rgb(10,10,140)",
+                                        "OFFLINE":"rgb(10,10,100)"
+                                    },
+                                    "strokeStyle": "rgb(255,0,0)"
+                                },
+                                {
+                                    "enable": true,
+                                    "key": "Vision/Reverse/solvePNP",
+                                    "class": "rects",
+                                    "subclass": "pnp",
+                                    "targetTimeout": 500, 
+                                    "cameraOffset": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "theta": 180
+                                    },
+                                    "width": 15,
+                                    "height": 5,
+                                    "styles": [
+                                         "Chartreuse", 
+                                         "DeepPink", 
+                                         "Cyan", 
+                                         "DarkOrange"
+                                    ]
+                                },
+                                {
+                                    "enable": true,
+                                    "key": "Vision/selectedIdx",
+                                    "class": "text",
+                                    "subclass": "selection",
+                                    "origin": [400, 40],
+                                    "font": "30px Impact",
+                                    "value": "",
+                                    "prompt": "selected vision target: ",
+                                    "promptStyle": "cornflowerblue",
+                                    "range": ["Left", "Right"],
+                                    "styles": [
+                                        "Chartreuse",
+                                        "DeepPink"
+                                    ]
+                                },
+                                {
+                                    "key": "DriverStation/MatchTime",
+                                    "class": "text",
+                                    "subclass": "time",
+                                    "enable": true,
+                                    "origin": [30, 40],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        { "//": "--------- paths page -------------------------- ",
+            "navtext": "Paths",
+            "icon":  "t-highway-divided ticon", "///": "was fas fa-road",
+            "widgets": [
+                {
+                    "id": "Paths",
+                    "label": "Path Planning",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": [
+                        "Paths/Coords"
+                    ],
+                    "wsize": [600, "row"],
+                    "widgets": [
+                        {
+                            "type": "selector",
+                            "label": "Path",
+                            "id": "pathsel",
+                            "size": [200, "row"],
+                            "ntkeys": [
+                                "Paths/Current",
+                                "Paths/Options"
+                            ],
+                            "params": {
+                                "width": "18em",
+                                "ntkey": "Paths/Current",
+                                "optionsntkey": "Paths/Options"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "img",
+                    "id": "fieldmap",
+                    "size": [1280, "fill"],
+                    "params":
+                    {
+                        "overlayId": "fieldmapOverlay",
+                        "url": "/images/field2020.png",
+                        "//": "mouse tracking handled by fieldMapOverlayCanv",
+                        "cls": "nopointer size1x"
+                    }
+                },
+                {
+                    "type": "texteditor",
+                    "id": "patheditor",
+                    "size": [400, 600],
+                    "ntkeys": ["Paths/Current"],
+                    "params": {
+                        "title": "Path Editor",
+                        "theme": "ace/theme/terminal",
+                        "mode": "ace/mode/json",
+                        "filesystem": "paths"
+                    }
+                },
+                {
+                    "//": "canvas goes last since it occupies one grid",
+                    "type": "canvas",
+                    "id": "fieldmapOverlay",
+                    "size": [0, 0],
+                    "params": {
+                        "canvcls": "yespointer",
+                        "overlay":
+                        {
+                            "enable": true,
+                            "updateinterval": 20,
+                            "//": "items drawn in order (bottom-to-top)",
+                            "items":
+                            [
+                                {
+                                    "key": "RobotState/pose",
+                                    "class": "poselist",
+                                    "enable": true,
+                                    "fillStyle": {
+                                        "AUTONOMOUS": "rgb(200,150,0)",
+                                        "TELEOP": "rgb(0,100,250)",
+                                        "DISABLED":"rgb(10,10,140)",
+                                        "OFFLINE":"rgb(10,10,100)"
+                                    },
+                                    "strokeStyle": "rgb(255,0,0)"
+                                },
+                                {
+                                    "key": "Paths/Current",
+                                    "class": "path",
+                                    "enable": false,
+                                    "config": {
+                                        "mode": "optspline",
+                                        "color": "blue"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/Current",
+                                    "class": "path",
+                                    "enable": true,
+                                    "pointerevents": true,
+                                    "config": {
+                                        "mode": "robot",
+                                        "colors": {
+                                            "backwheels": "blue",
+                                            "frontwheels": "orange",
+                                            "body": "rgba(10,10,10,.08)",
+                                            "body/active": "rgba(200,150,100,.8)",
+                                            "visionArea/search": "rgba(250,50,50,.8)",
+                                            "visionArea/locked": "rgba(50,250,50,.8)"
+                                        }
+                                    },
+                                    "label": {
+                                        "fillStyle": "orange",
+                                        "font": "15px Impact"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/Current",
+                                    "class": "path",
+                                    "enable": true,
+                                    "pointerevents": true,
+                                    "config": {
+                                        "mode": "waypoints",
+                                        "color": "blue"
+                                    },
+                                    "label": {
+                                        "fillStyle": "cornflowerblue",
+                                        "font": "18px Impact"
+                                    }
+                                },
+                                {
+                                    "key": "Paths/Current",
+                                    "class": "path",
+                                    "enable": false,
+                                    "config": {
+                                        "mode": "optsplineCtls",
+                                        "color": "blue"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        { "//": "--------- drivetrain page -------------------------- ",
+            "navtext": "Drive",
+            "icon":  "fas fa-tachometer-alt",
+            "widgets": [
+                {
+                    "id": "Drive",
+                    "label": "Drive Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Drive/State",
+                              "Drive/Status"]
+                },
+                {
+                    "id": "driveOdometry",
+                    "label": "Odometry",
+                    "type": "pathplot",
+                    "size": [400, 300],
+                    "enable": false,
+                    "ntkeys": "RobotState/pose",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": -326,
+                                "max": 326,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -162,
+                                "max": 162,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "id": "driveIMU",
+                    "label": "IMU Heading",
+                    "type": "stripchart",
+                    "size": [330, 300],
+                    "ntkeys": "Drive/imuHeading",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -200,
+                                "max": 200
+                            },
+                            "widths": [1],
+                            "colors":["rgb(20,120,255)"]
+                        }
+                    }
+                },
+                {
+                    "id": "driveSpeedLeft",
+                    "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Drive/leftSpeed",
+                    "ntkeyRefs":[
+                        "Drive/leftSpeedTarget"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -80,
+                                "max": 80
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "driveSpeedRight",
+                    "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Drive/rightSpeed",
+                    "ntkeyRefs":[
+                        "Drive/rightSpeedTarget"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -80,
+                                "max": 80
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "trajectoryStates",
+                    "label": "Trajectory State - <span class='blue'>vel</span> <span class='yellow'>acc</a> <span class='amber'>curv</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "//": "expect 'velocity acceleration curvature'",
+                    "ntkeys": "DriveMotionPlanner/trajectorySetpoints",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -35,
+                                "max":  35
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100,0)"],
+                            "channelcount": 3,
+                            "widths": [1, 1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "leftSpeedoverVoltage",
+                    "label": "Left Speed vs %Vbus",
+                    "type": "pathplot",
+                    "size": [300, 300],
+                    "ntkeys": [
+                        "Drive/leftDemand"
+                    ],
+                    "ntkeyRefs": [
+                        "Drive/leftSpeed"
+                    ],
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 1,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 80,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.5,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+
+                },
+                {
+                    "enable": false,
+                    "id": "Lidar",
+                    "label": "Lidar",
+                    "type": "systemstate",
+                    "size": ["fill", 40],
+                    "ntkeys": ["Lidar/status",
+                               "Lidar/angle",
+                               "Turret/state"
+                            ]
+                },
+                {
+                    "enable": false,
+                    "id": "lidarOdometry",
+                    "label": "LIDAR Odometry",
+                    "type": "pathplot",
+                    "size": [330, 170],
+                    "ntkeys": "Lidar/pose",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 652,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -162,
+                                "max": 162,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "enable": false,
+                    "id": "lidarPoints",
+                    "label": "LIDAR Points",
+                    "type": "pathplot",
+                    "size": [330, 170],
+                    "ntkeys": "Lidar/points",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 652,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": 0,
+                                "max": 324,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.5,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            },
+                            "maxlength": 300
+                        }
+                    }
+                },
+                {
+                    "enable": false,
+                    "id": "lidarPtsRel",
+                    "label": "LIDAR Rel Points",
+                    "type": "pathplot",
+                    "size": [230, 230],
+                    "websubkeys": "lidarscan",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": -100,
+                                "max": 100,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -100,
+                                "max": 100,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 0
+                                },
+                                "points": {
+                                    "show": 1,
+                                    "radius": 0.5,
+                                    "fill": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            },
+                            "maxlength":  360
+                        }
+                    }
+                }
+            ]
+        },
+        { "//": "--------- vision page -------------------------- ",
+            "navtext": "Vision",
+            "icon":  "fas fa-eye",
+            "widgets": [
+                {
+                    "id": "Vision",
+                    "label": "Vision Subsystem",
+                    "type": "systemstate",
+                    "size": ["fill", "row"],
+                    "ntkeys": "Vision/State"
+                },
+                {
+                    "type": "cameras",
+                    "label": "Camera View",
+                    "id": "cameras",
+                    "size": [700, 700],
+                    "ntkeys": [
+                        "Vision/Camera"
+                    ],
+                    "params": {
+                        "selector": true,
+                        "cameras":
+                        {
+                            "PiCam default":
+                            {
+                                "ip": "${visionbackcam}:5080",
+                                "url": "/default.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam hsv":
+                            {
+                                "ip": "${visionbackcam}:5080",
+                                "url": "/hsv.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam bypass mjpg":
+                            {
+                                "ip": "${visionbackcam}:5080",
+                                "url": "/bypass.mjpg",
+                                "cls": "rotate0 size640"
+                            },
+                            "PiCam mask mjpg":
+                            {
+                                "ip": "${visionbackcam}:5080",
+                                "url": "/mask.mjpg",
+                                "cls": "rotate0 size640"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        { "//": "--------- test page -------------------------- ",
+            "navtext": "Test",
+            "icon": "fas fa-vial",
+            "widgets": [
+                {
+                    "type": "systemstate",
+                    "id": "Test",
+                    "label": "Test Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "selector",
+                    "label": "Test Mode",
+                    "id": "testmode",
+                    "size": [220, "row"],
+                    "ntkeys": ["TestMode",
+                               "TestModeOptions"],
+                    "params": {
+                        "width": "9em",
+                        "ntkey": "TestMode",
+                        "optionsntkey": "TestModeOptions"
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "label": "Variant",
+                    "id": "testvariant",
+                    "size": [220, "row"],
+                    "ntkeys": ["TestVariant"],
+                    "params": {
+                        "width": "10em"
+                    }
+                },
+                {
+                    "type": "systemstate",
+                    "id": "widgets",
+                    "label": "Example Widgets",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "slider",
+                    "id": "s1",
+                    "label": "A Slider",
+                    "size": [200, "row"],
+                    "ntkeys": ["Test/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "numberinput",
+                    "id": "s2",
+                    "label": "A Number",
+                    "size": [200, "row"],
+                    "ntkeys": ["Test/Number1"],
+                    "params": {
+                        "min": 0,
+                        "max": 1,
+                        "step": 0.01
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "id": "s3",
+                    "label": "Some Text",
+                    "size": [220, "row"],
+                    "ntkeys": ["Test/Text1"],
+                    "params": {
+                        "width": "8em"
+                    }
+                },
+                {
+                    "type": "checkbox",
+                    "label": "A Checkbox",
+                    "id": "s4",
+                    "size": [120, "row"],
+                    "ntkeys": ["Test/Check1"]
+                },
+                {
+                    "type": "selector",
+                    "label": "A Selector",
+                    "id": "s5",
+                    "size": [200, "row"],
+                    "ntkeys": ["Test/Sel1"],
+                    "params": {
+                        "width": "8em",
+                        "ntkey": "Test/Sel1",
+                        "options": [
+                             "blue pill",
+                             "red pill"
+                        ]
+                    }
+                },
+                {
+                    "type": "rangeslider",
+                    "size": [200, "row"],
+                    "label": "Range Slider",
+                    "id": "hrange",
+                    "ntkeys": "Test/TestRange",
+                    "params":
+                    {
+                       "min": 0,
+                       "max": 255,
+                       "from": 0,
+                       "to": 255
+                    }
+                }
+            ]
+        },
+        { "//": "--------- network tables page -------------------------- ",
+            "navtext": "Network Tables",
+            "icon": "fas fa-network-wired",
+            "pagehandler": "NetTabPH",
+            "widgets": [
+                {
+                    "type": "nettab",
+                    "label": "networktables",
+                    "id": "nettab",
+                    "size": ["fill", "fill"]
+                }
+            ]
+        },
+        { "//": "--------- robotlog page -------------------------------- ",
+            "navtext": "Robot Log",
+            "icon":  "fas fa-robot",
+            "pagehandler": "RobotlogPH",
+            "widgets": [
+                {
+                    "type": "robotdevices",
+                    "label": "devices",
+                    "id": "robotdevs",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Robot/Connections"]
+                },
+                {
+                    "type": "robotlog",
+                    "label": "robologs",
+                    "id": "robotlog",
+                    "size": ["fill", "fill"],
+                    "ntkeys": ["Robot/Verbosity"]
+                }
+            ]
+        },
+        { "//": "--------- about page --------------------------------- ",
+            "navtext": "About",
+            "icon": "fas fa-cogs",
+            "widgets": [
+                {
+                    "type": "html",
+                    "id": "about",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about2",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about3",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "about4",
+                    "size": [400, 280],
+                    "params": {
+                        "url": "/pages/about.html"
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "helpcam",
+                    "size": [200, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Camera Links</h2>",
+                            "<ul>",
+                            "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
+                            "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
+                            "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
+                            "</ul",
+                            "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
+                            "</div>"
+                        ]
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "helpdash",
+                    "size": [590, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Dashboard Links</h2>",
+                            "<ul>",
+                            "<li><a href='/index.html?${envparam}&'>Standard Launch</a>",
+                            "<li><a href='/index.html?${envparam}&demo=1'>Demo</a>",
+                            "<li><a href='/index.html?${envparam}&shownav=0&#tab8' target='_blank'>Camera Only</a>",
+                            "</ul>",
+                            "Dashboard URL syntax:",
+                            "<br /><br />",
+                            "<code>http://localhost:5080/index.html?shownav=0&demo=1&layout=filename.json&env=dana&#tab0</code>",
+                            "<br />",
+                            "<br />",
+                            "<code><b>shownav</b></code>",
+                              " - controls display of navbar <br>",
+                            "<code><b>demo</b></code>",
+                              " - generates random data <br>",
+                            "<code><b>env</b></code> ",
+                              " - selects different layout variants <br>",
+                            "<code><b>layout</b></code>",
+                              " - selects n layout from www/layouts <br>",
+                            "<code><b>url hash</b></code> ",
+                              " - selects page, follows all optional configs",
+                            "<br />",
+                            "</div>"
+                        ]
+                    }
+                }
+            ]
+        },
+        { "//": "--------- video page -------------------------------------- ",
+            "icon": "_none_", "//preventaccidents:": "fas fa-video",
+            "navtext": "videostream",
+            "widgets": [
+                {
+                    "type": "slider",
+                    "id": "visionViewSlider",
+                    "label": "Vision View Angle:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "slider",
+                    "id": "turretOffsetSlider",
+                    "label": "Turret Offset:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider2"],
+                    "params": {
+                        "min": -180,
+                        "max": 180,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "videostream",
+                    "id": "driverstream",
+                    "size": ["fill", "fill"],
+                    "ntkeys": "Driver/VideoStream",
+                    "params":
+                    {
+                        "overlayId": "videoOverlay",
+                        "//multistream:true":  "keep streams open throughout match",
+                        "//multistream:false":  "close streams not being viewed",
+                        "multistream": false,
+                        "streams":
+                        {
+                            "Test":
+                            {
+                                "protocol": "testpattern",
+                                "cls": "size1280"
+                            },
+                            "TestM":
+                            {
+                                "protocol": "http",
+                                "ip": "${driverbackcam}:1181",
+                                "url": "/stream.mjpg",
+                                "cls": "size1x"
+                            },
+                            "Front":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverfrontcam}:5805",
+                                "cls": "size1280",
+                                "cmd": "${driverfrontcamcmd}"
+                            },
+                            "Back":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverbackcam}:5805",
+                                "cls": "size1280",
+                                "cmd": "${driverbackcamcmd}"
+                            },
+                            "_Front_deprecated":
+                            {
+                                "protocol": "webrtc",
+                                "ip": "${driverfrontcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "size1280"
+                            },
+                            "_Back_deprecated":
+                            {
+                                "protocol": "webrtc",
+                                "ip": "${driverbackcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "size1280"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "canvas",
+                    "id": "videoOverlay",
+                    "size": [0, 0],
+                    "params": {
+                        "overlay":
+                        {
+                            "enable": true,
+                            "updateinterval": 500,
+                            "//": "items drawn in order (bottom-to-top)",
+                            "items":
+                            [
+                                {
+                                    "key": "DriverStation/MatchTime",
+                                    "class": "text",
+                                    "subclass": "time",
+                                    "enable": true,
+                                    "origin": [300, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": ""
+                                },
+                                {
+                                    "key": "Driver/VideoStream",
+                                    "class": "text",
+                                    "enable": true,
+                                    "origin": [10, 30],
+                                    "font": "30px Impact",
+                                    "fillStyle": "rgba(255, 255, 10, .85)",
+                                    "value": "<nocamera>"
+                                },
+                                {
+                                    "key": "Driver/VideoStreamOverlay/Crosshairs",
+                                    "class": "crosshairs",
+                                    "enable": true,
+                                    "formatStyle": 1,
+                                    "viewAngle": 0,
+                                    "boxHeight": 20,
+                                    "color1": "rgba(255, 255, 0, 1)",
+                                    "color2": "rgba(0, 0, 0, 1)",
+                                    "lineWidth": 2,
+                                    "value": "on"
+                                },
+                                {
+                                    "key": "Driver/VideoStreamOverlay/Msg",
+                                    "class": "text",
+                                    "enable": true,
+                                    "origin": [800, 30],
+                                    "font": "14px Verdana",
+                                    "fillStyle": "rgb(180, 180, 0)",
+                                    "shadowOffsetX": 1,
+                                    "shadowOffsetY": 1,
+                                    "shadowBlur": 1,
+                                    "value": ""
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+       content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--
+    Failed attempt to support a javascript-fetch to ctre http api.
+    Failure is apparently due to server's lack of appropriate CORS
+    security headers and the result is the browser blocks the response.
+    (Access-Control-Allow-Origin, ...)
+    Since we don't control the ctre server, we need to adopt the more
+    radical solution of a special Tornado handler/uri.
+    <meta http-equiv="Content-Security-Policy"
+       content="default-src 'self' * data: 'unsafe-inline' 'unsafe-eval';">
+    -->
+
+    <link rel="icon" href="/favicon.ico">
+    <title>Spartronics4915 Dashboard </title>
+
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/selector.css" rel="stylesheet">
+    <link href="/css/slider.css" rel="stylesheet">
+    <link href="/nih/fontawesome/css/all.css" rel="stylesheet">
+    <link href="/nih/traffico/traffico.css" rel="stylesheet">
+    <link href="/nih/rangeslider/ion.rangeSlider.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <header>
+        <nav>
+            <div id="navlogo">
+                <img src="/images/SpartronicsLogo80px.png" />
+            </div>
+            <div id="navtitle"> Dashboard </div>
+            <div id="navlayout"></div>
+            <div class="navtab"><span class="nettabtxt" id="Robot/GamePhase">phase</span></div>
+            <div class="nopadX blue">Volts</div>
+            <div class="navtab" style="padding-left:2px; padding-right:2px;" id="batteryVoltage"></div>
+            <div class="nopadX blue">Amps</div>
+            <div class="navtab" style="padding-left:2px;" id="inputCurrent"></div>
+        </nav>
+    </header>
+    <div id="mainlayout" class="container gridded"> </div>
+    <div id="alert"></div>
+    <div id="footerpad"> </div>
+
+    <footer>
+        <div id="cnxstatus">
+            &nbsp;&nbsp;
+            Robot <span id="robotId"></span>
+                <span id="robotStatus">unknown state</span>
+                <span id="robotAddress"></span>
+                <span id="robotCANStatus"></span>
+            </span>
+            &nbsp; &nbsp; &nbsp;
+            <span id="nettab-status">
+            NetworkTables <span id="nettabState">Unknown state</span>
+            &nbsp;
+            Build
+            <span id='buildid'>
+                <span class='amber'>unknown</span>
+            </span>
+            &nbsp; &nbsp; &nbsp;
+            <span id="statusmsg">
+            </span>
+        </div>
+    </footer>
+
+    <!-- jQuery first -->
+    <script src="/nih/jquery-3.3.1.min.js"></script>
+    <script src="/nih/jquery.flot.min.js"></script>
+    <script src="/nih/pynetworktables2js/networktables.js"></script>
+    <script src="/nih/pynetworktables2js/camera.js"></script>
+    <script src="/nih/rangeSlider/ion.rangeSlider.min.js"></script>
+    <script src="/nih/canvas-gauges/gauge.min.js"></script>
+    <script src="/nih/ace-1.4.3/ace.js"></script>
+
+    <!-- app first -->
+    <script src="/js/app.js" type="module"></script>
+    <script src="/js/layout.js"></script>
+    <script src="/js/robotlog.js"></script>
+    <script src="/js/webapi.js"></script>
+
+    <script src="/js/video/webRTCSignaling.js"></script>
+    <script src="/js/video/h264player.js"></script>
+
+    <script src="/js/pagehandlers/pagehandler.js"></script>
+    <script src="/js/pagehandlers/robotlogPH.js"></script>
+    <script src="/js/pagehandlers/nettabPH.js"></script>
+
+    <script src="/js/widgets/widget.js"></script>
+    <script src="/js/widgets/cameras.js"></script>
+    <script src="/js/widgets/canvas.js"></script>
+    <script src="/js/widgets/checkbox.js"></script>
+    <script src="/js/widgets/fieldconfig.js"></script>
+    <script src="/js/widgets/img.js"></script>
+    <script src="/js/widgets/nettab.js"></script>
+    <script src="/js/widgets/numberinput.js"></script>
+    <script src="/js/widgets/pathplot.js"></script>
+    <script src="/js/widgets/pctbar.js"></script>
+    <script src="/js/widgets/rangeslider.js"></script>
+    <script src="/js/widgets/robotlog.js"></script>
+    <script src="/js/widgets/robotdevices.js"></script>
+    <script src="/js/widgets/selector.js"></script>
+    <script src="/js/widgets/slider.js"></script>
+    <script src="/js/widgets/stripchart.js"></script>
+    <script src="/js/widgets/systemstate.js"></script>
+    <script src="/js/widgets/textinput.js"></script>
+    <script src="/js/widgets/texteditor.js"></script>
+    <script src="/js/widgets/videostream.js"></script>
+
+    <script src="/_test/nettabSample.js"></script>
+
+    <script type="text/javascript">
+        function onOpenCvReady()
+        {
+            app.info("opencv.js is almost ready.");
+            // if we access cv.getBuildInformation at this point, it's
+            // in a kindof bogus state. Experimentation showed that
+            // cv to be in a reasonable state.
+            setTimeout(function() {
+                app.opencv.loaded = true;
+                app.opencv.cv = cv; // grab a reference just for add'l security
+            }, 2000);
+        }
+
+        function onOpenCvError()
+        {
+            let element = document.getElementById('statusmsg');
+            element.setAttribute('class', 'ERROR');
+            element.innerHTML = 'Failed to load opencv.js';
+        }
+    </script>
+
+    <!--
+    <script async src="/nih/opencv/opencv3.4.js" type="text/javascript"
+            onload="onOpenCvReady();" onerror="onOpenCvError();"></script>
+    -->
+
+  </body>
+</html>

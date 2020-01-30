@@ -1,0 +1,144 @@
+<div class="col-sm-12">
+    Build <span id="buildid"><span class="amber">unknown</span></span>&nbsp;&nbsp;
+    <br/>
+    <br/>
+</div>
+
+<!-- Testing -->
+<div class="col-sm-13 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            Testing &nbsp; &nbsp;
+                Strategy
+                 <select class="selector" style="width:15em" id="TestMode">
+                        <option>None</option>
+                 </select>
+                &nbsp; &nbsp; Variant &nbsp; &nbsp;
+                <input type="text" style="width:10em" id="TestVariant" />
+                &nbsp; &nbsp; Enable Testing Buttons &nbsp; &nbsp;
+                <input type="checkbox" id="TestingGUI" />
+        </h3>
+    </div>
+</div>
+
+<!-- LED, Vision -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            LED
+            <small id="ledStatus">status n/a</small>
+            <span id="ledDriverLED" class="LEDOff">
+                &nbsp;&#9724; <!-- square -->
+            </span>
+            <span id="ledVisionLamp">
+                <img src="/images/pic_bulboff.gif" width=10px\>
+            </span>
+            &nbsp;&nbsp;Vision
+            <small id="visionStatus">status n/a</small>
+            <span class="panelState">
+            &nbsp;&nbsp;State: <span id="visionState">n/a</span>
+            </span>
+            &nbsp;&nbsp;
+            <span id="ledMessage">
+            </span>
+        </h3>
+    </div>
+</div>
+
+<!-- Drive -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Drive
+            <small id="driveStatus">status n/a</small>
+            <span class="panelState">
+                &nbsp;&nbsp;State: <span id="driveState">n/a</span>
+            </span>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <!-- subpanel one (left) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    IMU Heading <span id="imuHeading">n/a</span>
+                </div>
+                <div class="stripChart" id="imuHeadingChart"
+                    style="width:300px; height:100px"></div>
+            </div>
+        </div>
+
+        <!-- subpanel one (right) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Left Speed <span id="leftSpeedTxt">0</span> ips
+                </div>
+                <div class="stripChart" id="leftSpeedChart"
+                    style="width:626px; height:200px">
+                </div>
+            </div>
+        </div>
+
+
+        <!-- subpanel two (left) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Odometry
+                </div>
+                <div class="stripChart" id="driveOdometryPlot"
+                    style="width:326px; height:162px">
+                </div>
+            </div>
+        </div>
+
+        <!-- subpanel left (right) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Right Speed <span id="rightSpeedTxt">0</span> ips
+                </div>
+                <div class="stripChart" id="rightSpeedChart"
+                    style="width:626px; height:200px">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- LIDAR -->
+<div class="col-sm-12 panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">LIDAR
+            <small id="lidarStatus">status n/a</small>
+            &nbsp;&nbsp;Angle: <small id="lidarAngle">n/a</small>°
+            &nbsp;&nbsp;Turret State: <small id="turretState">n/a</small>44
+        </h3>
+    </div>
+    <div class="panel-body">
+        <!-- subpanel two (left) -->
+        <div class="col-sm-6">
+            <div class="plotContainer" style="border:5px;">
+                <div>
+                    Odometry
+                </div>
+                <div class="stripChart" id="lidarOdometryPlot"
+                    style="width:326px; height:162px">
+                </div>
+            </div>
+        </div>
+
+        <!-- subpanel left (right) -->
+        <div class="col-sm-6">
+          <div class="plotContainer" style="border:5px;">
+              <div>
+                  Point Cloud
+              </div>
+              <div class="stripChart" id="lidarPointPlot"
+                  style="width:326px; height:162px">
+              </div>
+          </div>
+        </div>
+    </div>
+</div>
