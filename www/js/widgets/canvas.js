@@ -1,6 +1,11 @@
 /* global Widget, app, cv */
 
+<<<<<<< HEAD
 const s_fieldSize = [12*54, 12*27]; // 648 x 324
+=======
+// 26 ft. 11¼ in. by 52 ft. 5¼ in.
+const s_fieldSize = [629.25, 323.25];
+>>>>>>> 61759cdf85bebcd1ab117d14cbfe0f05b6d8a860
 
 class CanvasWidget extends Widget
 {
@@ -474,7 +479,7 @@ class CanvasWidget extends Widget
         // cx = fx * w/fW
         // cy = (fy-fH/2)*h/-fH
         let fx = s_fieldSize[0] * (ccoords[0] / this.canvasEl.width);
-        let fy = s_fieldSize[1]*.5 - 
+        let fy = s_fieldSize[1] * .5 - 
                  s_fieldSize[1] * (ccoords[1] / this.canvasEl.height);
         app.putValue("Paths/Coords", `${fx.toFixed(1)} ${fy.toFixed(1)}`);
         return [fx, fy];
