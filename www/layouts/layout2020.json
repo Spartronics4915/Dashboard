@@ -4,27 +4,29 @@
         "default": {
             "//": "official robot settings",
             "envparam": "env=default",
-            "visionbackcam": "10.49.15.10",
-            "driverbackcam": "10.49.15.11",
-            "driverfrontcam": "10.49.15.12",
+            "testcam": "10.49.15.10:1181",
+            "visionbackcam": "10.49.15.10:5806",
+            "driverbackcam": "10.49.15.11:5805",
+            "driverfrontcam": "10.49.15.12:5805",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "robotid": "main2020"
         },
         "dana": {
             "envparam": "env=dana",
-            "driverbackcam": "192.168.0.7",
-            "driverfrontcam": "192.168.0.8",
-            "visionbackcam": "192.168.0.8",
+            "testcam": "192.168.1.13:1181",
+            "driverbackcam": "192.168.1.3:5805",
+            "driverfrontcam": "192.168.1.13:5805",
+            "visionbackcam": "192.168.1.8:5806",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
         },
         "test": {
             "//": "available for editing on-the-fly",
             "envparam": "env=test",
-            "driverbackcam": "10.49.15.109",
-            "driverfrontcam": "10.49.15.110",
-            "visionbackcam": "10.49.15.111"
+            "driverbackcam": "10.49.15.109:5805",
+            "driverfrontcam": "10.49.15.110:5805",
+            "visionbackcam": "10.49.15.111:5806"
         }
     },
     "season": {
@@ -646,6 +648,7 @@
             "icon": "fas fa-vial",
             "widgets": [
                 {
+                    "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "Test",
                     "label": "Test Subsystem",
@@ -676,6 +679,39 @@
                     }
                 },
                 {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "dashboard",
+                    "label": "Dashboard Tests",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "slider",
+                    "id": "visionViewSlider",
+                    "label": "Vision View Angle:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider1"],
+                    "params": {
+                        "min": 0,
+                        "max": 100,
+                        "step": 1
+                    }
+                },
+                {
+                    "type": "slider",
+                    "id": "turretOffsetSlider",
+                    "label": "Turret Offset:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/Slider2"],
+                    "params": {
+                        "min": -180,
+                        "max": 180,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "widgets",
                     "label": "Example Widgets",
@@ -878,33 +914,12 @@
             ]
         },
         { "//": "--------- video page -------------------------------------- ",
-            "icon": "_none_", "//preventaccidents:": "fas fa-video",
+            "//NB0/icon:": "fas fa-video",
+            "//NB1:": "this should be maintained as real driver view",
+            "//NB2:": "ie: no widgets since driver has no mouse during match",
+            "icon": "_none_", 
             "navtext": "videostream",
             "widgets": [
-                {
-                    "type": "slider",
-                    "id": "visionViewSlider",
-                    "label": "Vision View Angle:",
-                    "size": [300, "row"],
-                    "ntkeys": ["Driver/Slider1"],
-                    "params": {
-                        "min": 0,
-                        "max": 100,
-                        "step": 1
-                    }
-                },
-                {
-                    "type": "slider",
-                    "id": "turretOffsetSlider",
-                    "label": "Turret Offset:",
-                    "size": [300, "row"],
-                    "ntkeys": ["Driver/Slider2"],
-                    "params": {
-                        "min": -180,
-                        "max": 180,
-                        "step": 1
-                    }
-                },
                 {
                     "type": "videostream",
                     "id": "driverstream",
@@ -926,21 +941,21 @@
                             "TestM":
                             {
                                 "protocol": "http",
-                                "ip": "${driverbackcam}:1181",
+                                "ip": "${testcam}",
                                 "url": "/stream.mjpg",
                                 "cls": "size1x"
                             },
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}:5805",
+                                "ip": "${driverfrontcam}",
                                 "cls": "size1280",
                                 "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverbackcam}:5805",
+                                "ip": "${driverbackcam}",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },

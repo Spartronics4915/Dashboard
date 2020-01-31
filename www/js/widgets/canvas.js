@@ -257,13 +257,20 @@ class CanvasWidget extends Widget
 
                     // XXX: we need to make this year-agnostic by providing
                     // generic controls that can be configured via the layout file.
-                    var turretOffset = document.getElementById("turretOffsetSliderSlider").value; //get from networktables
-                    //
-                    // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
-                    //
-                    // Add thickness/box for accuracy of shooter
-                    item.viewAngle = document.getElementById("visionViewSliderSlider").value;
-                    var boxWidth = item.viewAngle * w/360;
+                    var turretOffset = 0;
+                    var boxWidth = 0;
+                    if(false)
+                    {
+                        //get from networktables
+                        turretOffset = document.getElementById("turretOffsetSliderSlider").value; 
+                        //
+                        // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
+                        //
+                        // Add thickness/box for accuracy of shooter
+                        item.viewAngle = document.getElementById("visionViewSliderSlider").value;
+                        boxWidth = item.viewAngle * w/360;
+                    }
+
 
                     this.canvasCtx.lineWidth = item.lineWidth;
                     if(Math.abs(turretOffset) > 90) {
