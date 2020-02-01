@@ -688,10 +688,10 @@
                 },
                 {
                     "type": "slider",
-                    "id": "flywheelSpeed",
+                    "id": "flywheelSlider",
                     "label": "Flywheel Speed:",
-                    "size": [500, "row"],
-                    "ntkeys": ["Driver/Slider1"],
+                    "size": [300, "row"],
+                    "ntkeys": ["Launcher/FlywheelRPS"],
                     "params": {
                         "min": 0,
                         "max": 90,
