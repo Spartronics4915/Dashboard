@@ -4,19 +4,21 @@
         "default": {
             "//": "official robot settings",
             "envparam": "env=default",
-            "visionbackcam": "10.49.15.10",
-            "driverbackcam": "10.49.15.11",
+            "visionbackcam": "10.49.15.10:5806",
+            "driverbackcam": "10.49.15.11:5805",
             "driverfrontcam": "10.49.15.12:5805",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf"
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "testcam": "10.49.15.11:1181"
         },
         "dana": {
             "envparam": "env=dana",
             "driverbackcam": "192.168.1.3:5805",
-            "driverfrontcam": "192.168.1.3:5805",
+            "driverfrontcam": "192.168.1.13:5805",
             "visionbackcam": "192.168.1.8:5806",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
-            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
+            "testcam": "192.168.1.13:1181"
         },
         "test": {
             "//": "available for editing on-the-fly",
@@ -919,21 +921,21 @@
                             "TestM":
                             {
                                 "protocol": "http",
-                                "ip": "${driverbackcam}:1181",
+                                "ip": "${testcam}",
                                 "url": "/stream.mjpg",
                                 "cls": "size1x"
                             },
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}:5805",
+                                "ip": "${driverfrontcam}",
                                 "cls": "size1280",
                                 "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverbackcam}:5805",
+                                "ip": "${driverbackcam}",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },
