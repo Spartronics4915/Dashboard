@@ -1,11 +1,7 @@
 /* global Widget, app, cv */
 
-<<<<<<< HEAD
-const s_fieldSize = [12*54, 12*27]; // 648 x 324
-=======
 // 26 ft. 11¼ in. by 52 ft. 5¼ in.
 const s_fieldSize = [629.25, 323.25];
->>>>>>> 61759cdf85bebcd1ab117d14cbfe0f05b6d8a860
 
 class CanvasWidget extends Widget
 {

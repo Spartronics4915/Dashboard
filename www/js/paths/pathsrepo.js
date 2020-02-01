@@ -44,7 +44,7 @@ const landmarks2020 =
     rightmidLeft: Pose2d.fromXYTheta(Field.xsize-1, 0, 180),
     midmidRight: Pose2d.fromXYTheta(Field.xsize*.5, 0, 0),
     midmidLeft: Pose2d.fromXYTheta(Field.xsize*.5, 0, 180),
-};
+}
 
 // a repository for paths, keyed by pathname
 export default class PathsRepo

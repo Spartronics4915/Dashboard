@@ -62,7 +62,12 @@ export class Constants
             // robot parameters.
             this.drive =
             {
-                visionCone: [],
+                viewCone: {
+                    offsetX: 0,
+                    offsetY: 0,
+                    viewDistance: 10,
+                    viewAngle: 45
+                },
                 WheelBase: 25.75,
                 WheelDiameter: 6,
                 WheelRadius: 3,

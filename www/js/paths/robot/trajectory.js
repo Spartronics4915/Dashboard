@@ -31,10 +31,9 @@ export class Trajectory
     {
         if(config.mode == "robot")
         {
-            //fix so it's not year-specific.
-            let coneAngle = Math.PI/4;
-            let coneDistance = 20;
             let constants = Constants.getInstance();
+            let coneAngle = constants.drive.viewCone.viewAngle / 180 * Math.PI;
+            let coneDistance = constants.drive.viewCone.viewDistance;
             let yrad = constants.drive.CenterToSide;
             let xrad = constants.drive.CenterToFront;
             let endT = this.poseSamples[this.poseSamples.length-1].getSampleTime();
@@ -85,7 +84,7 @@ export class Trajectory
     }
 
     //change this so it's not year-specific.
-    _drawCone(p, coneDistance, coneAngle, ctx, config)
+    _drawCone(p, coneDistance, coneAngle, ctx, config)// Add support for multiple cones, move where stuff is
     {
         ctx.save(); // no functionality for search sweeping or locking to target yet. 
         ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red 
