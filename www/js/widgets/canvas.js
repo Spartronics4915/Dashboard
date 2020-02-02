@@ -250,35 +250,27 @@ class CanvasWidget extends Widget
                     this.canvasCtx.moveTo(centerX, 0);
                     this.canvasCtx.lineTo(centerX, h);
                     this.canvasCtx.stroke();
-                    if(false)
-                    {
-                        // just use shadow
-                        this.canvasCtx.beginPath();
-                        this.canvasCtx.strokeStyle = item.color2;
-                        this.canvasCtx.moveTo(centerX - item.lineWidth, 0);
-                        this.canvasCtx.lineTo(centerX - item.lineWidth, h);
-                        this.canvasCtx.moveTo(centerX + item.lineWidth, 0);
-                        this.canvasCtx.lineTo(centerX + item.lineWidth, h);
-                        this.canvasCtx.stroke();
-                    }
+
                     this.canvasCtx.restore();
                 }
                 break;
-            // case "compass":
-            //     {
-            //         this.canvasCtx.save();
-            //         this.canvasCtx.moveTo(w - item.compassR, item.compassR);
-            //         this.canvasCtx.strokeStyle = item.color1;
-            //         this.canvasCtx.lineWidth = item.lineWidth;
-            //         this.canvasCtx.beginPath();
-            //         this.canvasCtx.arc()
-            //         this.canvasCtx.moveTo(centerX, 0);
-            //         this.canvasCtx.lineTo(centerX, h);
-            //         this.canvasCtx.stroke();
+            case "compass": //fix so this is less year-specific. Also fix the strange transparency bug...
+                {
+                    this.canvasCtx.save();
+                    this.canvasCtx.fillStyle = item.color2;
+                    this.canvasCtx.lineWidth = item.lineWidth;
+                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, 0, 2*Math.PI);
+                    this.canvasCtx.fill();
                     
-            //         this.canvasCtx.restore();
-            //     }
-            //     break;
+                    this.canvasCtx.fillStyle = item.color1;
+                    this.canvasCtx.beginPath();
+                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 + item.turretViewAngle / 360 * Math.PI, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 - item.turretViewAngle / 360 * Math.PI, true);
+                    this.canvasCtx.lineTo(w - item.compassR - 10, item.compassR + 10);
+                    this.canvasCtx.fill();
+
+                    this.canvasCtx.restore();
+                }
+                break;
             case "gauge":
                 this._drawGauge(item);
                 break;

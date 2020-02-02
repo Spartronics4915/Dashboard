@@ -699,6 +699,18 @@
                     }
                 },
                 {
+                    "type": "slider",
+                    "id": "turretOffset",
+                    "label": "Turret Offset:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Driver/TurretOffset"],
+                    "params": {
+                        "min": 0,
+                        "max": 180,
+                        "step": 1
+                    }
+                },
+                {
                     "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "widgets",
@@ -1016,7 +1028,6 @@
                                     "enable": true,
                                     "formatStyle": 1,
                                     "turretViewAngle": 50,
-                                    "turretOffset": 30,
                                     "compassR": 50,
                                     "color1": "rgba(255, 255, 0, 1)",
                                     "color2": "rgba(0, 0, 0, 1)",
