@@ -688,24 +688,24 @@
                 },
                 {
                     "type": "slider",
-                    "id": "visionViewSlider",
-                    "label": "Vision View Angle:",
+                    "id": "flywheelSlider",
+                    "label": "Flywheel Speed:",
                     "size": [300, "row"],
-                    "ntkeys": ["Driver/Slider1"],
+                    "ntkeys": ["Launcher/FlywheelRPS"],
                     "params": {
                         "min": 0,
-                        "max": 100,
+                        "max": 90,
                         "step": 1
                     }
                 },
                 {
                     "type": "slider",
-                    "id": "turretOffsetSlider",
+                    "id": "turretOffset",
                     "label": "Turret Offset:",
                     "size": [300, "row"],
-                    "ntkeys": ["Driver/Slider2"],
+                    "ntkeys": ["Driver/TurretOffset"],
                     "params": {
-                        "min": -180,
+                        "min": 0,
                         "max": 180,
                         "step": 1
                     }
@@ -881,7 +881,7 @@
                 {
                     "type": "html",
                     "id": "helpdash",
-                    "size": [590, 280],
+                    "size": [310, 280],
                     "params": {
                         "html": [
                             "<div class='references'>",
@@ -908,6 +908,21 @@
                               " - selects page, follows all optional configs",
                             "<br />",
                             "</div>"
+                        ]
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "helplayout",
+                    "size": [280, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Layout Links</h2>",
+                            "<ul>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2020.json'>layout2020</a>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2019.json'>layout2019</a>",
+                            "</ul>"
                         ]
                     }
                 }
@@ -1008,12 +1023,12 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "key": "Driver/VideoStreamOverlay/Crosshairs",
-                                    "class": "crosshairs",
+                                    "key": "Driver/VideoStreamOverlay/CompassOverlay",
+                                    "class": "compass",
                                     "enable": true,
                                     "formatStyle": 1,
-                                    "viewAngle": 0,
-                                    "boxHeight": 20,
+                                    "turretViewAngle": 50,
+                                    "compassR": 50,
                                     "color1": "rgba(255, 255, 0, 1)",
                                     "color2": "rgba(0, 0, 0, 1)",
                                     "lineWidth": 2,

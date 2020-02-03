@@ -1,7 +1,6 @@
 /* global Widget, app, cv */
 
-// 26 ft. 11¼ in. by 52 ft. 5¼ in.
-const s_fieldSize = [629.25, 323.25];
+const s_fieldSize = [12*54, 12*27]; // 648 x 324
 
 class CanvasWidget extends Widget
 {
@@ -92,8 +91,6 @@ class CanvasWidget extends Widget
         return Object.keys(hiddenMap);
     }
 
-    // onIdle is registered with app as a "page idler", called when associated
-    // page is visible.
     onIdle()
     {
         if(this.config.params.overlay  && this.config.params.overlay.enable)
@@ -102,8 +99,6 @@ class CanvasWidget extends Widget
         }
     }
 
-    // like all widgets, changes to requested networktable keys ('ntkeys') 
-    // trigger this message.
     valueChanged(key, value, isNew)
     {
         this._updateOverlay(key, value, isNew);
@@ -111,8 +106,6 @@ class CanvasWidget extends Widget
             this.lastVisionKeyUpdate = new Date();
     }
 
-    // when this canvas widget is of class "yespointer", this method is
-    // invoked with mouse events.
     _onMouseMove(evt)
     {
         if(this.config.params.overlay)
@@ -135,10 +128,6 @@ class CanvasWidget extends Widget
                     }
                 }
             }
-        }
-        else
-        {
-            console.debug("no overlay config params");
         }
     }
 
@@ -255,40 +244,29 @@ class CanvasWidget extends Widget
                     this.canvasCtx.shadowOffsetY = 0;
                     this.canvasCtx.shadowBlur = 8;
 
-                    // XXX: we need to make this year-agnostic by providing
-                    // generic controls that can be configured via the layout file.
-                    var turretOffset = 0;
-                    var boxWidth = 0;
-                    if(false)
-                    {
-                        //get from networktables
-                        turretOffset = document.getElementById("turretOffsetSliderSlider").value; 
-                        //
-                        // FIXME: !! IMPORTANT !! boxWidth used as the camera view angle
-                        //
-                        // Add thickness/box for accuracy of shooter
-                        item.viewAngle = document.getElementById("visionViewSliderSlider").value;
-                        boxWidth = item.viewAngle * w/360;
-                    }
-
-
-                    this.canvasCtx.lineWidth = item.lineWidth;
-                    if(Math.abs(turretOffset) > 90) {
-                        this.canvasCtx.strokeStyle = "rgba(255, 0, 0, 1)";
-                    } else if(Math.abs(turretOffset) > item.viewAngle / 2 && Math.abs(turretOffset) <= 90) {
-                        this.canvasCtx.strokeStyle = "rgba(255, 255, 0, 1)";
-                    } else if(Math.abs(turretOffset) <= (item.viewAngle / 2) && turretOffset != 0) {
-                        this.canvasCtx.strokeStyle = "rgba(0, 255, 0, 1)";
-                    } else if(turretOffset == 0) {
-                        this.canvasCtx.strokeStyle = "rgba(255, 255, 255, 1)";
-                    }
-                    this.canvasCtx.fillRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
-                    this.canvasCtx.strokeRect(centerX - boxWidth/2, 20, boxWidth, item.boxHeight);
                     this.canvasCtx.strokeStyle = item.color1;
+                    this.canvasCtx.lineWidth = item.lineWidth;
                     this.canvasCtx.beginPath();
-                    this.canvasCtx.moveTo(centerX + turretOffset * (w / 360), 20);
-                    this.canvasCtx.lineTo(centerX + turretOffset * (w / 360), item.boxHeight + 20);
+                    this.canvasCtx.moveTo(centerX, 0);
+                    this.canvasCtx.lineTo(centerX, h);
                     this.canvasCtx.stroke();
+
+                    this.canvasCtx.restore();
+                }
+                break;
+            case "compass": //fix so this is less year-specific. Also fix the strange transparency bug...
+                {
+                    this.canvasCtx.save();
+                    this.canvasCtx.fillStyle = item.color2;
+                    this.canvasCtx.lineWidth = item.lineWidth;
+                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, 0, 2*Math.PI);
+                    this.canvasCtx.fill();
+                    
+                    this.canvasCtx.fillStyle = item.color1;
+                    this.canvasCtx.beginPath();
+                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 + item.turretViewAngle / 360 * Math.PI, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 - item.turretViewAngle / 360 * Math.PI, true);
+                    this.canvasCtx.lineTo(w - item.compassR - 10, item.compassR + 10);
+                    this.canvasCtx.fill();
 
                     this.canvasCtx.restore();
                 }
@@ -482,7 +460,7 @@ class CanvasWidget extends Widget
         // cx = fx * w/fW
         // cy = (fy-fH/2)*h/-fH
         let fx = s_fieldSize[0] * (ccoords[0] / this.canvasEl.width);
-        let fy = s_fieldSize[1] * .5 - 
+        let fy = s_fieldSize[1]*.5 - 
                  s_fieldSize[1] * (ccoords[1] / this.canvasEl.height);
         app.putValue("Paths/Coords", `${fx.toFixed(1)} ${fy.toFixed(1)}`);
         return [fx, fy];
@@ -872,15 +850,14 @@ class CanvasWidget extends Widget
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
+        if(!item.value) return;
         let coords = null, fcoords = null;
         if(evt != undefined)
         {
             // has the side-effect of printing canvas coords
             coords = this._evtToCanvasCoords(evt);
-            fcoords = this._canvasToFieldCoords(coords); // updates nettables
+            fcoords = this._canvasToFieldCoords(coords);
         }
-        if(!item.value) return;
-
         let path = app.getPathsRepo().getPath(item.value);
         if(path != null)
         {
@@ -930,6 +907,8 @@ class CanvasWidget extends Widget
                 }
             }
         }
+        else
+            app.warning("missing path " + item.value);
     }
 
     addRandomPt()

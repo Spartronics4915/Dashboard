@@ -864,7 +864,7 @@
                 {
                     "type": "html",
                     "id": "helpdash",
-                    "size": [590, 280],
+                    "size": [310, 280],
                     "params": {
                         "html": [
                             "<div class='references'>",
@@ -891,6 +891,21 @@
                               " - selects page, follows all optional configs",
                             "<br />",
                             "</div>"
+                        ]
+                    }
+                },
+                {
+                    "type": "html",
+                    "id": "helplayout",
+                    "size": [280, 280],
+                    "params": {
+                        "html": [
+                            "<div class='references'>",
+                            "<h2>Layout Links</h2>",
+                            "<ul>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2020.json'>layout2020</a>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2019.json'>layout2019</a>",
+                            "</ul>"
                         ]
                     }
                 }

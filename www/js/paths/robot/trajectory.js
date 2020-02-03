@@ -31,9 +31,9 @@ export class Trajectory
     {
         if(config.mode == "robot")
         {
-            let visionViewAngle = Math.PI/4;
-            let visionDist = 20;
             let constants = Constants.getInstance();
+            let coneAngle = constants.drive.viewCone.viewAngle / 180 * Math.PI;
+            let coneDistance = constants.drive.viewCone.viewDistance;
             let yrad = constants.drive.CenterToSide;
             let xrad = constants.drive.CenterToFront;
             let endT = this.poseSamples[this.poseSamples.length-1].getSampleTime();
@@ -61,7 +61,7 @@ export class Trajectory
                 else
                 {
                     this._drawTimeBar(p, xrad, yrad, ctx, config);
-                    this._drawVisionViewCone(p, visionDist, visionViewAngle, ctx, config);
+                    this._drawCone(p, coneDistance, coneAngle, ctx, config);
                     break;
                 }
             }
@@ -83,14 +83,15 @@ export class Trajectory
         ctx.restore();
     }
 
-    _drawVisionViewCone(p, visionDist, visionViewAngle, ctx, config)
+    //change this so it's not year-specific.
+    _drawCone(p, coneDistance, coneAngle, ctx, config)// Add support for multiple cones, move where stuff is
     {
         ctx.save(); // no functionality for search sweeping or locking to target yet. 
-        ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red
+        ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red 
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
         ctx.beginPath();
-        ctx.arc(0, 0, visionDist * 10, (visionViewAngle / 2), -(visionViewAngle / 2), true);
+        ctx.arc(0, 0, coneDistance * 10, (coneAngle / 2), -(coneAngle / 2), true);
         ctx.lineTo(0,0);
         ctx.fill();
         ctx.restore();
