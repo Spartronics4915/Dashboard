@@ -184,7 +184,7 @@ class CanvasWidget extends Widget
             this._updateOpenCV(opencvItem, w, h);
 
         // good to go
-        app.debug("drawOverlay");
+        // app.info("drawOverlay");
         this.canvasCtx.clearRect(0, 0, w, h);
 
         for(let item of this.config.params.overlay.items)
@@ -282,6 +282,11 @@ class CanvasWidget extends Widget
                 }
                 break;
             case "robot":
+                this._drawRobot(item);
+                break;
+            case "cone":
+                // app.info("drawCone");
+                this._drawCone(item);
                 break;
             case "gauge":
                 this._drawGauge(item);
@@ -383,6 +388,8 @@ class CanvasWidget extends Widget
                     }
                 }
                 break;
+            default:
+                app.warning("unimplement canvas item " + item.class);
             }
         }
     }
@@ -478,7 +485,7 @@ class CanvasWidget extends Widget
         return fxy;
     }
 
-    s_fieldToCanvasCoords(pose) // unused?
+    _fieldToCanvasCoords(pose) // unused?
     {
         // pose is x, y (inches), cosangle, sinangle
         let pc = app.getFieldPct(pose[0], pose[1]);
@@ -526,23 +533,84 @@ class CanvasWidget extends Widget
         return ret;
     }
 
-    _drawRobot()
+    _parsePoseString(p)
     {
+        // 408.4 151.2 -220
+        let poseFields = p.split(" ");
+        console.assert(poseFields.length == 3);
+        let x = Number(poseFields[0]);
+        let y = Number(poseFields[1]);
+        let rot = _d2r(Number(poseFields[2]));
+        return [x, y, rot];
+    }
 
+    _drawRobot(item)
+    {
+        // assume item.value is a pose in field coordinates
+        let config = item.config;
+        let pfields = this._parsePoseString(item.value);
+        let x = pfields[0];
+        let y = pfields[1];
+        let rot = pfields[2];
+
+        let ctx = this._drawFieldBegin();
+        ctx.fillStyle = config.colors["body"];
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.fillRect(-config.xsize/2, -config.ysize/2, config.xsize, config.ysize);
+        this._drawFieldEnd();
     }
 
     //change this so it's not year-specific.
-    _drawCone(p, coneDistance, coneAngle, ctx, config)// Add support for multiple cones, move where stuff is
+    _drawCone(item)
     {
-        ctx.save(); // no functionality for search sweeping or locking to target yet. 
-        ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red 
-        ctx.translate(p.translation.x, p.translation.y);
-        ctx.rotate(p.rotation.getRadians());
-        ctx.beginPath();
-        ctx.arc(0, 0, coneDistance * 10, (coneAngle / 2), -(coneAngle / 2), true);
-        ctx.lineTo(0,0);
-        ctx.fill();
-        ctx.restore();
+        let config = item.config;
+        let coneAngle = _d2r(config.angle);
+        let orientationAngle = config.rotation ? _d2r(config.rotation) : 0;
+        let coneLength = config.length;
+        let coneOffset = config.offset;
+        let fill = config.colors["active"];
+
+        if(config.coordinateSystem) 
+        {
+            switch(config.coordinateSystem) 
+            {
+            case "robot":
+                {
+                    // posekey tells us what ntkey to consult for pose...
+                    // XXX: need to extend support for item.key to a list
+                    let pose = this._parsePoseString(app.getValue(config.posekey));
+                    let ctx = this._drawFieldBegin();
+                    ctx.translate(pose[0], pose[1]);
+                    ctx.rotate(pose[2]);
+                    ctx.fillStyle = fill;
+                    if(coneOffset)
+                        ctx.translate(coneOffset[0], coneOffset[1]);
+                    if(orientationAngle)
+                        ctx.rotate(_d2r(orientationAngle));
+
+                    // arc(x, y, radius, startAngle, endAngle [, anticlockwise])
+                    ctx.arc(0, 0, coneLength, -(coneAngle/2), (coneAngle/2));
+                    ctx.lineTo(0, 0);
+                    ctx.fill();
+                    this._drawFieldEnd();
+                }
+                break;
+            default:
+                app.warning("canvas._drawCone: unknown coordsys " + 
+                            config.coordinateSystem);
+            }
+        }
+        else
+        {
+            let ctx = this._canvasCtx;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(0, 0, coneLength, (coneAngle / 2), -(coneAngle / 2), true);
+            ctx.lineTo(0,0);
+            ctx.fill();
+            ctx.restore();
+        }
     }
 
     _drawGauge(item)
@@ -768,9 +836,9 @@ class CanvasWidget extends Widget
     _drawFieldBegin()
     {
         // paths and poses
-        // FRC field is 684 x 342, we assume we have the
-        // correct aspect ratio. We assume field poses have
-        // an origin at the midpoint and y is up.
+        // FRC field differs each year, we assume our canvas has the
+        // correct aspect ratio. Currently we assume field poses have an origin 
+        // at the [left, ymid] and that y is up (ie: we must flipY).
         let ctx = this.canvasCtx;
         ctx.save();
         if(this._trustCanvXform)
@@ -1080,6 +1148,12 @@ class CanvasWidget extends Widget
             ctx.fill();
     }
 }
+
+function _d2r(deg) 
+{
+    return deg * (Math.PI / 180);
+}
+
 
 Widget.AddWidgetClass("canvas", CanvasWidget);
 window.CanvasUtils = CanvasWidget; // expose static methods

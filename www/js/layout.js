@@ -45,9 +45,17 @@ class Layout
         this.season = this.layout.season;
         if(!this.season)
         {
-            this.season = {
-                "year": "2019",
-                "robotid": "FirstRobot"
+            this.season = 
+            {
+                year: "2019",
+                robotid: "FirstRobot",
+                field: 
+                {
+                    xsize: 640,
+                    ysize: 320,
+                    xrange: [0, 640],
+                    yrange: [-160, 160]
+                }
             };
         }
         this.pageTemplates = this.layout.pageTemplates;

@@ -104,7 +104,7 @@
                     }
                 },
                 {
-                    "//": "fieldmap overlay for *driver* page ---------------",
+                    "//": "fieldmap overlay for *driver* field-view page ---------------",
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
@@ -118,7 +118,45 @@
                             "items":
                             [
                                 {
+                                    "key": "RobotState/pose",
+                                    "class": "robot",
                                     "enable": true,
+                                    "config":
+                                    {
+                                        "//XXX": "need to get updated dims",
+                                        "xsize": 32.25,
+                                        "ysize": 27.5,
+                                        "colors":
+                                        {
+                                            "body": "rgba(200,150,100,.8)"
+                                        }
+                                    }
+                                },
+                                {
+                                    "//": "draw turret cone atop robot and before waypoints",
+                                    "//1": "NB: path widget draws robot here (for now)",
+                                    "key": "Launcher/TurretAngle",
+                                    "class": "cone",
+                                    "enable": true,
+                                    "config": 
+                                    {
+                                        "//": "length is 10ft",
+                                        "coordinateSystem": "robot",
+                                        "posekey": "RobotState/pose",
+                                        "offset": [0, 0],
+                                        "angle": 30,
+                                        "length": 120,
+                                        "rotation": 0,
+                                        "colors": 
+                                        {
+                                            "active": "rgba(250,50,50,.8)",
+                                            "inactive": "rgba(50,250,50,.8)"
+                                        }
+                                    }
+                                },
+                                {
+                                    "//": "now that we have a robot, the pose history is distracting",
+                                    "enable": false,
                                     "key": "RobotState/pose",
                                     "class": "poselist",
                                     "fillStyle": {
@@ -240,7 +278,7 @@
                     }
                 },
                 {
-                    "//0": "fieldmap overlay in *path-planning* page",
+                    "//0": "fieldmap overlay in *path-planning* page -----------------",
                     "//1": "canvas goes last since it occupies one grid",
                     "type": "canvas",
                     "id": "fieldmapOverlay",
@@ -254,19 +292,6 @@
                             "//": "items drawn in order (bottom-to-top)",
                             "items":
                             [
-                                {
-                                    "//": "pose history for robot pose",
-                                    "key": "RobotState/pose",
-                                    "class": "poselist",
-                                    "enable": true,
-                                    "fillStyle": {
-                                        "AUTONOMOUS": "rgb(200,150,0)",
-                                        "TELEOP": "rgb(0,100,250)",
-                                        "DISABLED":"rgb(10,10,140)",
-                                        "OFFLINE":"rgb(10,10,100)"
-                                    },
-                                    "strokeStyle": "rgb(255,0,0)"
-                                },
                                 {
                                     "//": "(disabled) draw the selected path as optspline",
                                     "key": "Paths/Current",
@@ -292,27 +317,10 @@
                                             "body/active": "rgba(200,150,100,.8)"
                                         }
                                     },
-                                    "label": {
+                                    "label": 
+                                    {
                                         "fillStyle": "orange",
                                         "font": "15px Impact"
-                                    }
-                                },
-                                {
-                                    "//": "draw turret cone atop robot and before waypoints",
-                                    "//1": "NB: path widget draws robot here (for now)",
-                                    "key": "Launcher/TurretAngle",
-                                    "class": "cone",
-                                    "config": 
-                                    {
-                                        "axis": "x",
-                                        "angle": 30,
-                                        "length": 20,
-                                        "origin": "Robot/pose",
-                                        "colors": 
-                                        {
-                                            "active": "rgba(250,50,50,.8)",
-                                            "inactive": "rgba(50,250,50,.8)"
-                                        }
                                     }
                                 },
                                 {
