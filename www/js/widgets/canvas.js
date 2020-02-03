@@ -590,6 +590,7 @@ class CanvasWidget extends Widget
                         ctx.rotate(_d2r(orientationAngle));
 
                     // arc(x, y, radius, startAngle, endAngle [, anticlockwise])
+                    ctx.beginPath();
                     ctx.arc(0, 0, coneLength, -(coneAngle/2), (coneAngle/2));
                     ctx.lineTo(0, 0);
                     ctx.fill();
