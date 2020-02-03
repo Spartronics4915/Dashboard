@@ -1,7 +1,22 @@
 {
     "layoutName": "Test2020.json",
-    "environments": {
-        "default": {
+    "season": 
+    {
+        "year": "2020",
+        "robotid": "${robotid}",
+        "field": 
+        {
+            "//": "26 ft. 11.25 in. by 52 ft. 5.25 in. (per Declan)",
+            "xsize": 629.25,
+            "ysize": 323.25,
+            "xrange": [0, 629.25],
+            "yrange": [-161.625, 161.625]
+        }
+    },
+    "environments": 
+    {
+        "default": 
+        {
             "//": "official robot settings",
             "envparam": "env=default",
             "testcam": "10.49.15.10:1181",
@@ -12,7 +27,8 @@
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "robotid": "main2020"
         },
-        "dana": {
+        "dana": 
+        {
             "envparam": "env=dana",
             "testcam": "192.168.1.13:1181",
             "driverbackcam": "192.168.1.3:5805",
@@ -21,7 +37,8 @@
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
         },
-        "test": {
+        "test":
+        {
             "//": "available for editing on-the-fly",
             "envparam": "env=test",
             "driverbackcam": "10.49.15.109:5805",
@@ -29,11 +46,8 @@
             "visionbackcam": "10.49.15.111:5806"
         }
     },
-    "season": {
-        "year": "2020",
-        "robotid":  "${robotid}"
-    },
-    "pageTemplates": [
+    "pageTemplates": 
+    [
         { "//": "--------- driver page -------------------------- ",
             "icon": "fas fa-gamepad primary",
             "navtext": "Compete",
@@ -90,6 +104,7 @@
                     }
                 },
                 {
+                    "//": "fieldmap overlay for *driver* page ---------------",
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
@@ -115,7 +130,8 @@
                                     "strokeStyle": "rgb(255,0,0)"
                                 },
                                 {
-                                    "enable": true,
+                                    "//": "draw PNP visualization",
+                                    "enable": false,
                                     "key": "Vision/Reverse/solvePNP",
                                     "class": "rects",
                                     "subclass": "pnp",
@@ -135,6 +151,7 @@
                                     ]
                                 },
                                 {
+                                    "//": "draw text indicating vision target",
                                     "enable": true,
                                     "key": "Vision/selectedIdx",
                                     "class": "text",
@@ -181,6 +198,7 @@
                     "wsize": [600, "row"],
                     "widgets": [
                         {
+                            "//": "menu of paths, and current path",
                             "type": "selector",
                             "label": "Path",
                             "id": "pathsel",
@@ -222,7 +240,8 @@
                     }
                 },
                 {
-                    "//": "canvas goes last since it occupies one grid",
+                    "//0": "fieldmap overlay in *path-planning* page",
+                    "//1": "canvas goes last since it occupies one grid",
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
@@ -236,6 +255,7 @@
                             "items":
                             [
                                 {
+                                    "//": "pose history for robot pose",
                                     "key": "RobotState/pose",
                                     "class": "poselist",
                                     "enable": true,
@@ -248,6 +268,7 @@
                                     "strokeStyle": "rgb(255,0,0)"
                                 },
                                 {
+                                    "//": "(disabled) draw the selected path as optspline",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": false,
@@ -257,6 +278,7 @@
                                     }
                                 },
                                 {
+                                    "//": "(enabled) draw the selected path as robot",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
@@ -267,9 +289,7 @@
                                             "backwheels": "blue",
                                             "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
-                                            "body/active": "rgba(200,150,100,.8)",
-                                            "visionArea/search": "rgba(250,50,50,.8)",
-                                            "visionArea/locked": "rgba(50,250,50,.8)"
+                                            "body/active": "rgba(200,150,100,.8)"
                                         }
                                     },
                                     "label": {
@@ -278,6 +298,25 @@
                                     }
                                 },
                                 {
+                                    "//": "draw turret cone atop robot and before waypoints",
+                                    "//1": "NB: path widget draws robot here (for now)",
+                                    "key": "Launcher/TurretAngle",
+                                    "class": "cone",
+                                    "config": 
+                                    {
+                                        "axis": "x",
+                                        "angle": 30,
+                                        "length": 20,
+                                        "origin": "Robot/pose",
+                                        "colors": 
+                                        {
+                                            "active": "rgba(250,50,50,.8)",
+                                            "inactive": "rgba(50,250,50,.8)"
+                                        }
+                                    }
+                                },
+                                {
+                                    "//": "(enabled) draw the current path's waypoints",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
@@ -292,6 +331,7 @@
                                     }
                                 },
                                 {
+                                    "//": "(disabled) draw the current path's spline controlpoints",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": false,
@@ -323,7 +363,7 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
-                    "enable": false,
+                    "enable": true,
                     "ntkeys": "RobotState/pose",
                     "params": {
                         "plot": {
@@ -699,11 +739,12 @@
                     }
                 },
                 {
+                    "//": "Edit/Tweak/Debug cone associated with Turret Angle",
                     "type": "slider",
                     "id": "turretOffset",
-                    "label": "Turret Offset:",
+                    "label": "Turret Angle:",
                     "size": [300, "row"],
-                    "ntkeys": ["Driver/TurretOffset"],
+                    "ntkeys": ["Launcher/TurretAngle"],
                     "params": {
                         "min": 0,
                         "max": 180,

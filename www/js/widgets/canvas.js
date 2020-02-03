@@ -1,7 +1,5 @@
 /* global Widget, app, cv */
 
-const s_fieldSize = [12*54, 12*27]; // 648 x 324
-
 class CanvasWidget extends Widget
 {
     constructor(config, targetElem, pageHandler)
@@ -91,6 +89,8 @@ class CanvasWidget extends Widget
         return Object.keys(hiddenMap);
     }
 
+    // onIdle is registered above as a "page idler", called when associated
+    // page is visible. frequency controlled by updateinterval.
     onIdle()
     {
         if(this.config.params.overlay  && this.config.params.overlay.enable)
@@ -99,6 +99,8 @@ class CanvasWidget extends Widget
         }
     }
 
+    // like all widgets, changes to requested networktable keys ('ntkeys') 
+    // trigger this message.
     valueChanged(key, value, isNew)
     {
         this._updateOverlay(key, value, isNew);
@@ -106,6 +108,8 @@ class CanvasWidget extends Widget
             this.lastVisionKeyUpdate = new Date();
     }
 
+    // when this canvas widget is of class "yespointer", this method is
+    // is invoked on mouse/pointer events. Parameter is standard DOM event.
     _onMouseMove(evt)
     {
         if(this.config.params.overlay)
@@ -131,6 +135,8 @@ class CanvasWidget extends Widget
         }
     }
 
+    // DOM coords vs canvas coords (make relative to our origin)
+    //  x+ is right, y+ is down
     _evtToCanvasCoords(evt)
     {
         let r = this.canvasEl.getBoundingClientRect();
@@ -264,12 +270,18 @@ class CanvasWidget extends Widget
                     
                     this.canvasCtx.fillStyle = item.color1;
                     this.canvasCtx.beginPath();
-                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 + item.turretViewAngle / 360 * Math.PI, NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 - item.turretViewAngle / 360 * Math.PI, true);
+                    // XXX: shouldn't access NetworkTables here.
+                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, 
+                            item.compassR, 
+                            NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 + item.turretViewAngle / 360 * Math.PI, 
+                            NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 - item.turretViewAngle / 360 * Math.PI, 
+                            true);
                     this.canvasCtx.lineTo(w - item.compassR - 10, item.compassR + 10);
                     this.canvasCtx.fill();
-
                     this.canvasCtx.restore();
                 }
+                break;
+            case "robot":
                 break;
             case "gauge":
                 this._drawGauge(item);
@@ -459,21 +471,20 @@ class CanvasWidget extends Widget
         // fy = fH/2 - fH * cy/h
         // cx = fx * w/fW
         // cy = (fy-fH/2)*h/-fH
-        let fx = s_fieldSize[0] * (ccoords[0] / this.canvasEl.width);
-        let fy = s_fieldSize[1]*.5 - 
-                 s_fieldSize[1] * (ccoords[1] / this.canvasEl.height);
-        app.putValue("Paths/Coords", `${fx.toFixed(1)} ${fy.toFixed(1)}`);
-        return [fx, fy];
+        let x = (ccoords[0] / this.canvasEl.width);
+        let y = (ccoords[1] / this.canvasEl.height);
+        let fxy = app.getFieldCoords(x, y);
+        app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
+        return fxy;
     }
 
-    s_fieldToCanvasCoords(pose)
+    s_fieldToCanvasCoords(pose) // unused?
     {
         // pose is x, y (inches), cosangle, sinangle
-        let cx = pose[0] * this.canvasEl.width / s_fieldSize[0];
-        let cy = (pose[1]-s_fieldSize[1]*.5)*this.canvasEl.height / -s_fieldSize[1];
+        let pc = app.getFieldPct(pose[0], pose[1]);
         // angles in canvas coords are just flipped in y (rotated 180)o
         // console.log(pose, cx, cy);
-        return [cx, cy, pose[2], -pose[3]];
+        return [pc[0], pc[1], pose[2], -pose[3]];
     }
 
     _getItemText(item)
@@ -513,6 +524,25 @@ class CanvasWidget extends Widget
             break;
         }
         return ret;
+    }
+
+    _drawRobot()
+    {
+
+    }
+
+    //change this so it's not year-specific.
+    _drawCone(p, coneDistance, coneAngle, ctx, config)// Add support for multiple cones, move where stuff is
+    {
+        ctx.save(); // no functionality for search sweeping or locking to target yet. 
+        ctx.fillStyle = config.colors["visionArea/locked"]; //visionArea/locked => green, visionArea/search => red 
+        ctx.translate(p.translation.x, p.translation.y);
+        ctx.rotate(p.rotation.getRadians());
+        ctx.beginPath();
+        ctx.arc(0, 0, coneDistance * 10, (coneAngle / 2), -(coneAngle / 2), true);
+        ctx.lineTo(0,0);
+        ctx.fill();
+        ctx.restore();
     }
 
     _drawGauge(item)
@@ -745,10 +775,11 @@ class CanvasWidget extends Widget
         ctx.save();
         if(this._trustCanvXform)
         {
+            let fs = app.getFieldSize();
             let width = this.canvasEl.width;
             let height = this.canvasEl.height;
-            let sx = width/s_fieldSize[0];
-            let sy = -height/s_fieldSize[1]; // flip y
+            let sx = width/fs[0];
+            let sy = -height/fs[1]; // flip y
             // origin x is "left"
             // origin y is middle
             ctx.translate(0, height*.5);
@@ -850,14 +881,15 @@ class CanvasWidget extends Widget
         //      time-constrained spline:
         //          color-coding velocity
         //          color-coding curvature
-        if(!item.value) return;
         let coords = null, fcoords = null;
         if(evt != undefined)
         {
             // has the side-effect of printing canvas coords
             coords = this._evtToCanvasCoords(evt);
-            fcoords = this._canvasToFieldCoords(coords);
+            fcoords = this._canvasToFieldCoords(coords); // updates network tables
         }
+        if(!item.value) return; // this must follow _canvasToFieldCoords
+
         let path = app.getPathsRepo().getPath(item.value);
         if(path != null)
         {

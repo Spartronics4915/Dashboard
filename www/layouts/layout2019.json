@@ -1,5 +1,18 @@
 {
     "layoutName": "Test2019.json",
+    "season": 
+    {
+        "year": "2019",
+        "robotid":  "${robotid}",
+        "field": 
+        { 
+            "//": "[12*54, 12*27]; 648 x 324",
+            "xsize": 648, 
+            "ysize": 324,
+            "xrange": [0, 648],
+            "yrange": [-162, 162]
+        }
+    },
     "environments": {
         "default": {
             "//": "official robot settings",

@@ -54,7 +54,6 @@ export class App
         this.opencv.loaded = false; // accessed directly by opencv factory
         document.addEventListener("DOMContentLoaded",
             this.onReady.bind(this), false);
-
     }
 
     alertuser(msg)
@@ -137,6 +136,7 @@ export class App
     }
 
     // onReady is invoked after all scripts have finished loading.
+    // it also runs after a url change
     onReady()
     {
         this.firstLoad = false;
@@ -232,17 +232,63 @@ export class App
         setTimeout(this.onIdle.bind(this), 1000/fps);
     }
 
+    getYear()
+    {
+        console.assert(this.year); // valid only after LayoutLoaded
+        return this.year;
+    }
+
+    getField()
+    {
+        console.assert(this.field); // valid only after LayoutLoaded
+        return this.field;
+    }
+
+    getFieldSize()
+    {
+        console.assert(this.field); // valid only after LayoutLoaded
+        return [this.field.xsize, this.field.ysize];
+    }
+
+    // given xpct and ypct produce field units
+    getFieldCoords(xpct, ypct)
+    {
+        console.assert(this.field);
+        let fx = this.field.xrange[0] + xpct * this.field.xsize; 
+        let fy = this.field.yrange[0] + ypct * this.field.ysize; 
+        return [fx, fy];
+    }
+
+    // given field coords, return pct along field
+    getFieldPct(fx, fy)
+    {
+        console.assert(this.field);
+        let px = (fx - this.field.xrange[0]) / this.field.xsize;
+        let py = (fy - this.field.yrange[0]) / this.field.ysize;
+        return [px, py];
+    }
+
     onLayoutLoaded()
     {
         if(this.layout.season)
         {
+            this.field = this.layout.season.field;
+            this.year = this.layout.season.year;
             if(this.layout.season.robotid)
                 Constants.setRobotId(this.layout.season.robotid);
-            this.pathsRepo = new PathsRepo(this.layout.season.year);
         }
         else
-            this.pathsRepo = new PathsRepo();
-
+        {
+            this.year = "2019";
+            this.field = 
+            {
+                xsize: 648,
+                ysize: 324,
+                xrange: [0, 648],
+                yrange: [-162, 162]
+            };
+        }
+        this.pathsRepo = new PathsRepo(this.year, this.field);
         this.robotLog = new RobotLog();
         this.robotLog.addWsConnectionListener(this.onLogConnect.bind(this),
                                                 true);
