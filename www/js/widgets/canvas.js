@@ -566,10 +566,24 @@ class CanvasWidget extends Widget
     {
         let config = item.config;
         let coneAngle = _d2r(config.angle);
-        let orientationAngle = config.rotation ? _d2r(config.rotation) : 0;
+        let orientationAngle = config.orientation ? _d2r(config.orientation) : 0;
         let coneLength = config.length;
-        let coneOffset = config.offset;
+        let coneOffset = config.offset ? config.offset : [0, 0];
         let fill = config.colors["active"];
+        if(config.keyTarget)
+        {
+            switch(config.keyTarget)
+            {
+            case "orientation":
+                orientationAngle = _d2r(item.value);
+                break;
+            case "angle":
+                coneAngle = _d2r(item.value);
+                break;
+            default:
+                app.warning("_drawCone: unknown keyTarget" + config.keyTarget);
+            }
+        }
 
         if(config.coordinateSystem) 
         {
@@ -584,10 +598,8 @@ class CanvasWidget extends Widget
                     ctx.translate(pose[0], pose[1]);
                     ctx.rotate(pose[2]);
                     ctx.fillStyle = fill;
-                    if(coneOffset)
-                        ctx.translate(coneOffset[0], coneOffset[1]);
-                    if(orientationAngle)
-                        ctx.rotate(_d2r(orientationAngle));
+                    ctx.translate(coneOffset[0], coneOffset[1]);
+                    ctx.rotate(orientationAngle);
 
                     // arc(x, y, radius, startAngle, endAngle [, anticlockwise])
                     ctx.beginPath();
