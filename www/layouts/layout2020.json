@@ -376,13 +376,13 @@
                     "params": {
                         "plot": {
                             "xaxis": {
-                                "min": -326,
-                                "max": 326,
+                                "min": 0,
+                                "max": 629.25,
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": -162,
-                                "max": 162,
+                                "min": -161.625,
+                                "max": 161.625,
                                 "show": 1
                             },
                             "series": {
@@ -754,8 +754,8 @@
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/TurretAngle"],
                     "params": {
-                        "min": 0,
-                        "max": 180,
+                        "min": -45,
+                        "max": 45,
                         "step": 1
                     }
                 },
@@ -1072,16 +1072,20 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "key": "Driver/VideoStreamOverlay/CompassOverlay",
+                                    "key": "Launcher/TurretAngle",
                                     "class": "compass",
                                     "enable": true,
-                                    "formatStyle": 1,
-                                    "turretViewAngle": 50,
-                                    "compassR": 50,
-                                    "color1": "rgba(255, 255, 0, 1)",
-                                    "color2": "rgba(0, 0, 0, 1)",
-                                    "lineWidth": 2,
-                                    "value": "on"
+                                    "config":{
+                                        "cameraStateKey": "Driver/VideoStream",
+                                        "visionStateKey": "Vision/Status",
+                                        "needleAngle": 50,
+                                        "radius": 50,
+                                        "needleColor1": "rgba(255, 255, 0, 1)",
+                                        "needleColor2": "rgba(0, 255, 0, 1)",
+                                        "bgColor": "rgba(0, 0, 255, 1)",
+                                        "lineWidth": 2,
+                                        "value": "on"
+                                    }
                                 },
                                 {
                                     "key": "Driver/VideoStreamOverlay/Msg",
