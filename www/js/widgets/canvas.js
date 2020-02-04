@@ -581,16 +581,16 @@ class CanvasWidget extends Widget
         {
             this.canvasCtx.arc(w - radius - 10, radius + 10, 
                 radius, 
-                _d2r(item.value + 180) + _d2r(needleAngle) / 2, 
-                _d2r(item.value + 180) - _d2r(needleAngle) / 2, 
+                _d2r(item.value - 90) + _d2r(needleAngle) / 2, 
+                _d2r(item.value - 90) - _d2r(needleAngle) / 2, 
                 true);
         }
         else
         {
             this.canvasCtx.arc(w - radius - 10, radius + 10, 
                 radius, 
-                _d2r(item.value) + _d2r(needleAngle) / 2, 
-                _d2r(item.value) - _d2r(needleAngle) / 2, 
+                _d2r(item.value + 90) + _d2r(needleAngle) / 2, 
+                _d2r(item.value + 90) - _d2r(needleAngle) / 2, 
                 true);
         }
         this.canvasCtx.lineTo(w - radius - 10, radius + 10);
