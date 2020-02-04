@@ -143,14 +143,38 @@
                                         "//": "length is 10ft",
                                         "coordinateSystem": "robot",
                                         "posekey": "RobotState/pose",
-                                        "offset": [0, 0],
+                                        "offset": [10, 0],
                                         "angle": 30,
                                         "length": 120,
-                                        "rotation": 0,
+                                        "orientation": 0,
+                                        "keyTarget": "angle",
                                         "colors": 
                                         {
                                             "active": "rgba(250,50,50,.8)",
                                             "inactive": "rgba(50,250,50,.8)"
+                                        }
+                                    }
+                                },
+                                {
+                                    "//": "draw turret aim cone atop robot",
+                                    "//1": "NB: path widget draws robot here (for now)",
+                                    "key": "Launcher/TurretAimAngle",
+                                    "class": "cone",
+                                    "enable": true,
+                                    "config": 
+                                    {
+                                        "//": "length is 10ft (120in)",
+                                        "coordinateSystem": "robot",
+                                        "posekey": "RobotState/pose",
+                                        "offset": [10, 0],
+                                        "angle": 10,
+                                        "length": 120,
+                                        "orientation": 0,
+                                        "keyTarget": "orientation",
+                                        "colors": 
+                                        {
+                                            "active": "rgba(50, 250,50, .6)",
+                                            "inactive": "rgba(50, 250, 50, .8)"
                                         }
                                     }
                                 },
@@ -749,13 +773,27 @@
                 {
                     "//": "Edit/Tweak/Debug cone associated with Turret Angle",
                     "type": "slider",
-                    "id": "turretOffset",
+                    "id": "turretAngle",
                     "label": "Turret Angle:",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/TurretAngle"],
                     "params": {
                         "min": -45,
                         "max": 45,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
+                    "type": "slider",
+                    "id": "turretAimAngle",
+                    "label": "Turret Aim Angle:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Launcher/TurretAimAngle"],
+                    "params": {
+                        "//": "// max matches TurretConeAngle",
+                        "min": 0,
+                        "max": 30,
                         "step": 1
                     }
                 },
