@@ -581,16 +581,16 @@ class CanvasWidget extends Widget
         {
             this.canvasCtx.arc(w - radius - 10, radius + 10, 
                 radius, 
-                _d2r(item.value - 90) + _d2r(needleAngle) / 2, 
-                _d2r(item.value - 90) - _d2r(needleAngle) / 2, 
+                _d2r(-1 * item.value - 90) + _d2r(needleAngle/2), 
+                _d2r(-1 * item.value - 90) - _d2r(needleAngle/2), 
                 true);
         }
         else
         {
             this.canvasCtx.arc(w - radius - 10, radius + 10, 
                 radius, 
-                _d2r(item.value + 90) + _d2r(needleAngle) / 2, 
-                _d2r(item.value + 90) - _d2r(needleAngle) / 2, 
+                _d2r(-1 * item.value + 90) + _d2r(needleAngle/2), 
+                _d2r(-1 * item.value + 90) - _d2r(needleAngle/2), 
                 true);
         }
         this.canvasCtx.lineTo(w - radius - 10, radius + 10);
@@ -605,6 +605,7 @@ class CanvasWidget extends Widget
         let orientationAngle = config.orientation ? _d2r(config.orientation) : 0;
         let coneLength = config.length;
         let coneOffset = config.offset ? config.offset : [0, 0];
+        let angleOffset = config.offsetAngle ? config.offsetAngle : 0;
         let fill = config.colors["active"];
         if(config.keyTarget)
         {
@@ -635,7 +636,7 @@ class CanvasWidget extends Widget
                     ctx.rotate(pose[2]);
                     ctx.fillStyle = fill;
                     ctx.translate(coneOffset[0], coneOffset[1]);
-                    ctx.rotate(orientationAngle);
+                    ctx.rotate(_d2r(angleOffset) + orientationAngle);
 
                     // arc(x, y, radius, startAngle, endAngle [, anticlockwise])
                     ctx.beginPath();
