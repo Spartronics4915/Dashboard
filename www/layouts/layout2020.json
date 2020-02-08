@@ -133,7 +133,7 @@
                                     }
                                 },
                                 {
-                                    "//": "draw turret cone atop robot and before waypoints",
+                                    "//": "draw turret FOV cone atop robot and before waypoints",
                                     "//1": "NB: path widget draws robot here (for now)",
                                     "key": "Launcher/TurretAngle",
                                     "class": "cone",
@@ -143,15 +143,15 @@
                                         "//": "length is 10ft",
                                         "coordinateSystem": "robot",
                                         "posekey": "RobotState/pose",
-                                        "offset": [10, 0],
-                                        "angle": 30,
+                                        "offset": [-10, 0],
+                                        "offsetAngle": 180,
+                                        "angle": 90,
                                         "length": 120,
                                         "orientation": 0,
-                                        "keyTarget": "angle",
                                         "colors": 
                                         {
-                                            "active": "rgba(250,50,50,.8)",
-                                            "inactive": "rgba(50,250,50,.8)"
+                                            "active": "rgba(250, 50, 50,.8)",
+                                            "inactive": "rgba(50, 250, 50,.8)"
                                         }
                                     }
                                 },
@@ -166,14 +166,15 @@
                                         "//": "length is 10ft (120in)",
                                         "coordinateSystem": "robot",
                                         "posekey": "RobotState/pose",
-                                        "offset": [10, 0],
+                                        "offset": [-10, 0],
+                                        "offsetAngle": 180,
                                         "angle": 10,
                                         "length": 120,
                                         "orientation": 0,
                                         "keyTarget": "orientation",
                                         "colors": 
                                         {
-                                            "active": "rgba(50, 250,50, .6)",
+                                            "active": "rgba(50, 250, 50, .6)",
                                             "inactive": "rgba(50, 250, 50, .8)"
                                         }
                                     }
@@ -395,18 +396,18 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
-                    "enable": true,
+                    "enable": false,
                     "ntkeys": "RobotState/pose",
                     "params": {
                         "plot": {
                             "xaxis": {
-                                "min": -326,
-                                "max": 326,
+                                "min": 0,
+                                "max": 629.25,
                                 "show": 1
                             },
                             "yaxis": {
-                                "min": -162,
-                                "max": 162,
+                                "min": -161.625,
+                                "max": 161.625,
                                 "show": 1
                             },
                             "series": {
@@ -503,6 +504,29 @@
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100,0)"],
                             "channelcount": 3,
                             "widths": [1, 1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "turretFlywheelSpeed",
+                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/CurrentFlywheelRPS",
+                    "ntkeyRefs":[
+                        "Launcher/FlywheelRPS"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 100
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
                             "maxlength": 400
                         }
                     }
@@ -771,19 +795,6 @@
                     }
                 },
                 {
-                    "//": "Edit/Tweak/Debug cone associated with Turret Angle",
-                    "type": "slider",
-                    "id": "turretAngle",
-                    "label": "Turret Angle:",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/TurretAngle"],
-                    "params": {
-                        "min": 0,
-                        "max": 180,
-                        "step": 1
-                    }
-                },
-                {
                     "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
                     "type": "slider",
                     "id": "turretAimAngle",
@@ -792,6 +803,20 @@
                     "ntkeys": ["Launcher/TurretAimAngle"],
                     "params": {
                         "//": "// max matches TurretConeAngle",
+                        "min": -45,
+                        "max": 45,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "Edit/Tweak/Debug slider associated with Hood Angle",
+                    "type": "slider",
+                    "id": "hoodAngle",
+                    "label": "Hood Angle:",
+                    "size": [300, "row"],
+                    "ntkeys": ["Launcher/HoodAngle"],
+                    "params": {
+                        "//": "// max matches HoodAngle",
                         "min": 0,
                         "max": 30,
                         "step": 1
@@ -1110,16 +1135,20 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "key": "Driver/VideoStreamOverlay/CompassOverlay",
+                                    "key": "Launcher/TurretAimAngle",
                                     "class": "compass",
                                     "enable": true,
-                                    "formatStyle": 1,
-                                    "turretViewAngle": 50,
-                                    "compassR": 50,
-                                    "color1": "rgba(255, 255, 0, 1)",
-                                    "color2": "rgba(0, 0, 0, 1)",
-                                    "lineWidth": 2,
-                                    "value": "on"
+                                    "config":{
+                                        "cameraStateKey": "Driver/VideoStream",
+                                        "visionStateKey": "Vision/Status",
+                                        "needleAngle": 50,
+                                        "radius": 50,
+                                        "needleColor1": "rgba(255, 255, 0, 1)",
+                                        "needleColor2": "rgba(0, 255, 0, 1)",
+                                        "bgColor": "rgba(0, 0, 255, 1)",
+                                        "lineWidth": 2,
+                                        "value": "on"
+                                    }
                                 },
                                 {
                                     "key": "Driver/VideoStreamOverlay/Msg",
