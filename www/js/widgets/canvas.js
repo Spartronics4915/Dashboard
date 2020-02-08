@@ -883,6 +883,24 @@ class CanvasWidget extends Widget
         }
     }
 
+    /*_drawCompassBegin()
+    {
+        // paths and poses
+        // rotates and flips the canvas so 0 degrees is upwards, increasing counterclockwise. 
+        let ctx = this.canvasCtx;
+        ctx.save();
+        if(this._trustCanvXform)
+        {
+            let width = this.canvasEl.width;
+            let height = this.canvasEl.height;
+            let sx = width;
+            let sy = -height; // flip y
+            //ctx.translate(0, height*.5);
+            ctx.scale(sx, sy);
+        }
+        return ctx;
+    }*/
+
     _drawFieldBegin()
     {
         // paths and poses

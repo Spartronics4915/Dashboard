@@ -145,14 +145,13 @@
                                         "posekey": "RobotState/pose",
                                         "offset": [-10, 0],
                                         "offsetAngle": 180,
-                                        "angle": 30,
+                                        "angle": 90,
                                         "length": 120,
                                         "orientation": 0,
-                                        "keyTarget": "angle",
                                         "colors": 
                                         {
-                                            "active": "rgba(250,50,50,.8)",
-                                            "inactive": "rgba(50,250,50,.8)"
+                                            "active": "rgba(250, 50, 50,.8)",
+                                            "inactive": "rgba(50, 250, 50,.8)"
                                         }
                                     }
                                 },
@@ -175,7 +174,7 @@
                                         "keyTarget": "orientation",
                                         "colors": 
                                         {
-                                            "active": "rgba(50, 250,50, .6)",
+                                            "active": "rgba(50, 250, 50, .6)",
                                             "inactive": "rgba(50, 250, 50, .8)"
                                         }
                                     }
@@ -397,7 +396,7 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
-                    "enable": true,
+                    "enable": false,
                     "ntkeys": "RobotState/pose",
                     "params": {
                         "plot": {
@@ -505,6 +504,29 @@
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(200,100,0)"],
                             "channelcount": 3,
                             "widths": [1, 1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "turretFlywheelSpeed",
+                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/CurrentFlywheelRPS",
+                    "ntkeyRefs":[
+                        "Launcher/FlywheelRPS"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 100
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
                             "maxlength": 400
                         }
                     }
@@ -766,19 +788,6 @@
                     "label": "Flywheel Speed:",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/FlywheelRPS"],
-                    "params": {
-                        "min": 0,
-                        "max": 90,
-                        "step": 1
-                    }
-                },
-                {
-                    "//": "Edit/Tweak/Debug cone associated with Turret Angle",
-                    "type": "slider",
-                    "id": "turretAngle",
-                    "label": "Turret Angle:",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/TurretAngle"],
                     "params": {
                         "min": 0,
                         "max": 90,
