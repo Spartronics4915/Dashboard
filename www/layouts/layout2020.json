@@ -389,7 +389,8 @@
                     "type": "systemstate",
                     "size": ["fill", "row"],
                     "ntkeys": ["Drive/State",
-                              "Drive/Status"]
+                              "Drive/Status",
+                              "Drive/currentCommand"]
                 },
                 {
                     "id": "driveOdometry",
@@ -757,7 +758,7 @@
                     "id": "Launcher",
                     "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": []
+                    "ntkeys": ["Launcher/currentCommand"]
                 },
                 {
                     "type": "slider",
@@ -828,7 +829,7 @@
                     "id": "Climber",
                     "label": "Climber Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": []
+                    "ntkeys": ["Climber/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
@@ -836,7 +837,7 @@
                     "id": "Indexer",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": []
+                    "ntkeys": ["Indexer/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
@@ -844,7 +845,23 @@
                     "id": "Intake",
                     "label": "Intake Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": []
+                    "ntkeys": ["Intake/currentCommand"]
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "PanelRotator",
+                    "label": "PanelRotator Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["PanelRotator/currentCommand"]
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "LED",
+                    "label": "LED Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["LED/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
