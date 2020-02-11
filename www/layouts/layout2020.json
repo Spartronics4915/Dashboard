@@ -514,29 +514,6 @@
                     }
                 },
                 {
-                    "id": "turretFlywheelSpeed",
-                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
-                    "type": "stripchart",
-                    "size": [330, 170],
-                    "ntkeys": "Launcher/CurrentFlywheelRPS",
-                    "ntkeyRefs":[
-                        "Launcher/FlywheelRPS"
-                    ],
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "min": 0,
-                                "max": 100
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
-                            "channelcount": 2,
-                            "widths": [1, 1],
-                            "maxlength": 400
-                        }
-                    }
-                },
-                {
                     "id": "leftSpeedoverVoltage",
                     "label": "Left Speed vs %Vbus",
                     "type": "pathplot",
@@ -782,8 +759,8 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "dashboard",
-                    "label": "Dashboard Tests",
+                    "id": "Launcher",
+                    "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": []
                 },
@@ -826,6 +803,53 @@
                         "max": 30,
                         "step": 1
                     }
+                },
+                {
+                    "id": "turretFlywheelSpeed",
+                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/CurrentFlywheelRPS",
+                    "ntkeyRefs":[
+                        "Launcher/FlywheelRPS"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 100
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "Climber",
+                    "label": "Climber Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "Indexer",
+                    "label": "Indexer Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "Intake",
+                    "label": "Intake Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
                 },
                 {
                     "//": "----------------------------------",
