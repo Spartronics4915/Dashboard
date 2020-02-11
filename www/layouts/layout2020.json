@@ -18,13 +18,16 @@
         "default": 
         {
             "//": "official robot settings",
+            "//2": "still need to find what the value is for top cam IP",
             "envparam": "env=default",
             "testcam": "10.49.15.10:1181",
             "visionbackcam": "10.49.15.10:5806",
             "driverbackcam": "10.49.15.11:5805",
             "driverfrontcam": "10.49.15.12:5805",
+            "drivertopcam": "10.49.15.13:5805",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "drivertopcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "robotid": "main2020"
         },
         "dana": 
@@ -43,7 +46,8 @@
             "envparam": "env=test",
             "driverbackcam": "10.49.15.109:5805",
             "driverfrontcam": "10.49.15.110:5805",
-            "visionbackcam": "10.49.15.111:5806"
+            "visionbackcam": "10.49.15.111:5806",
+            "drivertopcam": "10.49.15.112:5805"
         }
     },
     "pageTemplates": 
@@ -85,7 +89,8 @@
                                     "options": [
                                         "Test",
                                         "Front",
-                                        "Back"
+                                        "Back",
+                                        "Top"
                                     ]
                                 }
                             }
@@ -983,6 +988,7 @@
                             "<ul>",
                             "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
                             "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
+                            "  <li><a href='http://${drivertopcam}' target='_blank'>Top Pi Status</a>",
                             "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
                             "</ul",
                             "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
@@ -1086,6 +1092,13 @@
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },
+                            "Top":
+                            {
+                                "protocol": "ws",
+                                "ip": "${drivertopcam}",
+                                "cls": "size1280",
+                                "cmd": "${drivertopcamcmd}"
+                            },
                             "_Front_deprecated":
                             {
                                 "protocol": "webrtc",
@@ -1097,6 +1110,13 @@
                             {
                                 "protocol": "webrtc",
                                 "ip": "${driverbackcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "size1280"
+                            },
+                            "_Top_deprecated":
+                            {
+                                "protocol": "webrtc",
+                                "ip": "${drivertopcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "size1280"
                             }
@@ -1141,11 +1161,11 @@
                                     "config":{
                                         "cameraStateKey": "Driver/VideoStream",
                                         "visionStateKey": "Vision/Status",
-                                        "needleAngle": 50,
+                                        "needleAngle": 20,
                                         "radius": 50,
                                         "needleColor1": "rgba(255, 255, 0, 1)",
                                         "needleColor2": "rgba(0, 255, 0, 1)",
-                                        "bgColor": "rgba(0, 0, 255, 1)",
+                                        "bgColor": "rgba(0, 0, 255, .8)",
                                         "lineWidth": 2,
                                         "value": "on"
                                     }

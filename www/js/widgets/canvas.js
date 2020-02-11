@@ -569,33 +569,34 @@ class CanvasWidget extends Widget
         }
 
         this.canvasCtx.save();
-        this.canvasCtx.beginPath();
-        this.canvasCtx.fillStyle = bgColor;
-        this.canvasCtx.lineWidth = item.lineWidth;
-        this.canvasCtx.arc(w - radius - 10, radius + 10, radius, 0, 2*Math.PI);
-        this.canvasCtx.fill();
+        let ctx = this._drawCompassBegin();
+        ctx.beginPath();
+        ctx.fillStyle = bgColor;
+        ctx.lineWidth = item.lineWidth;
+        ctx.arc(0, 0, radius, 0, 2*Math.PI);
+        ctx.fill();
         
-        this.canvasCtx.fillStyle = needleColor;
-        this.canvasCtx.beginPath();
+        ctx.fillStyle = needleColor;
+        ctx.beginPath();
         if (flip)
         {
-            this.canvasCtx.arc(w - radius - 10, radius + 10, 
+            ctx.arc(0, 0, 
                 radius, 
-                _d2r(-1 * item.value - 90) + _d2r(needleAngle/2), 
-                _d2r(-1 * item.value - 90) - _d2r(needleAngle/2), 
+                _d2r(item.value + 90) + _d2r(needleAngle/2), 
+                _d2r(item.value + 90) - _d2r(needleAngle/2), 
                 true);
         }
         else
         {
-            this.canvasCtx.arc(w - radius - 10, radius + 10, 
+            ctx.arc(0, 0, 
                 radius, 
-                _d2r(-1 * item.value + 90) + _d2r(needleAngle/2), 
-                _d2r(-1 * item.value + 90) - _d2r(needleAngle/2), 
+                _d2r(item.value - 90) + _d2r(needleAngle/2), 
+                _d2r(item.value - 90) - _d2r(needleAngle/2), 
                 true);
         }
-        this.canvasCtx.lineTo(w - radius - 10, radius + 10);
-        this.canvasCtx.fill();
-        this.canvasCtx.restore();
+        ctx.lineTo(0, 0);
+        ctx.fill();
+        this._drawCompassEnd();
     }
     //change this so it's not year-specific.
     _drawCone(item)
@@ -883,23 +884,25 @@ class CanvasWidget extends Widget
         }
     }
 
-    /*_drawCompassBegin()
+    _drawCompassBegin()
     {
         // paths and poses
         // rotates and flips the canvas so 0 degrees is upwards, increasing counterclockwise. 
         let ctx = this.canvasCtx;
         ctx.save();
+        var w = this.canvasEl.getAttribute("width");
         if(this._trustCanvXform)
         {
-            let width = this.canvasEl.width;
-            let height = this.canvasEl.height;
-            let sx = width;
-            let sy = -height; // flip y
-            //ctx.translate(0, height*.5);
-            ctx.scale(sx, sy);
+            ctx.scale(1, -1);
+            ctx.translate(w - 60, -60);
         }
         return ctx;
-    }*/
+    }
+
+    _drawCompassEnd()
+    {
+        this.canvasCtx.restore();
+    }
 
     _drawFieldBegin()
     {
