@@ -260,32 +260,13 @@ class CanvasWidget extends Widget
                     this.canvasCtx.restore();
                 }
                 break;
-            case "compass": //fix so this is less year-specific. Also fix the strange transparency bug...
-                {
-                    this.canvasCtx.save();
-                    this.canvasCtx.fillStyle = item.color2;
-                    this.canvasCtx.lineWidth = item.lineWidth;
-                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, item.compassR, 0, 2*Math.PI);
-                    this.canvasCtx.fill();
-                    
-                    this.canvasCtx.fillStyle = item.color1;
-                    this.canvasCtx.beginPath();
-                    // XXX: shouldn't access NetworkTables here.
-                    this.canvasCtx.arc(w - item.compassR - 10, item.compassR + 10, 
-                            item.compassR, 
-                            NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 + item.turretViewAngle / 360 * Math.PI, 
-                            NetworkTables.getValue("/SmartDashboard/Driver/TurretOffset", 30) *-Math.PI/180 - item.turretViewAngle / 360 * Math.PI, 
-                            true);
-                    this.canvasCtx.lineTo(w - item.compassR - 10, item.compassR + 10);
-                    this.canvasCtx.fill();
-                    this.canvasCtx.restore();
-                }
+            case "compass":
+                this._drawCompass(item);
                 break;
             case "robot":
                 this._drawRobot(item);
                 break;
             case "cone":
-                // app.info("drawCone");
                 this._drawCone(item);
                 break;
             case "gauge":
@@ -557,6 +538,61 @@ class CanvasWidget extends Widget
         this._drawFieldEnd();
     }
 
+    _drawCompass(item)
+    {
+        let config = item.config;
+        let radius = config.radius;
+        let bgColor = config.bgColor;
+        let needleColor = config.needleColor1;
+        let needleAngle = config.needleAngle;
+        let w = this.canvasEl.getAttribute("width");
+        let flip = false;
+
+        if (config.cameraStateKey)
+        {
+            flip = app.getValue(config.cameraStateKey) == "Front"? false: true;
+        }
+        if (config.visionStateKey)
+        {
+            if (app.getValue(config.visionStateKey) == "Acquired")
+            {
+                needleColor = config.needleColor2;
+            }
+            else
+            {
+                needleColor = config.needleColor1;
+            }
+        }
+
+        this.canvasCtx.save();
+        this.canvasCtx.beginPath();
+        this.canvasCtx.fillStyle = bgColor;
+        this.canvasCtx.lineWidth = item.lineWidth;
+        this.canvasCtx.arc(w - radius - 10, radius + 10, radius, 0, 2*Math.PI);
+        this.canvasCtx.fill();
+        
+        this.canvasCtx.fillStyle = needleColor;
+        this.canvasCtx.beginPath();
+        if (flip)
+        {
+            this.canvasCtx.arc(w - radius - 10, radius + 10, 
+                radius, 
+                _d2r(-1 * item.value - 90) + _d2r(needleAngle/2), 
+                _d2r(-1 * item.value - 90) - _d2r(needleAngle/2), 
+                true);
+        }
+        else
+        {
+            this.canvasCtx.arc(w - radius - 10, radius + 10, 
+                radius, 
+                _d2r(-1 * item.value + 90) + _d2r(needleAngle/2), 
+                _d2r(-1 * item.value + 90) - _d2r(needleAngle/2), 
+                true);
+        }
+        this.canvasCtx.lineTo(w - radius - 10, radius + 10);
+        this.canvasCtx.fill();
+        this.canvasCtx.restore();
+    }
     //change this so it's not year-specific.
     _drawCone(item)
     {
@@ -565,6 +601,7 @@ class CanvasWidget extends Widget
         let orientationAngle = config.orientation ? _d2r(config.orientation) : 0;
         let coneLength = config.length;
         let coneOffset = config.offset ? config.offset : [0, 0];
+        let angleOffset = config.offsetAngle ? config.offsetAngle : 0;
         let fill = config.colors["active"];
         if(config.keyTarget)
         {
@@ -595,7 +632,7 @@ class CanvasWidget extends Widget
                     ctx.rotate(pose[2]);
                     ctx.fillStyle = fill;
                     ctx.translate(coneOffset[0], coneOffset[1]);
-                    ctx.rotate(orientationAngle);
+                    ctx.rotate(_d2r(angleOffset) + orientationAngle);
 
                     // arc(x, y, radius, startAngle, endAngle [, anticlockwise])
                     ctx.beginPath();
@@ -841,6 +878,24 @@ class CanvasWidget extends Widget
             }
         }
     }
+
+    /*_drawCompassBegin()
+    {
+        // paths and poses
+        // rotates and flips the canvas so 0 degrees is upwards, increasing counterclockwise. 
+        let ctx = this.canvasCtx;
+        ctx.save();
+        if(this._trustCanvXform)
+        {
+            let width = this.canvasEl.width;
+            let height = this.canvasEl.height;
+            let sx = width;
+            let sy = -height; // flip y
+            //ctx.translate(0, height*.5);
+            ctx.scale(sx, sy);
+        }
+        return ctx;
+    }*/
 
     _drawFieldBegin()
     {
