@@ -107,6 +107,8 @@ export default class PathsRepo
             rightmidLeft: Pose2d.fromXYTheta(this.field.xsize-1, 0, 180),
             midmidRight: Pose2d.fromXYTheta(this.field.xsize*.5, 0, 0),
             midmidLeft: Pose2d.fromXYTheta(this.field.xsize*.5, 0, 180),
+            blueTgt: Pose2d.fromXYTheta(this.field.xsize, -67.5, 0),
+            redTgt: Pose2d.fromXYTheta(this.field.xrange[0], 67.5, 180),
         };
     }
 
@@ -116,6 +118,14 @@ export default class PathsRepo
         this.addPath(new Path("midfield", [
                     this.landmarks.midmidRight,
                     this.landmarks.midmidRight,
+                    ]));
+        this.addPath(new Path("blueTarget", [
+                    _adjustPose("frontcenter", this.landmarks.blueTgt),
+                    _adjustPose("frontcenter", this.landmarks.blueTgt),
+                    ]));
+        this.addPath(new Path("redTarget", [
+                    _adjustPose("frontcenter", this.landmarks.redTgt),
+                    _adjustPose("frontcenter", this.landmarks.redTgt),
                     ]));
         this.addPath(new Path("test1", [
                     _adjustPose("backcenter", this.landmarks.leftmidRight),

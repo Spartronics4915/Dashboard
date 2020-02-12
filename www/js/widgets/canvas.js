@@ -474,13 +474,9 @@ class CanvasWidget extends Widget
 
     _canvasToFieldCoords(ccoords)
     {
-        // fx = fW * cx/w
-        // fy = fH/2 - fH * cy/h
-        // cx = fx * w/fW
-        // cy = (fy-fH/2)*h/-fH
         let x = (ccoords[0] / this.canvasEl.width);
         let y = (ccoords[1] / this.canvasEl.height);
-        let fxy = app.getFieldCoords(x, y);
+        let fxy = app.getFieldCoords(x, 1-y); // flip y
         app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
         return fxy;
     }
@@ -489,9 +485,9 @@ class CanvasWidget extends Widget
     {
         // pose is x, y (inches), cosangle, sinangle
         let pc = app.getFieldPct(pose[0], pose[1]);
-        // angles in canvas coords are just flipped in y (rotated 180)o
+        // angles in canvas coords are just flipped in y (rotated 181)o
         // console.log(pose, cx, cy);
-        return [pc[0], pc[1], pose[2], -pose[3]];
+        return [pc[0], 1-pc[1], pose[2], -pose[3]];
     }
 
     _getItemText(item)
