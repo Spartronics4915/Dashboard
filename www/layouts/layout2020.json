@@ -180,57 +180,6 @@
                                     }
                                 },
                                 {
-                                    "//": "now that we have a robot, the pose history is distracting",
-                                    "enable": false,
-                                    "key": "RobotState/pose",
-                                    "class": "poselist",
-                                    "fillStyle": {
-                                        "AUTONOMOUS": "rgb(200,150,0)",
-                                        "TELEOP": "rgb(0,100,250)",
-                                        "DISABLED":"rgb(10,10,140)",
-                                        "OFFLINE":"rgb(10,10,100)"
-                                    },
-                                    "strokeStyle": "rgb(255,0,0)"
-                                },
-                                {
-                                    "//": "draw PNP visualization",
-                                    "enable": false,
-                                    "key": "Vision/Reverse/solvePNP",
-                                    "class": "rects",
-                                    "subclass": "pnp",
-                                    "targetTimeout": 500, 
-                                    "cameraOffset": {
-                                        "x": 0,
-                                        "y": 0,
-                                        "theta": 180
-                                    },
-                                    "width": 15,
-                                    "height": 5,
-                                    "styles": [
-                                         "Chartreuse", 
-                                         "DeepPink", 
-                                         "Cyan", 
-                                         "DarkOrange"
-                                    ]
-                                },
-                                {
-                                    "//": "draw text indicating vision target",
-                                    "enable": true,
-                                    "key": "Vision/selectedIdx",
-                                    "class": "text",
-                                    "subclass": "selection",
-                                    "origin": [400, 40],
-                                    "font": "30px Impact",
-                                    "value": "",
-                                    "prompt": "selected vision target: ",
-                                    "promptStyle": "cornflowerblue",
-                                    "range": ["Left", "Right"],
-                                    "styles": [
-                                        "Chartreuse",
-                                        "DeepPink"
-                                    ]
-                                },
-                                {
                                     "key": "DriverStation/MatchTime",
                                     "class": "text",
                                     "subclass": "time",
@@ -674,13 +623,88 @@
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": "Vision/State"
+                    "ntkeys": ["Vision/currentCommand"]
                 },
                 {
+                    "id": "visionLatency",
+                    "label": "Latency",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Vision/Latency",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 1
+                            },
+                            "fillvalue": 0.5,
+                            "colors":["rgb(20,120,255)"],
+                            "channelcount": 1,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "visionError",
+                    "label": "Pose Error (in)",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Vision/PoseError",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 20
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)"],
+                            "channelcount": 1,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "//": "pathplot of vision-based pose estimates",
+                    "id": "visionOdometry",
+                    "label": "Vision Odometry",
+                    "type": "pathplot",
+                    "size": [400, 300],
+                    "enable": true,
+                    "ntkeys": "Vision/PoseEstimate",
+                    "params": {
+                        "plot": {
+                            "xaxis": {
+                                "min": 0,
+                                "max": 629.25,
+                                "show": 1
+                            },
+                            "yaxis": {
+                                "min": -161.625,
+                                "max": 161.625,
+                                "show": 1
+                            },
+                            "series": {
+                                "shadowSize": 0,
+                                "lines": {
+                                    "show": 1,
+                                    "lineWidth": 1
+                                },
+                                "points": {
+                                    "show": 0
+                                },
+                                "color": "rgb(20, 120, 255)"
+                            }
+                        }
+                    }
+                },
+                {
+                    "//": "this may only be useful during debugging",
                     "type": "cameras",
                     "label": "Camera View",
                     "id": "cameras",
-                    "size": [700, 700],
+                    "size": [400, 400],
                     "ntkeys": [
                         "Vision/Camera"
                     ],
