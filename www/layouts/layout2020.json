@@ -623,7 +623,7 @@
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Vision/currentCommand"]
+                    "ntkeys": ["Vision/currentCommand", "Vision/Status"]
                 },
                 {
                     "id": "visionLatency",
