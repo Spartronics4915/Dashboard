@@ -79,8 +79,12 @@ export default class Path
 
     intersect(config, x, y)
     {
-        switch(config.mode)
+        switch(config.mode.toLowerCase())
         {
+        case "robot":
+        case "robot (paused)":
+        case "trajectory":
+            return this.getTrajectory().intersect(x,y);
         case "waypoints":
             for(let p of this.waypoints)
             {
@@ -98,12 +102,6 @@ export default class Path
             }
             break;
         case "spline":
-            for(let p of this.getSplineSamples())
-            {
-                if(p.intersect(x, y)) 
-                    return p;
-            }
-            break;
         case "optspline":
             for(let p of this.getOptimizedSplineSamples())
             {
@@ -111,15 +109,20 @@ export default class Path
                     return p;
             }
             break;
-        case "splineCtls":
-            app.warning("splineCtls.intersection not implemented");
-            break;
+        case "controlpoints":
         case "optsplineCtls":
             app.warning("optsplineCtls.intersection not implemented");
             break;
-        case "robot":
-        case "trajectory":
-            return this.getTrajectory().intersect(x,y);
+        case "rawspline":
+            for(let p of this.getSplineSamples())
+            {
+                if(p.intersect(x, y)) 
+                    return p;
+            }
+            break;
+        case "rawsplinectls":
+            app.warning("splineCtls.intersection not implemented");
+            break;
         default:
             app.warning("Path.draw unknown mode " + config.mode);
             break;
@@ -129,29 +132,36 @@ export default class Path
 
     draw(ctx, config)
     {
-        switch(config.mode)
+        switch(config.mode.toLowerCase())
         {
-        case "waypoints":
-            for(let p of this.waypoints)
-                p.draw(ctx, config.color, 4, this._reverse);
-            break;
-        case "spline":
-            for(let p of this.getSplineSamples())
-                p.draw(ctx, config.color, 2);
-            break;
-        case "optspline":
-            for(let p of this.getOptimizedSplineSamples())
-                p.draw(ctx, config.color, 2);
-            break;
-        case "splineCtls":
-            this.getSplines().draw(ctx, config.color);
-            break;
-        case "optsplineCtls":
-            this.getOptimizedSplines().draw(ctx, config.color);
+        case "robot (paused)":
+            config.paused = true;
+            this.getTrajectory().draw(ctx, config);
             break;
         case "trajectory":
         case "robot":
+            config.paused = false;
             this.getTrajectory().draw(ctx, config);
+            break;
+        case "waypoints":
+            for(let p of this.waypoints)
+                p.draw(ctx, config.colors.waypoints, 4, this._reverse);
+            break;
+        case "spline":
+        case "optspline":
+            for(let p of this.getOptimizedSplineSamples())
+                p.draw(ctx, config.colors.spline || "blue", 2);
+            break;
+        case "controlpoints":
+        case "optsplinectls":
+            this.getOptimizedSplines().draw(ctx, config.colors.splineCtls || "red");
+            break;
+        case "rawspline": // un-optimized
+            for(let p of this.getSplineSamples())
+                p.draw(ctx, config.colors.spline, 2);
+            break;
+        case "rawsplinectls": // un-optimized
+            this.getSplines().draw(ctx, config.colors.splineCtls || "red");
             break;
         default:
             app.warning("Path.draw unknown mode " + config.mode);

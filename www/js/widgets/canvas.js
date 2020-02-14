@@ -1006,20 +1006,28 @@ class CanvasWidget extends Widget
         this._drawFieldEnd();
     }
 
+    // drawPath is used to draw a named path represented by name within the 
+    // paths repo. We can draw a number of visualizations including an
+    // animated depiction of robot pose.
     _drawPath(item, evt)
     {
-        // modes:
-        //      waypoints only (x,y,theta)
-        //      full path as used by robot
-        //      spline prior to curvature optimization
-        //      spline after curvature optimization
-        //      time-constrained spline:
-        //          color-coding velocity
-        //          color-coding curvature
+        // item.value is the name of the path to visualize
+        // item.config.mode or item.config.modekey selects draw mode from:
+        //   "robot":  robot along path (animated)
+        //   "robot (paused)":  robot along path (paused)
+        //   "waypoints": waypoints only (x,y,theta)
+        //   "optspline": after curvature optimization
+        //   "spline": prior to curvature optimization (samples)
+        //   "splineCtls": control points
+        //   "optsplineCtls": control points
+        //   time-constrained spline:
+        //       color-coding velocity
+        //       color-coding curvature
         let coords = null, fcoords = null;
         if(evt != undefined)
         {
-            // has the side-effect of printing canvas coords
+            // has the side-effect of printing canvas coords, so do this before
+            // return so we can see coordinates even with no path requested.
             coords = this._evtToCanvasCoords(evt);
             fcoords = this._canvasToFieldCoords(coords); // updates network tables
         }
@@ -1028,8 +1036,11 @@ class CanvasWidget extends Widget
         let path = app.getPathsRepo().getPath(item.value);
         if(path != null)
         {
+            if(item.config.modekey)
+                item.config.mode = app.getValue(item.config.modekey);
             if(!item.config.mode)
                 item.config.mode = "waypoints";
+
             if(evt != undefined) // mouse moved
             {
                 let p = path.intersect(item.config, fcoords[0], fcoords[1]);
@@ -1046,13 +1057,13 @@ class CanvasWidget extends Widget
             else
             {
                 let ctx = this._drawFieldBegin();
-                path.draw(ctx, item.config);
+                path.draw(ctx, item.config); // <------------------
                 this._drawFieldEnd();
-                if(item.label && item._intersect)
+                if(item.config.label && item._intersect)
                 {
                     ctx.save();
-                    ctx.fillStyle = item.label.fillStyle;
-                    ctx.font = item.label.font;
+                    ctx.fillStyle = item.config.label.fillStyle;
+                    ctx.font = item.config.label.font;
                     ctx.shadowColor = "black";
                     ctx.shadowBlur = 0;
                     ctx.shadowOffsetX = 2;
@@ -1060,7 +1071,7 @@ class CanvasWidget extends Widget
                     let mtxt = ctx.measureText(item._intersect.txt);
                     let x = item._intersect.coords[0]+10; 
                     let y;
-                    let height = parseInt(item.label.font, 10);
+                    let height = parseInt(item.config.label.font, 10);
                     if(item.config.mode == "waypoints")
                         y = item._intersect.coords[1];
                     else
@@ -1068,7 +1079,7 @@ class CanvasWidget extends Widget
                     let rectY = Math.floor(y - .9*height);
                     ctx.fillStyle = "rgb(10,10,10)";
                     ctx.fillRect(x, rectY, mtxt.width, height);
-                    ctx.fillStyle = item.label.fillStyle;
+                    ctx.fillStyle = item.config.label.fillStyle;
                     ctx.fillText(item._intersect.txt, x, y);
                     ctx.restore();
                 }

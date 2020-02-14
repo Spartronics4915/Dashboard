@@ -361,6 +361,11 @@ footer
     /* grid-auto-flow: row/dense */
 }
 
+.inlined
+{
+    display: inline;
+}
+
 .containerrow
 {
     grid-column: 1/-1;

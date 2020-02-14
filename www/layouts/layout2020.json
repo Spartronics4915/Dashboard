@@ -115,6 +115,7 @@
                             "enable": true,
                             "updateinterval": 500,
                             "//": "items drawn in order (bottom-to-top)",
+                            "//1": "XXX: add poseList with skip-sample filtering",
                             "items":
                             [
                                 {
@@ -161,6 +162,7 @@
                                     "key": "Launcher/TurretAimAngle",
                                     "class": "cone",
                                     "enable": true,
+                                    "value": 0,
                                     "config": 
                                     {
                                         "//": "length is 10ft (120in)",
@@ -213,7 +215,7 @@
                             "type": "selector",
                             "label": "Alliance",
                             "id": "currentAlliance",
-                            "size": [80, "row"],
+                            "size": [0, "row"],
                             "ntkeys": [
                                 "Paths/AllianceMode"
                             ],
@@ -232,15 +234,37 @@
                             "type": "selector",
                             "label": "Path",
                             "id": "pathsel",
-                            "size": [200, "row"],
+                            "size": [0, "row"],
                             "ntkeys": [
                                 "Paths/Current",
                                 "Paths/Options"
                             ],
                             "params": {
-                                "width": "18em",
+                                "width": "14em",
                                 "ntkey": "Paths/Current",
                                 "optionsntkey": "Paths/Options"
+                            }
+                        },
+                        {
+                            "//": "menu of paths drawmode",
+                            "type": "selector",
+                            "label": "Display",
+                            "id": "pathsDisplay",
+                            "size": [0, "row"],
+                            "ntkeys": [
+                                "Paths/DisplayMode"
+                            ],
+                            "params": {
+                                "width": "12em",
+                                "ntkey": "Paths/DisplayMode",
+                                "options": 
+                                [
+                                    "Robot",
+                                    "Robot (paused)",
+                                    "Waypoints",
+                                    "Spline"
+                                ],
+                                "//": "ControlPoints isn't very useful"
                             }
                         }
                     ]
@@ -285,59 +309,30 @@
                             "items":
                             [
                                 {
-                                    "//": "(disabled) draw the selected path as optspline",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optspline",
-                                        "color": "blue"
-                                    }
-                                },
-                                {
-                                    "//": "(enabled) draw the selected path as robot",
+                                    "//": "draw the selected path",
+                                    "//1": "drawmode controlled by selector",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
+                                    "value": "Robot",
                                     "config": {
-                                        "mode": "robot",
-                                        "colors": {
+                                        "modekey": "Paths/DisplayMode",
+                                        "colors": 
+                                        {
                                             "backwheels": "blue",
                                             "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
-                                            "body/active": "rgba(200,150,100,.8)"
+                                            "body/active": "rgba(200,150,100,.8)",
+                                            "spline": "blue",
+                                            "splineCtls": "red",
+                                            "waypoints": "blue"
+                                        },
+                                        "label": 
+                                        {
+                                            "fillStyle": "orange",
+                                            "font": "15px Impact"
                                         }
-                                    },
-                                    "label": 
-                                    {
-                                        "fillStyle": "orange",
-                                        "font": "15px Impact"
-                                    }
-                                },
-                                {
-                                    "//": "(enabled) draw the current path's waypoints",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": true,
-                                    "pointerevents": true,
-                                    "config": {
-                                        "mode": "waypoints",
-                                        "color": "blue"
-                                    },
-                                    "label": {
-                                        "fillStyle": "cornflowerblue",
-                                        "font": "18px Impact"
-                                    }
-                                },
-                                {
-                                    "//": "(disabled) draw the current path's spline controlpoints",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optsplineCtls",
-                                        "color": "blue"
                                     }
                                 }
                             ]
@@ -1004,8 +999,9 @@
             "pagehandler": "RobotlogPH",
             "widgets": [
                 {
+                    "//": "only shows Talon Devices not as useful",
                     "type": "robotdevices",
-                    "label": "devices",
+                    "label": "CTRE devices",
                     "id": "robotdevs",
                     "size": ["fill", "row"],
                     "ntkeys": ["Robot/Connections"]

@@ -47,6 +47,9 @@ class PageHandler
             style += "grid-column:auto/-1;";
         }
         else
+        if(sz[0] == 0)
+        {/* no grid-column request (ie: pack)*/}
+        else
         {
             let cols = Math.round(sz[0]/gridsize);
             style += `grid-column:span ${cols};`;

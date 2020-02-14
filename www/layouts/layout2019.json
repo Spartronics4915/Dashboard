@@ -268,43 +268,25 @@
                             "items":
                             [
                                 {
-                                    "key": "RobotState/pose",
-                                    "class": "poselist",
-                                    "enable": true,
-                                    "fillStyle": {
-                                        "AUTONOMOUS": "rgb(200,150,0)",
-                                        "TELEOP": "rgb(0,100,250)",
-                                        "DISABLED":"rgb(10,10,140)",
-                                        "OFFLINE":"rgb(10,10,100)"
-                                    },
-                                    "strokeStyle": "rgb(255,0,0)"
-                                },
-                                {
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optspline",
-                                        "color": "blue"
-                                    }
-                                },
-                                {
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
-                                    "config": {
+                                    "config": 
+                                    {
                                         "mode": "robot",
-                                        "colors": {
+                                        "colors": 
+                                        {
                                             "backwheels": "blue",
                                             "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
                                             "body/active": "rgba(200,150,100,.8)"
+                                        },
+                                        "label": 
+                                        {
+                                            "fillStyle": "orange",
+                                            "font": "15px Impact"
                                         }
-                                    },
-                                    "label": {
-                                        "fillStyle": "orange",
-                                        "font": "15px Impact"
                                     }
                                 },
                                 {
@@ -312,22 +294,18 @@
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
-                                    "config": {
+                                    "config": 
+                                    {
                                         "mode": "waypoints",
-                                        "color": "blue"
-                                    },
-                                    "label": {
-                                        "fillStyle": "cornflowerblue",
-                                        "font": "18px Impact"
-                                    }
-                                },
-                                {
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optsplineCtls",
-                                        "color": "blue"
+                                        "colors": 
+                                        {
+                                            "waypoints": "blue"
+                                        },
+                                        "label": 
+                                        {
+                                            "fillStyle": "cornflowerblue",
+                                            "font": "18px Impact"
+                                        }
                                     }
                                 }
                             ]

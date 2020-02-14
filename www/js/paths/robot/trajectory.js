@@ -29,36 +29,41 @@ export class Trajectory
 
     draw(ctx, config)
     {
-        if(config.mode == "robot")
+        if(config.mode.toLowerCase().startsWith("robot"))
         {
             let constants = Constants.getInstance();
-            let yrad = constants.drive.CenterToSide;
-            let xrad = constants.drive.CenterToFront;
+            let yHalf = constants.drive.CenterToSide;
+            let xHalf = constants.drive.CenterToFront;
             let endT = this.poseSamples[this.poseSamples.length-1].getSampleTime();
             let endTMS = endT * 1000;
             let modT = (Date.now() % endTMS) / 1000;
+            if(!config.paused)
+                config.currentTime = modT;
+            else
+            if(config.currentTime === undefined)
+                config.currenTime = 0;
 
             for(let p of this.poseSamples)
-                this._drawRobot(p, xrad, yrad, ctx, config);
+                this._drawRobot(p, xHalf, yHalf, ctx, config);
             for(let p of this.poseSamples)
             {
-                this._drawWheels("back", p, xrad, yrad, ctx, 
+                this._drawWheels("back", p, xHalf, yHalf, ctx, 
                                 config.colors["backwheels"]);
             }
             for(let p of this.poseSamples)
             {
-                this._drawWheels("front", p, xrad, yrad, ctx, 
+                this._drawWheels("front", p, xHalf, yHalf, ctx, 
                                 config.colors["frontwheels"]);
             }
 
             // draw the pose that matches our time
             for(let p of this.poseSamples)
             {
-                if(p.getSampleTime() < modT)
+                if(p.getSampleTime() < config.currentTime)
                     continue;
                 else
                 {
-                    this._drawTimeBar(p, xrad, yrad, ctx, config);
+                    this._drawActiveRobot(p, xHalf, yHalf, ctx, config);
                     break;
                 }
             }
@@ -70,27 +75,28 @@ export class Trajectory
         }
     }
 
-    _drawRobot(p, xrad, yrad, ctx, config)
+    _drawRobot(p, xHalf, yHalf, ctx, config)
     {
         ctx.save();
         ctx.fillStyle = config.colors["body"];
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
-        ctx.fillRect(-xrad, -yrad, 2*xrad, 2*yrad);
+        ctx.fillRect(-xHalf, -yHalf, 2*xHalf, 2*yHalf);
         ctx.restore();
     }
 
-    _drawTimeBar(p, xrad, yrad, ctx, config)
+    _drawActiveRobot(p, xHalf, yHalf, ctx, config)
     {
         ctx.save();
         ctx.fillStyle = config.colors["body/active"];
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
-        ctx.fillRect(-xrad, -yrad, 2*xrad, 2*yrad);
+        ctx.fillRect(-xHalf, -yHalf, 2*xHalf, 2*yHalf);
         ctx.restore();
+        p.draw(ctx);
     }
 
-    _drawWheels(subset, p, xrad, yrad, ctx, color)
+    _drawWheels(subset, p, xHalf, yHalf, ctx, color)
     {
         ctx.save();
         ctx.translate(p.translation.x, p.translation.y);
@@ -100,11 +106,11 @@ export class Trajectory
             // back left (x is front)
             ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.arc(-xrad, -yrad, 2, 0, 2 * Math.PI, false);
+            ctx.arc(-xHalf, -yHalf, 2, 0, 2 * Math.PI, false);
             ctx.fill();
             // back right
             ctx.beginPath();
-            ctx.arc(-xrad, yrad, 2, 0, 2 * Math.PI, false);
+            ctx.arc(-xHalf, yHalf, 2, 0, 2 * Math.PI, false);
             ctx.fill();
         }
         if(subset == "front" || subset == "all")
@@ -112,11 +118,11 @@ export class Trajectory
             ctx.fillStyle = color;
             // front left
             ctx.beginPath();
-            ctx.arc(xrad, -yrad, 2, 0, 2 * Math.PI, false);
+            ctx.arc(xHalf, -yHalf, 2, 0, 2 * Math.PI, false);
             ctx.fill();
             // front right
             ctx.beginPath();
-            ctx.arc(xrad, yrad, 2, 0, 2 * Math.PI, false);
+            ctx.arc(xHalf, yHalf, 2, 0, 2 * Math.PI, false);
             ctx.fill();
         }
         ctx.restore();
@@ -334,7 +340,7 @@ export class Trajectory
                 else
                 {
                     // no stationary samples please
-                    app.error("trajectory invalid sample " + samp + " stationary?");
+                    app.info("trajectory invalid (stationary?) sample " + samp);
                 }
             }
             t += dt;
