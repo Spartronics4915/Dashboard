@@ -524,6 +524,8 @@ class CanvasWidget extends Widget
     _drawRobot(item)
     {
         // assume item.value is a pose in field coordinates
+        if(!item.value) return;
+
         let config = item.config;
         let pfields = this._parsePoseString(item.value);
         let x = pfields[0];
@@ -626,7 +628,8 @@ class CanvasWidget extends Widget
                 {
                     // posekey tells us what ntkey to consult for pose...
                     // XXX: need to extend support for item.key to a list
-                    let pose = this._parsePoseString(app.getValue(config.posekey));
+                    let poseStr = app.getValue(config.posekey);
+                    let pose = this._parsePoseString(poseStr);
                     let ctx = this._drawFieldBegin();
                     ctx.translate(pose[0], pose[1]);
                     ctx.rotate(pose[2]);

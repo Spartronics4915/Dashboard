@@ -207,8 +207,26 @@
                     "ntkeys": [
                         "Paths/Coords"
                     ],
-                    "wsize": [600, "row"],
                     "widgets": [
+                        {
+                            "//": "menu of alliance mode, and current alliance",
+                            "type": "selector",
+                            "label": "Alliance",
+                            "id": "currentAlliance",
+                            "size": [80, "row"],
+                            "ntkeys": [
+                                "Paths/AllianceMode"
+                            ],
+                            "params": {
+                                "width": "8em",
+                                "ntkey": "Paths/AllianceMode",
+                                "options": [
+                                    "FMS",
+                                    "Blue",
+                                    "Red"
+                                ]
+                            }
+                        },
                         {
                             "//": "menu of paths, and current path",
                             "type": "selector",

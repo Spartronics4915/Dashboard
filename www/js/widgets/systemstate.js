@@ -32,7 +32,7 @@ class SystemState extends Widget
             this.widgetsId = `${w.id}Widgets`;
             let sz = this.config.wsize ? this.config.wsize :  [800, "row"];
             let wstl = gstyle(sz);
-            html += `<div id='${this.widgetsId}' ${wstl})}></div>`;
+            html += `<div id='${this.widgetsId}' class='gridded' ${wstl})}></div>`;
         }
         html += "</div>"; // end of systemstate
         html += "<hr />";
