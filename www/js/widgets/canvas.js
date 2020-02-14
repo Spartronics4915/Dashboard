@@ -18,6 +18,9 @@ class CanvasWidget extends Widget
         this.targetElem.html(html);
         this.canvasEl = document.getElementById(this.canvId);
         this.canvasCtx = this.canvasEl.getContext("2d");
+        this.fmsIsRedAlliance = false; // /FMS/IsRedAlliance
+        this.pathDisplayMode = "Blue"; // Paths/DisplayMode: Blue, Red, FMS
+        this.fieldCoordMode = "Blue"; // derived from pathDisplayMode + fmsIsRedAlliance
         this.resizeListener = null;
         this._trustCanvXform = true;
 
@@ -103,6 +106,21 @@ class CanvasWidget extends Widget
     // trigger this message.
     valueChanged(key, value, isNew)
     {
+        switch(key)
+        {
+        case "/FMSInfo/IsRedAlliance":
+            this.fmsIsRedAlliance = value;
+            if(this.pathDisplayMode == "FMS")
+                this.fieldCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
+            break;
+        case "/SmartDashboard/Paths/AllianceMode":
+            this.pathDisplayMode = value;
+            if(this.pathDisplayMode == "FMS")
+                this.fieldCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
+            else
+                this.fieldCoordMode = value;
+            break;
+        }
         this._updateOverlay(key, value, isNew);
         if (key.startsWith("/SmartDashboard/Vision"))
             this.lastVisionKeyUpdate = new Date();
@@ -453,24 +471,6 @@ class CanvasWidget extends Widget
         }
     }
 
-    _canvasToFieldCoords(ccoords)
-    {
-        let x = (ccoords[0] / this.canvasEl.width);
-        let y = (ccoords[1] / this.canvasEl.height);
-        let fxy = app.getFieldCoords(x, 1-y); // flip y
-        app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
-        return fxy;
-    }
-
-    _fieldToCanvasCoords(pose) // unused?
-    {
-        // pose is x, y (inches), cosangle, sinangle
-        let pc = app.getFieldPct(pose[0], pose[1]);
-        // angles in canvas coords are just flipped in y (rotated 181)o
-        // console.log(pose, cx, cy);
-        return [pc[0], 1-pc[1], pose[2], -pose[3]];
-    }
-
     _getItemText(item)
     {
         let ret;
@@ -536,8 +536,44 @@ class CanvasWidget extends Widget
         ctx.fillStyle = config.colors["body"];
         ctx.translate(x, y);
         ctx.rotate(rot);
-        ctx.fillRect(-config.xsize/2, -config.ysize/2, config.xsize, config.ysize);
+        // ctx.fillRect(-config.xsize/2, -config.ysize/2, config.xsize, config.ysize);
+
+        ctx.save();
+        /* shadow directions are expressed in world-canv coords? 
+         *  which is what we want here (ie: constant direction shadows)
+         */
+        ctx.shadowColor =  "rgba(0,0,0,.8)";
+        ctx.shadowOffsetX = 5; // * Math.cos(-rot);
+        ctx.shadowOffsetY = 5; //* Math.sin(-rot);
+        ctx.shadowBlur = 3;
+        CanvasWidget.roundRect(ctx, -config.xsize/2, -config.ysize/2,
+                            config.xsize, config.ysize, config.radius || 5,
+                            false, true);
+        ctx.restore();
+
+        // pose marker at robot origin
+        this._drawPose(ctx);
         this._drawFieldEnd();
+    }
+
+    _drawPose(ctx, color, radius)
+    {
+        color = color || "darkgreen";
+        radius = radius || 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = color;
+        ctx.lineCap = "round";
+        ctx.fill();
+        ctx.stroke();
+
+        let len = 12; 
+        ctx.strokeStyle = "darkred"; 
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(len, 0);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
     }
 
     _drawCompass(item)
@@ -898,35 +934,12 @@ class CanvasWidget extends Widget
             ctx.scale(sx, sy);
         }
         return ctx;
-    }*/
-
-    _drawFieldBegin()
-    {
-        // paths and poses
-        // FRC field differs each year, we assume our canvas has the
-        // correct aspect ratio. Currently we assume field poses have an origin 
-        // at the [left, ymid] and that y is up (ie: we must flipY).
-        let ctx = this.canvasCtx;
-        ctx.save();
-        if(this._trustCanvXform)
-        {
-            let fs = app.getFieldSize();
-            let width = this.canvasEl.width;
-            let height = this.canvasEl.height;
-            let sx = width/fs[0];
-            let sy = -height/fs[1]; // flip y
-            // origin x is "left"
-            // origin y is middle
-            ctx.translate(0, height*.5);
-            ctx.scale(sx, sy);
-        }
-        return ctx;
     }
-
-    _drawFieldEnd()
+    
+    _drawCompassEnd()
     {
         this.canvasCtx.restore();
-    }
+    }*/
 
     _drawPoselist(item, evt)
     {
@@ -1087,6 +1100,94 @@ class CanvasWidget extends Widget
         }
         else
             app.warning("missing path " + item.value);
+    }
+
+    /** on field coordinates:
+     *    in order to support path-reuse and to simplify robot initialization
+     *    we adopt a different coordinate system depending on our Alliance.
+     *    The field as defined by the app/layout is assumed to be in "Blue"
+     *    alliance coords where:
+     * 
+     *      Blue: origin is left-mid, x+ to right, y+ up
+     *      Red: origin is right-mid, x+ to left, y- up
+     * 
+     *    Currently, this simple approach will only work if the field is
+     *    rotationally symmetric as opposed to flipped around x-mid.
+     */
+    _canvasToFieldCoords(ccoords)
+    {
+        /* canvas is origin top-left, x+ right, y+ down */
+        let x = (ccoords[0] / this.canvasEl.width);
+        let y = (ccoords[1] / this.canvasEl.height);
+        let fxy;
+        if(this.fieldCoordMode == "Red") 
+            fxy = app.getFieldCoords(1-x, y); // only flip x
+        else
+            fxy = app.getFieldCoords(x, 1-y); // only flip y
+        app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
+        return fxy;
+    }
+
+    _fieldToCanvasCoords(pose) // unused?
+    {
+        // pose is x, y (inches), cosangle, sinangle
+        let pct = app.getFieldPct(pose[0], pose[1]);
+        if(this.fieldCoordMode == "Red")
+        {
+            // angles in canvas coords fine as-is
+            // console.log(pose, cx, cy);
+            return [1-pct[0], pct[1], pose[2], pose[3]];
+        }
+        else
+        {
+            // angles in canvas coords are just flipped in y (rotated 180)
+            // console.log(pose, cx, cy);
+            return [pct[0], 1-pct[1], pose[2], -pose[3]];
+        }
+    }
+
+    _drawFieldBegin()
+    {
+        // paths and poses
+        // FRC field differs each year, we assume our canvas has the
+        // correct aspect ratio. Currently we assume field poses will
+        // be drawn relative to our Alliance.
+        // Blue: origin: left, mid;  x+ right, y+ up
+        // Red: origin: right, mid;  x+ left, y+ down
+        //
+        // Also, yorigin is at mid, and y is up for Blue and down for 
+        // at the [left, ymid] and that y is up (ie: we must flipY).
+        let ctx = this.canvasCtx;
+        ctx.save();
+        if(this._trustCanvXform)
+        {
+            let fs = app.getFieldSize();
+            let width = this.canvasEl.width;
+            let height = this.canvasEl.height;
+            let sx, sy, tx, ty;
+            if(this.fieldCoordMode == "Red")
+            {
+                tx = width;
+                ty = height * .5;
+                sx = -width/fs[0]; // flip x
+                sy = height/fs[1]; // don't flip y (canvas y is already down)
+            }
+            else
+            {
+                tx = 0;
+                ty = height*.5;
+                sx = width/fs[0];
+                sy = -height/fs[1]; // flip y
+            }
+            ctx.translate(tx, ty);
+            ctx.scale(sx, sy);
+        }
+        return ctx;
+    }
+
+    _drawFieldEnd()
+    {
+        this.canvasCtx.restore();
     }
 
     addRandomPt()

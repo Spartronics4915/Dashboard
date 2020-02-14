@@ -108,6 +108,11 @@
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
+                    "ntkeys":
+                    [
+                        "/FMSInfo/IsRedAlliance",
+                        "Paths/AllianceMode"
+                    ],
                     "params": {
                         "canvcls": "nopointer",
                         "overlay":
@@ -299,6 +304,12 @@
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
+                    "ntkeys": 
+                    [
+                        "/FMSInfo/IsRedAlliance",
+                        "Paths/AllianceMode",
+                        "Paths/DisplayMode"
+                    ],
                     "params": {
                         "canvcls": "yespointer",
                         "overlay":

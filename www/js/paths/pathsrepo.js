@@ -119,11 +119,11 @@ export default class PathsRepo
                     this.landmarks.midmidRight,
                     this.landmarks.midmidRight,
                     ]));
-        this.addPath(new Path("blueTarget", [
+        this.addPath(new Path("ourTarget", [
                     _adjustPose("frontcenter", this.landmarks.blueTgt),
                     _adjustPose("frontcenter", this.landmarks.blueTgt),
                     ]));
-        this.addPath(new Path("redTarget", [
+        this.addPath(new Path("opponentTarget", [
                     _adjustPose("frontcenter", this.landmarks.redTgt),
                     _adjustPose("frontcenter", this.landmarks.redTgt),
                     ]));

@@ -81,7 +81,7 @@ export class Trajectory
         ctx.fillStyle = config.colors["body"];
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
-        ctx.fillRect(-xHalf, -yHalf, 2*xHalf, 2*yHalf);
+        this._roundRect(ctx, -xHalf, -yHalf, 2*xHalf, 2*yHalf, config.radius);
         ctx.restore();
     }
 
@@ -91,7 +91,7 @@ export class Trajectory
         ctx.fillStyle = config.colors["body/active"];
         ctx.translate(p.translation.x, p.translation.y);
         ctx.rotate(p.rotation.getRadians());
-        ctx.fillRect(-xHalf, -yHalf, 2*xHalf, 2*yHalf);
+        this._roundRect(ctx, -xHalf, -yHalf, 2*xHalf, 2*yHalf, config.radius);
         ctx.restore();
         p.draw(ctx);
     }
@@ -131,6 +131,36 @@ export class Trajectory
     getSamples()
     {
         return this.poseSamples;
+    }
+
+    _roundRect(ctx, x, y, width, height, radius)
+    {
+        if (radius === undefined)
+            radius = 5;
+        if(radius == 0)
+        {
+            ctx.rect(x, y, width, height);
+        }
+        else
+        {
+            x = Number(x);
+            y = Number(y);
+            width = Number(width);
+            height = Number(height);
+            radius = Number(radius);
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+        ctx.fill();
     }
 
     // returns a trajectory:
@@ -351,6 +381,7 @@ export class Trajectory
             delete samp.maxVel;
         }
     }
+
 }
 
 export default Trajectory;
