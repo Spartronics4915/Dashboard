@@ -399,14 +399,14 @@ export class App
                 "id": "inputCurrentChart",
                 "type": "stripchart",
                 "size": [100, 48],
-                // "ntkeys": "/SmartDashboard/Robot/BatteryCurrent",
-                "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
+                "ntkeys": "/SmartDashboard/Robot/TotalCurrent", // from PDP
+                // "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
                 "params": {
                     "plot": {
                         "yaxis": {
                             "min": 0,
-                            "max": 2,
-                            "show": false,
+                            "max": 30,
+                            "show": true,
                         },
                         "fillvalue": 0,
                         "colors":["rgb(255, 80, 0)"],
