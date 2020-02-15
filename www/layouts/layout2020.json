@@ -647,7 +647,7 @@
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Vision/currentCommand", "Vision/Status"]
+                    "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
                 },
                 {
                     "id": "visionLatency",
@@ -765,15 +765,15 @@
                 }
             ]
         },
-        { "//": "--------- test page -------------------------- ",
-            "navtext": "Test",
+        { "//": "--------- tune page -------------------------- ",
+            "navtext": "Tune",
             "icon": "fas fa-vial",
             "widgets": [
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "Test",
-                    "label": "Test Subsystem",
+                    "label": "Tune Subsystems",
                     "size": ["fill", "row"],
                     "ntkeys": []
                 },
@@ -910,6 +910,14 @@
                     "label": "LED Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["LED/currentCommand"]
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "Vision",
+                    "label": "Vision Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
                 },
                 {
                     "//": "----------------------------------",
