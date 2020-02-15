@@ -13,7 +13,7 @@ class SystemState extends Widget
         let gstyle = pagehandler.newGridElemStyle.bind(pagehandler);
 
         let html = "<div class='systemstate container gridded'>";
-        let gw = 180;
+        let gw = 180; /* first columnt width is 180 */
         html +=     `<div ${gstyle([gw, "row"])}>`; 
         html +=       `<span class="title">${w.label}</span> `;
         // add spans to title div according to ntkeys (like status, etc)

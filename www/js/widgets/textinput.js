@@ -5,6 +5,7 @@ class TextInputWidget extends Widget
     {
         super(config, targetElem, pageHandler);
         this.params = this.config.params;
+        targetElem.addClass("flex");
         this.targetId = targetElem.attr("id");
         this.controlId = `${this.config.id}Txt`;
         let width = "10em";

@@ -85,6 +85,7 @@ export class RobotStateMgr
                 app.putValue("RobotState/pose", newpose);
             }
 
+            /* disabled, not very interesting 
             // trigger vision target too
             if(!this.visionTarget)
             {
@@ -111,6 +112,7 @@ export class RobotStateMgr
                 app.putValue("Vision/Reverse/solvePNP", targets);
                 this.visionTarget.timeStamp = Date.now(); 
             }
+            */
         }
     }
 

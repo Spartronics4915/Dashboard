@@ -987,6 +987,21 @@
                     }
                 },
                 {
+                    "type": "selector",
+                    "label": "Another Selector",
+                    "id": "s6",
+                    "size": [200, "row"],
+                    "ntkeys": ["Test/Sel2"],
+                    "params": {
+                        "width": "8em",
+                        "ntkey": "Test/Sel2",
+                        "options": [
+                             "green pill",
+                             "alpha pill"
+                        ]
+                    }
+                },
+                {
                     "type": "rangeslider",
                     "size": [200, "row"],
                     "label": "Range Slider",
