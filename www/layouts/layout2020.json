@@ -21,10 +21,12 @@
             "envparam": "env=default",
             "testcam": "10.49.15.10:1181",
             "visionbackcam": "10.49.15.10:5806",
-            "driverbackcam": "10.49.15.11:5805",
-            "driverfrontcam": "10.49.15.12:5805",
+            "driverbackcam": "10.49.15.12:5805",
+            "driverfrontcam": "10.49.15.11:5805",
+            "driverupcam": "10.49.15.13:5805",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "robotid": "main2020"
         },
         "dana": 
@@ -85,7 +87,8 @@
                                     "options": [
                                         "Test",
                                         "Front",
-                                        "Back"
+                                        "Back",
+                                        "Up"
                                     ]
                                 }
                             }
@@ -1175,6 +1178,13 @@
                                 "ip": "${driverbackcam}",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
+                            },
+                            "Up":
+                            {
+                                "protocol": "ws",
+                                "ip": "${driverupcam}",
+                                "cls": "size1280",
+                                "cmd": "${driverupcamcmd}"
                             },
                             "_Front_deprecated":
                             {
