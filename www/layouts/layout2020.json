@@ -758,25 +758,25 @@
                         {
                             "PiCam default":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/default.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam hsv":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/hsv.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam bypass mjpg":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/bypass.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam mask mjpg":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/mask.mjpg",
                                 "cls": "rotate0 size640"
                             }
@@ -1117,7 +1117,7 @@
                             "  <li><a href='http://${driverfrontcam}:${camStatusPort}' target='_blank'>Front</a>",
                             "  <li><a href='http://${driverbackcam}:${camStatusPort}' target='_blank'>Back</a>",
                             "  <li><a href='http://${driverupcam}:${camStatusPort}' target='_blank'>Up</a>",
-                            "  <li><a href='http://${visionbackcam}:${camStatusPort}' target='_blank'>Vision</a>",
+                            "  <li><a href='http://${visioncam}:${camStatusPort}' target='_blank'>Vision</a>",
                             "</ul>",
                             "<h2>Camera Feeds</h2>",
                             "<ul>",
