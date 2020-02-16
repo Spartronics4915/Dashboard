@@ -390,6 +390,7 @@ footer
 .yespointer
 {
     pointer-events: all;
+    key-events: all;
 }
 
 .xtrapad

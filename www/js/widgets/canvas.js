@@ -37,6 +37,21 @@ class CanvasWidget extends Widget
             }
         }
         this.canvasEl.onmousemove = this._onMouseMove.bind(this);
+        this.canvasEl.tabIndex = "1";
+
+        navigator.permissions.query({name:"clipboard-write"}).then((result) => 
+        {
+            if (result.state === "granted") 
+            {
+                this.canvasEl.addEventListener("keydown", this._onKeyDown.bind(this), false);
+            } 
+            else 
+            if (result.state === "prompt") 
+            {
+                console.notice("need permissions");
+            }
+            // Don't do anything if the permission was denied.
+        });
 
         // TODO: for opencv of other img or video src, we need its element id
     }
@@ -150,6 +165,42 @@ class CanvasWidget extends Widget
                     }
                 }
             }
+        }
+    }
+
+    _onKeyDown(evt)
+    {
+        switch(evt.code)
+        {
+        case "KeyC":
+            if(evt.ctrlKey || evt.metaKey)
+            {
+                /* copy current coords to clipboard */
+                if(this._fieldcoords)
+                {
+                    let x = this._fieldcoords[0], y = this._fieldcoords[1];
+                    let indent = "    ";
+                    let indent2 = indent.repeat(2); 
+                    let indent3 = indent.repeat(3);
+                    let txt = `\n${indent2}{\n` +
+                          `${indent3}"x": ${x.toFixed(1)},\n` +
+                          `${indent3}"y": ${y.toFixed(1)},\n` +
+                          `${indent3}"heading": 0\n` +
+                          `${indent2}}`;
+                    navigator.clipboard.writeText(txt).then(() =>
+                    {
+                        console.debug("copied " + txt);
+                    }).catch( err =>
+                    {
+                        console.error("can't copy to clipboard " + err);
+                    });
+                }
+                else
+                    console.warn("No field coords for copy");
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -1047,6 +1098,7 @@ class CanvasWidget extends Widget
             // return so we can see coordinates even with no path requested.
             coords = this._evtToCanvasCoords(evt);
             fcoords = this._canvasToFieldCoords(coords); // updates network tables
+            this._fieldcoords = fcoords; // for copyToClipboard
         }
         if(!item.value) return; // this must follow _canvasToFieldCoords
 

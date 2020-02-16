@@ -59,7 +59,7 @@ class TextEditorWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
-        // the value is assume to a "file name"
+        // the value is assumed to a "file name"
         // XXX: if the current file is dirty, we could stash its contents
         //  and re-apply, etc.  ace has a multi-session support which might
         //  be the way to go.
@@ -72,7 +72,7 @@ class TextEditorWidget extends Widget
 
     _makeClean()
     {
-        // make clean, need another _onChage to update dirty...
+        // make clean, need another _onChange to update dirty...
         this.editor.session.setUndoManager(new ace.UndoManager());
         this._onChange(); 
     }

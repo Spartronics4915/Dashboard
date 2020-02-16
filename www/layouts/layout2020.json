@@ -20,17 +20,17 @@
             "//": "official robot settings",
             "envparam": "env=default",
             "robotid": "main2021",
-            "testcam": "10.49.15.10:1181",
             "camFeedPort": 5805,
             "visionFeedPort": 5806,
             "camStatusPort": 80,
             "visioncam": "10.49.15.10",
-            "driverbackcam": "10.49.15.12",
             "driverfrontcam": "10.49.15.11",
+            "driverbackcam": "10.49.15.12",
             "driverupcam": "10.49.15.13",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf"
+            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "testcam": "10.49.15.10:1181"
         },
         "dana": 
         {
@@ -311,7 +311,8 @@
                     "id": "patheditor",
                     "size": [400, 600],
                     "ntkeys": ["Paths/Current"],
-                    "params": {
+                    "params": 
+                    {
                         "title": "Path Editor",
                         "theme": "ace/theme/terminal",
                         "mode": "ace/mode/json",
@@ -346,7 +347,7 @@
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
-                                    "value": "Robot",
+                                    "value": "home",
                                     "config": {
                                         "modekey": "Paths/DisplayMode",
                                         "colors": 
