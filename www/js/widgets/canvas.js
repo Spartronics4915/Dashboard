@@ -37,22 +37,8 @@ class CanvasWidget extends Widget
             }
         }
         this.canvasEl.onmousemove = this._onMouseMove.bind(this);
+        this.canvasEl.onkeydown = this._onKeyDown.bind(this);
         this.canvasEl.tabIndex = "1";
-
-        navigator.permissions.query({name:"clipboard-write"}).then((result) => 
-        {
-            if (result.state === "granted") 
-            {
-                this.canvasEl.addEventListener("keydown", this._onKeyDown.bind(this), false);
-            } 
-            else 
-            if (result.state === "prompt") 
-            {
-                console.notice("need permissions");
-            }
-            // Don't do anything if the permission was denied.
-        });
-
         // TODO: for opencv of other img or video src, we need its element id
     }
 
@@ -186,7 +172,11 @@ class CanvasWidget extends Widget
                           `${indent3}"x": ${x.toFixed(1)},\n` +
                           `${indent3}"y": ${y.toFixed(1)},\n` +
                           `${indent3}"heading": 0\n` +
-                          `${indent2}}`;
+                          `${indent2}},`;
+                    if(this.config.params.copykey) // nb: this is canvas-wide
+                    {
+                        app.putValue(this.config.params.copykey, txt);
+                    }
                     navigator.clipboard.writeText(txt).then(() =>
                     {
                         console.debug("copied " + txt);

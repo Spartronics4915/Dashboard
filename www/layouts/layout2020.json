@@ -310,13 +310,14 @@
                     "type": "texteditor",
                     "id": "patheditor",
                     "size": [400, 600],
-                    "ntkeys": ["Paths/Current"],
+                    "ntkeys": ["Paths/Current", "Paths/Clipboard"],
                     "params": 
                     {
                         "title": "Path Editor",
                         "theme": "ace/theme/terminal",
                         "mode": "ace/mode/json",
-                        "filesystem": "paths"
+                        "filesystem": "paths",
+                        "pastekey": "Paths/Clipboard"
                     }
                 },
                 {
@@ -333,6 +334,7 @@
                     ],
                     "params": {
                         "canvcls": "yespointer",
+                        "copykey": "Paths/Clipboard",
                         "overlay":
                         {
                             "enable": true,

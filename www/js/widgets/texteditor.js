@@ -59,15 +59,24 @@ class TextEditorWidget extends Widget
 
     valueChanged(key, value, isNew)
     {
-        // the value is assumed to a "file name"
-        // XXX: if the current file is dirty, we could stash its contents
-        //  and re-apply, etc.  ace has a multi-session support which might
-        //  be the way to go.
-        this.filenm = value;
-        $(`#${this.filenmId}`).html(value);
-        let txt = app.getFileContents(this.params.filesystem, value);
-        this.editor.session.setValue(txt);
-        this._makeClean();
+        if(app.ntkeyNormalize(this.params.pastekey) == key)
+        {
+            if(isNew) return; /* on first connection */
+            let cursorPosition = this.editor.getCursorPosition();
+            this.editor.session.insert(cursorPosition, value);
+        }
+        else
+        {
+            // the value is assumed to a "file name"
+            // XXX: if the current file is dirty, we could stash its contents
+            //  and re-apply, etc.  ace has a multi-session support which might
+            //  be the way to go.
+            this.filenm = value;
+            $(`#${this.filenmId}`).html(value);
+            let txt = app.getFileContents(this.params.filesystem, value);
+            this.editor.session.setValue(txt);
+            this._makeClean();
+        }
     }
 
     _makeClean()
