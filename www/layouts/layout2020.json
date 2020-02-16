@@ -903,6 +903,26 @@
                     "ntkeys": ["Climber/currentCommand"]
                 },
                 {
+                    "id": "climberWinchCurrent",
+                    "label": "Winch Current",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Climber/WinchCurrent",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 40
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)"],
+                            "channelcount": 1,
+                            "widths": [1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
                     "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "Indexer", "//": "name is subsystem name",
