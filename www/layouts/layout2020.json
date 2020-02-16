@@ -85,10 +85,11 @@
                             "label": "Video Stream",
                             "id": "videoStream",
                             "size": [200, "row"],
+                            "ntkey": "/SmartDashboard/Driver/VideoStream",
                             "params": 
                             {
                                 "width": "8em",
-                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "ntkey": "/SmartDashboard/Driver/VideoStream",
                                 "//": "make sure these options are substrings of videochannel's streams array",
                                 "options": [
                                     "Test",

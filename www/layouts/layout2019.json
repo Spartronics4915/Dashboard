@@ -58,22 +58,28 @@
                             "label": "Auto Strategy",
                             "id": "autoStrategy",
                             "size": [200, "row"],
+                            "ntkeys": 
+                            [
+                                "/SmartDashboard/AutoStrategy",
+                                "/SmartDashboard/AutoStrategyOptions"
+                            ],
                             "params": 
                             {
                                 "ntkey": "/SmartDashboard/AutoStrategy",
-                                "width": "8em",
-                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions"
-                            }
+                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions",
+                                "width": "12em"
+                            }              
                         },
                         {
                             "type": "selector",
                             "label": "Video Stream",
                             "id": "videoStream",
-                            "size": [200, "row"],
+                            "size": [240, "row"],
+                            "ntkey": "/SmartDashboard/Driver/VideoStream",
                             "params": 
                             {
                                 "width": "8em",
-                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "ntkey": "/SmartDashboard/Driver/VideoStream",
                                 "//": "make sure these options are substrings of videochannel's streams array",
                                 "options": [
                                     "Test",
