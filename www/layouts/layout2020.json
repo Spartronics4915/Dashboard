@@ -963,6 +963,13 @@
                     "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
                 },
                 {
+                    "type": "checkbox",
+                    "label": "LED Relay",
+                    "id": "visionLEDRelay",
+                    "size": [120, "row"],
+                    "ntkeys": ["Vision/LEDRelay"]
+                },
+                {
                     "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "examples", "//": "name is subsystem name",
