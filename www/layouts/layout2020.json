@@ -795,7 +795,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "tune", "//": "name is subsystem name",
+                    "id": "tune", "//1": "no subsystem named tune",
                     "label": "Tune Subsystems",
                     "size": ["fill", "row"],
                     "ntkeys": []
@@ -826,10 +826,10 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Launcher", "//": "name is subsystem name",
+                    "id": "Launcher", "//1": "name is subsystem name",
                     "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Launcher/currentCommand"]
+                    "ntkeys": ["Launcher/Status", "Launcher/currentCommand"]
                 },
                 {
                     "type": "slider",
@@ -897,10 +897,10 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Climber", "//": "name is subsystem name",
+                    "id": "Climber", "//1": "name is subsystem name",
                     "label": "Climber Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Climber/currentCommand"]
+                    "ntkeys": ["Climber/Status", "Climber/currentCommand"]
                 },
                 {
                     "id": "climberWinchCurrent",
@@ -925,42 +925,37 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Indexer", "//": "name is subsystem name",
+                    "id": "Indexer", "//1": "name is subsystem name",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Indexer/currentCommand"]
+                    "ntkeys": ["Indexer/Status", "Indexer/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Intake", "//": "name is subsystem name",
+                    "id": "Intake", "//1": "name is subsystem name",
                     "label": "Intake Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Intake/currentCommand"]
+                    "ntkeys": ["Intake/Status", "Intake/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "PanelRotator", "//": "name is subsystem name",
+                    "id": "PanelRotator", "//1": "name is subsystem name",
                     "label": "PanelRotator Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["PanelRotator/currentCommand"]
+                    "ntkeys": ["PanelRotator/Status", 
+                               "PanelRotator/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "LED", "//": "name is subsystem name",
-                    "label": "LED Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["LED/currentCommand"]
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Vision", "//": "name is subsystem name",
+                    "id": "Vision", "//1": "name is subsystem name",
                     "label": "Vision Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
+                    "ntkeys": ["Vision/Status", 
+                               "Vision/currentCommand" 
+                               ]
                 },
                 {
                     "type": "checkbox",
@@ -972,7 +967,15 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "examples", "//": "name is subsystem name",
+                    "id": "LED", "//1": "name is subsystem name",
+                    "label": "LED Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["LED/Status", "LED/currentCommand"]
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "examples", "//1": "name is subsystem name",
                     "label": "Example Widgets",
                     "size": ["fill", "row"],
                     "ntkeys": []
