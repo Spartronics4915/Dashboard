@@ -359,6 +359,12 @@ footer
     grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     /* grid-auto-flow: row/dense */
+
+    /* helpful during debugging 
+    border-width: 1px;
+    border-color: red;
+    border-style: solid;
+    */
 }
 
 .inlined

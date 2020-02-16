@@ -50,17 +50,45 @@
                     "type": "systemstate",
                     "id": "compete",
                     "label": "Driver Interface",
-                    "size": ["fill", "row"],
-                    "wsize": [800, "row"],
-                    "widgets": [
+                    "size": [200, "row"],
+                    "widgets": 
+                    [
+                        {
+                            "type": "selector",
+                            "label": "Auto Strategy",
+                            "id": "autoStrategy",
+                            "size": [200, "row"],
+                            "params": 
+                            {
+                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "width": "8em",
+                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions"
+                            }
+                        },
+                        {
+                            "type": "selector",
+                            "label": "Video Stream",
+                            "id": "videoStream",
+                            "size": [200, "row"],
+                            "params": 
+                            {
+                                "width": "8em",
+                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "//": "make sure these options are substrings of videochannel's streams array",
+                                "options": [
+                                    "Test",
+                                    "Front",
+                                    "Back",
+                                    "Up"
+                                ]
+                            }
+                        },
                         {
                             "type": "fieldconfig",
                             "label": "Field Config",
                             "id": "fieldconfig",
-                            "size": [800, "row"],
+                            "size": [400, "row"],
                             "ntkeys": [
-                                "AutoStrategy",
-                                "AutoStrategyOptions",
                                 "/FMSInfo/IsRedAlliance",
                                 "/FMSInfo/StationNumber",
                                 "/FMSInfo/GameSpecificMessage",
@@ -69,20 +97,7 @@
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber"
-                            ],
-                            "params": {
-                                "videoStream":
-                                {
-                                    "label": "VideoStream",
-                                    "ntkey": "Driver/VideoStream",
-                                    "//": "make sure these options are substrings of videochannel's streams array",
-                                    "options": [
-                                        "Test",
-                                        "Front",
-                                        "Back"
-                                    ]
-                                }
-                            }
+                            ]
                         }
                     ]
                 },
@@ -207,25 +222,67 @@
                     "id": "Paths",
                     "label": "Path Planning",
                     "type": "systemstate",
-                    "size": ["fill", "row"],
+                    "size": [285, "row"],
                     "ntkeys": [
                         "Paths/Coords"
                     ],
-                    "wsize": [600, "row"],
-                    "widgets": [
+                    "widgets": 
+                    [
                         {
+                            "//": "menu of alliance mode, and current alliance",
+                            "type": "selector",
+                            "label": "Alliance",
+                            "id": "currentAlliance",
+                            "size": [180, "row"],
+                            "ntkeys": [
+                                "Paths/AllianceMode"
+                            ],
+                            "params": {
+                                "width": "8em",
+                                "ntkey": "Paths/AllianceMode",
+                                "options": [
+                                    "FMS",
+                                    "Blue",
+                                    "Red"
+                                ]
+                            }
+                        },
+                        {
+                            "//": "menu of paths, and current path",
                             "type": "selector",
                             "label": "Path",
                             "id": "pathsel",
-                            "size": [200, "row"],
+                            "size": [250, "row"],
                             "ntkeys": [
                                 "Paths/Current",
                                 "Paths/Options"
                             ],
                             "params": {
-                                "width": "18em",
+                                "width": "14em",
                                 "ntkey": "Paths/Current",
                                 "optionsntkey": "Paths/Options"
+                            }
+                        },
+                        {
+                            "//": "menu of paths drawmode",
+                            "type": "selector",
+                            "label": "Display",
+                            "id": "pathsDisplay",
+                            "size": [220, "row"],
+                            "ntkeys": [
+                                "Paths/DisplayMode"
+                            ],
+                            "params": {
+                                "width": "12em",
+                                "ntkey": "Paths/DisplayMode",
+                                "options": 
+                                [
+                                    "Robot",
+                                    "Robot (paused)",
+                                    "Waypoints",
+                                    "Spline"
+                                ],
+                                "//": "ControlPoints isn't very useful"
                             }
                         }
                     ]

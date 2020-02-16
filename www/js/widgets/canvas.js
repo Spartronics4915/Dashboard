@@ -514,11 +514,15 @@ class CanvasWidget extends Widget
     {
         // 408.4 151.2 -220
         let poseFields = p.split(" ");
-        console.assert(poseFields.length == 3);
-        let x = Number(poseFields[0]);
-        let y = Number(poseFields[1]);
-        let rot = _d2r(Number(poseFields[2]));
-        return [x, y, rot];
+        if(poseFields.length != 3)
+            return [0,0,0]; // occurs in partially initialized state.
+        else
+        {
+            let x = Number(poseFields[0]);
+            let y = Number(poseFields[1]);
+            let rot = _d2r(Number(poseFields[2]));
+            return [x, y, rot];
+        }
     }
 
     _drawRobot(item)

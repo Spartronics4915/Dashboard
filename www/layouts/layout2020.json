@@ -56,19 +56,46 @@
             "widgets": [
                 {
                     "type": "systemstate",
-                    "id": "compete",
+                    "id": "competeSS",
                     "label": "Driver Interface",
-                    "size": ["fill", "row"],
-                    "wsize": [800, "row"],
+                    "size": [200, "row"],
                     "widgets": [
+                        {
+                            "type": "selector",
+                            "label": "Auto Strategy",
+                            "id": "autoStrategy",
+                            "size": [200, "row"],
+                            "params": 
+                            {
+                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "width": "8em",
+                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions"
+                            }
+                        },
+                        {
+                            "type": "selector",
+                            "label": "Video Stream",
+                            "id": "videoStream",
+                            "size": [200, "row"],
+                            "params": 
+                            {
+                                "width": "8em",
+                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "//": "make sure these options are substrings of videochannel's streams array",
+                                "options": [
+                                    "Test",
+                                    "Front",
+                                    "Back",
+                                    "Up"
+                                ]
+                            }
+                        },
                         {
                             "type": "fieldconfig",
                             "label": "Field Config",
                             "id": "fieldconfig",
-                            "size": [800, "row"],
+                            "size": [400, "row"],
                             "ntkeys": [
-                                "AutoStrategy",
-                                "AutoStrategyOptions",
                                 "/FMSInfo/IsRedAlliance",
                                 "/FMSInfo/StationNumber",
                                 "/FMSInfo/GameSpecificMessage",
@@ -77,21 +104,7 @@
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber"
-                            ],
-                            "params": {
-                                "videoStream":
-                                {
-                                    "label": "VideoStream",
-                                    "ntkey": "Driver/VideoStream",
-                                    "//": "make sure these options are substrings of videochannel's streams array",
-                                    "options": [
-                                        "Test",
-                                        "Front",
-                                        "Back",
-                                        "Up"
-                                    ]
-                                }
-                            }
+                            ]
                         }
                     ]
                 },
@@ -210,20 +223,21 @@
             "icon":  "t-highway-divided ticon", "///": "was fas fa-road",
             "widgets": [
                 {
-                    "id": "Paths",
-                    "label": "Path Planning",
                     "type": "systemstate",
-                    "size": ["fill", "row"],
+                    "id": "Paths", "// name is important":"",
+                    "label": "Path Planning",
+                    "size": [285, "row"],
                     "ntkeys": [
                         "Paths/Coords"
                     ],
-                    "widgets": [
+                    "widgets": 
+                    [
                         {
                             "//": "menu of alliance mode, and current alliance",
                             "type": "selector",
                             "label": "Alliance",
                             "id": "currentAlliance",
-                            "size": [0, "row"],
+                            "size": [180, "row"],
                             "ntkeys": [
                                 "Paths/AllianceMode"
                             ],
@@ -242,7 +256,7 @@
                             "type": "selector",
                             "label": "Path",
                             "id": "pathsel",
-                            "size": [0, "row"],
+                            "size": [250, "row"],
                             "ntkeys": [
                                 "Paths/Current",
                                 "Paths/Options"
@@ -258,7 +272,7 @@
                             "type": "selector",
                             "label": "Display",
                             "id": "pathsDisplay",
-                            "size": [0, "row"],
+                            "size": [220, "row"],
                             "ntkeys": [
                                 "Paths/DisplayMode"
                             ],
@@ -360,9 +374,9 @@
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
                 {
-                    "id": "Drive",
-                    "label": "Drive Subsystem",
                     "type": "systemstate",
+                    "id": "DriveSS",
+                    "label": "Drive Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Drive/State",
                               "Drive/Status",
@@ -527,9 +541,9 @@
                 },
                 {
                     "enable": false,
-                    "id": "Lidar",
-                    "label": "Lidar",
                     "type": "systemstate",
+                    "id": "LidarSS",
+                    "label": "Lidar",
                     "size": ["fill", 40],
                     "ntkeys": ["Lidar/status",
                                "Lidar/angle",
@@ -646,7 +660,7 @@
             "icon":  "fas fa-eye",
             "widgets": [
                 {
-                    "id": "Vision",
+                    "id": "VisionSS",
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
@@ -775,7 +789,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Test",
+                    "id": "tuneSS",
                     "label": "Tune Subsystems",
                     "size": ["fill", "row"],
                     "ntkeys": []
@@ -806,7 +820,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Launcher",
+                    "id": "LauncherSS",
                     "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Launcher/currentCommand"]
@@ -814,7 +828,7 @@
                 {
                     "type": "slider",
                     "id": "flywheelSlider",
-                    "label": "Flywheel Speed:",
+                    "label": "Flywheel Speed ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/FlywheelRPS"],
                     "params": {
@@ -827,7 +841,7 @@
                     "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
                     "type": "slider",
                     "id": "turretAimAngle",
-                    "label": "Turret Aim Angle:",
+                    "label": "Turret Aim Angle ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/TurretAimAngle"],
                     "params": {
@@ -841,7 +855,7 @@
                     "//": "Edit/Tweak/Debug slider associated with Hood Angle",
                     "type": "slider",
                     "id": "hoodAngle",
-                    "label": "Hood Angle:",
+                    "label": "Hood Angle ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/HoodAngle"],
                     "params": {
@@ -877,7 +891,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Climber",
+                    "id": "ClimberSS",
                     "label": "Climber Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Climber/currentCommand"]
@@ -885,7 +899,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Indexer",
+                    "id": "IndexerSS",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Indexer/currentCommand"]
@@ -893,7 +907,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Intake",
+                    "id": "IntakeSS",
                     "label": "Intake Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Intake/currentCommand"]
@@ -901,7 +915,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "PanelRotator",
+                    "id": "PanelRotatorSS",
                     "label": "PanelRotator Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["PanelRotator/currentCommand"]
@@ -909,7 +923,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "LED",
+                    "id": "LEDSS",
                     "label": "LED Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["LED/currentCommand"]
@@ -917,7 +931,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Vision",
+                    "id": "VisionSS",
                     "label": "Vision Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
@@ -925,7 +939,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "widgets",
+                    "id": "examplesSS",
                     "label": "Example Widgets",
                     "size": ["fill", "row"],
                     "ntkeys": []

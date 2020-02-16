@@ -5,18 +5,17 @@ class SystemState extends Widget
     constructor(config, targetElem, pagehandler)
     {
         super(config, targetElem, pagehandler);
+        targetElem.addClass("systemstate");
+
         let w = this.config;
         this.counter = 0;
         this.subsys  = w.id;
         this.numKeys = this.config.ntkeys ? this.config.ntkeys.length : 0;
+        let gstyle = pagehandler.getGridStyler();
 
-        let gstyle = pagehandler.newGridElemStyle.bind(pagehandler);
-
-        let html = "<div class='systemstate container gridded'>";
-        let gw = 180; /* first columnt width is 180 */
-        html +=     `<div ${gstyle([gw, "row"])}>`; 
-        html +=       `<span class="title">${w.label}</span> `;
-        // add spans to title div according to ntkeys (like status, etc)
+        /* first column of this row is the title and associated (text) keys */
+        let html = `<span class="title">${w.label}</span> `;
+        // add spans to col1 div according to ntkeys (like status, etc)
         for(let i=0;i<this.numKeys;i++)
         {
             let key = this.config.ntkeys[i];
@@ -26,25 +25,25 @@ class SystemState extends Widget
             html += `<span class='state'>${label}</span> `+
                     `<span class='strong' id='${domid}'>n/a</span> `;
         }
-        html += "</div>"; // end of $gw-grid-units
         if(this.config.widgets)
         {
-            this.widgetsId = `${w.id}Widgets`;
-            let sz = this.config.wsize ? this.config.wsize :  [800, "row"];
-            let wstl = gstyle(sz);
-            html += `<div id='${this.widgetsId}' class='gridded' ${wstl})}></div>`;
-        }
-        html += "</div>"; // end of systemstate
-        html += "<hr />";
-        targetElem.html(html);
-
-        if(this.widgetsId)
-        {
-            let wtarget = document.getElementById(this.widgetsId);
-            pagehandler.layoutWidgets(this.config.widgets, function(html, cb) {
-                wtarget.innerHTML = html;
+            // lets add widgets as siblings rather then children so we
+            // don't enter recursive-grid hell.
+            targetElem.html(html);
+            pagehandler.layoutWidgets(this.config.widgets, (whtml, cb) => 
+            {
+                let rowsz = gstyle(["fill", 1]);
+                let hr = `<div ${rowsz}><hr /></div>`;
+                let html = `${whtml} ${hr}`;
+                // targetElem is a jquery list
+                targetElem[0].insertAdjacentHTML("afterend", html);
                 cb();
-            });
+            }, "systemstate");
+        }
+        else
+        {
+            html += "<hr />";
+            targetElem.html(html);
         }
     }
 

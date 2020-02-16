@@ -34,6 +34,11 @@ class PageHandler
         return this.newGridElemStyle(["fill", "row"], xtra);
     }
 
+    getGridStyler()
+    {
+        return this.newGridElemStyle.bind(this);
+    }
+
     newGridElemStyle(sz, xtra)
     {
         let gridsize = 12; // 10x10 with gap of 2
@@ -66,7 +71,7 @@ class PageHandler
                 rows = 3;
             else
                 rows = Math.round(sz[1]/gridsize);
-            style += `grid-row: span ${rows}; min-height:${rows*gridsize}px`;
+            style += `grid-row:span ${rows}; min-height:${rows*gridsize}px`;
         }
         if(xtra)
             style += `; ${xtra}`;
@@ -74,7 +79,7 @@ class PageHandler
         return style;
     }
 
-    layoutWidgets(widgets, loadHtmlCB)
+    layoutWidgets(widgets, loadHtmlCB, xtraClass=null)
     {
         let htmllist = [];
         this.widgetNesting += 1;
@@ -88,6 +93,8 @@ class PageHandler
             let sz = w.size;
             if(!sz) sz = [100, 100];
             div += this.newGridElemStyle(sz);
+            if(xtraClass)
+                div += ` class='${xtraClass}'`;
             div += "></div>";
             htmllist.push(div);
         }
