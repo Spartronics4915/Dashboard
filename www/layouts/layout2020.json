@@ -375,7 +375,7 @@
             "widgets": [
                 {
                     "type": "systemstate",
-                    "id": "DriveSS",
+                    "id": "Drive", "//": "name is subsystem name",
                     "label": "Drive Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Drive/State",
@@ -542,7 +542,7 @@
                 {
                     "enable": false,
                     "type": "systemstate",
-                    "id": "LidarSS",
+                    "id": "Lidar", "//": "name is subsystem name",
                     "label": "Lidar",
                     "size": ["fill", 40],
                     "ntkeys": ["Lidar/status",
@@ -660,7 +660,7 @@
             "icon":  "fas fa-eye",
             "widgets": [
                 {
-                    "id": "VisionSS",
+                    "id": "Vision", "//": "name is subsystem name",
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
@@ -789,7 +789,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "tuneSS",
+                    "id": "tune", "//": "name is subsystem name",
                     "label": "Tune Subsystems",
                     "size": ["fill", "row"],
                     "ntkeys": []
@@ -820,7 +820,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "LauncherSS",
+                    "id": "Launcher", "//": "name is subsystem name",
                     "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Launcher/currentCommand"]
@@ -891,7 +891,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "ClimberSS",
+                    "id": "Climber", "//": "name is subsystem name",
                     "label": "Climber Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Climber/currentCommand"]
@@ -899,7 +899,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "IndexerSS",
+                    "id": "Indexer", "//": "name is subsystem name",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Indexer/currentCommand"]
@@ -907,7 +907,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "IntakeSS",
+                    "id": "Intake", "//": "name is subsystem name",
                     "label": "Intake Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Intake/currentCommand"]
@@ -915,7 +915,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "PanelRotatorSS",
+                    "id": "PanelRotator", "//": "name is subsystem name",
                     "label": "PanelRotator Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["PanelRotator/currentCommand"]
@@ -923,7 +923,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "LEDSS",
+                    "id": "LED", "//": "name is subsystem name",
                     "label": "LED Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["LED/currentCommand"]
@@ -931,7 +931,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "VisionSS",
+                    "id": "Vision", "//": "name is subsystem name",
                     "label": "Vision Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
@@ -939,7 +939,7 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "examplesSS",
+                    "id": "examples", "//": "name is subsystem name",
                     "label": "Example Widgets",
                     "size": ["fill", "row"],
                     "ntkeys": []
