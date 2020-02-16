@@ -19,33 +19,36 @@
         {
             "//": "official robot settings",
             "envparam": "env=default",
+            "robotid": "main2021",
             "testcam": "10.49.15.10:1181",
-            "visionbackcam": "10.49.15.10:5806",
-            "driverbackcam": "10.49.15.12:5805",
-            "driverfrontcam": "10.49.15.11:5805",
-            "driverupcam": "10.49.15.13:5805",
+            "camFeedPort": 5805,
+            "visionFeedPort": 5806,
+            "camStatusPort": 80,
+            "visioncam": "10.49.15.10",
+            "driverbackcam": "10.49.15.12",
+            "driverfrontcam": "10.49.15.11",
+            "driverupcam": "10.49.15.13",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "robotid": "main2020"
+            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf"
         },
         "dana": 
         {
             "envparam": "env=dana",
             "testcam": "192.168.1.13:1181",
-            "driverbackcam": "192.168.1.3:5805",
-            "driverfrontcam": "192.168.1.13:5805",
-            "visionbackcam": "192.168.1.8:5806",
-            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
-            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+            "driverbackcam": "192.168.1.3",
+            "driverfrontcam": "192.168.1.13",
+            "driverupcam": "10.49.15.15",
+            "visioncam": "192.168.1.8"
         },
         "test":
         {
             "//": "available for editing on-the-fly",
             "envparam": "env=test",
-            "driverbackcam": "10.49.15.109:5805",
-            "driverfrontcam": "10.49.15.110:5805",
-            "visionbackcam": "10.49.15.111:5806"
+            "driverbackcam": "10.49.15.109",
+            "driverfrontcam": "10.49.15.110",
+            "driverupcam": "10.49.15.15",
+            "visioncam": "10.49.15.111"
         }
     },
     "pageTemplates": 
@@ -1109,11 +1112,18 @@
                     "params": {
                         "html": [
                             "<div class='references'>",
-                            "<h2>Camera Links</h2>",
+                            "<h2>Camera Status</h2>",
                             "<ul>",
-                            "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
-                            "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
-                            "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
+                            "  <li><a href='http://${driverfrontcam}:${camStatusPort}' target='_blank'>Front</a>",
+                            "  <li><a href='http://${driverbackcam}:${camStatusPort}' target='_blank'>Back</a>",
+                            "  <li><a href='http://${driverupcam}:${camStatusPort}' target='_blank'>Up</a>",
+                            "  <li><a href='http://${visionbackcam}:${camStatusPort}' target='_blank'>Vision</a>",
+                            "</ul>",
+                            "<h2>Camera Feeds</h2>",
+                            "<ul>",
+                            "  <li><a href='http://${driverfrontcam}:${camFeedPort}' target='_blank'>Front</a>",
+                            "  <li><a href='http://${driverbackcam}:${camFeedPort}' target='_blank'>Back</a>",
+                            "  <li><a href='http://${driverupcam}:${camFeedPort}' target='_blank'>Up</a>",
                             "</ul",
                             "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
                             "</div>"
@@ -1205,21 +1215,21 @@
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}",
+                                "ip": "${driverfrontcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverbackcam}",
+                                "ip": "${driverbackcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },
                             "Up":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverupcam}",
+                                "ip": "${driverupcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverupcamcmd}"
                             },
