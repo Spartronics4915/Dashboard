@@ -66,10 +66,10 @@ class SelectorWidget extends Widget
     valueChanged(key, value, isNew)
     {
         app.debug(`selector: ${key} -> ${value}`);
-        if(app.ntkeyCompare(key, this.params.optionsntkey))
-        {
-            this.optionsChanged(value.split(","));
-        }
+        if(app.ntkeyCompare(key, this.params.optionsntkey)) 
+        { 
+            this.optionsChanged(value.split(",")); 
+        } 
         else
         {
             let selectEl = $(`#${this.targetId} .select-selected`)[0];

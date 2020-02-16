@@ -67,12 +67,17 @@
                             "type": "selector",
                             "label": "Auto Strategy",
                             "id": "autoStrategy",
-                            "size": [200, "row"],
+                            "size": [280, "row"],
+                            "ntkeys": 
+                            [
+                                "/SmartDashboard/AutoStrategy",
+                                "/SmartDashboard/AutoStrategyOptions"
+                            ],
                             "params": 
                             {
                                 "ntkey": "/SmartDashboard/AutoStrategy",
-                                "width": "8em",
-                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions"
+                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions",
+                                "width": "12em"
                             }
                         },
                         {
