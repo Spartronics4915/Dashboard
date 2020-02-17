@@ -901,6 +901,29 @@
                     }
                 },
                 {
+                    "id": "turretAngle",
+                    "label": "Turret Angle",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/turretAngle",
+                    "ntkeyRefs":[
+                        "Launcher/turretAngleActual"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 100
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
                     "//": "----------------------------------",
                     "type": "systemstate",
                     "id": "Climber", "//1": "name is subsystem name",

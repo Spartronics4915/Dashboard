@@ -405,7 +405,7 @@ export class App
                     "plot": {
                         "yaxis": {
                             "min": 0,
-                            "max": 30,
+                            "max": 60,
                             "show": true,
                         },
                         "fillvalue": 0,
