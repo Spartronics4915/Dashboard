@@ -912,8 +912,8 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": 0,
-                                "max": 100
+                                "min": -50,
+                                "max": 50
                             },
                             "fillvalue": 0,
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
