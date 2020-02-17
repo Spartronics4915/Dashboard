@@ -89,6 +89,8 @@ class StripChart extends Widget
     valueChanged(key,  vals, isnew)
     {
         // currently we only support a single key, so no need to check it.
+        // if channelcount > 1, data is usually packed into an Array by 
+        // pagehandler.js
         if(Array.isArray(vals))
             this.addDataPts(vals);
         else

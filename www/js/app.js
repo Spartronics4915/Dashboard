@@ -399,14 +399,14 @@ export class App
                 "id": "inputCurrentChart",
                 "type": "stripchart",
                 "size": [100, 48],
-                // "ntkeys": "/SmartDashboard/Robot/BatteryCurrent",
-                "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
+                "ntkeys": "/SmartDashboard/Robot/TotalCurrent", // from PDP
+                // "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
                 "params": {
                     "plot": {
                         "yaxis": {
                             "min": 0,
-                            "max": 2,
-                            "show": false,
+                            "max": 60,
+                            "show": true,
                         },
                         "fillvalue": 0,
                         "colors":["rgb(255, 80, 0)"],
@@ -619,12 +619,20 @@ export class App
 
         // On boot, make sure that we don't attempt to open channels
         // to unconnected robot. NB: nettab connection is "guaranteed"
-        // as long as our python environment is present. This is different
-        // from a robot connection.
+        // as long as our python environment is present. 
+        // This is *different* from a robot connection.
         this.putValueIfUndefined("Robot/GamePhase", "OFFLINE");
-        this.putValueIfUndefined("Driver/Camera1", "Test");
-        this.putValueIfUndefined("Driver/Camera2", "Test");
+
+        /* No matter how many cameras onboard, we currently assume that
+         * only a single videostream is active. The possible values of the 
+         * videostream may vary from season-to-season. Typical values are
+         * "Test", "Front", "Back", "Up". 
+         */
         this.putValueIfUndefined("Driver/VideoStream", "Test");
+
+        /* Here we build the menu of autonomous paths based on those
+         * stored within our pathsRepo.
+         */
         if(this.pathsRepo)
             this.putValue("Paths/Options", this.pathsRepo.getPathNames().join(","));
 

@@ -20,34 +20,36 @@
             "//": "official robot settings",
             "//2": "still need to find what the value is for top cam IP",
             "envparam": "env=default",
-            "testcam": "10.49.15.10:1181",
-            "visionbackcam": "10.49.15.10:5806",
-            "driverbackcam": "10.49.15.12:5805",
-            "driverfrontcam": "10.49.15.11:5805",
-            "drivertopcam": "10.49.15.13:5805",
+            "robotid": "main2021",
+            "camFeedPort": 5805,
+            "visionFeedPort": 5806,
+            "camStatusPort": 80,
+            "visioncam": "10.49.15.10",
+            "driverfrontcam": "10.49.15.11",
+            "driverbackcam": "10.49.15.12",
+            "driverupcam": "10.49.15.13",
             "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
             "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "drivertopcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
-            "robotid": "main2020"
+            "driverupcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline -vf -hf",
+            "testcam": "10.49.15.10:1181"
         },
         "dana": 
         {
             "envparam": "env=dana",
             "testcam": "192.168.1.13:1181",
-            "driverbackcam": "192.168.1.3:5805",
-            "driverfrontcam": "192.168.1.13:5805",
-            "visionbackcam": "192.168.1.8:5806",
-            "driverbackcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline",
-            "driverfrontcamcmd": "raspivid -t 0 -b 1500000 -o - -w 640 -h 480 -fps 30 -pf baseline"
+            "driverbackcam": "192.168.1.3",
+            "driverfrontcam": "192.168.1.13",
+            "driverupcam": "10.49.15.15",
+            "visioncam": "192.168.1.8"
         },
         "test":
         {
             "//": "available for editing on-the-fly",
             "envparam": "env=test",
-            "driverbackcam": "10.49.15.109:5805",
-            "driverfrontcam": "10.49.15.110:5805",
-            "visionbackcam": "10.49.15.111:5806",
-            "drivertopcam": "10.49.15.112:5805"
+            "driverbackcam": "10.49.15.109",
+            "driverfrontcam": "10.49.15.110",
+            "driverupcam": "10.49.15.15",
+            "visioncam": "10.49.15.111"
         }
     },
     "pageTemplates": 
@@ -58,19 +60,52 @@
             "widgets": [
                 {
                     "type": "systemstate",
-                    "id": "compete",
+                    "id": "competeSS",
                     "label": "Driver Interface",
-                    "size": ["fill", "row"],
-                    "wsize": [800, "row"],
+                    "size": [200, "row"],
                     "widgets": [
+                        {
+                            "type": "selector",
+                            "label": "Auto Strategy",
+                            "id": "autoStrategy",
+                            "size": [280, "row"],
+                            "ntkeys": 
+                            [
+                                "/SmartDashboard/AutoStrategy",
+                                "/SmartDashboard/AutoStrategyOptions"
+                            ],
+                            "params": 
+                            {
+                                "ntkey": "/SmartDashboard/AutoStrategy",
+                                "optionsntkey": "/SmartDashboard/AutoStrategyOptions",
+                                "width": "12em"
+                            }
+                        },
+                        {
+                            "type": "selector",
+                            "label": "Video Stream",
+                            "id": "videoStream",
+                            "size": [200, "row"],
+                            "ntkey": "/SmartDashboard/Driver/VideoStream",
+                            "params": 
+                            {
+                                "width": "8em",
+                                "ntkey": "/SmartDashboard/Driver/VideoStream",
+                                "//": "make sure these options are substrings of videochannel's streams array",
+                                "options": [
+                                    "Test",
+                                    "Front",
+                                    "Back",
+                                    "Up"
+                                ]
+                            }
+                        },
                         {
                             "type": "fieldconfig",
                             "label": "Field Config",
                             "id": "fieldconfig",
-                            "size": [800, "row"],
+                            "size": [400, "row"],
                             "ntkeys": [
-                                "AutoStrategy",
-                                "AutoStrategyOptions",
                                 "/FMSInfo/IsRedAlliance",
                                 "/FMSInfo/StationNumber",
                                 "/FMSInfo/GameSpecificMessage",
@@ -79,21 +114,7 @@
                                 "/FMSInfo/EventName",
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber"
-                            ],
-                            "params": {
-                                "videoStream":
-                                {
-                                    "label": "VideoStream",
-                                    "ntkey": "Driver/VideoStream",
-                                    "//": "make sure these options are substrings of videochannel's streams array",
-                                    "options": [
-                                        "Test",
-                                        "Front",
-                                        "Back",
-                                        "Top"
-                                    ]
-                                }
-                            }
+                            ]
                         }
                     ]
                 },
@@ -113,6 +134,11 @@
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
+                    "ntkeys":
+                    [
+                        "/FMSInfo/IsRedAlliance",
+                        "Paths/AllianceMode"
+                    ],
                     "params": {
                         "canvcls": "nopointer",
                         "overlay":
@@ -120,6 +146,7 @@
                             "enable": true,
                             "updateinterval": 500,
                             "//": "items drawn in order (bottom-to-top)",
+                            "//1": "XXX: add poseList with skip-sample filtering",
                             "items":
                             [
                                 {
@@ -166,6 +193,7 @@
                                     "key": "Launcher/TurretAimAngle",
                                     "class": "cone",
                                     "enable": true,
+                                    "value": 0,
                                     "config": 
                                     {
                                         "//": "length is 10ft (120in)",
@@ -205,29 +233,70 @@
             "icon":  "t-highway-divided ticon", "///": "was fas fa-road",
             "widgets": [
                 {
-                    "id": "Paths",
-                    "label": "Path Planning",
                     "type": "systemstate",
-                    "size": ["fill", "row"],
+                    "id": "Paths", "// name is important":"",
+                    "label": "Path Planning",
+                    "size": [285, "row"],
                     "ntkeys": [
                         "Paths/Coords"
                     ],
-                    "wsize": [600, "row"],
-                    "widgets": [
+                    "widgets": 
+                    [
+                        {
+                            "//": "menu of alliance mode, and current alliance",
+                            "type": "selector",
+                            "label": "Alliance",
+                            "id": "currentAlliance",
+                            "size": [180, "row"],
+                            "ntkeys": [
+                                "Paths/AllianceMode"
+                            ],
+                            "params": {
+                                "width": "8em",
+                                "ntkey": "Paths/AllianceMode",
+                                "options": [
+                                    "FMS",
+                                    "Blue",
+                                    "Red"
+                                ]
+                            }
+                        },
                         {
                             "//": "menu of paths, and current path",
                             "type": "selector",
                             "label": "Path",
                             "id": "pathsel",
-                            "size": [200, "row"],
+                            "size": [250, "row"],
                             "ntkeys": [
                                 "Paths/Current",
                                 "Paths/Options"
                             ],
                             "params": {
-                                "width": "18em",
+                                "width": "14em",
                                 "ntkey": "Paths/Current",
                                 "optionsntkey": "Paths/Options"
+                            }
+                        },
+                        {
+                            "//": "menu of paths drawmode",
+                            "type": "selector",
+                            "label": "Display",
+                            "id": "pathsDisplay",
+                            "size": [220, "row"],
+                            "ntkeys": [
+                                "Paths/DisplayMode"
+                            ],
+                            "params": {
+                                "width": "12em",
+                                "ntkey": "Paths/DisplayMode",
+                                "options": 
+                                [
+                                    "Robot",
+                                    "Robot (paused)",
+                                    "Waypoints",
+                                    "Spline"
+                                ],
+                                "//": "ControlPoints isn't very useful"
                             }
                         }
                     ]
@@ -248,12 +317,14 @@
                     "type": "texteditor",
                     "id": "patheditor",
                     "size": [400, 600],
-                    "ntkeys": ["Paths/Current"],
-                    "params": {
+                    "ntkeys": ["Paths/Current", "Paths/Clipboard"],
+                    "params": 
+                    {
                         "title": "Path Editor",
                         "theme": "ace/theme/terminal",
                         "mode": "ace/mode/json",
-                        "filesystem": "paths"
+                        "filesystem": "paths",
+                        "pastekey": "Paths/Clipboard"
                     }
                 },
                 {
@@ -262,8 +333,15 @@
                     "type": "canvas",
                     "id": "fieldmapOverlay",
                     "size": [0, 0],
+                    "ntkeys": 
+                    [
+                        "/FMSInfo/IsRedAlliance",
+                        "Paths/AllianceMode",
+                        "Paths/DisplayMode"
+                    ],
                     "params": {
                         "canvcls": "yespointer",
+                        "copykey": "Paths/Clipboard",
                         "overlay":
                         {
                             "enable": true,
@@ -272,59 +350,30 @@
                             "items":
                             [
                                 {
-                                    "//": "(disabled) draw the selected path as optspline",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optspline",
-                                        "color": "blue"
-                                    }
-                                },
-                                {
-                                    "//": "(enabled) draw the selected path as robot",
+                                    "//": "draw the selected path",
+                                    "//1": "drawmode controlled by selector",
                                     "key": "Paths/Current",
                                     "class": "path",
                                     "enable": true,
                                     "pointerevents": true,
+                                    "value": "home",
                                     "config": {
-                                        "mode": "robot",
-                                        "colors": {
+                                        "modekey": "Paths/DisplayMode",
+                                        "colors": 
+                                        {
                                             "backwheels": "blue",
                                             "frontwheels": "orange",
                                             "body": "rgba(10,10,10,.08)",
-                                            "body/active": "rgba(200,150,100,.8)"
+                                            "body/active": "rgba(200,150,100,.8)",
+                                            "spline": "blue",
+                                            "splineCtls": "red",
+                                            "waypoints": "blue"
+                                        },
+                                        "label": 
+                                        {
+                                            "fillStyle": "orange",
+                                            "font": "15px Impact"
                                         }
-                                    },
-                                    "label": 
-                                    {
-                                        "fillStyle": "orange",
-                                        "font": "15px Impact"
-                                    }
-                                },
-                                {
-                                    "//": "(enabled) draw the current path's waypoints",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": true,
-                                    "pointerevents": true,
-                                    "config": {
-                                        "mode": "waypoints",
-                                        "color": "blue"
-                                    },
-                                    "label": {
-                                        "fillStyle": "cornflowerblue",
-                                        "font": "18px Impact"
-                                    }
-                                },
-                                {
-                                    "//": "(disabled) draw the current path's spline controlpoints",
-                                    "key": "Paths/Current",
-                                    "class": "path",
-                                    "enable": false,
-                                    "config": {
-                                        "mode": "optsplineCtls",
-                                        "color": "blue"
                                     }
                                 }
                             ]
@@ -338,9 +387,9 @@
             "icon":  "fas fa-tachometer-alt",
             "widgets": [
                 {
-                    "id": "Drive",
-                    "label": "Drive Subsystem",
                     "type": "systemstate",
+                    "id": "Drive", "//": "name is subsystem name",
+                    "label": "Drive Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["Drive/State",
                               "Drive/Status",
@@ -505,9 +554,9 @@
                 },
                 {
                     "enable": false,
-                    "id": "Lidar",
-                    "label": "Lidar",
                     "type": "systemstate",
+                    "id": "Lidar", "//": "name is subsystem name",
+                    "label": "Lidar",
                     "size": ["fill", 40],
                     "ntkeys": ["Lidar/status",
                                "Lidar/angle",
@@ -624,11 +673,11 @@
             "icon":  "fas fa-eye",
             "widgets": [
                 {
-                    "id": "Vision",
+                    "id": "Vision", "//": "name is subsystem name",
                     "label": "Vision Subsystem",
                     "type": "systemstate",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Vision/currentCommand", "Vision/Status"]
+                    "ntkeys": ["Vision/currentCommand", "Vision/Status", "Vision/LEDRelay"]
                 },
                 {
                     "id": "visionLatency",
@@ -719,25 +768,25 @@
                         {
                             "PiCam default":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/default.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam hsv":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/hsv.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam bypass mjpg":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/bypass.mjpg",
                                 "cls": "rotate0 size640"
                             },
                             "PiCam mask mjpg":
                             {
-                                "ip": "${visionbackcam}:5080",
+                                "ip": "${visioncam}:5080",
                                 "url": "/mask.mjpg",
                                 "cls": "rotate0 size640"
                             }
@@ -746,15 +795,15 @@
                 }
             ]
         },
-        { "//": "--------- test page -------------------------- ",
-            "navtext": "Test",
+        { "//": "--------- tune page -------------------------- ",
+            "navtext": "Tune",
             "icon": "fas fa-vial",
             "widgets": [
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Test",
-                    "label": "Test Subsystem",
+                    "id": "tune", "//1": "no subsystem named tune",
+                    "label": "Tune Subsystems",
                     "size": ["fill", "row"],
                     "ntkeys": []
                 },
@@ -784,15 +833,15 @@
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Launcher",
+                    "id": "Launcher", "//1": "name is subsystem name",
                     "label": "Launcher Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Launcher/currentCommand"]
+                    "ntkeys": ["Launcher/Status", "Launcher/currentCommand"]
                 },
                 {
                     "type": "slider",
                     "id": "flywheelSlider",
-                    "label": "Flywheel Speed:",
+                    "label": "Flywheel Speed ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/FlywheelRPS"],
                     "params": {
@@ -805,7 +854,7 @@
                     "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
                     "type": "slider",
                     "id": "turretAimAngle",
-                    "label": "Turret Aim Angle:",
+                    "label": "Turret Aim Angle ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/TurretAimAngle"],
                     "params": {
@@ -819,7 +868,7 @@
                     "//": "Edit/Tweak/Debug slider associated with Hood Angle",
                     "type": "slider",
                     "id": "hoodAngle",
-                    "label": "Hood Angle:",
+                    "label": "Hood Angle ",
                     "size": [300, "row"],
                     "ntkeys": ["Launcher/HoodAngle"],
                     "params": {
@@ -853,49 +902,110 @@
                     }
                 },
                 {
+                    "id": "turretAngle",
+                    "label": "Turret Angle",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/turretAngle",
+                    "ntkeyRefs":[
+                        "Launcher/turretAngleActual"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -50,
+                                "max": 50
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Climber",
+                    "id": "Climber", "//1": "name is subsystem name",
                     "label": "Climber Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Climber/currentCommand"]
+                    "ntkeys": ["Climber/Status", "Climber/currentCommand"]
+                },
+                {
+                    "id": "climberWinchCurrent",
+                    "label": "Winch Current",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Climber/WinchCurrent",
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 40
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)"],
+                            "channelcount": 1,
+                            "widths": [1],
+                            "maxlength": 400
+                        }
+                    }
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Indexer",
+                    "id": "Indexer", "//1": "name is subsystem name",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Indexer/currentCommand"]
+                    "ntkeys": ["Indexer/Status", "Indexer/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "Intake",
+                    "id": "Intake", "//1": "name is subsystem name",
                     "label": "Intake Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Intake/currentCommand"]
+                    "ntkeys": ["Intake/Status", "Intake/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "PanelRotator",
+                    "id": "PanelRotator", "//1": "name is subsystem name",
                     "label": "PanelRotator Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["PanelRotator/currentCommand"]
+                    "ntkeys": ["PanelRotator/Status", 
+                               "PanelRotator/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "LED",
+                    "id": "Vision", "//1": "name is subsystem name",
+                    "label": "Vision Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Vision/Status", 
+                               "Vision/currentCommand" 
+                               ]
+                },
+                {
+                    "type": "checkbox",
+                    "label": "LED Relay",
+                    "id": "visionLEDRelay",
+                    "size": [120, "row"],
+                    "ntkeys": ["Vision/LEDRelay"]
+                },
+                {
+                    "//": "----------------------------------",
+                    "type": "systemstate",
+                    "id": "LED", "//1": "name is subsystem name",
                     "label": "LED Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["LED/currentCommand"]
+                    "ntkeys": ["LED/Status", "LED/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
                     "type": "systemstate",
-                    "id": "widgets",
+                    "id": "examples", "//1": "name is subsystem name",
                     "label": "Example Widgets",
                     "size": ["fill", "row"],
                     "ntkeys": []
@@ -957,6 +1067,21 @@
                     }
                 },
                 {
+                    "type": "selector",
+                    "label": "Another Selector",
+                    "id": "s6",
+                    "size": [200, "row"],
+                    "ntkeys": ["Test/Sel2"],
+                    "params": {
+                        "width": "8em",
+                        "ntkey": "Test/Sel2",
+                        "options": [
+                             "green pill",
+                             "alpha pill"
+                        ]
+                    }
+                },
+                {
                     "type": "rangeslider",
                     "size": [200, "row"],
                     "label": "Range Slider",
@@ -991,8 +1116,9 @@
             "pagehandler": "RobotlogPH",
             "widgets": [
                 {
+                    "//": "only shows Talon Devices not as useful",
                     "type": "robotdevices",
-                    "label": "devices",
+                    "label": "CTRE devices",
                     "id": "robotdevs",
                     "size": ["fill", "row"],
                     "ntkeys": ["Robot/Connections"]
@@ -1049,12 +1175,18 @@
                     "params": {
                         "html": [
                             "<div class='references'>",
-                            "<h2>Camera Links</h2>",
+                            "<h2>Camera Status</h2>",
                             "<ul>",
-                            "  <li><a href='http://${driverfrontcam}' target='_blank'>Front Pi Status</a>",
-                            "  <li><a href='http://${driverbackcam}' target='_blank'>Back Pi Status</a>",
-                            "  <li><a href='http://${drivertopcam}' target='_blank'>Top Pi Status</a>",
-                            "  <li><a href='http://${visionbackcam}' target='_blank'>Back Vision Pi Status</a>",
+                            "  <li><a href='http://${driverfrontcam}:${camStatusPort}' target='_blank'>Front</a>",
+                            "  <li><a href='http://${driverbackcam}:${camStatusPort}' target='_blank'>Back</a>",
+                            "  <li><a href='http://${driverupcam}:${camStatusPort}' target='_blank'>Up</a>",
+                            "  <li><a href='http://${visioncam}:${camStatusPort}' target='_blank'>Vision</a>",
+                            "</ul>",
+                            "<h2>Camera Feeds</h2>",
+                            "<ul>",
+                            "  <li><a href='http://${driverfrontcam}:${camFeedPort}' target='_blank'>Front</a>",
+                            "  <li><a href='http://${driverbackcam}:${camFeedPort}' target='_blank'>Back</a>",
+                            "  <li><a href='http://${driverupcam}:${camFeedPort}' target='_blank'>Up</a>",
                             "</ul",
                             "<br><i><b>Remember: a video stream can only have a single viewer!!!</b></i>",
                             "</div>"
@@ -1146,23 +1278,23 @@
                             "Front":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverfrontcam}",
+                                "ip": "${driverfrontcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverfrontcamcmd}"
                             },
                             "Back":
                             {
                                 "protocol": "ws",
-                                "ip": "${driverbackcam}",
+                                "ip": "${driverbackcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverbackcamcmd}"
                             },
-                            "Top":
+                            "Up":
                             {
                                 "protocol": "ws",
-                                "ip": "${drivertopcam}",
+                                "ip": "${driverupcam}:${camFeedPort}",
                                 "cls": "size1280",
-                                "cmd": "${drivertopcamcmd}"
+                                "cmd": "${driverupcamcmd}"
                             },
                             "_Front_deprecated":
                             {

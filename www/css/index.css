@@ -359,6 +359,17 @@ footer
     grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(10px, 1fr));
     /* grid-auto-flow: row/dense */
+
+    /* helpful during debugging 
+    border-width: 1px;
+    border-color: red;
+    border-style: solid;
+    */
+}
+
+.inlined
+{
+    display: inline;
 }
 
 .containerrow
@@ -379,6 +390,7 @@ footer
 .yespointer
 {
     pointer-events: all;
+    key-events: all;
 }
 
 .xtrapad
@@ -417,7 +429,7 @@ footer
 .systemstate
 {
     color: #16c;
-    background-image: linear-gradient(#111, #111);
+    background-image: linear-gradient(#111, rgb(18, 19, 24));
     /* vertical-align: baseline; */
 }
 

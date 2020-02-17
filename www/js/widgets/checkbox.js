@@ -5,6 +5,7 @@ class CheckboxWidget extends Widget
     {
         super(config, targetElem, pageHandler);
         this.params = this.config.params;
+        targetElem.addClass("flex");
         this.targetId = targetElem.attr("id");
         this.controlId = `${this.config.id}Check`;
         let html = `<label>${this.config.label}</label> `;
