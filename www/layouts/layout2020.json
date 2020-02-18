@@ -831,7 +831,7 @@
                     }
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "--Launcher ----------------------------------------",
                     "type": "systemstate",
                     "id": "Launcher", "//1": "name is subsystem name",
                     "label": "Launcher Subsystem",
@@ -842,8 +842,8 @@
                     "type": "slider",
                     "id": "flywheelSlider",
                     "label": "Flywheel Speed ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/FlywheelRPS"],
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/flywheelRPSSlider"],
                     "params": {
                         "min": 0,
                         "max": 90,
@@ -855,8 +855,8 @@
                     "type": "slider",
                     "id": "turretAimAngle",
                     "label": "Turret Aim Angle ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/TurretAimAngle"],
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/turretAngleSlider"],
                     "params": {
                         "//": "// max matches TurretConeAngle",
                         "min": -45,
@@ -869,8 +869,8 @@
                     "type": "slider",
                     "id": "hoodAngle",
                     "label": "Hood Angle ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/HoodAngle"],
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/hoodAngleSlider"],
                     "params": {
                         "//": "// max matches HoodAngle",
                         "min": 0,
@@ -879,13 +879,29 @@
                     }
                 },
                 {
-                    "id": "turretFlywheelSpeed",
+                    "//": "Edit/Tweak/Debug slider associated with target distance",
+                    "type": "slider",
+                    "id": "targetDistance",
+                    "label": "Target Distance (in)",
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/targetDistanceSlider"],
+                    "params": 
+                    {
+                        "//": "// max matches HoodAngle",
+                        "min": 0,
+                        "max": 450,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": " stripcharts begin ---------------------------",
+                    "id": "turretFlywheelRPS",
                     "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "Launcher/CurrentFlywheelRPS",
+                    "ntkeys": "Launcher/currentFlywheelRPS",
                     "ntkeyRefs":[
-                        "Launcher/FlywheelRPS"
+                        "Launcher/flywheelRPSTarget"
                     ],
                     "params": {
                         "plot": {
@@ -903,12 +919,13 @@
                 },
                 {
                     "id": "turretAngle",
-                    "label": "Turret Angle",
+                    "label": "Turret Angles <span class='blue'>Yaw</span>, <span class='yellow'>YawTarget</span>, <span class='green'>Pitch (Hood)</span>",
                     "type": "stripchart",
                     "size": [330, 170],
                     "ntkeys": "Launcher/turretAngle",
                     "ntkeyRefs":[
-                        "Launcher/turretAngleActual"
+                        "Launcher/turretAngleTarget",
+                        "Launcher/hoodAngle"
                     ],
                     "params": {
                         "plot": {
@@ -917,9 +934,9 @@
                                 "max": 50
                             },
                             "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
-                            "channelcount": 2,
-                            "widths": [1, 1],
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(35, 92, 60)"],
+                            "channelcount": 3,
+                            "widths": [1, 1, 1],
                             "maxlength": 400
                         }
                     }
@@ -937,7 +954,7 @@
                     "label": "Winch Current",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "Climber/WinchCurrent",
+                    "ntkeys": "Climber/winchCurrent",
                     "params": {
                         "plot": {
                             "yaxis": {
