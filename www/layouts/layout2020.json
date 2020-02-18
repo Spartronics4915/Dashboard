@@ -975,7 +975,35 @@
                     "id": "Indexer", "//1": "name is subsystem name",
                     "label": "Indexer Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": ["Indexer/Status", "Indexer/currentCommand"]
+                    "ntkeys": ["Indexer/Status", 
+                               "Indexer/currentCommand", 
+                               "Indexer/ballsHeld",
+                               "Indexer/isLaunching",
+                               "Indexer/isTransferring"]
+                },
+                {
+                    "id": "indexerPosition",
+                    "label": "Position <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": 
+                    [
+                        "Indexer/position",
+                        "Indexer/targetPosition"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 360
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "yellow"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
                 },
                 {
                     "//": "----------------------------------",
