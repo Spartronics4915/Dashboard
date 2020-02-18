@@ -800,35 +800,12 @@
             "icon": "fas fa-vial",
             "widgets": [
                 {
-                    "//": "----------------------------------",
+                    "//": "---Drive -------------------------",
                     "type": "systemstate",
-                    "id": "tune", "//1": "no subsystem named tune",
-                    "label": "Tune Subsystems",
+                    "id": "Drive", "//1": "name is subsystem name",
+                    "label": "Drive Subsystem",
                     "size": ["fill", "row"],
-                    "ntkeys": []
-                },
-                {
-                    "type": "selector",
-                    "label": "Test Mode",
-                    "id": "testmode",
-                    "size": [220, "row"],
-                    "ntkeys": ["TestMode",
-                               "TestModeOptions"],
-                    "params": {
-                        "width": "9em",
-                        "ntkey": "TestMode",
-                        "optionsntkey": "TestModeOptions"
-                    }
-                },
-                {
-                    "type": "textinput",
-                    "label": "Variant",
-                    "id": "testvariant",
-                    "size": [220, "row"],
-                    "ntkeys": ["TestVariant"],
-                    "params": {
-                        "width": "10em"
-                    }
+                    "ntkeys": ["Drive/Status", "Drive/currentCommand"]
                 },
                 {
                     "//": "--Launcher ----------------------------------------",
@@ -883,7 +860,7 @@
                     "type": "slider",
                     "id": "targetDistance",
                     "label": "Target Distance (in)",
-                    "size": [250, "row"],
+                    "size": [270, "row"],
                     "ntkeys": ["Launcher/targetDistanceSlider"],
                     "params": 
                     {
@@ -942,7 +919,7 @@
                     }
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "--Climber-------------------------",
                     "type": "systemstate",
                     "id": "Climber", "//1": "name is subsystem name",
                     "label": "Climber Subsystem",
@@ -951,26 +928,29 @@
                 },
                 {
                     "id": "climberWinchCurrent",
-                    "label": "Winch Current",
+                    "label": "Winch Current <span class='yellow'>Max</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "Climber/winchCurrent",
+                    "ntkeys": [
+                        "Climber/winchCurrent",
+                        "Climber/winchCurrentMax"
+                    ],
                     "params": {
                         "plot": {
                             "yaxis": {
                                 "min": 0,
-                                "max": 40
+                                "max": 60
                             },
                             "fillvalue": 0,
-                            "colors":["rgb(20,120,255)"],
-                            "channelcount": 1,
-                            "widths": [1],
+                            "colors":["rgb(20,120,255)", "yellow"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
                             "maxlength": 400
                         }
                     }
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "--Indexer-------------------------",
                     "type": "systemstate",
                     "id": "Indexer", "//1": "name is subsystem name",
                     "label": "Indexer Subsystem",
@@ -1006,7 +986,7 @@
                     }
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "--Intake--------------------------",
                     "type": "systemstate",
                     "id": "Intake", "//1": "name is subsystem name",
                     "label": "Intake Subsystem",
@@ -1014,16 +994,18 @@
                     "ntkeys": ["Intake/Status", "Intake/currentCommand"]
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "--PanelRotator--------------------",
                     "type": "systemstate",
                     "id": "PanelRotator", "//1": "name is subsystem name",
                     "label": "PanelRotator Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["PanelRotator/Status", 
+                               "PanelRotator/currentColor",
+                               "PanelRotator/currentColorConfidence",
                                "PanelRotator/currentCommand"]
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "-Vision---------------------------",
                     "type": "systemstate",
                     "id": "Vision", "//1": "name is subsystem name",
                     "label": "Vision Subsystem",
@@ -1040,12 +1022,43 @@
                     "ntkeys": ["Vision/LEDRelay"]
                 },
                 {
-                    "//": "----------------------------------",
+                    "//": "-LED------------------------------",
                     "type": "systemstate",
                     "id": "LED", "//1": "name is subsystem name",
                     "label": "LED Subsystem",
                     "size": ["fill", "row"],
                     "ntkeys": ["LED/Status", "LED/currentCommand"]
+                },
+                {
+                    "//": "-Tests - in 2020 we don't appear to need this?------",
+                    "type": "systemstate",
+                    "id": "Test", "//1": "no subsystem named tune",
+                    "label": "Run Tests",
+                    "size": ["fill", "row"],
+                    "ntkeys": []
+                },
+                {
+                    "type": "selector",
+                    "label": "Test Mode",
+                    "id": "testmode",
+                    "size": [220, "row"],
+                    "ntkeys": ["TestMode",
+                               "TestModeOptions"],
+                    "params": {
+                        "width": "9em",
+                        "ntkey": "TestMode",
+                        "optionsntkey": "TestModeOptions"
+                    }
+                },
+                {
+                    "type": "textinput",
+                    "label": "Variant",
+                    "id": "testvariant",
+                    "size": [220, "row"],
+                    "ntkeys": ["TestVariant"],
+                    "params": {
+                        "width": "10em"
+                    }
                 },
                 {
                     "//": "----------------------------------",
