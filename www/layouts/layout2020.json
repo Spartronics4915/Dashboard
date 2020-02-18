@@ -18,6 +18,7 @@
         "default": 
         {
             "//": "official robot settings",
+            "//2": "still need to find what the value is for top cam IP",
             "envparam": "env=default",
             "robotid": "main2021",
             "camFeedPort": 5805,
@@ -799,10 +800,240 @@
             "icon": "fas fa-vial",
             "widgets": [
                 {
-                    "//": "----------------------------------",
+                    "//": "---Drive -------------------------",
                     "type": "systemstate",
-                    "id": "tune", "//1": "no subsystem named tune",
-                    "label": "Tune Subsystems",
+                    "id": "Drive", "//1": "name is subsystem name",
+                    "label": "Drive Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Drive/Status", "Drive/currentCommand"]
+                },
+                {
+                    "//": "--Launcher ----------------------------------------",
+                    "type": "systemstate",
+                    "id": "Launcher", "//1": "name is subsystem name",
+                    "label": "Launcher Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Launcher/Status", "Launcher/currentCommand"]
+                },
+                {
+                    "type": "slider",
+                    "id": "flywheelSlider",
+                    "label": "Flywheel Speed ",
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/flywheelRPSSlider"],
+                    "params": {
+                        "min": 0,
+                        "max": 90,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
+                    "type": "slider",
+                    "id": "turretAimAngle",
+                    "label": "Turret Aim Angle ",
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/turretAngleSlider"],
+                    "params": {
+                        "//": "// max matches TurretConeAngle",
+                        "min": -45,
+                        "max": 45,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "Edit/Tweak/Debug slider associated with Hood Angle",
+                    "type": "slider",
+                    "id": "hoodAngle",
+                    "label": "Hood Angle ",
+                    "size": [250, "row"],
+                    "ntkeys": ["Launcher/hoodAngleSlider"],
+                    "params": {
+                        "//": "// max matches HoodAngle",
+                        "min": 0,
+                        "max": 30,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": "Edit/Tweak/Debug slider associated with target distance",
+                    "type": "slider",
+                    "id": "targetDistance",
+                    "label": "Target Distance (in)",
+                    "size": [270, "row"],
+                    "ntkeys": ["Launcher/targetDistanceSlider"],
+                    "params": 
+                    {
+                        "//": "// max matches HoodAngle",
+                        "min": 0,
+                        "max": 450,
+                        "step": 1
+                    }
+                },
+                {
+                    "//": " stripcharts begin ---------------------------",
+                    "id": "turretFlywheelRPS",
+                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/currentFlywheelRPS",
+                    "ntkeyRefs":[
+                        "Launcher/flywheelRPSTarget"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 100
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "id": "turretAngle",
+                    "label": "Turret Angles <span class='blue'>Yaw</span>, <span class='yellow'>YawTarget</span>, <span class='green'>Pitch (Hood)</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": "Launcher/turretAngle",
+                    "ntkeyRefs":[
+                        "Launcher/turretAngleTarget",
+                        "Launcher/hoodAngle"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": -50,
+                                "max": 50
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(35, 92, 60)"],
+                            "channelcount": 3,
+                            "widths": [1, 1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "//": "--Climber-------------------------",
+                    "type": "systemstate",
+                    "id": "Climber", "//1": "name is subsystem name",
+                    "label": "Climber Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Climber/Status", "Climber/currentCommand"]
+                },
+                {
+                    "id": "climberWinchCurrent",
+                    "label": "Winch Current <span class='yellow'>Max</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": [
+                        "Climber/winchCurrent",
+                        "Climber/winchCurrentMax"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 60
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "yellow"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "//": "--Indexer-------------------------",
+                    "type": "systemstate",
+                    "id": "Indexer", "//1": "name is subsystem name",
+                    "label": "Indexer Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Indexer/Status", 
+                               "Indexer/currentCommand", 
+                               "Indexer/ballsHeld",
+                               "Indexer/isLaunching",
+                               "Indexer/isTransferring"]
+                },
+                {
+                    "id": "indexerPosition",
+                    "label": "Position <span class='yellow'>Target</span>",
+                    "type": "stripchart",
+                    "size": [330, 170],
+                    "ntkeys": 
+                    [
+                        "Indexer/position",
+                        "Indexer/targetPosition"
+                    ],
+                    "params": {
+                        "plot": {
+                            "yaxis": {
+                                "min": 0,
+                                "max": 360
+                            },
+                            "fillvalue": 0,
+                            "colors":["rgb(20,120,255)", "yellow"],
+                            "channelcount": 2,
+                            "widths": [1, 1],
+                            "maxlength": 400
+                        }
+                    }
+                },
+                {
+                    "//": "--Intake--------------------------",
+                    "type": "systemstate",
+                    "id": "Intake", "//1": "name is subsystem name",
+                    "label": "Intake Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Intake/Status", "Intake/currentCommand"]
+                },
+                {
+                    "//": "--PanelRotator--------------------",
+                    "type": "systemstate",
+                    "id": "PanelRotator", "//1": "name is subsystem name",
+                    "label": "PanelRotator Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["PanelRotator/Status", 
+                               "PanelRotator/currentColor",
+                               "PanelRotator/currentColorConfidence",
+                               "PanelRotator/currentCommand"]
+                },
+                {
+                    "//": "-Vision---------------------------",
+                    "type": "systemstate",
+                    "id": "Vision", "//1": "name is subsystem name",
+                    "label": "Vision Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["Vision/Status", 
+                               "Vision/currentCommand" 
+                               ]
+                },
+                {
+                    "type": "checkbox",
+                    "label": "LED Relay",
+                    "id": "visionLEDRelay",
+                    "size": [120, "row"],
+                    "ntkeys": ["Vision/LEDRelay"]
+                },
+                {
+                    "//": "-LED------------------------------",
+                    "type": "systemstate",
+                    "id": "LED", "//1": "name is subsystem name",
+                    "label": "LED Subsystem",
+                    "size": ["fill", "row"],
+                    "ntkeys": ["LED/Status", "LED/currentCommand"]
+                },
+                {
+                    "//": "-Tests - in 2020 we don't appear to need this?------",
+                    "type": "systemstate",
+                    "id": "Test", "//1": "no subsystem named tune",
+                    "label": "Run Tests",
                     "size": ["fill", "row"],
                     "ntkeys": []
                 },
@@ -828,178 +1059,6 @@
                     "params": {
                         "width": "10em"
                     }
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Launcher", "//1": "name is subsystem name",
-                    "label": "Launcher Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["Launcher/Status", "Launcher/currentCommand"]
-                },
-                {
-                    "type": "slider",
-                    "id": "flywheelSlider",
-                    "label": "Flywheel Speed ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/FlywheelRPS"],
-                    "params": {
-                        "min": 0,
-                        "max": 90,
-                        "step": 1
-                    }
-                },
-                {
-                    "//": "Edit/Tweak/Debug cone associated with Turret Aim Angle",
-                    "type": "slider",
-                    "id": "turretAimAngle",
-                    "label": "Turret Aim Angle ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/TurretAimAngle"],
-                    "params": {
-                        "//": "// max matches TurretConeAngle",
-                        "min": -45,
-                        "max": 45,
-                        "step": 1
-                    }
-                },
-                {
-                    "//": "Edit/Tweak/Debug slider associated with Hood Angle",
-                    "type": "slider",
-                    "id": "hoodAngle",
-                    "label": "Hood Angle ",
-                    "size": [300, "row"],
-                    "ntkeys": ["Launcher/HoodAngle"],
-                    "params": {
-                        "//": "// max matches HoodAngle",
-                        "min": 0,
-                        "max": 30,
-                        "step": 1
-                    }
-                },
-                {
-                    "id": "turretFlywheelSpeed",
-                    "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
-                    "type": "stripchart",
-                    "size": [330, 170],
-                    "ntkeys": "Launcher/CurrentFlywheelRPS",
-                    "ntkeyRefs":[
-                        "Launcher/FlywheelRPS"
-                    ],
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "min": 0,
-                                "max": 100
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
-                            "channelcount": 2,
-                            "widths": [1, 1],
-                            "maxlength": 400
-                        }
-                    }
-                },
-                {
-                    "id": "turretAngle",
-                    "label": "Turret Angle",
-                    "type": "stripchart",
-                    "size": [330, 170],
-                    "ntkeys": "Launcher/turretAngle",
-                    "ntkeyRefs":[
-                        "Launcher/turretAngleActual"
-                    ],
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "min": -50,
-                                "max": 50
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
-                            "channelcount": 2,
-                            "widths": [1, 1],
-                            "maxlength": 400
-                        }
-                    }
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Climber", "//1": "name is subsystem name",
-                    "label": "Climber Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["Climber/Status", "Climber/currentCommand"]
-                },
-                {
-                    "id": "climberWinchCurrent",
-                    "label": "Winch Current",
-                    "type": "stripchart",
-                    "size": [330, 170],
-                    "ntkeys": "Climber/WinchCurrent",
-                    "params": {
-                        "plot": {
-                            "yaxis": {
-                                "min": 0,
-                                "max": 40
-                            },
-                            "fillvalue": 0,
-                            "colors":["rgb(20,120,255)"],
-                            "channelcount": 1,
-                            "widths": [1],
-                            "maxlength": 400
-                        }
-                    }
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Indexer", "//1": "name is subsystem name",
-                    "label": "Indexer Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["Indexer/Status", "Indexer/currentCommand"]
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Intake", "//1": "name is subsystem name",
-                    "label": "Intake Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["Intake/Status", "Intake/currentCommand"]
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "PanelRotator", "//1": "name is subsystem name",
-                    "label": "PanelRotator Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["PanelRotator/Status", 
-                               "PanelRotator/currentCommand"]
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "Vision", "//1": "name is subsystem name",
-                    "label": "Vision Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["Vision/Status", 
-                               "Vision/currentCommand" 
-                               ]
-                },
-                {
-                    "type": "checkbox",
-                    "label": "LED Relay",
-                    "id": "visionLEDRelay",
-                    "size": [120, "row"],
-                    "ntkeys": ["Vision/LEDRelay"]
-                },
-                {
-                    "//": "----------------------------------",
-                    "type": "systemstate",
-                    "id": "LED", "//1": "name is subsystem name",
-                    "label": "LED Subsystem",
-                    "size": ["fill", "row"],
-                    "ntkeys": ["LED/Status", "LED/currentCommand"]
                 },
                 {
                     "//": "----------------------------------",
@@ -1308,6 +1367,13 @@
                                 "ip": "${driverbackcam}:8080",
                                 "url": "/stream/webrtc",
                                 "cls": "size1280"
+                            },
+                            "_Top_deprecated":
+                            {
+                                "protocol": "webrtc",
+                                "ip": "${drivertopcam}:8080",
+                                "url": "/stream/webrtc",
+                                "cls": "size1280"
                             }
                         }
                     }
@@ -1350,11 +1416,11 @@
                                     "config":{
                                         "cameraStateKey": "Driver/VideoStream",
                                         "visionStateKey": "Vision/Status",
-                                        "needleAngle": 50,
+                                        "needleAngle": 20,
                                         "radius": 50,
                                         "needleColor1": "rgba(255, 255, 0, 1)",
                                         "needleColor2": "rgba(0, 255, 0, 1)",
-                                        "bgColor": "rgba(0, 0, 255, 1)",
+                                        "bgColor": "rgba(0, 0, 255, .8)",
                                         "lineWidth": 2,
                                         "value": "on"
                                     }
