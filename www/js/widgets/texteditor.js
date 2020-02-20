@@ -79,6 +79,11 @@ class TextEditorWidget extends Widget
         }
     }
 
+    addRandomPt()
+    {
+        /* no op */
+    }
+
     _makeClean()
     {
         // make clean, need another _onChange to update dirty...
