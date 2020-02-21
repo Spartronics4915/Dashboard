@@ -573,6 +573,13 @@ export class Pose2d  /* this is also a Pose2dWithCurvature when values are prese
         // curvature?
     }
 
+    asReverse()
+    {
+        let ret = Pose2d.clone(this);
+        ret.reverse();
+        return ret;
+    }
+
     asInfo()
     {
         let x = this.translation.x.toFixed(1); 

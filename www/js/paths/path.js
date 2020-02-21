@@ -71,6 +71,13 @@ export default class Path
         return path;
     }
 
+    /**
+     * preserves the order of the waypoints, but reverse each one's direction
+     * so that it's possible to follow the same path, but in the reverse
+     * direction.  If you are gluing paths together as with a k-turn, this
+     * may not be sufficient.  Ie: you may need to pre-reverse the starting
+     * pose so that it matches the end pose of the prior segment.
+     */
     reverse()
     {
         this._reverse = true;

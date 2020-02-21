@@ -304,7 +304,7 @@
                 {
                     "type": "img",
                     "id": "fieldmap",
-                    "size": [1280, "fill"],
+                    "size": [1024, "fill"],
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
@@ -400,10 +400,12 @@
                     "label": "Odometry",
                     "type": "pathplot",
                     "size": [400, 300],
-                    "enable": false,
-                    "ntkeys": "RobotState/pose",
+                    "enable": true,
+                    "ntkeys": ["RobotState/pose",
+                               "RobotState/encoderPose"],
                     "params": {
                         "plot": {
+                            "channelcount": 2,
                             "xaxis": {
                                 "min": 0,
                                 "max": 629.25,
@@ -422,9 +424,9 @@
                                 },
                                 "points": {
                                     "show": 0
-                                },
-                                "color": "rgb(20, 120, 255)"
-                            }
+                                }
+                            },
+                            "colors": ["rgb(20, 120, 255)", "green"]
                         }
                     }
                 },
@@ -876,7 +878,7 @@
                     "label": "Flywheel <span class='blue'>RPS</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
                     "size": [330, 170],
-                    "ntkeys": "Launcher/currentFlywheelRPS",
+                    "ntkeys": "Launcher/flywheelRPS",
                     "ntkeyRefs":[
                         "Launcher/flywheelRPSTarget"
                     ],
@@ -911,7 +913,7 @@
                                 "max": 50
                             },
                             "fillvalue": 0,
-                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "rgb(35, 92, 60)"],
+                            "colors":["rgb(20,120,255)", "rgb(200,200,10)", "green"],
                             "channelcount": 3,
                             "widths": [1, 1, 1],
                             "maxlength": 400
@@ -1305,6 +1307,7 @@
             "//NB0/icon:": "fas fa-video",
             "//NB1:": "this should be maintained as real driver view",
             "//NB2:": "ie: no widgets since driver has no mouse during match",
+            "//NB3:": "we hide this page to minimize the chance of accidental stream-stealing",
             "icon": "_none_", 
             "navtext": "videostream",
             "widgets": [

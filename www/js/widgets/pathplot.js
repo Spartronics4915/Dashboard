@@ -26,8 +26,8 @@ class PathPlot extends Widget
         {
             this.plotConfig.maxlength = 300; // number of data points
         }
-        if(!config.params.channelcount)
-            config.params.channelcount = 1;
+        if(!config.params.plot.channelcount)
+            config.params.plot.channelcount = 1;
 
         this.reset();
 
@@ -92,7 +92,7 @@ class PathPlot extends Widget
     {
         this.chanData = [];
         this.nextSlot = [];
-        for(let ch=0;ch < this.config.params.channelcount; ch++)
+        for(let ch=0;ch < this.config.params.plot.channelcount; ch++)
         {
             this.chanData[ch] = [];
             this.nextSlot[ch] = 0;
@@ -156,7 +156,7 @@ class PathPlot extends Widget
         }
         if(chan==0)
         {
-            for(let ch=1;ch < this.config.params.channelcount; ch++)
+            for(let ch=1;ch < this.config.params.plot.channelcount; ch++)
                 this.addRandomPt(ch);
         }
     }
@@ -167,7 +167,7 @@ class PathPlot extends Widget
     _getPathData() 
     {
         var result = [];
-        for(let chan=0;chan<this.config.params.channelcount;chan++)
+        for(let chan=0;chan<this.config.params.plot.channelcount;chan++)
         {
             let data = this.chanData[chan];
             let chanres = [];
