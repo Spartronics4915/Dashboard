@@ -824,7 +824,7 @@
                     "params": {
                         "min": 0,
                         "max": 90,
-                        "step": 1
+                        "step": 0.25
                     }
                 },
                 {
@@ -851,7 +851,7 @@
                     "params": {
                         "//": "// max matches HoodAngle",
                         "min": 0,
-                        "max": 30,
+                        "max": 35,
                         "step": 1
                     }
                 },
