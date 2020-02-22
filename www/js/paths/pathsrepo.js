@@ -8,6 +8,7 @@ export default class PathsRepo
     constructor(year="2019", field)
     {
         this.pathMap = {};
+        this.groupMap = {};
         this.year = year;
         this.field = field;
         this.landmarks = null; // year-specific
@@ -61,14 +62,24 @@ export default class PathsRepo
         return txt;
     }
 
+    addPath(path)
+    {
+        this.pathMap[path.name] = path;
+    }
+
     getPathNames()
     {
         return Object.keys(this.pathMap);
     }
 
-    addPath(path)
+    addPathGroup(pgrp)
     {
-        this.pathMap[path.name] = path;
+        this.groupMap[pgrp.name] = pgrp;
+    }
+
+    getPathGroupNames()
+    {
+        return Object.keys(this.groupMap);
     }
 
     // landmarks are points on the field.
@@ -109,11 +120,66 @@ export default class PathsRepo
             midmidLeft: Pose2d.fromXYTheta(this.field.xsize*.5, 0, 180),
             blueTgt: Pose2d.fromXYTheta(this.field.xsize, -67.5, 0),
             redTgt: Pose2d.fromXYTheta(this.field.xrange[0], 67.5, 180),
+
+            /* from frc2020/TrajectoryContainer.java */
+            kStartPointLeft: Pose2d.fromXYTheta(508, 138, 180),
+            kStartPointRight: Pose2d.fromXYTheta(508, -138, 180),
+            kStartPointMiddle: Pose2d.fromXYTheta(508, -65, 180),
+            kLeftTrenchFar: Pose2d.fromXYTheta(380, 134, 120),
+            kLeftShootingPosition: Pose2d.fromXYTheta(508, 5, 148.69),
+            kRightTrenchFar: Pose2d.fromXYTheta(324, -134, 180),
+            kRightTrenchVeryFar: Pose2d.fromXYTheta(404, -134, 180),
+            kRightTrenchNear: Pose2d.fromXYTheta(242, -134, 180),
+            kEightBallIntermediate: Pose2d.fromXYTheta(456, -134, 180),
+            kRightShootingPosition: Pose2d.fromXYTheta(421, -121, 194.36),
+            kShieldGeneratorFarRight: Pose2d.fromXYTheta(386, -46, 140),
+            kHalfWayToShielGenerator: Pose2d.fromXYTheta(450, -80, 170),
+            kMiddleShootingPosition: Pose2d.fromXYTheta(456, -65, 180),
+            kJustAhead: Pose2d.fromXYTheta(120, 0, 0),
+            kJustBehind: Pose2d.fromXYTheta(-120, 0, 0)
         };
     }
 
     _createPaths2020()
     {
+        this.addPath(new Path("Left", [
+                  _adjustPose("backcenter", this.landmarks.kStartPointLeft),
+                  _adjustPose("frontcenter", this.landmarks.kLeftTrenchFar)
+                   ]));
+        this.addPath(new Path("MiddleP1", [ // forward
+                  _adjustPose("backcenter", this.landmarks.kStartPointMiddle),
+                  _adjustPose("frontcenter", this.landmarks.kShieldGeneratorFarRight)
+                   ]));
+        this.addPath(new Path("MiddleP2", [ // backup, need to pre-reverse points...
+                  _adjustPose("backcenter", this.landmarks.kShieldGeneratorFarRight.asReverse()),
+                  _adjustPose("backcenter", this.landmarks.kMiddleShootingPosition.asReverse())
+                  ]).reverse());
+        this.addPath(new Path("RightP1", [
+                  _adjustPose("backcenter", this.landmarks.kStartPointRight),
+                  _adjustPose("frontcenter", this.landmarks.kRightTrenchFar)
+                  ]));
+        this.addPath(new Path("RightP2", [
+                  _adjustPose("frontcenter", this.landmarks.kRightTrenchFar).asReverse(),
+                  _adjustPose("frontcenter", this.landmarks.kRightShootingPosition).asReverse()
+                  ]).reverse());
+        this.addPath(new Path("EightBallP1", [ // this is the same as MiddleP1
+                  _adjustPose("frontcenter", this.landmarks.kStartPointMiddle),
+                  _adjustPose("frontcenter", this.landmarks.kShieldGeneratorFarRight)
+                  ]));
+        this.addPath(new Path("EightBallP2", [
+                  _adjustPose("frontcenter", this.landmarks.kShieldGeneratorFarRight).asReverse(),
+                  _adjustPose("frontcenter", this.landmarks.kEightBallIntermediate).asReverse(),
+                  ]).reverse());
+        this.addPath(new Path("EightBallP3", [
+                  _adjustPose("frontcenter", this.landmarks.kEightBallIntermediate),
+                  _adjustPose("frontcenter", this.landmarks.kRightTrenchFar),
+                  ]));
+        this.addPath(new Path("EightBallP4", [
+                  _adjustPose("frontcenter", this.landmarks.kRightTrenchFar).asReverse(),
+                  _adjustPose("frontcenter", this.landmarks.kRightShootingPosition).asReverse(),
+                  ]).reverse());
+
+        // debugging
         this.addPath(new Path("home", []));
         this.addPath(new Path("midfield", [
                     this.landmarks.midmidRight,
@@ -135,6 +201,11 @@ export default class PathsRepo
                     _adjustPose("backcenter", this.landmarks.leftmidRight),
                     _adjustPose("frontcenter", this.landmarks.midmidRight),
                     ]).reverse());
+
+    }
+
+    _createPathGroups()
+    {
     }
 
     _createPaths2019()

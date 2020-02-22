@@ -26,8 +26,10 @@ class PathPlot extends Widget
         {
             this.plotConfig.maxlength = 300; // number of data points
         }
-        this.data = [];
-        this.nextSlot = 0;
+        if(!config.params.plot.channelcount)
+            config.params.plot.channelcount = 1;
+
+        this.reset();
 
         // console.log("plotting: " + this.plotConfig.id);
         // we use flot for plotting.  In their terminology we have
@@ -56,7 +58,7 @@ class PathPlot extends Widget
         html +=  "</div>";
         html += "</div>";
         targetElem.html(html);
-        this.plot = $.plot(this.plotConfig.id, [this.getPathData()], 
+        this.plot = $.plot(this.plotConfig.id, this._getPathData(),
                            this.plotConfig);
     }
 
@@ -68,89 +70,125 @@ class PathPlot extends Widget
                     " invalid websubmsg payload (missing p2list)");
             return;
         }
-        this.addDataPts2(data.pt2list);
+        this._addDataPts2(data.pt2list);
     }
 
     valueChanged(key, value, isNew)
     {                
         // We expect three numbers in string value: "x y angle"
         //  (parseFloat is builtin)
+        let chan = 0;
+        if(Array.isArray(this.config.ntkeys))
+            chan = this.config.ntkeys.indexOf(key);
         var result;
         if(Array.isArray(value))
             result = value;
         else
             result = value.split(" ").map(parseFloat);
-        this.addDataPt(result[0], result[1], result[2]);
+        this._addDataPt(result[0], result[1], result[2], chan);
     }
 
     reset()
     {
-        this.data = [];
+        this.chanData = [];
+        this.nextSlot = [];
+        for(let ch=0;ch < this.config.params.plot.channelcount; ch++)
+        {
+            this.chanData[ch] = [];
+            this.nextSlot[ch] = 0;
+        }
     }
 
-    addDataPt(x, y, angle)
+    _addDataPt(x, y, angle, chan=0)
     {
-        if (this.data.length < (this.nextSlot+1))
-            this.data.push((0,0,0));
-        this.data[this.nextSlot] = this.clamp(x, y, angle);
-        this.nextSlot++;
-        if(this.nextSlot === this.plotConfig.maxlength)
-            this.nextSlot = 0;
-        this.plot.setData([this.getPathData()]);
-        this.plot.draw();
+        let data = this.chanData[chan];
+        let nextSlot = this.nextSlot[chan];
+        if (data.length < nextSlot+1)
+            data.push((0,0,0));
+        data[nextSlot] = this.clamp(x, y, angle);
+        nextSlot++;
+        if(nextSlot === this.plotConfig.maxlength)
+           nextSlot = 0;
+        this.nextSlot[chan] = nextSlot;
+        if(chan == 0)
+        {
+            this.plot.setData(this._getPathData());
+            this.plot.draw();
+        }
     }
 
-    addDataPts2(pt2list)
+    _addDataPts2(pt2list, chan=0)
     {
+        let data = this.chanData[chan];
+        let nextSlot = this.nextSlot[chan];
         for(let i=0;i<pt2list.length;i++)
         {
-            if (this.data.length < (this.nextSlot+1))
-                this.data.push((0,0,0));
+            if (data.length < nextSlot+1)
+                data.push((0,0,0));
             let pt = pt2list[i];
-            this.data[this.nextSlot] = this.clamp(pt[0], pt[1], 0);
-            this.nextSlot++;
-            if(this.nextSlot === this.plotConfig.maxlength)
-                this.nextSlot = 0;
+            data[nextSlot] = this.clamp(pt[0], pt[1], 0);
+            nextSlot++;
+            if(nextSlot === this.plotConfig.maxlength)
+               nextSlot = 0;
         }
-        this.plot.setData([this.getPathData()]);
+        this.nextSlot[chan] = nextSlot;
+        this.plot.setData(this._getPathData());
         this.plot.draw();
     }
 
-    addRandomPt() 
+    addRandomPt(chan=0) 
     {
-        if(this.data.length == 0) 
+        let data = this.chanData[chan];
+        let nextSlot = this.nextSlot[chan];
+        if(data.length == 0) 
         {
-            this.addDataPt(this.plotConfig.xaxis.min + this.xrange/2, 
+            this._addDataPt(this.plotConfig.xaxis.min + this.xrange/2, 
                            this.plotConfig.yaxis.min + this.yrange/2, 
-                           0);
+                           0, chan);
         }
         else
         {
-            let lastSlot = (this.plotConfig.maxlength + this.nextSlot - 1) % 
+            let lastSlot = (this.plotConfig.maxlength + nextSlot - 1) % 
                             this.plotConfig.maxlength;
-            let lastPt = this.data[lastSlot];
-            this.addDataPt(lastPt[0] + 25*(Math.random()-.5), 
-                          lastPt[1]+ 25*(Math.random()-.5), 0);
+            let lastPt = data[lastSlot];
+            this._addDataPt(lastPt[0] + 25*(Math.random()-.5), 
+                          lastPt[1]+ 25*(Math.random()-.5), 0, chan);
+        }
+        if(chan==0)
+        {
+            for(let ch=1;ch < this.config.params.plot.channelcount; ch++)
+                this.addRandomPt(ch);
         }
     }
 
-    getPathData() 
+    /**
+     * returns an array of 1 or more arrays of data
+     */
+    _getPathData() 
     {
-        var res = [];
-        // oldest data is at this.nextSlot, we want to run oldest to newest
-        // this is only true after we've filled our array
-        if(this.data.length < this.plotConfig.maxlength)
+        var result = [];
+        for(let chan=0;chan<this.config.params.plot.channelcount;chan++)
         {
-            for(let i=0; i<this.data.length; i++)
-                res.push(this.data[i]);
+            let data = this.chanData[chan];
+            let chanres = [];
+            let nextSlot = this.nextSlot[chan];
+
+            // oldest data is at this.nextSlot, we want to run oldest to newest
+            // this is only true after we've filled our array
+            if(data.length < this.plotConfig.maxlength)
+            {
+                for(let i=0; i<data.length; i++)
+                    chanres.push(data[i]);
+            }
+            else
+            for(let i=0; i<data.length; i++)
+            {
+                var j = (i + nextSlot) % this.plotConfig.maxlength;
+                chanres.push(data[j]);
+            }
+            result.push(chanres);
         }
-        else
-        for(let i=0; i<this.data.length; i++)
-        {
-            var j = (i + this.nextSlot) % this.plotConfig.maxlength;
-            res.push(this.data[j]);
-        }
-        return res;
+        return result;
     }
 
     clamp(x, y, angle)
