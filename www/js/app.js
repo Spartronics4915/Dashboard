@@ -398,21 +398,21 @@ export class App
             {
                 "id": "inputCurrentChart",
                 "type": "stripchart",
-                "size": [100, 48],
+                "size": [200, 48],
                 "ntkeys": "/SmartDashboard/Robot/TotalCurrent", // from PDP
                 // "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
                 "params": {
                     "plot": {
                         "yaxis": {
                             "min": 0,
-                            "max": 60,
+                            "max": 120,
                             "show": true,
                         },
                         "fillvalue": 0,
                         "colors":["rgb(255, 80, 0)"],
                         "channelcount": 1,
                         "widths": [2],
-                        "maxlength": 100,
+                        "maxlength": 200,
                    },
                 }
             },
