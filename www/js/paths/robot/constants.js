@@ -57,30 +57,26 @@ export class Constants
                 AngularDrag: 12,   // N*m/(rad/sec)
             };
             break;
-        case "main2020":
-            // copied from 2019, XXX: update me when we actually know the
-            // robot parameters.
+        case "Athena": // 2020 robot
+        case "Robot2020":
+            // XXX: update me when we actually know the robot parameters.
             this.drive =
             {
-                viewCone: {
-                    offsetX: 0,
-                    offsetY: 0,
-                    viewDistance: 10,
-                    viewAngle: 45
-                },
-                WheelBase: 25.75,
-                WheelDiameter: 6,
-                WheelRadius: 3,
-                TrackScrubFactor: 1.1982,
+                // drawing cones, etc isn't our job, that's pure display and
+                // our job is pathfollowing.
+                WheelBase: 26.75,
+                WheelDiameter: 8,
+                WheelRadius: 4,
+                TrackScrubFactor: 1,
                 RightTransmission: {
-                    Ks: .9167,
-                    Kv: .2405,
-                    Ka: .0651,
+                    Ks: .243,
+                    Kv: .204,
+                    Ka: .0261
                 },
                 LeftTransmission: {
-                    Ks: .9238,
-                    Kv: .2448,
-                    Ka: .0643,
+                    Ks: .241,
+                    Kv: .204,
+                    Ka: .0237
                 },
                 CenterToFront: 17.625, // in
                 CenterToSide: 18.75,
@@ -127,6 +123,7 @@ export class Constants
                 AngularDrag: 12,   // N*m/(rad/sec)
             };
             break;
+        case "chaos":
         case "FirstRobot":
         case "FirstRobot2019":
         default:

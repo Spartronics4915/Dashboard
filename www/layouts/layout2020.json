@@ -18,9 +18,8 @@
         "default": 
         {
             "//": "official robot settings",
-            "//2": "still need to find what the value is for top cam IP",
             "envparam": "env=default",
-            "robotid": "main2021",
+            "robotid": "Athena",
             "camFeedPort": 5805,
             "visionFeedPort": 5806,
             "camStatusPort": 80,
@@ -397,7 +396,7 @@
                 },
                 {
                     "id": "driveOdometry",
-                    "label": "Odometry",
+                    "label": "Odometry <span class='blue'>pose</a> <span class='yellow'>encoderPose</span>",
                     "type": "pathplot",
                     "size": [400, 300],
                     "enable": true,
@@ -426,28 +425,31 @@
                                     "show": 0
                                 }
                             },
-                            "colors": ["rgb(20, 120, 255)", "green"]
+                            "colors": ["rgb(20, 120, 255)", "yellow"]
                         }
                     }
                 },
                 {
                     "id": "driveIMU",
-                    "label": "IMU Heading",
+                    "label": "IMU Heading <span class='blue'>Raw</span> <span class='yellow'>Adjusted</span>",
                     "type": "stripchart",
                     "size": [330, 300],
-                    "ntkeys": "Drive/imuHeading",
+                    "ntkeys": ["Drive/imuHeading",
+                               "Dreive/imuHeadingAdjusted"],
                     "params": {
                         "plot": {
+                            "channelcount": 2,
                             "yaxis": {
                                 "min": -200,
                                 "max": 200
                             },
-                            "widths": [1],
-                            "colors":["rgb(20,120,255)"]
+                            "widths": [1, 1],
+                            "colors":["rgb(20,120,255)", "yellow"]
                         }
                     }
                 },
                 {
+                    "// XXX":  "need to wire this into robot code ---------------",
                     "id": "driveSpeedLeft",
                     "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
@@ -471,6 +473,7 @@
                     }
                 },
                 {
+                    "// XXX":  "need to wire this into robot code ---------------",
                     "id": "driveSpeedRight",
                     "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
                     "type": "stripchart",
@@ -494,6 +497,7 @@
                     }
                 },
                 {
+                    "// XXX":  "need to wire this into robot code ---------------",
                     "id": "trajectoryStates",
                     "label": "Trajectory State - <span class='blue'>vel</span> <span class='yellow'>acc</a> <span class='amber'>curv</span>",
                     "type": "stripchart",
@@ -515,6 +519,7 @@
                     }
                 },
                 {
+                    "// XXX": "need to wire this into robot code ---------------",
                     "id": "leftSpeedoverVoltage",
                     "label": "Left Speed vs %Vbus",
                     "type": "pathplot",
@@ -552,9 +557,9 @@
                             }
                         }
                     }
-
                 },
                 {
+                    "// XXX": "disabled for 2020 robot",
                     "enable": false,
                     "type": "systemstate",
                     "id": "Lidar", "//": "name is subsystem name",
@@ -566,6 +571,7 @@
                             ]
                 },
                 {
+                    "// XXX": "disabled for 2020 robot",
                     "enable": false,
                     "id": "lidarOdometry",
                     "label": "LIDAR Odometry",
@@ -599,6 +605,7 @@
                     }
                 },
                 {
+                    "// XXX": "disabled for 2020 robot",
                     "enable": false,
                     "id": "lidarPoints",
                     "label": "LIDAR Points",
@@ -634,6 +641,7 @@
                     }
                 },
                 {
+                    "// XXX": "disabled for 2020 robot",
                     "enable": false,
                     "id": "lidarPtsRel",
                     "label": "LIDAR Rel Points",
