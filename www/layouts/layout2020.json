@@ -1364,27 +1364,6 @@
                                 "ip": "${driverupcam}:${camFeedPort}",
                                 "cls": "size1280",
                                 "cmd": "${driverupcamcmd}"
-                            },
-                            "_Front_deprecated":
-                            {
-                                "protocol": "webrtc",
-                                "ip": "${driverfrontcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "size1280"
-                            },
-                            "_Back_deprecated":
-                            {
-                                "protocol": "webrtc",
-                                "ip": "${driverbackcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "size1280"
-                            },
-                            "_Top_deprecated":
-                            {
-                                "protocol": "webrtc",
-                                "ip": "${drivertopcam}:8080",
-                                "url": "/stream/webrtc",
-                                "cls": "size1280"
                             }
                         }
                     }

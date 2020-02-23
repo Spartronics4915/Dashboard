@@ -519,6 +519,16 @@ input[type="text"]
     z-index: 0; /* prevent ace gutter from occluding the footer */
 }
 
+/* flot ---------------------------------------------
+ *   ticklabel color can't be controlled by css because they are svg elements.
+ *   I made a change to jquery.canvaswrapper.js to hardcode rgb(80,80,80)
+ *   on line 318.
+ */
+.tickLabel 
+{
+    font-size: 80%;
+}
+
 /* robolog -------------------------------------------*/
 .logmsg
 {

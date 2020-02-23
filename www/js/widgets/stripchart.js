@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, Widget */
 // StripChart requires jquery.flot plot package
 class StripChart extends Widget
 {
@@ -38,6 +38,8 @@ class StripChart extends Widget
             for(let i=0;i<this.plotConfig.channelcount;i++)
                 this.plotConfig.widths[i] = 2;
         }
+        if(this.plotConfig.yaxis.autoScale == undefined)
+            this.plotConfig.yaxis.autoScale = false;
         this.yrange = this.plotConfig.yaxis.max - this.plotConfig.yaxis.min + 1;
         for(let i=0;i<this.plotConfig.channelcount;i++)
         {

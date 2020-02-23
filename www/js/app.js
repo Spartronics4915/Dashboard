@@ -376,16 +376,31 @@ export class App
                 "ntkeys": "/SmartDashboard/Robot/BatteryVoltage",
                 "params": {
                     "plot": {
-                        "yaxis": {
+                        "yaxis": 
+                        {
                             "show": false,
                             "min": 0,
                             "max": 13
                         },
                         "fillvalue": 10,
-                        "colors":["rgb(255, 255, 0)"],
+                        "colors":["green"],
                         "channelcount": 1,
                         "widths": [2],
                         "maxlength": 100,
+                        "series":
+                        {
+                            "threshold": 
+                            [
+                                {
+                                    below: 10,
+                                    color: "yellow"
+                                },
+                                {
+                                    below: 8,
+                                    color: "red"
+                                }
+                            ]
+                        }
                     },
                 }
             }, targetEl, undefined/*nopagehandler*/);
@@ -401,18 +416,35 @@ export class App
                 "size": [200, 48],
                 "ntkeys": "/SmartDashboard/Robot/TotalCurrent", // from PDP
                 // "ntkeys": "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent",
-                "params": {
-                    "plot": {
-                        "yaxis": {
+                "params": 
+                {
+                    "plot": 
+                    {
+                        "yaxis": 
+                        {
                             "min": 0,
                             "max": 120,
                             "show": true,
                         },
                         "fillvalue": 0,
-                        "colors":["rgb(255, 80, 0)"],
+                        "colors":["red"],
                         "channelcount": 1,
                         "widths": [2],
                         "maxlength": 200,
+                        "series": 
+                        {
+                            "threshold": 
+                            [
+                                {
+                                    below: 75,
+                                    color: "orange"
+                                },
+                                {
+                                    below: 50,
+                                    color: "green"
+                                }
+                            ]
+                        }
                    },
                 }
             },
@@ -734,10 +766,14 @@ export class App
             if(this.robotBatteryW)
                 this.robotBatteryW.valueChanged(key, value, isNew);
             break;
-        //  case "/SmartDashboard/Robot/BatteryCurrent":
-        case "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent":
+        case "/SmartDashboard/Robot/BatteryCurrent":
+        // case "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent":
             if(this.robotCurrentW)
                 this.robotCurrentW.valueChanged(key, value, isNew);
+            if(value > 80)
+            {
+                // log something?
+            }
             break;
         case "/SmartDashboard/Robot/GamePhase":
             this.robotStateMgr.changeGamePhase(value);
