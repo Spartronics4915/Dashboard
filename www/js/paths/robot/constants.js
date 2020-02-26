@@ -68,15 +68,17 @@ export class Constants
                 WheelDiameter: 8,
                 WheelRadius: 4,
                 TrackScrubFactor: 1,
-                RightTransmission: {
-                    Ks: .243,
-                    Kv: .204,
-                    Ka: .0261
-                },
-                LeftTransmission: {
+                LeftTransmission: 
+                {
                     Ks: .241,
                     Kv: .204,
                     Ka: .0237
+                },
+                RightTransmission: 
+                {
+                    Ks: .243,
+                    Kv: .204,
+                    Ka: .0261
                 },
                 CenterToFront: 17.375, // in
                 CenterToSide: 18.875,
