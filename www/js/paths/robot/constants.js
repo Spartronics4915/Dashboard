@@ -78,9 +78,8 @@ export class Constants
                     Kv: .204,
                     Ka: .0237
                 },
-                CenterToFront: 17.625, // in
-                CenterToSide: 18.75,
-                // hm what about CenterToBack?
+                CenterToFront: 17.375, // in
+                CenterToSide: 18.875,
                 VelocityKp: .3,
             };
             this.robot =
