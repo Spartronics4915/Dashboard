@@ -766,7 +766,7 @@ export class App
             if(this.robotBatteryW)
                 this.robotBatteryW.valueChanged(key, value, isNew);
             break;
-        case "/SmartDashboard/Robot/BatteryCurrent":
+        case "/SmartDashboard/Robot/TotalCurrent":
         // case "/LiveWindow/Ungrouped/PowerDistributionPanel[0]/TotalCurrent":
             if(this.robotCurrentW)
                 this.robotCurrentW.valueChanged(key, value, isNew);
