@@ -189,7 +189,7 @@
                                 {
                                     "//": "draw turret aim cone atop robot",
                                     "//1": "NB: path widget draws robot here (for now)",
-                                    "key": "Launcher/TurretAimAngle",
+                                    "key": "Launcher/turretAngle",
                                     "class": "cone",
                                     "enable": true,
                                     "value": 0,
@@ -451,7 +451,7 @@
                 {
                     "// XXX":  "need to wire this into robot code ---------------",
                     "id": "driveSpeedLeft",
-                    "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
+                    "label": "Left <span class='blue'>Speed</span>, <span class='yellow'>Target</span> m/s",
                     "type": "stripchart",
                     "size": [330, 170],
                     "ntkeys": "Drive/leftSpeed",
@@ -461,8 +461,8 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -80,
-                                "max": 80
+                                "min": -4,
+                                "max": 4
                             },
                             "fillvalue": 0,
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
@@ -475,7 +475,7 @@
                 {
                     "// XXX":  "need to wire this into robot code ---------------",
                     "id": "driveSpeedRight",
-                    "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span>",
+                    "label": "Right <span class='blue'>Speed</span>, <span class='yellow'>Target</span> m/s",
                     "type": "stripchart",
                     "size": [330, 170],
                     "ntkeys": "Drive/rightSpeed",
@@ -485,8 +485,8 @@
                     "params": {
                         "plot": {
                             "yaxis": {
-                                "min": -80,
-                                "max": 80
+                                "min": -4,
+                                "max": 4
                             },
                             "fillvalue": 0,
                             "colors":["rgb(20,120,255)", "rgb(200,200,10)"],
@@ -520,6 +520,7 @@
                 },
                 {
                     "// XXX": "need to wire this into robot code ---------------",
+                    "enable": false,
                     "id": "leftSpeedoverVoltage",
                     "label": "Left Speed vs %Vbus",
                     "type": "pathplot",
@@ -539,7 +540,7 @@
                             },
                             "yaxis": {
                                 "min": 0,
-                                "max": 80,
+                                "max": 3,
                                 "show": 1
                             },
                             "series": {
@@ -1400,7 +1401,7 @@
                                     "value": "<nocamera>"
                                 },
                                 {
-                                    "key": "Launcher/TurretAimAngle",
+                                    "key": "Launcher/turretAngle",
                                     "class": "compass",
                                     "enable": true,
                                     "config":{
