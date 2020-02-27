@@ -1218,10 +1218,12 @@ class CanvasWidget extends Widget
         {
             let dx = fxy[0] - this.refPointF[0];
             let dy = fxy[1] - this.refPointF[1];
-            app.putValue("Paths/ReferenceDist", Math.hypot(dx, dy).toFixed(1));
+            let dist = Math.hypot(dx, dy).toFixed(1);
+            let angle = _r2d(Math.atan2(dy, dx)).toFixed(0);
+            app.putValue("Paths/ToRefPt", `${dist}in ${angle}deg`);
         }
         else
-            app.putValue("Paths/ReferenceDist", "n/a");
+            app.putValue("Paths/ToRefPt", "n/a");
         return fxy;
     }
 
@@ -1428,6 +1430,11 @@ class CanvasWidget extends Widget
 function _d2r(deg) 
 {
     return deg * (Math.PI / 180);
+}
+
+function _r2d(rad) 
+{
+    return rad * 180 / Math.PI;
 }
 
 

@@ -238,7 +238,7 @@
                     "size": [150, "row"],
                     "ntkeys": [
                         "Paths/Coords",
-                        "Paths/ReferenceDist"
+                        "Paths/ToRefPt"
                     ],
                     "widgets": 
                     [
