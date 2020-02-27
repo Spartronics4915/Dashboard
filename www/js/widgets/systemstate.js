@@ -16,6 +16,7 @@ class SystemState extends Widget
         /* first column of this row is the title and associated (text) keys */
         let html = `<span class="title">${w.label}</span> `;
         // add spans to col1 div according to ntkeys (like status, etc)
+        let separator = this.config.separator || " ";
         for(let i=0;i<this.numKeys;i++)
         {
             let key = this.config.ntkeys[i];
@@ -23,7 +24,7 @@ class SystemState extends Widget
             let label = this.ntkeyToLabel(key, this.subsys);
             // infer label from network table name
             html += `<span class='state'>${label}</span> `+
-                    `<span class='strong' id='${domid}'>n/a</span> `;
+                    `<span class='strong' id='${domid}'>n/a</span>${separator}`;
         }
         if(this.config.widgets)
         {

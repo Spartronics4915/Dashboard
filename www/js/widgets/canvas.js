@@ -112,24 +112,50 @@ class CanvasWidget extends Widget
     // trigger this message.
     valueChanged(key, value, isNew)
     {
+        var newCoordMode;
         switch(key)
         {
         case "/FMSInfo/IsRedAlliance":
             this.fmsIsRedAlliance = value;
             if(this.pathDisplayMode == "FMS")
-                this.fieldCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
+                newCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
             break;
         case "/SmartDashboard/Paths/AllianceMode":
             this.pathDisplayMode = value;
             if(this.pathDisplayMode == "FMS")
-                this.fieldCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
+                newCoordMode = this.fmsIsRedAlliance ? "Red" : "Blue";
             else
-                this.fieldCoordMode = value;
+                newCoordMode = value;
             break;
         }
         this._updateOverlay(key, value, isNew);
         if (key.startsWith("/SmartDashboard/Vision"))
             this.lastVisionKeyUpdate = new Date();
+        
+        if(newCoordMode && this.fieldCoordMode != newCoordMode)
+        {
+            this.fieldCoordMode = newCoordMode;
+            // we're switching modes - do we want 
+            //  a) refPt to stay in the same place in the map (same canv coords) 
+            //  b) refPt to represent same feature on the map (same field coords)
+            //  c) clear the refpoint
+            let pref = "c";
+            switch(pref)
+            {
+            case "a":
+                if(this.refPointC)
+                    this.refPointF = this._canvasToFieldCoords(this.refPointC);
+                break;
+            case "b":
+                if(this.refPointF)
+                    this.refPointC = this._fieldToCanvasCoords(this.refPointF).slice(0,2);
+                break;
+            case "c":
+                this.refPointF = null;
+                this.refPointC = null;
+                break;
+            }
+        }
     }
 
     // when this canvas widget is of class "yespointer", this method is
@@ -165,8 +191,8 @@ class CanvasWidget extends Widget
     {
         if(this.lastFieldCoords)
         {
-            let x = this.lastFieldCoords[0].toFixed(1);
-            let y = this.lastFieldCoords[1].toFixed(1);
+            let x = this.lastFieldCoords[0].toFixed(0);
+            let y = this.lastFieldCoords[1].toFixed(0);
             this.refPointC = this.lastCanvasCoords;
             this.refPointF = this.lastFieldCoords;
             app.alertuser(`new refpt: ${x}, ${y}`);
@@ -1213,35 +1239,37 @@ class CanvasWidget extends Widget
             fxy = app.getFieldCoords(1-x, y); // only flip x
         else
             fxy = app.getFieldCoords(x, 1-y); // only flip y
-        app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
+        app.putValue("Paths/Coords", `${fxy[0].toFixed(0)} ${fxy[1].toFixed(0)}`);
         if(this.refPointF)
         {
             let dx = fxy[0] - this.refPointF[0];
             let dy = fxy[1] - this.refPointF[1];
-            let dist = Math.hypot(dx, dy).toFixed(1);
+            let dist = Math.hypot(dx, dy).toFixed(0);
             let angle = _r2d(Math.atan2(dy, dx)).toFixed(0);
-            app.putValue("Paths/ToRefPt", `${dist}in ${angle}deg`);
+            app.putValue("Paths/ToRefPt", `${dist}in, ${angle}&deg;`);
         }
         else
-            app.putValue("Paths/ToRefPt", "n/a");
+            app.putValue("Paths/ToRefPt", "n/a            ");
         return fxy;
     }
 
-    _fieldToCanvasCoords(pose) // unused?
+    _fieldToCanvasCoords(pose)
     {
-        // pose is x, y (inches), cosangle, sinangle
+        // pose is x, y (inches), (cosangle, sinangle unused)
         let pct = app.getFieldPct(pose[0], pose[1]);
+        let w = this.canvasEl.width;
+        let h = this.canvasEl.height;
         if(this.fieldCoordMode == "Red")
         {
             // angles in canvas coords fine as-is
             // console.log(pose, cx, cy);
-            return [1-pct[0], pct[1], pose[2], pose[3]];
+            return [w*(1-pct[0]), h*pct[1], pose[2], pose[3]];
         }
         else
         {
             // angles in canvas coords are just flipped in y (rotated 180)
             // console.log(pose, cx, cy);
-            return [pct[0], 1-pct[1], pose[2], -pose[3]];
+            return [w*pct[0], h*(1-pct[1]), pose[2], -pose[3]];
         }
     }
 

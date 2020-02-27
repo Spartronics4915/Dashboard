@@ -240,6 +240,7 @@
                         "Paths/Coords",
                         "Paths/ToRefPt"
                     ],
+                    "separator": "<br/>",
                     "widgets": 
                     [
                         {
