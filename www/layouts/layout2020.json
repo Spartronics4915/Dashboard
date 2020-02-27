@@ -235,9 +235,10 @@
                     "type": "systemstate",
                     "id": "Paths", "// name is important":"",
                     "label": "Path Planning",
-                    "size": [285, "row"],
+                    "size": [150, "row"],
                     "ntkeys": [
-                        "Paths/Coords"
+                        "Paths/Coords",
+                        "Paths/ReferenceDist"
                     ],
                     "widgets": 
                     [

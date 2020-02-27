@@ -23,6 +23,10 @@ class CanvasWidget extends Widget
         this.fieldCoordMode = "Blue"; // derived from pathDisplayMode + fmsIsRedAlliance
         this.resizeListener = null;
         this._trustCanvXform = true;
+        this.lastFieldCoords = null;
+        this.lastCanvasCoords = null;
+        this.refPointC = null; // in canvas coords
+        this.refPointF = null; // in field coords
 
         if(this.config.params.overlay && this.config.params.overlay.enable)
         {
@@ -36,6 +40,7 @@ class CanvasWidget extends Widget
                         "canvas");
             }
         }
+        this.canvasEl.onmousedown = this._onMouseDown.bind(this);
         this.canvasEl.onmousemove = this._onMouseMove.bind(this);
         this.canvasEl.onkeydown = this._onKeyDown.bind(this);
         this.canvasEl.tabIndex = "1";
@@ -137,6 +142,8 @@ class CanvasWidget extends Widget
             {
                 if(item.pointerevents)
                 {
+                    this.lastCanvasCoords = this._evtToCanvasCoords(evt);
+                    this.lastFieldCoords = this._canvasToFieldCoords(this.lastCanvasCoords);
                     switch(item.class)
                     {
                     case "poselist":
@@ -154,17 +161,44 @@ class CanvasWidget extends Widget
         }
     }
 
+    _onMouseDown(evt)
+    {
+        if(this.lastFieldCoords)
+        {
+            let x = this.lastFieldCoords[0].toFixed(1);
+            let y = this.lastFieldCoords[1].toFixed(1);
+            this.refPointC = this.lastCanvasCoords;
+            this.refPointF = this.lastFieldCoords;
+            app.alertuser(`new refpt: ${x}, ${y}`);
+        }
+    }
+
     _onKeyDown(evt)
     {
         switch(evt.code)
         {
+        case "KeyD": // distance
+            if(this.refPointF)
+            {
+                let dx = this.lastFieldCoords[0] - this.refPointF[0];
+                let dy = this.lastFieldCoords[1] - this.refPointF[1];
+                let dist = Math.hypot(dx, dy);
+                let ft = dist/12;
+                let m = ft/3.281;
+                app.alertuser(`dist: ${dist.toFixed(1)}in, ${ft.toFixed(2)}ft, ${m.toFixed(2)}m`);
+            }
+            break;
         case "KeyC":
-            if(evt.ctrlKey || evt.metaKey)
+            if(!(evt.ctrlKey || evt.metaKey))
+            {
+                this._onMouseDown(null);
+            }
+            else
             {
                 /* copy current coords to clipboard */
-                if(this._fieldcoords)
+                if(this.lastFieldCoords)
                 {
-                    let x = this._fieldcoords[0], y = this._fieldcoords[1];
+                    let x = this.lastFieldCoords[0], y = this.lastFieldCoords[1];
                     let indent = "    ";
                     let indent2 = indent.repeat(2); 
                     let indent3 = indent.repeat(3);
@@ -431,6 +465,18 @@ class CanvasWidget extends Widget
             default:
                 app.warning("unimplement canvas item " + item.class);
             }
+        }
+        // place the mouse marker if registered
+        if(this.refPointC)
+        {
+            let ctx = this.canvasCtx;
+            let color = "rgb(80,255,100)";
+            let radius = 4;
+            ctx.beginPath();
+            ctx.arc(this.refPointC[0], this.refPointC[1], radius, 
+                        0, 2 * Math.PI, false);
+            ctx.fillStyle = color;
+            ctx.fill();
         }
     }
 
@@ -1084,9 +1130,8 @@ class CanvasWidget extends Widget
         {
             // has the side-effect of printing canvas coords, so do this before
             // return so we can see coordinates even with no path requested.
-            coords = this._evtToCanvasCoords(evt);
-            fcoords = this._canvasToFieldCoords(coords); // updates network tables
-            this._fieldcoords = fcoords; // for copyToClipboard
+            coords = this.lastCanvasCoords;
+            fcoords = this.lastFieldCoords;
         }
         if(!item.value) return; // this must follow _canvasToFieldCoords
 
@@ -1169,6 +1214,14 @@ class CanvasWidget extends Widget
         else
             fxy = app.getFieldCoords(x, 1-y); // only flip y
         app.putValue("Paths/Coords", `${fxy[0].toFixed(1)} ${fxy[1].toFixed(1)}`);
+        if(this.refPointF)
+        {
+            let dx = fxy[0] - this.refPointF[0];
+            let dy = fxy[1] - this.refPointF[1];
+            app.putValue("Paths/ReferenceDist", Math.hypot(dx, dy).toFixed(1));
+        }
+        else
+            app.putValue("Paths/ReferenceDist", "n/a");
         return fxy;
     }
 
