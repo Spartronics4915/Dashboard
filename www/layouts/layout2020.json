@@ -434,8 +434,8 @@
                     "label": "IMU Heading <span class='blue'>Raw</span> <span class='yellow'>Adjusted</span>",
                     "type": "stripchart",
                     "size": [330, 300],
-                    "ntkeys": ["Drive/imuHeading",
-                               "Dreive/imuHeadingAdjusted"],
+                    "ntkeys": ["Drive/imuHeading"],
+                    "ntkeyRefs": ["Drive/imuHeadingAdjusted"],
                     "params": {
                         "plot": {
                             "channelcount": 2,
