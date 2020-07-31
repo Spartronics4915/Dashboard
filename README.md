@@ -47,7 +47,7 @@ single repository for multiple years. We will tag the commit at the
 end of a year, to allow us to easily return to that point in history, 
 then remove/rework the dashboard for the new game.
 
-Upgrading pynetworktables requires simultaneous update of pynetworktables2s.
+Upgrading pynetworktables requires simultaneous update of pynetworktables2js.
 Pip installs may or may not be in sync and may very according to python version.
 As of 1/20/2018, the python3 version of pynetworktables is still at 2017 level.
 For this reason python27 is preferred.
