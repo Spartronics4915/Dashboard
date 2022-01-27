@@ -957,6 +957,7 @@
                             "<div class='references'>",
                             "<h2>Layout Links</h2>",
                             "<ul>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2022.json'>layout2022</a>",
                             "<li><a href='/index.html?${envparam}&layout=layout2020.json'>layout2020</a>",
                             "<li><a href='/index.html?${envparam}&layout=layout2019.json'>layout2019</a>",
                             "</ul>"
