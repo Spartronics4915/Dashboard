@@ -36,7 +36,7 @@ export class App
         this.config.netTabVersion = 1802;
         this.config.demoMode = false;
         // default layout to use, potentially overridden by URI args
-        this.config.layout = "/layouts/layout2020.json";
+        this.config.layout = "/layouts/layout2022.json";
         this.config.layoutEnv = "default";
         this.config.demomode = false;
 
@@ -526,7 +526,7 @@ export class App
         this.currentPage = page;
         let ph = this.layout.buildContentPage(page);
         if(!this.pageHandlers[page])
-            this.pageHandlers[page] = ph;
+			this.setPageHandler(page, ph);
         this.updateNav();
         this.replayNetTab();
     }

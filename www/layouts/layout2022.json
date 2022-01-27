@@ -1,16 +1,16 @@
 {
-    "layoutName": "Test2020.json",
+    "layoutName": "Test2022.json",
     "season": 
     {
-        "year": "2020",
+        "year": "2022",
         "robotid": "${robotid}",
         "field": 
         {
-            "//": "26 ft. 11.25 in. by 52 ft. 5.25 in. (per Declan)",
-            "xsize": 629.25,
-            "ysize": 323.25,
-            "xrange": [0, 629.25],
-            "yrange": [-161.625, 161.625]
+            "//": "27 ft. by 54 ft. (per Henry)",
+            "xsize": 648,
+            "ysize": 324,
+            "xrange": [0, 648],
+            "yrange": [-162, 162]
         }
     },
     "environments": 
@@ -124,7 +124,7 @@
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
-                        "url": "/images/field2020.png",
+                        "url": "/images/field2022.png",
                         "cls": "nopointer size1x"
                     }
                 },
@@ -309,7 +309,7 @@
                     "params":
                     {
                         "overlayId": "fieldmapOverlay",
-                        "url": "/images/field2020.png",
+                        "url": "/images/field2022.png",
                         "//": "mouse tracking handled by fieldMapOverlayCanv",
                         "cls": "nopointer size1x"
                     }
@@ -1306,7 +1306,7 @@
                             "<div class='references'>",
                             "<h2>Layout Links</h2>",
                             "<ul>",
-							"<li><a href='/index.html?${envparam}&layout=layout2022.json'>layout2022</a>",
+                            "<li><a href='/index.html?${envparam}&layout=layout2022.json'>layout2022</a>",
                             "<li><a href='/index.html?${envparam}&layout=layout2020.json'>layout2020</a>",
                             "<li><a href='/index.html?${envparam}&layout=layout2019.json'>layout2019</a>",
                             "</ul>"

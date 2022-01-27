@@ -64,11 +64,12 @@ class Layout
         {
             let page = `tab${i}`;
             let icon = this.pageTemplates[i].icon;
+			let navtext = this.pageTemplates[i].navtext;
             if(icon)
             {
                 if(icon != "_none_")
                 {
-                    htmlList.push("<div class='navtab'>" +
+                    htmlList.push(`<div class='navtab' title='${navtext}'>` +
                        `<a href='#${page}'>` +
                             `<span class='${icon}'></span>` +
                         "</a></div>");
