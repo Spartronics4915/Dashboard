@@ -19,7 +19,7 @@ this approach may be for you.
 To run the dashboard:
 
   1. make sure you have python3 installed (3.6, 3.7 tested)
-  2. make sure the correct python moduleis are installed (pynetworktables)
+  2. make sure the correct python modules are installed (pynetworktables)
   3. make sure the javascript side of pynetworktable2js is up to date 
     (below www/js).
   3. start dashboard server: python DashboardServer.py
@@ -47,7 +47,7 @@ single repository for multiple years. We will tag the commit at the
 end of a year, to allow us to easily return to that point in history, 
 then remove/rework the dashboard for the new game.
 
-Upgrading pynetworktables requires simultaneous update of pynetworktables2s.
+Upgrading pynetworktables requires simultaneous update of pynetworktables2js.
 Pip installs may or may not be in sync and may very according to python version.
 As of 1/20/2018, the python3 version of pynetworktables is still at 2017 level.
 For this reason python27 is preferred.
@@ -59,7 +59,7 @@ computer.  Inbound UDP traffic is required.
 
 From the pynetworktables2js docs:
 
-  NetworkTables is type sensitive, whereas Javascript is loosely typed.
+> NetworkTables is type sensitive, whereas Javascript is loosely typed.
   This function will not check the type of the value that you are trying
   to *put*, so you must be careful to only put the correct values (types) 
   that are expected. If your robot tries to retrieve the value and it is an
@@ -67,23 +67,26 @@ From the pynetworktables2js docs:
   Make sure you test your code – you have been warned.
 
 ### Helpful Links
-
-[python](http://python.org) - is the language atop-which the dashboard
+[python](https://www.python.org) - is the language atop which the dashboard
 support resides.  
 
 [pynetworktables](https://github.com/robotpy/pynetworktables) - is
 the core technology.  You can use standard 'pip' mechanism to install
 this module into your python interpreter:  
 
-'python -m pip install pynetworktables'
+```
+python -m pip install pynetworktables
+```
 
-[pynetworktables2js](http://pynetworktables2js.readthedocs.io/en/stable/) -
+[pynetworktables2js](https://pynetworktables2js.readthedocs.io/en/stable/) -
 is a small python module that forwards NetworkTables key/values over a 
 Websocket, so that you can easily write a Driver Station Dashboard for your 
-robot in HTML5 + JavaScript.  Included in the package are JavaScript utilities
-to connect with the websocket.  Install via: 
+robot in HTML5 + JavaScript. Included in the package are JavaScript utilities
+to connect with the websocket. Install via: 
 
-'python -m pip install pynetworktables2js'
+```
+python -m pip install pynetworktables2js
+```
 
 `tornado` - is a python package for webservice development.
 
