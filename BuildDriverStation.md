@@ -46,6 +46,8 @@ Document the steps to configure a driver station from the basic Windows install.
    * Click 'OK' at the main 'Environment Variables' dialog
    * Click 'OK' at the 'System Properties' dialog
    * Close the 'Settings' dialog
+ * Turn on display of extensions and hidden files
+  * In the File Explorer, click 'View', and in the displayed ribbon, check the 'File name extensions' and the 'Hidden items' boxes
 
 
 ## General Software
@@ -56,19 +58,7 @@ Document the steps to configure a driver station from the basic Windows install.
  * Install KeePass [https://keepass.info/download.html KeePass]
  * Install PuTTY get latest 64-bit (currently 0.76) at [https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html PuTTY]. Example: [https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.76-installer.msi Installer]
 
-## FRC Software
-
-From the FRC instructions at [https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/index.html Installing software].
-
- * Install FRC Game Tools [https://www.ni.com/en-us/support/downloads/drivers/download.frc-game-tools.html#440024 Game Tools].  Best to grab the offline installer (currently 2022 f1).
-   * Don't need the NI Vision Support or the RT System Image in the 'Additional items ...' page.
-   * Cancel out of the 'Activate Software' screen.
-   * Reboot when prompted.
- * Install Java (needed for the Radio Config tool) (currently version 17): [https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.msi Java SDK]
- * Install the FRC Radio Configuration Tool [https://firstfrc.blob.core.windows.net/frc2022/Radio/FRC_Radio_Configuration_22_0_1.zip Radio Config Tool].  It is a .zip file which Windows can open, but it will complain when you run the .exe inside.  Click on 'More info' in the dialog and then 'Run anyway'.  You will need to also install Npcap as part of the install (it's included) - as noted take all of the defaulted options.
- * Though we won't be deploying code from this laptop, there are facilities in WPILib that we could potentially use (SmartDashboard, Shuffleboard), so install the latest WPILib from the Github site: [https://github.com/wpilibsuite/allwpilib/releases/download/v2022.3.1/WPILib_Windows64-2022.3.1.iso WPILib].  Click on the .iso and open it.  Run the WPILibInstaller.exe.  Select 'Tools Only' and 'Install for all Users'.
-
- Note: For both the FRC Radio Configuration and Driver Station, you will need to set the team number (4915) as part of the first execution.
+## Git for Windows
 
  * Install Git for Windows [https://github.com/git-for-windows/git/releases/download/v2.35.1.windows.2/Git-2.35.1.2-64-bit.exe Git install]
    * Check 'Additional icons' in the Select Components prompt.
@@ -115,6 +105,26 @@ fi
    * Enter 'Esc' to get out of insert mode
    * Enter ':wq' to write the file and quit
 
+## FRC Software
+
+From the FRC instructions at [https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/index.html Installing software].
+
+ * Install FRC Game Tools [https://www.ni.com/en-us/support/downloads/drivers/download.frc-game-tools.html#440024 Game Tools].  Best to grab the offline installer (currently 2022 f1).
+   * Offline installer as of this writing (03.11.22) is ni-frc-2022-game-gools_22.0.1_offline.iso.
+   * Once downloaded, double click on install file, which will open the .iso into an install directory
+   * Double click in the 'Install' file.
+   * Accept all the license agreements.
+   * Don't need the NI Vision Support or the RT System Image in the 'Additional items ...' page, but do include the Certificate Installer, if displayed
+   * Cancel out of the 'Activate Software' screen.
+   * Reboot when prompted.
+ * Install Java (needed for the Radio Config tool) (currently version 17): [https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.msi Java SDK]
+   * Ignore 'Next Steps'.
+ * Install the FRC Radio Configuration Tool [https://firstfrc.blob.core.windows.net/frc2022/Radio/FRC_Radio_Configuration_22_0_1.zip Radio Config Tool].  It is a .zip file which Windows can open, but it will complain when you run the .exe inside.  Click on 'More info' in the dialog and then 'Run anyway'.  You will need to also install Npcap as part of the install (it's included) - as noted take all of the defaulted options.
+ * Though we won't be deploying code from this laptop, there are facilities in WPILib that we could potentially use (SmartDashboard, Shuffleboard), so install the latest WPILib from the Github site: [https://github.com/wpilibsuite/allwpilib/releases/download/v2022.4.1/WPILib_Windows64-2022.4.1.iso WPILib].  Click on the .iso and open it.  Run the WPILibInstaller.exe.  Select 'Tools Only' and 'Install for all Users'.
+
+ Note: For both the FRC Radio Configuration and Driver Station, you will need to set the team number (4915) as part of the first execution.
+
+
 ## Spartronics Dashboard
 
  * Install Python.  The Dashboard uses pynetworktables and pynetworktables2js, both of which have problems with Python>3.8.x.  So we'll install the latest 3.8 binary release - 3.8.10 [https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe Python 3.8.10].  Run the installer, and select 'Customize installation'.
@@ -123,19 +133,19 @@ fi
    * Click Install
    * When the prompt for 'Disable path length limit' appears, click on it to allow longer paths.
  * Check that Python exists in the execution path by searching for 'cmd' and typing 'py -3' in the command window.  Python should start and display a '>>>' prompt.  To get out, type 'ctrl-Z' then 'Enter'.
- * Clone the Spartronics Dashboard repository into home directory:
+ * Open a Git Bash shell and clone the Spartronics Dashboard repository into the spartronics directory:
 ```bash
-cd ~
+cd /c/Users/spartronics
 git clone https://github.com/Spartronics4915/Dashboard.git
 ```
-  * Change into the Dashboard directory and use the requirements.txt file there to install some Python requirements:
+  * In a Windows command shell (as Administrator), change into the Dashboard directory and use the requirements.txt file there to install some Python requirements:
 ```bash
-cd Dashboard
+cd c:\Users\spartronics\Dashboard
 py -3 -m pip install -r requirements.txt
 ```
 ## Set up Driver camera and display scripts
 
- * Clone the Spartronics Vision repository into the home directory
+ * In a Git Bash shell, clone the Spartronics Vision repository into the home directory
  ```bash
  cd ~
  git clone https://github.com/Spartronics4915/Vision.git
@@ -145,14 +155,40 @@ py -3 -m pip install -r requirements.txt
 cd ~/Vision/tools/DriverCamScripts/Windows
 cp -r .ssh * /c/Users/spartronics
 ```
+ * In a Windows command shell, run the Spartronics.reg file:
+ ```bash
+ cd %HOME%
+ Spartronics.reg
+ ```
+ Select 'Yes' at the prompt.
 
-## Install PuTTY
+ * In the Windows File Explorer, navigate to c:\Users\Spartronics, copy and expand the zip with the desktop shortcuts:
+  * Right click on the Startup.zip
+  * Select the 'Extract all' option
+  * Replace 'Startup' in the displayed path with 'Desktop'
+  * The folder 'Startup' and other shortcuts should appear on the Desktop
+
+ * Create a 'Startup' toolbar
+  * Right click in an open area on the task bar
+  * Under Toolbars, select 'New toolbar'
+  * Navigate to 'This PC\Desktop'
+  * Single click on Startup to select it
+  * Click 'Select Folder'
+  * A new 'Startup' toolbar should appear in the taskbar
+
+## Install PuTTY keys (the easy way)
 
 SSH will be used to communicate between the Driver Station and the Raspberry Pis. In order for 
 the communication to work seamlessly, SSH key files need to be generated, and the PuTTY SSH agent,
 Pageant, needs to be set up.  The private key files used are not pass-phrase protected, so they can't be
-stored in the repository.  There should be a USB stick in the Vision box that contains a copy of
-the .ssh directory for the Driver Station.  If so, copy
+stored in the repository.  
+ * There should be a USB stick in the Vision box that contains a copy of
+the .ssh directory for the Driver Station.  If so, copy the contents into c:\Users\spartronics (choose to replace any existing files).
+ * Set PuTTY's Pageant agent to start up on login.  The shortcut that was copied to the Desktop in the previous section already is set up to install the Spartronics key into the agent - it just needs to be copied into the Windows Startup folder.
+  * Type 'Windows-R' to open the 'Run' dialog
+  * Typs 'shell:startup' in the dialog box. This will open up an Explorer window into the Startup folder.
+  * Copy the 'Pageant' shortcut from the desktop into this folder and close it.
+
 ## Install GStreamer
 
 This is a library that allows video streaming.  As of this writing (03.09.22), the compatible version between Windows and the Raspberry Pi is 1.4.4.  The downloads for Windows can be found at [https://gstreamer.freedesktop.org/data/pkg/windows/1.4.4/ GStreamer downloads].
