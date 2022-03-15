@@ -1,8 +1,14 @@
-# Building a driver station from scratch
-
 <!-- TOC depthFrom:2 orderedList:false -->
-
-- [Building a driver station from scratch](#building-a-driver-station-from-scratch)
+- [Introduction](#introduction)
+- [Install OS](#install-os)
+- [Post Install](#post-install)
+- [General Software](#general-software)
+- [Git for Windows](#git-for-windows)
+- [FRC Software](#frc-software)
+- [Spartronics Dashboard](#spartronics-dashboard)
+- [Set up Driver camera and display scripts](#set-up-driver-camera-and-display-scripts)
+- [Install PuTTY keys (the easy way)](#install-putty-keys-the-easy-way)
+- [Install GStreamer](#install-gstreamer)
 
 <!-- /TOC -->
 
@@ -129,7 +135,7 @@ From the FRC instructions at [https://docs.wpilib.org/en/stable/docs/zero-to-rob
 
  * Install Python.  The Dashboard uses pynetworktables and pynetworktables2js, both of which have problems with Python>3.8.x.  So we'll install the latest 3.8 binary release - 3.8.10 [https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe Python 3.8.10].  Run the installer, and select 'Customize installation'.
    * Make sure that all the optional features (including 'for all users') are checked.
-   * On the next screen, check 'Install for all users'.  Notice that the install path changes to C:\Program Files\Python38.
+   * On the next screen, check 'Install for all users' and 'Add to PATH environment variable'.  Notice that the install path changes to C:\Program Files\Python38.
    * Click Install
    * When the prompt for 'Disable path length limit' appears, click on it to allow longer paths.
  * Check that Python exists in the execution path by searching for 'cmd' and typing 'py -3' in the command window.  Python should start and display a '>>>' prompt.  To get out, type 'ctrl-Z' then 'Enter'.
