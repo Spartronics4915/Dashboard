@@ -161,7 +161,7 @@ py -3 -m pip install -r requirements.txt
 cd ~/Vision/tools/DriverCamScripts/Windows
 cp -r .ssh * /c/Users/spartronics
 ```
- * In a Windows command shell, run the Spartronics.reg file:
+ * In a Windows command shell (as Administrator), run the Spartronics.reg file:
  ```bash
  cd %HOME%
  Spartronics.reg
