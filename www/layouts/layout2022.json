@@ -114,6 +114,13 @@
                                 "/FMSInfo/MatchType",
                                 "/FMSInfo/MatchNumber"
                             ]
+                        },
+                        {
+                            "type": "checkbox",
+                            "label": "Launcher Motor Active",
+                            "id": "launcherMotorActive",
+                            "size": [120, "row"],
+                            "ntkeys": ["Launcher/MotorActive"]
                         }
                     ]
                 },
