@@ -1,5 +1,5 @@
 pynetworktables==2020.0.1
-tornado==5.1.1
+tornado==6.3.2
 winappdbg==1.5
 pynetworktables2js==2019.0.0
 fabric
